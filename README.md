@@ -1,6 +1,6 @@
-# **Next.js + Rainbowkit + SIWE + shadcn**
+#**Next.js + Rainbowkit + SIWE + shadcn**
 
-Live Demo: [https://next-web3-template-umber.vercel.app/](https://next-web3-template-umber.vercel.app/)
+Live Demo: [link-here](link-here)
 
 A **Next.js** frontend for the DAAO project, powered by **TypeScript**, **RainbowKit**, **Wagmi**, **Shadcn**, and **TailwindCSS**. 
 
@@ -32,7 +32,7 @@ Includes the following features:
    Alternatively, you can clone the repository using the CLI:
 
    ```bash
-   git clone https://github.com/CJskii/next-web3-template.git daao_frontend
+   git clone git-link-here daao_frontend
    cd daao_frontend 
 
    ```
@@ -63,46 +63,11 @@ bun run dev
 
 - Open http://localhost:3000 to view the app.
 
-## 🛠️ How to Contribute
-
-We welcome contributions to improve this template. Here's how you can get involved:
-
-- Fork the repository: Start by forking this repository to your GitHub account.
-
-- Clone your fork: Clone your forked repository to your local machine.
-
-```bash
-git clone https://github.com/yourusername/next-web3-template.git
-cd next-web3-template
-```
-
-- Create a new branch: Create a new branch for your feature or fix.
-
-```bash
-git checkout -b feature/your-feature-name
-```
-
-- Make your changes: Make the necessary changes to the template.
-
-- Commit your changes:
-
-```bash
-git add .
-git commit -m "Add your feature description here"
-```
-
-- Push your changes:
-
-```bash
-git push origin feature/your-feature-name
-```
-
-- Open a pull request: Submit a pull request to the main repository for review.
 
 ## 🔧 **Project Structure**
 
 ```bash
-next-web3-template/
+daao_ai_frontend/
 │
 ├── public/                # Public assets (e.g., favicon)
 │   └── favicon.ico
@@ -163,4 +128,4 @@ This project is licensed under the [MIT License](LICENSE).
 
 ## 📢 **Contact**
 
-For any questions or inquiries, feel free to reach out via [GitHub issues](https://github.com/yourusername/next-web3-template/issues) or open a discussion. We're happy to hear from the community and help with any issues you may encounter.
+For any questions or inquiries, feel free to reach out via GitHub issues or open a discussion. We're happy to hear from the community and help with any issues you may encounter.
