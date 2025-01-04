@@ -1,4 +1,4 @@
-#**Next.js + Rainbowkit + SIWE + shadcn**
+# **Next.js + Rainbowkit + SIWE + shadcn**
 
 Live Demo: [link-here](link-here)
 
