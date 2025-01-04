@@ -7,13 +7,25 @@ import Link from "next/link";
 import { GitFork, StarIcon } from "lucide-react";
 import { GitHubIcon } from "@/assets/icons/social";
 
+import { Syne } from "next/font/google";
+const syne = Syne({
+  subsets: ["latin"],
+  weight: "400",
+})
+
+import { Goldman } from "next/font/google";
+const gold = Goldman({
+  subsets: ["latin"],
+  weight: "400",
+})
+
 const HomePage: NextPage = () => {
   return (
     <PageLayout title="Homepage" description="Welcome to next-web-template">
-      <Typography variant="h1" className="text-center">
+      <Typography variant="h1" className=" ${syneMono.className} text-center px-4 sm:px-8 lg:px-16 py-4"  >
         Decentralized Autonomous Agentic Organiztaion
       </Typography>
-      <Typography variant="h4" className="text-center">
+      <Typography variant="h3" className="text-center px-4 sm:px-8 lg:px-60 py-4">
         Where autonomous agents meet decentralized innovation, driving seamless collaboration for a smarter future.
       </Typography>
 
@@ -22,7 +34,8 @@ const HomePage: NextPage = () => {
         target="_blank"
         className="my-12"
       >
-        <Button className="gap-2">
+        <Button variant="connect"
+          className="gap-2">
           LAUNCH A DAAO
         </Button>
       </Link>

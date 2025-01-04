@@ -4,6 +4,11 @@ module.exports = {
   content: ["./src/**/*.{js,ts,jsx,tsx}"],
   theme: {
     extend: {
+
+      fontFamily: {
+        syneMono: ['"Syne Mono"'],
+        goldman: ['"Goldman"'],
+      },
       borderRadius: {
         lg: "var(--radius)",
         md: "calc(var(--radius) - 2px)",

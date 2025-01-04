@@ -36,7 +36,7 @@ export const ConnectWalletButton = () => {
               if (!connected) {
                 return (
                   <Button
-                    className="bg-gradient rounded-xl font-normal hover:opacity-90"
+                    variant="connect"
                     onClick={openConnectModal}
                     type="button"
                   >

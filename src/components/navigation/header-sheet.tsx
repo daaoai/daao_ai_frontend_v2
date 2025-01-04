@@ -16,6 +16,7 @@ import { ConnectWalletButton } from "../ui/connect-button";
 import { Typography } from "../ui/typography";
 import { VisuallyHidden } from "@radix-ui/react-visually-hidden";
 
+
 export const HeaderSheet: React.FC = () => {
   const [isNavbarOpen, setIsNavbarOpen] = useState(false);
 

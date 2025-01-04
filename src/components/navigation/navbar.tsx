@@ -133,9 +133,9 @@ export const Navbar: React.FC = () => {
           <div className="flex items-center space-x-2">
             <img src="/images/logo.svg" alt="Logo" className="h-8 w-8" />
 
-            <Typography variant="h3" className="font-bold">
+            <div className="font-syne">
               D.A.A.O
-            </Typography>
+            </div>
           </div>
         </Link>
       </div>

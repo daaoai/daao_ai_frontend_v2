@@ -21,9 +21,14 @@ const typographyVariants = cva("", {
       extraSmall: "text-xs font-medium leading-none",
       muted: "text-sm text-muted-foreground",
     },
+    font: {
+      syneMono: "font-syneMono",
+      goldman: "font-goldman",
+    },
   },
   defaultVariants: {
     variant: "paragraph",
+    font: "syneMono",
   },
 });
 
@@ -50,7 +55,7 @@ const variantElementMap: Record<
 
 export interface TypographyProps
   extends React.HTMLAttributes<HTMLElement>,
-    VariantProps<typeof typographyVariants> {
+  VariantProps<typeof typographyVariants> {
   asChild?: boolean;
   as?: string;
 }
