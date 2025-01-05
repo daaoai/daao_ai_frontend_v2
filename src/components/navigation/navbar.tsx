@@ -1,4 +1,3 @@
-import Image from "next/image";
 import Link from "next/link";
 import React from "react";
 import { ThemeToggler } from "../ui/theme-toggler";
@@ -13,6 +12,7 @@ import {
   navigationMenuTriggerStyle,
 } from "@/components/ui/navigation-menu";
 import Logo from '../logo';
+import socialLinks from "@/lib/social-links";
 
 interface NavLink {
   label: string;
@@ -21,10 +21,7 @@ interface NavLink {
 
 const otherLinks: NavLink[] = [
   { label: "About", href: "/docs" },
-  { label: "Github", href: "/docs" },
-  { label: "Telegram", href: "/docs" },
-  { label: "Discord", href: "/docs" },
-  { label: "Twitter", href: "/docs" },
+  ...socialLinks
 ];
 
 export const NaviLinks: React.FC = () => (
@@ -66,7 +63,10 @@ export const Navbar: React.FC = () => {
       </div>
 
       <Link href="/" className="md:hidden">
-        <Logo />
+        <Logo
+          width={32}
+          height={32}
+        />
       </Link>
 
       <div className="flex-1 justify-center hidden items-center gap-3 lg:flex">
