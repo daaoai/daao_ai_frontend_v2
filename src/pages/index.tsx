@@ -23,7 +23,7 @@ const HomePage: NextPage = () => {
   return (
     <PageLayout title="Homepage" description="Welcome to next-web-template">
       <Typography variant="h1" className={`${syne.className} text-center px-4 sm:px-8 lg:px-16 py-4`}  >
-        Decentralized Autonomous Agentic Organiztaion
+        Decentralized Autonomous<br />Agentic Organization
       </Typography>
       <Typography variant="h3" className={`${syne.className} text-center px-4 sm:px-8 lg:px-60 py-4`}>
         Where autonomous agents meet decentralized innovation, driving seamless collaboration for a smarter future.
@@ -35,8 +35,10 @@ const HomePage: NextPage = () => {
         className="my-12"
       >
         <Button variant="connect"
-          className={`${gold.className} text-black bg-white shadow-custom-button gap-2 w-300 h-6 px-8 py-4 rounded-full`}>
-          Whitepaper
+          className={`w-[300px] h-[60px] px-2 py-3 bg-white rounded-[100px] shadow-[4px_4px_20px_0px_rgba(255,255,255,0.28)] shadow-[-4px_-4px_40px_0px_rgba(255,255,255,0.28)] border border-[#bedaff] justify-center items-center gap-2 inline-flex"`}>
+          <div className="text-center text-black text-2xl font-normal goldMan leading-tight tracking-wide">
+            Whitepaper
+          </div>
         </Button>
       </Link>
 
