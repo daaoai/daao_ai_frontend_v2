@@ -1,6 +1,7 @@
 import { getDefaultConfig } from '@rainbow-me/rainbowkit';
 import {
 
+  sepolia,
   mode,
 } from 'wagmi/chains';
 
