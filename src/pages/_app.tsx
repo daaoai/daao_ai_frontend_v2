@@ -25,7 +25,6 @@ import { SessionProvider } from "next-auth/react";
 
 import { config } from "../wagmi";
 
-import { ThemeProvider } from "@/components/theme-provider";
 import { Navbar } from "@/components/navigation/navbar";
 import { Footer } from "@/components/footer";
 
@@ -51,16 +50,9 @@ function MyApp({ Component, pageProps }: AppProps) {
             getSiweMessageOptions={getSiweMessageOptions}
           >
             <RainbowKitProvider>
-              <ThemeProvider
-                attribute="class"
-                defaultTheme="system"
-                enableSystem
-                disableTransitionOnChange
-              >
-                <Layout font={fontChoice}>
-                  <Component {...pageProps} />
-                </Layout>
-              </ThemeProvider>
+              <Layout font={fontChoice}>
+                <Component {...pageProps} />
+              </Layout>
             </RainbowKitProvider>
           </RainbowKitSiweNextAuthProvider>
         </QueryClientProvider>
