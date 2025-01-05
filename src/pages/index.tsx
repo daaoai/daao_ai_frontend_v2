@@ -35,7 +35,7 @@ const HomePage: NextPage = () => {
         className="my-12"
       >
         <Button variant="connect"
-          className={`${gold.className}gap-2`}>
+          className={`${gold.className} text-black bg-white shadow-custom-button gap-2 w-300 h-6 px-8 py-4 rounded-full`}>
           Whitepaper
         </Button>
       </Link>
