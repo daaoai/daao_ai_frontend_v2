@@ -11,26 +11,9 @@ import {
 } from "@/components/ui/sheet";
 import { ThemeToggler } from "../ui/theme-toggler";
 import { ConnectWalletButton } from "../ui/connect-button";
-import { Typography } from "../ui/typography";
 import { MobileNavLinks } from "./navbar";
-import logo from '@/assets/images/logo.svg';
+import Logo from "../logo";
 
-const Logo: React.FC = () => (
-  <div className="flex items-center space-x-2">
-    <div className="relative h-8 w-8">
-      <Image
-        src={logo}
-        alt="D.A.A.O Logo"
-        width={32}
-        height={32}
-        priority
-      />
-    </div>
-    <Typography variant="h3" className="font-bold">
-      D.A.A.O
-    </Typography>
-  </div>
-);
 export const HeaderSheet: React.FC = () => {
   const [isNavbarOpen, setIsNavbarOpen] = useState(false);
 
@@ -52,7 +35,10 @@ export const HeaderSheet: React.FC = () => {
         </VisuallyHidden>
 
         <div className="mb-6">
-          <Logo />
+          <Logo
+            width={32}
+            height={32}
+          />
         </div>
 
         <div className="flex flex-col items-stretch gap-2">
