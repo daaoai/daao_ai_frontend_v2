@@ -1,4 +1,5 @@
 import { useState } from "react";
+import Image from "next/image";
 import { MenuIcon } from "lucide-react";
 import { VisuallyHidden } from "@radix-ui/react-visually-hidden";
 import {
@@ -8,6 +9,7 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "@/components/ui/sheet";
+import { ThemeToggler } from "../ui/theme-toggler";
 import { ConnectWalletButton } from "../ui/connect-button";
 import { MobileNavLinks } from "./navbar";
 import Logo from "../logo";
@@ -42,6 +44,10 @@ export const HeaderSheet: React.FC = () => {
         <div className="flex flex-col items-stretch gap-2">
           <ConnectWalletButton />
           <MobileNavLinks />
+        </div>
+
+        <div className="absolute bottom-4 left-4">
+          <ThemeToggler />
         </div>
       </SheetContent>
     </Sheet>

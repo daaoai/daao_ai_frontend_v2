@@ -36,7 +36,7 @@ export const HeadComponent: React.FC<HeadComponentProps> = ({
       <meta property="og:site_name" content="next-web3-template" />
       {/* Additional tags */}
       <meta name="viewport" content="width=device-width, initial-scale=1" />
-      {/*<meta name="theme-color" content="system" />{" "}*/}
+      <meta name="theme-color" content="system" />{" "}
     </Head>
   );
 };

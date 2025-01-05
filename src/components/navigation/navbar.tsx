@@ -1,5 +1,6 @@
 import Link from "next/link";
 import React from "react";
+import { ThemeToggler } from "../ui/theme-toggler";
 import { Button } from "../ui/button";
 import { HeaderSheet } from "./header-sheet";
 import { ConnectWalletButton } from "@/components/ui/connect-button";
@@ -73,6 +74,7 @@ export const Navbar: React.FC = () => {
       </div>
 
       <div className="flex-1 justify-end items-center gap-3 hidden lg:flex">
+        <ThemeToggler />
         <ConnectWalletButton />
       </div>
 
