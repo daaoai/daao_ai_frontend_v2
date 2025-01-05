@@ -10,10 +10,6 @@ module.exports = {
       boxShadow: {
         'custom-button': '-4px -4px 40px 0 rgba(255, 255, 255, 0.28), 4px 4px 20px 0 rgba(255, 255, 255, 0.28)',
       },
-      fontFamily: {
-        syneMono: ['"Syne Mono"'],
-        goldman: ['"Goldman"'],
-      },
       borderRadius: {
         lg: "var(--radius)",
         md: "calc(var(--radius) - 2px)",

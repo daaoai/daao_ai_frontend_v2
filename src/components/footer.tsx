@@ -1,13 +1,14 @@
 import Link from "next/link";
-import {
-  GitHubIcon,
-  TelegramIcon,
-  DiscordIcon,
-  XIcon,
-} from "@/assets/icons/social";
-import { Typography } from "./ui/typography";
+import Logo from "./logo";
 
-interface FooterData {
+import { Plus_Jakarta_Sans } from "next/font/google";
+import socialLinks from "@/lib/social-links";
+const jakarta = Plus_Jakarta_Sans({
+  subsets: ["latin"],
+  weight: "400",
+})
+
+export interface FooterData {
   label: string;
   href: string;
   children?: React.ReactNode;
@@ -15,71 +16,63 @@ interface FooterData {
 
 const footerLinks: FooterData[] = [
   {
-    label: "Terms of Service",
-    href: "/terms",
-  },
-  {
     label: "Cookie Policy",
     href: "/cookie",
+  },
+  {
+    label: "Contact",
+    href: "/contact",
   },
   {
     label: "Legal Notice",
     href: "/legal",
   },
   {
-    label: "Contact",
-    href: "/contact",
-  },
-];
-
-const socialLinks: FooterData[] = [
-  {
-    label: "GitHub",
-    href: "https://github.com/your-profile",
-    children: <GitHubIcon />,
-  },
-  {
-    label: "Telegram",
-    href: "https://t.me/your-telegram",
-    children: <TelegramIcon />,
-  },
-  {
-    label: "Discord",
-    href: "https://discord.com/invite/your-invite",
-    children: <DiscordIcon />,
-  },
-  {
-    label: "Twitter/X",
-    href: "https://twitter.com/your-profile",
-    children: <XIcon />,
+    label: "Terms of Service",
+    href: "/terms",
   },
 ];
 
 export const Footer: React.FC = () => {
   return (
     <FooterContainer>
-      <FooterContent />
+      <div className={`${jakarta.className} text-sm flex flex-col justify-center items-center gap-4 w-full`}>
+        <FooterTopContent />
+        <FooterBottomContent />
+      </div>
     </FooterContainer>
   );
 };
 
-const FooterContent: React.FC = () => {
+const FooterTopContent: React.FC = () => {
   return (
-    <div className="flex flex-col md:flex-row justify-between items-center gap-4 w-full p-4">
-      {/* Company Info */}
+    <div className="flex flex-col md:flex-row justify-between items-center gap-4 w-full p-4 border-b border-[#212121]">
+      {/* logo */}
       <div className="flex flex-col justify-center items-center text-muted-foreground">
-        <p>© 2025 D.A.A.O.ai</p>
-        <Link href="/example">
-        </Link>
+        <Logo
+          width={32}
+          height={32}
+        />
       </div>
 
       {/* Footer Links (Terms, Cookie Policy, etc.) */}
-      <div className="flex flex-col lg:flex-row gap-4 justify-center items-center p-8">
+      <div className="flex flex-col lg:flex-row gap-4 justify-center md:text-right md:items-right items:center text-center py-8">
         {footerLinks.map((link, index) => (
           <FooterLink key={index} href={link.href} label={link.label}>
             {link.label}
           </FooterLink>
         ))}
+      </div>
+    </div>
+  );
+};
+
+const FooterBottomContent: React.FC = () => {
+  return (
+    <div className="flex flex-col md:flex-row justify-between items-center gap-4 w-full p-4">
+      {/* logo */}
+      <div className="flex flex-col justify-center items-center text-muted-foreground">
+        <p>© 2025 DAAOS. All rights reserved. </p>
       </div>
 
       {/* Social Icons */}
@@ -93,6 +86,7 @@ const FooterContent: React.FC = () => {
     </div>
   );
 };
+
 
 const FooterLink: React.FC<FooterData> = ({ href, children }) => {
   return (

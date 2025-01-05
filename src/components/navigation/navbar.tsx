@@ -1,7 +1,5 @@
-import Image from "next/image";
 import Link from "next/link";
 import React from "react";
-import logo from '@/assets/images/logo.svg';
 import { ThemeToggler } from "../ui/theme-toggler";
 import { Button } from "../ui/button";
 import { HeaderSheet } from "./header-sheet";
@@ -13,7 +11,8 @@ import {
   NavigationMenuList,
   navigationMenuTriggerStyle,
 } from "@/components/ui/navigation-menu";
-import { Typography } from "../ui/typography";
+import Logo from '../logo';
+import socialLinks from "@/lib/social-links";
 
 interface NavLink {
   label: string;
@@ -22,28 +21,8 @@ interface NavLink {
 
 const otherLinks: NavLink[] = [
   { label: "About", href: "/docs" },
-  { label: "Github", href: "/docs" },
-  { label: "Telegram", href: "/docs" },
-  { label: "Discord", href: "/docs" },
-  { label: "Twitter", href: "/docs" },
+  ...socialLinks
 ];
-
-const Logo: React.FC = () => (
-  <div className="flex items-center space-x-2">
-    <div className="relative h-8 w-8">
-      <Image
-        src={logo}
-        alt="D.A.A.O Logo"
-        width={32}
-        height={32}
-        priority
-      />
-    </div>
-    <Typography variant="h3" className="font-bold">
-      D.A.A.O
-    </Typography>
-  </div>
-);
 
 export const NaviLinks: React.FC = () => (
   <NavigationMenu>
@@ -76,12 +55,18 @@ export const Navbar: React.FC = () => {
     <div className="fixed z-50 flex w-full justify-between items-center border-b border-neutral-400/50 bg-white/50 p-4 backdrop-blur-xl dark:bg-black/50 md:px-16 md:py-4">
       <div className="flex-1 hidden md:block">
         <Link href="/" className="flex items-center justify-start">
-          <Logo />
+          <Logo
+            width={32}
+            height={32}
+          />
         </Link>
       </div>
 
       <Link href="/" className="md:hidden">
-        <Logo />
+        <Logo
+          width={32}
+          height={32}
+        />
       </Link>
 
       <div className="flex-1 justify-center hidden items-center gap-3 lg:flex">

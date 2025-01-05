@@ -8,13 +8,13 @@ import { GitFork, StarIcon } from "lucide-react";
 import { GitHubIcon } from "@/assets/icons/social";
 
 import { Syne_Mono } from "next/font/google";
-const syne = Syne_Mono({
+export const syne = Syne_Mono({
   subsets: ["latin"],
   weight: "400",
 })
 
 import { Goldman } from "next/font/google";
-const gold = Goldman({
+export const gold = Goldman({
   subsets: ["latin"],
   weight: "400",
 })
