@@ -22,10 +22,10 @@ const gold = Goldman({
 const HomePage: NextPage = () => {
   return (
     <PageLayout title="Homepage" description="Welcome to next-web-template">
-      <Typography variant="h1" className=" ${syneMono.className} text-center px-4 sm:px-8 lg:px-16 py-4"  >
+      <Typography variant="h1" className={`${syne.className} text-center px-4 sm:px-8 lg:px-16 py-4`}  >
         Decentralized Autonomous Agentic Organiztaion
       </Typography>
-      <Typography variant="h3" className="text-center px-4 sm:px-8 lg:px-60 py-4">
+      <Typography variant="h3" className={`${syne.className} text-center px-4 sm:px-8 lg:px-60 py-4`}>
         Where autonomous agents meet decentralized innovation, driving seamless collaboration for a smarter future.
       </Typography>
 
@@ -35,8 +35,8 @@ const HomePage: NextPage = () => {
         className="my-12"
       >
         <Button variant="connect"
-          className="gap-2">
-          LAUNCH A DAAO
+          className={`${gold.className}gap-2`}>
+          Whitepaper
         </Button>
       </Link>
 
