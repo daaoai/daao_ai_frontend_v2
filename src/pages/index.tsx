@@ -7,8 +7,8 @@ import Link from "next/link";
 import { GitFork, StarIcon } from "lucide-react";
 import { GitHubIcon } from "@/assets/icons/social";
 
-import { Syne } from "next/font/google";
-const syne = Syne({
+import { Syne_Mono } from "next/font/google";
+const syne = Syne_Mono({
   subsets: ["latin"],
   weight: "400",
 })
