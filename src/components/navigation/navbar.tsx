@@ -52,7 +52,7 @@ export const MobileNavLinks: React.FC = () => (
 
 export const Navbar: React.FC = () => {
   return (
-    <div className="fixed z-50 flex w-full justify-between items-center border-b border-[#212121] p-4 backdrop-blur-xl bg-black/0 md:px-16 md:py-4">
+    <div className="fixed z-50 flex w-full justify-between items-center border-b border-[#212121] p-4 backdrop-blur bg-black/0 md:px-16 md:py-4">
       <div className="flex-1 hidden md:block">
         <Link href="/" className="flex items-center justify-start">
           <Logo

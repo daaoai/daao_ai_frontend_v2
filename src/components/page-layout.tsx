@@ -44,7 +44,7 @@ const MainContainer: React.FC<LayoutProps & { children: React.ReactNode }> = ({
   flexDirection = "col",
   justify = "start",
   align = "center",
-  gap = 8,
+  gap = 2,
 }) => {
   const justifyClass = {
     start: "justify-start",
@@ -65,18 +65,20 @@ const MainContainer: React.FC<LayoutProps & { children: React.ReactNode }> = ({
 
   return (
     <main
-      className={`min-h-screen p-8 flex flex-${flexDirection} ${justifyClass} ${alignClass} gap-${gap} py-32`}
+      className={`min-h-screen flex flex-${flexDirection} ${justifyClass} ${alignClass} gap-${gap} pt-16`}
     >
       {/*background stuff */}
-      <div className="absolute inset-0 bg-gradient-to-b from-[#000e22] to-[#010101]">
-        <div className="absolute inset-0 bg-[length:80px_80px] opacity-50 bg-grid-pattern bg-blend-overlay pointer-events-none">
-        </div>
+      <div className="absolute inset-0 bg-gradient-to-b from-[#000e22] to-[#010101] h-dvh">
+        {/*<div className="absolute inset-0 bg-[length:80px_80px] opacity-50 bg-grid-pattern bg-blend-overlay pointer-events-none">
+        </div>*/}
+        {/*<div className="relative h-full bg-star-pattern bg-center bg-no-repeat">
+        </div>*/}
       </div>
 
       {/*rest of the stuff*/}
-      <div className=" relative z-10 flex flex-col items-center justify-center text-center">
+      <div className="relative z-10 flex flex-col items-center justify-center text-center h-dvh">
         {children}
       </div>
-    </main>
+    </main >
   );
 };
