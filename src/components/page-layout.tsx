@@ -67,7 +67,16 @@ const MainContainer: React.FC<LayoutProps & { children: React.ReactNode }> = ({
     <main
       className={`min-h-screen p-8 flex flex-${flexDirection} ${justifyClass} ${alignClass} gap-${gap} py-32`}
     >
-      {children}
+      {/*background stuff */}
+      <div className="absolute inset-0 bg-gradient-to-b from-[#000e22] to-[#010101]">
+        <div className="absolute inset-0 bg-[length:80px_80px] opacity-50 bg-grid-pattern bg-blend-overlay pointer-events-none">
+        </div>
+      </div>
+
+      {/*rest of the stuff*/}
+      <div className=" relative z-10 flex flex-col items-center justify-center text-center">
+        {children}
+      </div>
     </main>
   );
 };

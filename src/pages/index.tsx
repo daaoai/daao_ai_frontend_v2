@@ -22,30 +22,25 @@ const gold = Goldman({
 const HomePage: NextPage = () => {
   return (
     <PageLayout title="Homepage" description="Welcome to next-web-template">
-      <div className="absolute inset-0 bg-black bg-grid-pattern bg-[length:80px_80px] pointer-events-none">
-      </div>
+      <Typography variant="h1" className={`text-center text-[#d5ddf3] text-[70px] font-normal ${syne.className}`}>
+        Decentralized Autonomous<br />Agentic Organization
+      </Typography>
+      <Typography variant="h3" className={`w-[790px] text-center text-[#d5ddf3] text-2xl font-normal ${syne.className}`}>
+        Where autonomous agents meet decentralized innovation, driving seamless collaboration for a smarter future.
+      </Typography>
 
-      <div className="z-10 flex flex-col items-center justify-center text-center">
-        <Typography variant="h1" className={`text-center text-[#d5ddf3] text-[70px] font-normal ${syne.className}`}>
-          Decentralized Autonomous<br />Agentic Organization
-        </Typography>
-        <Typography variant="h3" className={`w-[790px] text-center text-[#d5ddf3] text-2xl font-normal ${syne.className}`}>
-          Where autonomous agents meet decentralized innovation, driving seamless collaboration for a smarter future.
-        </Typography>
-
-        <Link
-          href="insert-link-here"
-          target="_blank"
-          className="my-12"
-        >
-          <Button variant="connect"
-            className={`w-[300px] h-[60px] px-2 py-3 bg-white rounded-[100px] shadow-[4px_4px_20px_0px_rgba(255,255,255,0.28)] shadow-[-4px_-4px_40px_0px_rgba(255,255,255,0.28)] border border-[#bedaff] justify-center items-center gap-2 inline-flex"`}>
-            <div className="text-center text-black text-2xl font-normal goldman leading-tight tracking-wide">
-              Whitepaper
-            </div>
-          </Button>
-        </Link>
-      </div>
+      <Link
+        href="insert-link-here"
+        target="_blank"
+        className="my-12"
+      >
+        <Button variant="connect"
+          className={`w-[300px] h-[60px] px-2 py-3 bg-white rounded-[100px] shadow-custom-button border border-[#bedaff] justify-center items-center gap-2 inline-flex"`}>
+          <div className="text-center text-black text-2xl font-normal goldman leading-tight tracking-wide">
+            Whitepaper
+          </div>
+        </Button>
+      </Link>
     </PageLayout>
   );
 };
