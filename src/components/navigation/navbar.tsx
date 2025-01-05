@@ -52,7 +52,7 @@ export const MobileNavLinks: React.FC = () => (
 
 export const Navbar: React.FC = () => {
   return (
-    <div className="fixed z-50 flex w-full justify-between items-center border-b border-neutral-400/50 bg-white/50 p-4 backdrop-blur-xl dark:bg-black/50 md:px-16 md:py-4">
+    <div className="fixed z-50 flex w-full justify-between items-center border-b border-[#212121] p-4 backdrop-blur-xl bg-black/0 md:px-16 md:py-4">
       <div className="flex-1 hidden md:block">
         <Link href="/" className="flex items-center justify-start">
           <Logo
@@ -69,12 +69,11 @@ export const Navbar: React.FC = () => {
         />
       </Link>
 
-      <div className="flex-1 justify-center hidden items-center gap-3 lg:flex">
+      {/*<div className="flex-1 justify-center hidden items-center gap-3 lg:flex">
         <NaviLinks />
-      </div>
+      </div>*/}
 
       <div className="flex-1 justify-end items-center gap-3 hidden lg:flex">
-        <ThemeToggler />
         <ConnectWalletButton />
       </div>
 
