@@ -4,7 +4,12 @@ module.exports = {
   content: ["./src/**/*.{js,ts,jsx,tsx}"],
   theme: {
     extend: {
-
+      backgroundImage: {
+        'grid-pattern': "linear-gradient(to right, rgba(40, 55, 96, 0.25) 1px, transparent 1px), linear-gradient(to bottom, rgba(40, 55, 96, 0.25) 1px, transparent 1px)",
+      },
+      boxShadow: {
+        'custom-button': '-4px -4px 40px 0 rgba(255, 255, 255, 0.28), 4px 4px 20px 0 rgba(255, 255, 255, 0.28)',
+      },
       fontFamily: {
         syneMono: ['"Syne Mono"'],
         goldman: ['"Goldman"'],

@@ -7,8 +7,8 @@ import Link from "next/link";
 import { GitFork, StarIcon } from "lucide-react";
 import { GitHubIcon } from "@/assets/icons/social";
 
-import { Syne } from "next/font/google";
-const syne = Syne({
+import { Syne_Mono } from "next/font/google";
+const syne = Syne_Mono({
   subsets: ["latin"],
   weight: "400",
 })
@@ -22,10 +22,10 @@ const gold = Goldman({
 const HomePage: NextPage = () => {
   return (
     <PageLayout title="Homepage" description="Welcome to next-web-template">
-      <Typography variant="h1" className=" ${syneMono.className} text-center px-4 sm:px-8 lg:px-16 py-4"  >
-        Decentralized Autonomous Agentic Organiztaion
+      <Typography variant="h1" className={`text-center text-[#d5ddf3] text-[70px] font-normal ${syne.className}`}>
+        Decentralized Autonomous<br />Agentic Organization
       </Typography>
-      <Typography variant="h3" className="text-center px-4 sm:px-8 lg:px-60 py-4">
+      <Typography variant="h3" className={`w-[790px] text-center text-[#d5ddf3] text-2xl font-normal ${syne.className}`}>
         Where autonomous agents meet decentralized innovation, driving seamless collaboration for a smarter future.
       </Typography>
 
@@ -35,11 +35,12 @@ const HomePage: NextPage = () => {
         className="my-12"
       >
         <Button variant="connect"
-          className="gap-2">
-          LAUNCH A DAAO
+          className={`w-[300px] h-[60px] px-2 py-3 bg-white rounded-[100px] shadow-custom-button border border-[#bedaff] justify-center items-center gap-2 inline-flex"`}>
+          <div className="text-center text-black text-2xl font-normal goldman leading-tight tracking-wide">
+            Whitepaper
+          </div>
         </Button>
       </Link>
-
     </PageLayout>
   );
 };
