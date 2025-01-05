@@ -35,11 +35,7 @@ const getSiweMessageOptions: GetSiweMessageOptions = () => ({
   statement: "Sign in to Rainbowkit with Ethereum",
 });
 
-// export const monsterrat = Montserrat({
-//   subsets: ["latin"],
-//   variable: "--font-montserrat",
-//   weight: "500",
-// });
+
 
 // TODO: wagmi to change default theme based on the user's system preference
 

@@ -1,17 +1,30 @@
-import { getDefaultConfig } from '@rainbow-me/rainbowkit';
 import {
+  getDefaultConfig,
+  connectorsForWallets,
 
-  sepolia,
-  mode,
-} from 'wagmi/chains';
+} from '@rainbow-me/rainbowkit';
+import { mode } from 'wagmi/chains';
+import {
+  metaMaskWallet,
+  coinbaseWallet,
+  walletConnectWallet,
+  injectedWallet,
+} from '@rainbow-me/rainbowkit/wallets';
 
 export const config = getDefaultConfig({
   appName: 'RainbowKit App',
   projectId: 'YOUR_PROJECT_ID',
-  chains: [
-
-    mode,
-    ...(process.env.NEXT_PUBLIC_ENABLE_TESTNETS === 'true' ? [sepolia] : []),
-  ],
+  chains: [mode],
   ssr: true,
+  wallets: [
+    {
+      groupName: 'Recommended',
+      wallets: [
+        metaMaskWallet,
+        coinbaseWallet,
+        walletConnectWallet,
+        injectedWallet,
+      ],
+    },
+  ],
 });
