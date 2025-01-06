@@ -1,6 +1,7 @@
 
 // Logo.tsx
 import React from 'react';
+import { Typography } from './typography';
 
 export const Logo = () => (
     <div className="flex items-center space-x-2">
