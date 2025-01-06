@@ -42,11 +42,11 @@ const HomePage: NextPage = () => {
           <Link
             href="insert-link-here"
             target="_blank"
-            className="my-12"
+            className="my-8"
           >
             <Button variant="connect"
-              className={`w-[300px] h-[60px] px-2 py-3 bg-white rounded-[100px] shadow-custom-button border border-[#bedaff] justify-center items-center gap-2 inline-flex"`}>
-              <div className="text-center text-black text-2xl font-normal goldman leading-tight tracking-wide">
+              className={`py-6 px-12 bg-white rounded-xl border border-[#bedaff] justify-center items-center inline-flex`}>
+              <div className="text-center text-black text-xl font-normal goldman leading-tight tracking-wide">
                 Whitepaper
               </div>
             </Button>

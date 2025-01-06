@@ -73,8 +73,18 @@ export const Navbar: React.FC = () => {
         <NaviLinks />
       </div>*/}
 
-      <div className="flex-1 justify-end items-center gap-3 hidden lg:flex">
-        <ConnectWalletButton />
+      <div className="justify-center items-center hidden lg:flex h-min">
+        <Link
+          href="insert-link-here"
+          target="_blank"
+        >
+          <Button variant="connect"
+            className={`py-5 px-12 w-full md:w-48 h-10 md:h-8 bg-white rounded-xl border border-[#bedaff] justify-center items-center inline-flex`}>
+            <div className="text-center text-black text-xl font-normal leading-tight tracking-wide">
+              Join Waitlist
+            </div>
+          </Button>
+        </Link>
       </div>
 
       <div className="block lg:hidden">
