@@ -1,7 +1,9 @@
 "use client";
 import { ConnectButton } from "@rainbow-me/rainbowkit";
 import { Button } from "./button";
+import { mainnet, goerli, sepolia } from "wagmi/chains";
 import Image from "next/image";
+const ethChainIds: number[] = [mainnet.id, goerli.id, sepolia.id];
 
 export const ConnectWalletButton = () => {
   return (
@@ -21,6 +23,8 @@ export const ConnectWalletButton = () => {
           account &&
           chain &&
           (!authenticationStatus || authenticationStatus === "authenticated");
+                  const isEthChain = chain && ethChainIds.includes(chain.id);
+
         return (
           <div
             {...(!ready && {
@@ -44,7 +48,7 @@ export const ConnectWalletButton = () => {
                   </Button>
                 );
               }
-              if (chain.unsupported) {
+              if (!isEthChain ||chain.unsupported) {
                 return (
                   <Button
                     variant={"destructive"}
