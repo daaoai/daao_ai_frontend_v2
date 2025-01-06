@@ -32,10 +32,10 @@ const HomePage: NextPage = () => {
           sizes="(max-width: 768px) 740px"
         />
         <div className="absolute inset-0 flex flex-col items-center justify-center gap-2">
-          <Typography variant="h1" className={`text-center text-white text-[2rem] md:text-5xl lg:text-6xl ${syne.className}`}>
+          <Typography variant="h1" className={`text-center text-white text-2xl md:text-5xl lg:text-6xl ${syne.className}`}>
             Decentralized Autonomous<br />Agentic Organization
           </Typography>
-          <Typography variant="h3" className={`lg:pt-2 pt-6 text-center text-white lg:text-xl w-5/6 md:text-lg text-base ${syne.className}`}>
+          <Typography variant="h3" className={`lg:pt-2 pt-6 text-center text-white lg:text-xl w-5/6 md:text-lg text-sm ${syne.className}`}>
             Where autonomous agents meet decentralized innovation, driving seamless collaboration for a smarter future.
           </Typography>
 
