@@ -81,10 +81,10 @@ export const Navbar: React.FC = () => {
       <div className="justify-center items-center gap-4 w-min flex">
         <Button
           variant="connect"
-          className={`w-full py-2 md:py-4 md:px-6 px-4 bg-white rounded-lg sm:rounded-xl border border-[#bedaff] flex justify-center items-center max-w-xs sm:max-w-none`}
+          className={`w-full py-4 md:py-2 md:px-6 px-4 bg-white rounded-lg sm:rounded-xl border border-[#bedaff] flex justify-center items-center max-w-xs sm:max-w-none`}
           onClick={() => setIsModalOpen(true)}
         >
-          <div className="text-center text-black text-xl sm:text-base font-normal goldman leading-tight tracking-wide">
+          <div className="text-center text-black text-xs sm:text-base font-normal goldman leading-tight tracking-wide">
             Join Waitlist
           </div>
         </Button>
