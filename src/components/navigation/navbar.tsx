@@ -52,7 +52,7 @@ export const MobileNavLinks: React.FC = () => (
 
 export const Navbar: React.FC = () => {
   return (
-    <div className="fixed z-50 flex w-full justify-between items-center border-b border-neutral-400/50 bg-white/50 p-4 backdrop-blur-xl dark:bg-black/50 md:px-16 md:py-4">
+    <div className="fixed z-50 flex w-full justify-between items-center border-b border-[#212121] p-4 backdrop-blur bg-black/0 md:px-16 md:py-4">
       <div className="flex-1 hidden md:block">
         <Link href="/" className="flex items-center justify-start">
           <Logo
@@ -69,13 +69,22 @@ export const Navbar: React.FC = () => {
         />
       </Link>
 
-      <div className="flex-1 justify-center hidden items-center gap-3 lg:flex">
+      {/*<div className="flex-1 justify-center hidden items-center gap-3 lg:flex">
         <NaviLinks />
-      </div>
+      </div>*/}
 
-      <div className="flex-1 justify-end items-center gap-3 hidden lg:flex">
-        <ThemeToggler />
-        <ConnectWalletButton />
+      <div className="justify-center items-center hidden lg:flex h-min">
+        <Link
+          href="insert-link-here"
+          target="_blank"
+        >
+          <Button variant="connect"
+            className={`py-5 px-12 w-full md:w-48 h-10 md:h-8 bg-white rounded-xl border border-[#bedaff] justify-center items-center inline-flex`}>
+            <div className="text-center text-black text-xl font-normal leading-tight tracking-wide">
+              Join Waitlist
+            </div>
+          </Button>
+        </Link>
       </div>
 
       <div className="block lg:hidden">

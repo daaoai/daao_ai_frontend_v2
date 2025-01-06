@@ -1,11 +1,14 @@
 /** @type {import('tailwindcss').Config} */
-module.exports = {
+import tailwindcssAnimate from "tailwindcss-animate";
+
+export default {
   darkMode: ["class"],
   content: ["./src/**/*.{js,ts,jsx,tsx}"],
   theme: {
     extend: {
       backgroundImage: {
         'grid-pattern': "linear-gradient(to right, rgba(40, 55, 96, 0.25) 1px, transparent 1px), linear-gradient(to bottom, rgba(40, 55, 96, 0.25) 1px, transparent 1px)",
+        'star-pattern': "url('/star-1-with-ellipse.svg')",
       },
       boxShadow: {
         'custom-button': '-4px -4px 40px 0 rgba(255, 255, 255, 0.28), 4px 4px 20px 0 rgba(255, 255, 255, 0.28)',
@@ -59,5 +62,5 @@ module.exports = {
       },
     },
   },
-  plugins: [require("tailwindcss-animate")],
+  plugins: [tailwindcssAnimate],
 };
