@@ -2,7 +2,7 @@ import Link from "next/link";
 import Logo from "./logo";
 
 import { Plus_Jakarta_Sans } from "next/font/google";
-import socialLinks from "@/lib/social-links";
+import { socialLinks } from "@/lib/links";
 const jakarta = Plus_Jakarta_Sans({
   subsets: ["latin"],
   weight: "400",
