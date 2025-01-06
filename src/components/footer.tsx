@@ -15,22 +15,6 @@ export interface FooterData {
 }
 
 const footerLinks: FooterData[] = [
-  {
-    label: "Cookie Policy",
-    href: "/cookie",
-  },
-  {
-    label: "Contact",
-    href: "/contact",
-  },
-  {
-    label: "Legal Notice",
-    href: "/legal",
-  },
-  {
-    label: "Terms of Service",
-    href: "/terms",
-  },
 ];
 
 export const Footer: React.FC = () => {
