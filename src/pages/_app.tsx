@@ -26,16 +26,12 @@ import { SessionProvider } from "next-auth/react";
 import { config } from "../wagmi";
 
 import { ThemeProvider } from "@/components/theme-provider";
-import { Navbar } from "@/components/navigation/navbar";
-import { Footer } from "@/components/footer";
 
 const client = new QueryClient();
 
 const getSiweMessageOptions: GetSiweMessageOptions = () => ({
   statement: "Sign in to Rainbowkit with Ethereum",
 });
-
-
 
 // TODO: wagmi to change default theme based on the user's system preference
 
@@ -69,12 +65,11 @@ function MyApp({ Component, pageProps }: AppProps) {
   );
 }
 
-function Layout({ children, font }: { children: React.ReactNode; font?: string }) {
+function Layout({ children, font, subdomain }: { children: React.ReactNode; font?: string, subdomain?: string }) {
+  console.log('Subdomain:', subdomain);  // Log to check if it is passed correctly
   return (
     <div className={font || goldman.className}>
-      <Navbar />
       {children}
-      <Footer />
     </div>
   );
 }

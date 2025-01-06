@@ -1,12 +1,16 @@
 import { ReactNode } from "react";
 import { HeadComponent } from "./head-component";
 import React from "react";
+import { Navbar } from "./navigation/navbar";
+import { Footer } from "./footer";
+import { AppNavbar } from "./navigation/app-navbar";
 
 interface LayoutProps {
   flexDirection?: "row" | "col";
   justify?: "start" | "end" | "center" | "between" | "around" | "evenly";
   align?: "start" | "end" | "center" | "baseline" | "stretch";
   gap?: number;
+  app?: boolean;
 }
 
 interface PageLayoutProps extends LayoutProps {
@@ -23,6 +27,7 @@ export const PageLayout: React.FC<PageLayoutProps> = ({
   justify = "start",
   align = "center",
   gap = 8,
+  app = false
 }) => {
   return (
     <>
@@ -32,6 +37,7 @@ export const PageLayout: React.FC<PageLayoutProps> = ({
         justify={justify}
         align={align}
         gap={gap}
+        app={app}
       >
         {children}
       </MainContainer>
@@ -45,6 +51,7 @@ const MainContainer: React.FC<LayoutProps & { children: React.ReactNode }> = ({
   justify = "start",
   align = "center",
   gap = 2,
+  app = false,
 }) => {
   const justifyClass = {
     start: "justify-start",
@@ -64,21 +71,25 @@ const MainContainer: React.FC<LayoutProps & { children: React.ReactNode }> = ({
   }[align];
 
   return (
-    <main
-      className={`min-h-screen flex flex-${flexDirection} ${justifyClass} ${alignClass} gap-${gap} pt-16`}
-    >
-      {/*background stuff */}
-      <div className="absolute inset-0 bg-gradient-to-b from-[#000e22] to-[#010101] h-dvh">
-        {/*<div className="absolute inset-0 bg-[length:80px_80px] opacity-50 bg-grid-pattern bg-blend-overlay pointer-events-none">
+    <>
+      {app ? <AppNavbar /> : <Navbar />}
+      <main
+        className={`min-h-screen flex flex-${flexDirection} ${justifyClass} ${alignClass} gap-${gap} pt-16`}
+      >
+        {/*background stuff */}
+        <div className="absolute inset-0 bg-gradient-to-b from-[#000e22] to-[#010101] h-dvh">
+          {/*<div className="absolute inset-0 bg-[length:80px_80px] opacity-50 bg-grid-pattern bg-blend-overlay pointer-events-none">
         </div>*/}
-        {/*<div className="relative h-full bg-star-pattern bg-center bg-no-repeat">
+          {/*<div className="relative h-full bg-star-pattern bg-center bg-no-repeat">
         </div>*/}
-      </div>
+        </div>
 
-      {/*rest of the stuff*/}
-      <div className="relative z-10 flex flex-col items-center justify-center text-center h-dvh">
-        {children}
-      </div>
-    </main >
+        {/*rest of the stuff*/}
+        <div className="relative z-10 flex flex-col items-center justify-center text-center h-dvh">
+          {children}
+        </div>
+      </main >
+      <Footer />
+    </>
   );
 };
