@@ -12,7 +12,7 @@ import {
   navigationMenuTriggerStyle,
 } from "@/components/ui/navigation-menu";
 import Logo from '../logo';
-import socialLinks from "@/lib/social-links";
+import { socialLinks } from "@/lib/links";
 
 interface NavLink {
   label: string;

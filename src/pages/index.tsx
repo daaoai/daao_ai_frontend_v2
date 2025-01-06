@@ -6,12 +6,12 @@ import { Typography } from "@/components/ui/typography";
 import Link from "next/link";
 import Image from "next/image";
 import { ArrowRight } from "lucide-react";
+import { WHITEPAPER_URL } from "@/lib/links";
 import { Syne_Mono } from "next/font/google";
 export const syne = Syne_Mono({
   subsets: ["latin"],
   weight: "400",
 })
-
 import { Goldman } from "next/font/google";
 export const gold = Goldman({
   subsets: ["latin"],
@@ -41,7 +41,7 @@ const HomePage: NextPage = () => {
 
           <div className="flex flex-col sm:flex-row justify-center items-center gap-4 mt-6 w-min">
             <Link
-              href="insert-link-here"
+              href={WHITEPAPER_URL}
               target="_blank"
               className="w-full"
             >

@@ -6,7 +6,7 @@ import {
 } from "@/assets/icons/social";
 import { FooterData } from "@/components/footer";
 
-const socialLinks: FooterData[] = [
+export const socialLinks: FooterData[] = [
   {
     label: "GitHub",
     href: "https://github.com/your-profile",
@@ -29,5 +29,4 @@ const socialLinks: FooterData[] = [
   },
 ];
 
-export default socialLinks;
-
+export const WHITEPAPER_URL = "https://docsend.com/view/z9eqsrurcmdky2dn"
