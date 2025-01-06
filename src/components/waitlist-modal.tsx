@@ -1,5 +1,5 @@
 import React from "react"
-import { Button } from "./ui/button"
+import { ArrowRight, X } from "lucide-react";
 
 interface waitlistmodalProps {
   isOpen: boolean;
@@ -62,28 +62,49 @@ const WaitlistModal: React.FC<waitlistmodalProps> = ({
   if (!isOpen) return null;
 
   return (
-    <div className="fixed h-screen inset-0 z-[9999] flex items-center justify-center bg-black/50 px-4">
-      <div className="w-full  max-w-sm rounded-md bg-white p-6 shadow-lg dark:bg-neutral-800">
-        <h2 className="mb-4 text-xl font-semibold dark:text-white">
-          Join the Waitlist
-        </h2>
-        <div className="mb-4">
-          <input
-            type="email"
-            placeholder="Enter your email"
-            className="w-full rounded-md border p-2 focus:outline-none dark:bg-neutral-700 dark:text-white"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-          />
+    <div className="fixed h-screen inset-0 z-[9999] flex items-center justify-center px-4">
+      <div className="sm:w-[600px] w-[400px] sm:h-[300px] px-6 pb-16 pt-4 rounded-xl bg-[#010d1f] border border-[#aeb3b6] flex-col justify-center items-center gap-9 inline-flex">
+        <div className="flex justify-end w-full m-0">
+          <button
+            onClick={() => setIsOpen(false)}
+            aria-label="Close"
+            className="w-6 h-6 flex justify-center items-center text-[#9e9e9e] hover:text-white bg-transparent rounded-full"
+          >
+            <X />
+          </button>
         </div>
-        <div className="flex items-center justify-end space-x-2">
-          <Button variant="outline" onClick={() => setIsOpen(false)}>
-            Cancel
-          </Button>
-          <Button onClick={handleJoinWaitlist}>Join</Button>
+        <div className="h-14 flex-col justify-center items-center gap-2.5 flex">
+          <div className="text-center text-white text-2xl font-normal">
+            Launch a DAAO
+          </div>
+          <div className="text-center text-white text-sm font-normal']">
+            Stay in the loop with our latest progress and features.
+          </div>
+        </div>
+        <div className="flex items-center">
+          <div className="h-12 px-5 py-3.5 bg-[#212121] rounded-l-full flex items-center">
+            <input
+              type="email"
+              placeholder="Email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              className="bg-transparent text-[#9e9e9e] text-base font-normal leading-tight outline-none w-full placeholder:text-[#9e9e9e]"
+            />
+          </div>
+          <button
+            onClick={handleJoinWaitlist}
+            className="flex items-center px-4 sm:py-2 py-1 bg-white rounded-full ml-[-20px] shadow-md"
+          >
+            <div className="p-2 w-8 h-8 flex justify-center items-center bg-[#212121] rounded-full text-white">
+              <ArrowRight className="w-4 h-4 text-[#9e9e9e]" />
+            </div>
+            <span className="text-black text-base font-medium leading-tight ml-2">
+              Join Waitlist
+            </span>
+          </button>
         </div>
       </div>
-    </div>
+    </div >
   )
 }
 
