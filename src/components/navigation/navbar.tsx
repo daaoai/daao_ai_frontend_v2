@@ -51,10 +51,7 @@ export const MobileNavLinks: React.FC = () => (
 );
 
 export const Navbar: React.FC = () => {
-  // 1. State to manage modal open/close
   const [isModalOpen, setIsModalOpen] = useState(false);
-
-  // 2. State to hold the user's email input
   const [email, setEmail] = useState("");
 
   return (

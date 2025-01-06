@@ -1,7 +1,7 @@
 import { PageLayout } from "@/components/page-layout";
 import { Button } from "@/components/ui/button";
 import { NextPage } from "next/types";
-import React from "react";
+import React, { useState } from "react";
 import { Typography } from "@/components/ui/typography";
 import Link from "next/link";
 import Image from "next/image";
@@ -13,12 +13,16 @@ export const syne = Syne_Mono({
   weight: "400",
 })
 import { Goldman } from "next/font/google";
+import WaitlistModal from "@/components/waitlist-modal";
 export const gold = Goldman({
   subsets: ["latin"],
   weight: "400",
 })
 
 const HomePage: NextPage = () => {
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [email, setEmail] = useState("");
+
   return (
     <PageLayout title="Homepage" description="Welcome to next-web-template">
       {/* Star Image */}
@@ -32,7 +36,7 @@ const HomePage: NextPage = () => {
           sizes="(max-width: 768px) 740px"
         />
         <div className="absolute inset-0 flex flex-col items-center justify-center gap-2">
-          <Typography variant="h1" className={`text-center text-white text-2xl md:text-5xl lg:text-6xl ${syne.className}`}>
+          <Typography variant="h1" className={`text-center text-white text-3xl md:text-5xl lg:text-6xl ${syne.className}`}>
             Decentralized Autonomous<br />Agentic Organization
           </Typography>
           <Typography variant="h3" className={`lg:pt-2 pt-6 text-center text-white lg:text-xl w-5/6 md:text-lg text-sm ${syne.className}`}>
@@ -54,20 +58,23 @@ const HomePage: NextPage = () => {
                 </div>
               </Button>
             </Link>
-            <Link
-              href="insert-link-here"
-              target="_blank"
+            <Button
+              variant="connect"
+              className={`py-4 sm:py-6 px-6 sm:px-10 bg-transparent rounded-lg sm:rounded-xl border border-[#bedaff] flex justify-center items-center max-w-xs sm:max-w-none`}
+              onClick={() => setIsModalOpen(true)}
             >
-              <Button
-                variant="connect"
-                className={`py-4 sm:py-6 px-6 sm:px-10 bg-transparent rounded-lg sm:rounded-xl border border-[#bedaff] flex justify-center items-center max-w-xs sm:max-w-none`}
-              >
-                <div className="flex justify-center items-center gap-2 text-center text-white text-sm sm:text-base font-normal goldman leading-tight tracking-wide">
-                  Join Waitlist <ArrowRight />
-                </div>
-              </Button>
-            </Link>
+              <div className="flex justify-center items-center gap-2 text-center text-white text-sm sm:text-base font-normal goldman leading-tight tracking-wide">
+                Join Waitlist <ArrowRight />
+              </div>
+            </Button>
           </div>
+
+          <WaitlistModal
+            email={email}
+            setEmail={setEmail}
+            isOpen={isModalOpen}
+            setIsOpen={setIsModalOpen}
+          />
         </div>
       </div>
     </PageLayout>
