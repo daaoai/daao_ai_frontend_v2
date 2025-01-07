@@ -131,7 +131,7 @@ const HomePage: NextPage = () => {
       >
         <div className="h-min flex-col justify-center items-center gap-2.5 flex">
           <div className={`w-2/3 sm:w-1/2 max-w-xs md:max-w-sm lg:max-w-md h-52 sm:h-56 md:h-64 lg:h-72 bg-purple/50 rounded-md flex-col justify-center items-center inline-flex overflow-hidden`}>
-            <img className="w-full h-full blur-md" src="/roman-guy.svg" />
+            <img className="w-full h-full blur-md" src="/blur-image.svg" />
           </div>
           <div className="text-center text-white text-lg sm:text-xl md:text-2xl font-normal">
             Onchain Research DAO
