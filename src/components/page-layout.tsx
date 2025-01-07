@@ -91,7 +91,7 @@ const MainContainer: React.FC<LayoutProps & { children: React.ReactNode }> = ({
         )}
 
         {/*rest of the stuff*/}
-        <div className="h-min relative z-10 flex flex-col flex-wrap items-center justify-center text-center pb-16">
+        <div className="h-min relative z-10 flex flex-col flex-wrap items-center justify-center text-center pb-64">
           {children}
         </div>
       </main >
