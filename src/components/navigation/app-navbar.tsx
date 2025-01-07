@@ -1,18 +1,16 @@
 import Link from "next/link";
 import React, { useState } from "react";
-import { Button } from "../ui/button";
 // import { HeaderSheet } from "./header-sheet";
 import { ConnectWalletButton } from "@/components/ui/connect-button";
 import { Search } from "lucide-react";
 import Logo from '../logo';
 import { workSans } from "@/pages/app";
-import { ConnectButtonRenderer } from "@rainbow-me/rainbowkit/dist/components/ConnectButton/ConnectButtonRenderer";
 
 export const AppNavbar: React.FC = () => {
   const [search, setSearch] = useState("")
 
   return (
-    <div className={`gap-4 sm:gap-4 fixed z-50 flex w-full md:justify-between justify-center items-center border-b border-[#212121] p-2 bg-black/0 md:px-[150px] lg:px-[200px] md:py-4`}>
+    <div className={`gap-4 sm:gap-4 fixed z-50 flex w-full md:justify-between justify-center items-center border-b border-[#212121] p-2 bg-black px-4 sm:px-[50px] md:px-[100px] lg:px-[200px] md:py-4`}>
       <div className="block">
         <Link href="/" className="flex items-center justify-start">
           <Logo

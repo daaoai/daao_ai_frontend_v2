@@ -74,14 +74,14 @@ const MainContainer: React.FC<LayoutProps & { children: React.ReactNode }> = ({
     <>
       {app ? <AppNavbar /> : <Navbar />}
       <main
-        className={`min-h-screen h-dvh flex flex-${flexDirection} ${justifyClass} ${alignClass} gap-${gap} pt-16`}
+        className={`relative min-h-screen flex flex-wrap flex-${flexDirection} ${justifyClass} ${alignClass} gap-${gap} pt-16`}
       >
         {/*background stuff */}
         {app ? (
-          <div className="absolute inset-0 bg-black h-dvh">
+          <div className="absolute inset-0 bg-black h-full">
           </div>
         ) : (
-          <div className="absolute inset-0 bg-gradient-to-b from-[#000e22] to-[#010101] h-dvh">
+          <div className="absolute inset-0 bg-gradient-to-b from-[#000e22] to-[#010101] h-full">
             {/*<div className="absolute inset-0 bg-[length:80px_80px] opacity-50 bg-grid-pattern bg-blend-overlay pointer-events-none">
         </div>*/}
             {/*<div className="relative h-full bg-star-pattern bg-center bg-no-repeat">
@@ -91,7 +91,7 @@ const MainContainer: React.FC<LayoutProps & { children: React.ReactNode }> = ({
         )}
 
         {/*rest of the stuff*/}
-        <div className="relative z-10 flex flex-col items-center justify-center text-center h-dvh">
+        <div className="h-min relative z-10 flex flex-col flex-wrap items-center justify-center text-center pb-16">
           {children}
         </div>
       </main >
