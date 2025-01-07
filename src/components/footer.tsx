@@ -83,7 +83,7 @@ const FooterLink: React.FC<FooterData> = ({ href, children }) => {
   );
 };
 
-const FooterIconLink: React.FC<FooterData> = ({ href, label, children }) => {
+export const FooterIconLink: React.FC<FooterData> = ({ href, label, children }) => {
   return (
     <Link
       href={href}
