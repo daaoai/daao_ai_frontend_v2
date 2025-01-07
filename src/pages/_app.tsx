@@ -49,7 +49,7 @@ function MyApp({ Component, pageProps }: AppProps) {
             <RainbowKitProvider>
               <ThemeProvider
                 attribute="class"
-                defaultTheme="system"
+                defaultTheme="dark"
                 enableSystem
                 disableTransitionOnChange
               >
