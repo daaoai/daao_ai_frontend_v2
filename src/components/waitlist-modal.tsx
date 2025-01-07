@@ -1,5 +1,8 @@
 import React, { useState } from "react"
 import { ArrowRight, X } from "lucide-react";
+import { TelegramIcon } from "@/assets/icons/social";
+import Link from "next/link";
+import { socialLinks } from "@/lib/links";
 
 interface waitlistmodalProps {
   isOpen: boolean;
@@ -66,7 +69,7 @@ const WaitlistModal: React.FC<waitlistmodalProps> = ({
 
   return (
     <div className="fixed h-screen inset-0 z-[9999] flex items-center justify-center px-4">
-      <div className="sm:w-[600px] w-[400px] sm:h-[300px] px-6 pb-16 pt-4 rounded-xl bg-[#010d1f] border border-[#aeb3b6] flex-col justify-center items-center gap-9 inline-flex">
+      <div className="sm:w-[600px] w-[400px] min-h-min px-6 pb-16 pt-4 rounded-xl bg-[#010d1f] border border-[#aeb3b6] flex-col justify-center items-center gap-9 inline-flex">
         <div className="flex justify-end w-full m-0">
           <button
             onClick={() => {
@@ -87,8 +90,22 @@ const WaitlistModal: React.FC<waitlistmodalProps> = ({
           <div className="text-center text-white text-sm font-normal">
             Stay in the loop with our latest progress and features.
           </div>
-          <div className={`text-center ${statusMsg.includes("added") ? "text-green-700" : "text-red-700"} text-lg font-normal`}>
+          <div className={`flex flex-col gap-4 text-center ${statusMsg.includes("added") ? "text-green-700" : "text-red-700"} text-xl font-normal`}>
             {statusMsg}
+            {statusMsg.includes("added") ? (
+              <div className="gap-1 text-base flex flex-col text-neutral-400 justify-center items-center h-min">
+                <p>Feel free to join our telegram!</p>
+                <Link
+                  href={socialLinks.find((link) => link.label === "Telegram")?.href || "https://t.me/daaoai"}
+                  className="flex flex-row gap-2 justify-center items-center text-blue-400"
+                >
+                  <TelegramIcon />
+                  <span>Daao.ai</span>
+                </Link>
+              </div>
+            ) : (
+              <></>
+            )}
           </div>
         </div>
         <div className="flex items-center">
