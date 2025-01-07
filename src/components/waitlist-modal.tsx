@@ -1,4 +1,4 @@
-import React from "react"
+import React, { useState } from "react"
 import { ArrowRight, X } from "lucide-react";
 
 interface waitlistmodalProps {
@@ -14,6 +14,8 @@ const WaitlistModal: React.FC<waitlistmodalProps> = ({
   email,
   setEmail,
 }) => {
+  const [statusMsg, setStatusMsg] = useState("");
+
   const isValidEmail = (value: string) => {
     // Basic pattern: something@something.something
     // You can strengthen this regex if needed.
@@ -21,17 +23,16 @@ const WaitlistModal: React.FC<waitlistmodalProps> = ({
     return regex.test(value);
   };
 
-
-  // 3. Function to handle the API call
+  // Function to handle the API call
   const handleJoinWaitlist = async () => {
     if (!email.trim()) {
-      alert("Please enter your email.");
+      setStatusMsg("Please enter your email")
       return;
     }
 
     // Check if email is valid
     if (!isValidEmail(email)) {
-      alert("Please enter a valid email address.");
+      setStatusMsg("Please enter a valid email address");
       return;
     }
     try {
@@ -45,17 +46,17 @@ const WaitlistModal: React.FC<waitlistmodalProps> = ({
 
       if (!response.ok) {
         const err = await response.json();
-        alert(err.error || "Failed to join waitlist");
+        console.error("Error: ", err.error);
+        setStatusMsg("Failed to join waitlist");
         return;
       }
 
-      // Clear the input, close modal, show success
+      // Clear the input
       setEmail("");
-      setIsOpen(false);
-      alert("Thanks for joining the waitlist!");
+      setStatusMsg("You have been added to the waitlist!");
     } catch (error) {
-      console.error("Error joining waitlist:", error);
-      alert("Something went wrong. Please try again later.");
+      // console.error("Error joining waitlist:", error);
+      setStatusMsg("Something went wrong, please try again later");
     }
   };
 
@@ -80,6 +81,13 @@ const WaitlistModal: React.FC<waitlistmodalProps> = ({
           <div className="text-center text-white text-sm font-normal']">
             Stay in the loop with our latest progress and features.
           </div>
+          {statusMsg ? (
+            <div className={`text-center ${statusMsg.includes("added") ? "text-green-700" : "text-red-700"} text-lg font-normal`}>
+              {statusMsg}
+            </div>
+          ) : (
+            <></>
+          )}
         </div>
         <div className="flex items-center">
           <div className="h-12 px-5 py-3.5 bg-[#212121] rounded-l-full flex items-center">
@@ -95,8 +103,8 @@ const WaitlistModal: React.FC<waitlistmodalProps> = ({
             onClick={handleJoinWaitlist}
             className="flex items-center px-4 sm:py-2 py-1 bg-white rounded-full ml-[-20px] shadow-md"
           >
-            <div className="p-2 w-8 h-8 flex justify-center items-center bg-[#212121] rounded-full text-white">
-              <ArrowRight className="w-4 h-4 text-[#9e9e9e]" />
+            <div className="w-8 h-8 flex justify-center items-center bg-white rounded-full border border-black">
+              <ArrowRight className="w-4 h-4 text-black" />
             </div>
             <span className="text-black text-base font-medium leading-tight ml-2">
               Join Waitlist
