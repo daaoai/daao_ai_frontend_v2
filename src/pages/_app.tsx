@@ -65,8 +65,7 @@ function MyApp({ Component, pageProps }: AppProps) {
   );
 }
 
-function Layout({ children, font, subdomain }: { children: React.ReactNode; font?: string, subdomain?: string }) {
-  console.log('Subdomain:', subdomain);  // Log to check if it is passed correctly
+function Layout({ children, font }: { children: React.ReactNode; font?: string }) {
   return (
     <div className={font || goldman.className}>
       {children}

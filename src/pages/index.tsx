@@ -26,7 +26,7 @@ const HomePage: NextPage = () => {
   return (
     <PageLayout title="Homepage" description="Welcome to next-web-template">
       {/* Star Image */}
-      <div className="relative flex justify-center items-center">
+      <div className="relative flex justify-center items-center h-max">
         <Image
           src="/star-1-with-ellipse.svg"
           alt="Star"
