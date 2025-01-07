@@ -130,8 +130,8 @@ const HomePage: NextPage = () => {
         className="sm:my-[-40px] md:my-[-30px] z-10 lg:[600px] md:w-[550px] sm:w-[500px] w-[300px] min-h-min px-6 pb-16 pt-4 bg-gradient-to-br from-black via-[#061023] to-[#0e070e] rounded-3xl shadow-[0px_4px_36px_0px_rgba(255,255,255,0.10)] border border-[#212121] flex-col justify-center items-center gap-9 inline-flex"
       >
         <div className="h-min flex-col justify-center items-center gap-2.5 flex">
-          <div className={`w-2/3 sm:w-1/2 max-w-xs md:max-w-sm lg:max-w-md h-52 sm:h-56 md:h-64 lg:h-72 px-4 md:px-6 lg:px-8 bg-white rounded-[21.33px] flex-col justify-center items-center inline-flex overflow-hidden ${gold.className}`}>
-            <div className="text-center text-black text-[50px] md:text-[80px] lg:text-[100px] font-bold tracking-widest">?</div>
+          <div className={`w-2/3 sm:w-1/2 max-w-xs md:max-w-sm lg:max-w-md h-52 sm:h-56 md:h-64 lg:h-72 bg-purple/50 rounded-md flex-col justify-center items-center inline-flex overflow-hidden`}>
+            <img className="w-full h-full blur-md" src="/roman-guy.svg" />
           </div>
           <div className="text-center text-white text-lg sm:text-xl md:text-2xl font-normal">
             Onchain Research DAO
