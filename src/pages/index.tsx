@@ -26,22 +26,28 @@ const HomePage: NextPage = () => {
   const [statusMsg, setStatusMsg] = useState("");
 
   const isValidEmail = (value: string) => {
-    // Basic pattern: something@something.something
-    // You can strengthen this regex if needed.
-    const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    return regex.test(value);
+    // Check if the address starts with '0x' and is 42 characters long
+    if (value.length !== 42 || !value.startsWith('0x')) {
+      return false;
+    }
+
+    // Check if the remaining characters are valid hexadecimal characters
+    const hexPart = value.slice(2); // Remove '0x'
+    const hexRegex = /^[0-9a-fA-F]+$/;
+
+    return hexRegex.test(hexPart);
   };
 
   // Function to handle the API call
   const handleJoinWaitlist = async () => {
     if (!email.trim()) {
-      setStatusMsg("Please enter your email")
+      setStatusMsg("Please enter your mode address")
       return;
     }
 
     // Check if email is valid
     if (!isValidEmail(email)) {
-      setStatusMsg("Please enter a valid email address");
+      setStatusMsg("Please enter a valid mode address");
       return;
     }
     // try {
@@ -147,7 +153,7 @@ const HomePage: NextPage = () => {
           <div className="h-10 sm:h-12 px-5 py-3.5 bg-[#212121] rounded-l-full flex items-center">
             <input
               type="email"
-              placeholder="Email"
+              placeholder="Enter your Mode address"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               className="bg-transparent text-[#9e9e9e] text-sm sm:text-base font-normal leading-tight outline-none w-full placeholder:text-[#9e9e9e]"
