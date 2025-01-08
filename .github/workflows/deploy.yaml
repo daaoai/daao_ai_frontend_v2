@@ -45,7 +45,7 @@ jobs:
           script_stop: true
           script: |
             cd "${PROJECT_DIR}/"
-            sudo bun install
+            npm install
             bun run build
 
   deploy:
@@ -66,6 +66,8 @@ jobs:
           script_stop: true
           script: |
             cd "${PROJECT_DIR}/"
-            sudo rm -r /var/www/daao_ai_frontend/*
-            sudo cp -r build/* /var/www/daao_ai_frontend/
-            pm2 startOrReload ecosystem.config.ts
+            sudo rm -r /var/www/daao_ai_frontend/static/*
+            sudo cp -r build/static/* /var/www/daao_ai_frontend/static
+            sudo rm -r /var/www/daao_ai_frontend/public/*
+            sudo cp -r public/* /var/www/daao_ai_frontend/public
+            pm2 startOrReload ecosystem.config.js
