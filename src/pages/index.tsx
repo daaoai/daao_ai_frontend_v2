@@ -140,7 +140,7 @@ const HomePage: NextPage = () => {
             <img className="w-full h-full" src="/microscope.png" />
           </div>
           <div className="text-center text-white text-lg sm:text-xl md:text-2xl font-normal">
-            Onchain Research DAO ($RNDAO)
+            Onchain Research DAO ($RND)
           </div>
           <div className="px-2 sm:px-4 md:px-6 text-center text-white text-xs sm:text-sm font-normal">
             Finding and funding cutting-edge experimental onchain AI across the Ethereum and EVM community.
