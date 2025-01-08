@@ -55,7 +55,7 @@ export const Navbar: React.FC = () => {
   const [email, setEmail] = useState("");
 
   return (
-    <div className={`fixed z-50 flex w-full justify-between items-center border-b border-[#212121] p-4 bg-black/0 md:px-16 md:py-4`}>
+    <div className={`fixed z-50 flex w-full justify-between items-center border-b border-[#212121] p-4 bg-[#010d1f] md:px-16 md:py-4`}>
       <div className="flex-1 hidden md:block">
         <Link href="/" className="flex items-center justify-start">
           <Logo

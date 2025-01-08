@@ -82,7 +82,7 @@ const HomePage: NextPage = () => {
   return (
     <PageLayout title="Homepage" description="Welcome to a Network of Decentralized Autonomous Agentic Organizations">
       {/* Star Image */}
-      <div className="sm:my-[-60px] md:my-[-100px] relative flex justify-center items-center h-max">
+      <div className="sm:my-[-40px] relative flex justify-center items-center h-max">
         <Image
           src="/star-1-with-ellipse.svg"
           alt="Star"
