@@ -8,6 +8,8 @@ export const workSans = Work_Sans({
   weight: "400",
 })
 import { Anek_Latin } from 'next/font/google';
+import Link from 'next/link';
+import { Button } from '@/components/ui/button';
 export const anekLatin = Anek_Latin({
   subsets: ["latin"],
   weight: "600",
@@ -28,16 +30,20 @@ const AppHome: React.FC = () => {
             </div>
           </div>
           <div className="flex h-12 justify-start items-center gap-4 md:gap-7">
-            <button className="flex w-32 sm:w-36 md:w-40 lg:w-48 h-10 sm:h-11 md:h-12 px-4 py-2 sm:py-3 bg-white rounded-lg items-center justify-center">
+            <Button className="hover:bg-white/50 flex w-32 sm:w-36 md:w-40 lg:w-48 h-10 sm:h-11 md:h-12 px-4 py-2 sm:py-3 bg-white rounded-lg items-center justify-center">
               <span className="text-black text-sm sm:text-base md:text-lg lg:text-xl font-semibold leading-[1.1] tracking-tight">
                 DASHBOARD
               </span>
-            </button>
-            <button className="flex w-36 sm:w-40 md:w-44 lg:w-52 h-10 sm:h-11 md:h-12 px-4 py-2 sm:py-3 bg-[#28282c] rounded-lg items-center justify-center">
-              <span className="text-white text-sm sm:text-base md:text-lg lg:text-xl font-semibold leading-[1.1] tracking-tight">
-                LEADERBOARD
-              </span>
-            </button>
+            </Button>
+            <Link
+              href="/app/leaderboard"
+            >
+              <Button className="flex w-36 sm:w-40 md:w-44 lg:w-52 h-10 sm:h-11 md:h-12 px-4 py-2 sm:py-3 bg-[#28282c] hover:bg-[#28282c]/50 rounded-lg items-center justify-center">
+                <span className="text-white text-sm sm:text-base md:text-lg lg:text-xl font-semibold leading-[1.1] tracking-tight">
+                  LEADERBOARD
+                </span>
+              </Button>
+            </Link>
           </div>
         </div>
 
