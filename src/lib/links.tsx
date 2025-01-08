@@ -29,4 +29,17 @@ export const socialLinks: FooterData[] = [
   },
 ];
 
+export const RNDLinks: FooterData[] = [
+  {
+    label: "Telegram",
+    href: "https://t.me/rnddaoai",
+    children: <TelegramIcon />,
+  },
+  {
+    label: "Twitter/X",
+    href: "https://x.com/RNDdaoai",
+    children: <XIcon />,
+  },
+]
+
 export const WHITEPAPER_URL = "https://docsend.com/view/z9eqsrurcmdky2dn"

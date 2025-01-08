@@ -6,7 +6,7 @@ import { Typography } from "@/components/ui/typography";
 import Link from "next/link";
 import Image from "next/image";
 import { ArrowRight } from "lucide-react";
-import { socialLinks, WHITEPAPER_URL } from "@/lib/links";
+import { RNDLinks, socialLinks, WHITEPAPER_URL } from "@/lib/links";
 import { Syne_Mono } from "next/font/google";
 export const syne = Syne_Mono({
   subsets: ["latin"],
@@ -173,7 +173,7 @@ const HomePage: NextPage = () => {
         </div>
         {/* Social Icons */}
         <div className="flex flex-row gap-4">
-          {socialLinks.map((social, index) => (
+          {RNDLinks.map((social, index) => (
             <FooterIconLink key={index} href={social.href} label={social.label}>
               {social.children}
             </FooterIconLink>
