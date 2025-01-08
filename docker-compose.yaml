@@ -1,4 +1,16 @@
 services:
+  app:
+    build: .
+    container_name: daao-app
+    ports:
+      - "3000:3000"
+    env_file:
+      - .env
+    depends_on:
+      - db
+    networks:
+      - daao-network
+
   db:
     image: postgres:alpine
     container_name: daao-db
