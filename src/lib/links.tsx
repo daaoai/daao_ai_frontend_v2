@@ -7,24 +7,14 @@ import {
 import { FooterData } from "@/components/footer";
 
 export const socialLinks: FooterData[] = [
-  // {
-  //   label: "GitHub",
-  //   href: "https://github.com/your-profile",
-  //   children: <GitHubIcon />,
-  // },
   {
     label: "Telegram",
-    href: "https://t.me/rndaoai",
+    href: "https://t.me/daaoai",
     children: <TelegramIcon />,
   },
-  // {
-  //   label: "Discord",
-  //   href: "https://discord.com/invite/your-invite",
-  //   children: <DiscordIcon />,
-  // },
   {
     label: "Twitter/X",
-    href: "https://x.com/rndao14450",
+    href: "https://x.com/daaoai",
     children: <XIcon />,
   },
 ];
