@@ -14,7 +14,7 @@ export const socialLinks: FooterData[] = [
   // },
   {
     label: "Telegram",
-    href: "https://t.me/daaoai",
+    href: "https://t.me/rndaoai",
     children: <TelegramIcon />,
   },
   // {
@@ -24,7 +24,7 @@ export const socialLinks: FooterData[] = [
   // },
   {
     label: "Twitter/X",
-    href: "https://x.com/daaoai",
+    href: "https://x.com/rndao14450",
     children: <XIcon />,
   },
 ];

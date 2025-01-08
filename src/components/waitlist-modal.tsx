@@ -96,7 +96,7 @@ const WaitlistModal: React.FC<waitlistmodalProps> = ({
               <div className="gap-1 text-base flex flex-col text-neutral-400 justify-center items-center h-min">
                 <p>Feel free to join our telegram!</p>
                 <Link
-                  href={socialLinks.find((link) => link.label === "Telegram")?.href || "https://t.me/daaoai"}
+                  href={socialLinks.find((link) => link.label === "Telegram")?.href || "https://t.me/rndaoai"}
                   className="flex flex-row gap-2 justify-center items-center text-blue-400"
                 >
                   <TelegramIcon />
