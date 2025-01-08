@@ -133,7 +133,7 @@ const HomePage: NextPage = () => {
       {/*waitlist*/}
       <div
         id="waitlist"
-        className="sm:my-[-40px] md:my-[-30px] z-10 lg:[600px] md:w-[550px] sm:w-[500px] w-[300px] min-h-min px-6 pb-16 pt-4 bg-gradient-to-br from-black via-[#061023] to-[#0e070e] rounded-3xl shadow-[0px_4px_36px_0px_rgba(255,255,255,0.10)] border border-[#212121] flex-col justify-center items-center gap-9 inline-flex"
+        className="z-10 lg:[600px] md:w-[550px] sm:w-[500px] w-[350px] min-h-min px-6 pb-16 pt-4 bg-gradient-to-br from-black via-[#061023] to-[#0e070e] rounded-3xl shadow-[0px_4px_36px_0px_rgba(255,255,255,0.10)] border border-[#212121] flex-col justify-center items-center gap-9 inline-flex"
       >
         <div className="h-min flex-col justify-center items-center gap-2.5 flex">
           <div className={`w-2/3 sm:w-1/2 max-w-xs md:max-w-sm lg:max-w-md h-52 sm:h-56 md:h-64 lg:h-72 bg-purple/50 rounded-md flex-col justify-center items-center inline-flex overflow-hidden`}>
@@ -153,7 +153,7 @@ const HomePage: NextPage = () => {
           <div className="h-10 sm:h-12 px-5 py-3.5 bg-[#212121] rounded-l-full flex items-center">
             <input
               type="email"
-              placeholder="Enter your Mode address"
+              placeholder="Mode address"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               className="bg-transparent text-[#9e9e9e] text-sm sm:text-base font-normal leading-tight outline-none w-full placeholder:text-[#9e9e9e]"
