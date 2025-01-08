@@ -167,7 +167,7 @@ const HomePage: NextPage = () => {
               <ArrowRight className="w-4 h-4 text-black" />
             </div>
             <span className="text-black md:text-base text-sm font-medium leading-tight ml-2">
-              Register for whitelist
+              Join whitelist
             </span>
           </button>
         </div>
