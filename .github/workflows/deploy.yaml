@@ -66,8 +66,8 @@ jobs:
           script: |
             cd "${PROJECT_DIR}/"
             docker compose up -d
-            docker exec -it daao-app npx prisma generate
-            docker exec -it daao-app npx prisma migrate deploy
+            docker exec daao-app npx prisma generate
+            docker exec daao-app npx prisma migrate deploy
 
   deploy:
     name: Deploy Stage
