@@ -3,12 +3,12 @@ import type { NextRequest } from 'next/server';
 
 // Middleware to handle subdomain routing
 export function middleware(req: NextRequest) {
-  const host = req.headers.get('host') || '';
+  const username = req.nextUrl.username;
 
   // Check for the subdomain
-  if (host.startsWith('app.')) {
-    // Rewrite the request to a specific route for the subdomain
-    return NextResponse.rewrite(new URL('/app', req.url));
+  if (username === 'app') {
+    const path = req.nextUrl.pathname;
+    return NextResponse.redirect(new URL(`/app${path}`, req.url));
   }
 
   // Default behavior: continue to the original request
