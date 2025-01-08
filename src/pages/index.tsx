@@ -80,7 +80,7 @@ const HomePage: NextPage = () => {
 
 
   return (
-    <PageLayout title="Homepage" description="Welcome to next-web-template">
+    <PageLayout title="Homepage" description="Welcome to a Network of Decentralized Autonomous Agentic Organizations">
       {/* Star Image */}
       <div className="sm:my-[-60px] md:my-[-100px] relative flex justify-center items-center h-max">
         <Image
@@ -140,10 +140,10 @@ const HomePage: NextPage = () => {
             <img className="w-full h-full blur-md" src="/blur-image.svg" />
           </div>
           <div className="text-center text-white text-lg sm:text-xl md:text-2xl font-normal">
-            Onchain Research DAO
+            Onchain Research DAO ($RNDAO)
           </div>
           <div className="px-2 sm:px-4 md:px-6 text-center text-white text-xs sm:text-sm font-normal">
-            Launch and participate in next generation DAOs managed by agents. First DAO launching early January.
+            Finding and funding cutting-edge experimental onchain AI across the Ethereum and EVM community.
           </div>
         </div>
         <div className={`flex flex-col gap-4 text-center ${statusMsg.includes("added") ? "text-green-700" : "text-red-700"} text-xl font-normal`}>
