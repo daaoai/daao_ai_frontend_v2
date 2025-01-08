@@ -33,7 +33,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Build the latest frontend
+      - name: Build the latest app
         uses: appleboy/ssh-action@master
         env:
           PROJECT_DIR: ${{ secrets.PROJECT_DIR }}
@@ -45,8 +45,8 @@ jobs:
           script_stop: true
           script: |
             cd "${PROJECT_DIR}/"
-            npm install
-            npm run build
+            sudo bun install
+            bun run build
 
   deploy:
     name: Deploy Stage
@@ -68,4 +68,4 @@ jobs:
             cd "${PROJECT_DIR}/"
             sudo rm -r /var/www/daao_ai_frontend/*
             sudo cp -r build/* /var/www/daao_ai_frontend/
-            sudo nginx -s reload
+            pm2 startOrReload ecosystem.config.ts
