@@ -50,31 +50,29 @@ const HomePage: NextPage = () => {
       setStatusMsg("Please enter a valid mode address");
       return;
     }
-    // try {
-    //   const response = await fetch("/api/auth/joinWaitList", {
-    //     method: "POST",
-    //     headers: {
-    //       "Content-Type": "application/json",
-    //     },
-    //     body: JSON.stringify({ email }),
-    //   });
-    //
-    //   if (!response.ok) {
-    //     const err = await response.json();
-    //     console.error("Error: ", err.error);
-    //     setStatusMsg("Failed to join waitlist");
-    //     return;
-    //   }
-    //
-    //   // Clear the input
-    //   setEmail("");
-    //   setStatusMsg("You have been added to the waitlist!");
-    // } catch (error) {
-    //   // console.error("Error joining waitlist:", error);
-    //   setStatusMsg("Something went wrong, please try again later");
-    // }
-    setEmail("");
-    setStatusMsg("You have been added to the waitlist!");
+    try {
+      const response = await fetch("/api/auth/joinWaitList", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ email }),
+      });
+
+      if (!response.ok) {
+        const err = await response.json();
+        console.error("Error: ", err.error);
+        setStatusMsg("Failed to join waitlist");
+        return;
+      }
+
+      // Clear the input
+      setEmail("");
+      setStatusMsg("You have been added to the waitlist!");
+    } catch (error) {
+      // console.error("Error joining waitlist:", error);
+      setStatusMsg("Something went wrong, please try again later");
+    }
   };
 
 
