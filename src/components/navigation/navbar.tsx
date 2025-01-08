@@ -87,7 +87,7 @@ export const Navbar: React.FC = () => {
             className={`w-full py-4 md:py-2 md:px-6 px-4 bg-white rounded-lg sm:rounded-xl border border-[#bedaff] flex justify-center items-center max-w-xs sm:max-w-none`}
           >
             <div className="text-center text-black text-xs sm:text-base font-normal goldman leading-tight tracking-wide">
-              Join Waitlist
+              Register for whitelist
             </div>
           </Button>
         </Link>

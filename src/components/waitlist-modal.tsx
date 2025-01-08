@@ -126,7 +126,7 @@ const WaitlistModal: React.FC<waitlistmodalProps> = ({
               <ArrowRight className="w-4 h-4 text-black" />
             </div>
             <span className="text-black text-base font-medium leading-tight ml-2">
-              Join Waitlist
+              Register for whitelist
             </span>
           </button>
         </div>

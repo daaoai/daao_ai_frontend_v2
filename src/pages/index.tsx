@@ -122,7 +122,7 @@ const HomePage: NextPage = () => {
                 className={`py-4 sm:py-6 px-6 sm:px-10 bg-transparent rounded-lg sm:rounded-xl border border-[#bedaff] flex justify-center items-center max-w-xs sm:max-w-none`}
               >
                 <div className="flex justify-center items-center gap-2 text-center text-white text-sm sm:text-base font-normal goldman leading-tight tracking-wide">
-                  Join Waitlist <ArrowRight />
+                  Register for whitelist <ArrowRight />
                 </div>
               </Button>
             </Link>
@@ -167,7 +167,7 @@ const HomePage: NextPage = () => {
               <ArrowRight className="w-4 h-4 text-black" />
             </div>
             <span className="text-black md:text-base text-sm font-medium leading-tight ml-2">
-              Join Waitlist
+              Register for whitelist
             </span>
           </button>
         </div>
