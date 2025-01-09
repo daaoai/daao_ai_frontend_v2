@@ -52,7 +52,7 @@ export const MobileNavLinks: React.FC = () => (
 
 export const Navbar: React.FC = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [email, setEmail] = useState("");
+  const [publickey, setPublicKey] = useState("");
 
   return (
     <div className={`fixed z-50 flex w-full justify-between items-center border-b border-[#212121] p-4 bg-[#010d1f] md:px-16 md:py-4`}>
@@ -101,8 +101,8 @@ export const Navbar: React.FC = () => {
       <WaitlistModal
         isOpen={isModalOpen}
         setIsOpen={setIsModalOpen}
-        email={email}
-        setEmail={setEmail}
+        publicKey={publickey}
+        setPublicKey={setPublicKey}
       />
     </div>
   );
