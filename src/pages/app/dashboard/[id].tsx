@@ -4,6 +4,7 @@ import { workSans } from '..';
 import FundDetails, { Props } from '@/components/dashboard/fundcard-details';
 import Buysell from '@/components/dashboard/buysell-card';
 import { Tabs, TabsList, TabsTrigger } from '@radix-ui/react-tabs';
+import Orderbook from '@/components/dashboard/orderbook';
 
 const Dashboard: React.FC<Props> = () => {
 
@@ -55,6 +56,15 @@ const Dashboard: React.FC<Props> = () => {
           </Tabs>
         </div>
 
+        <Orderbook
+          name="Alchemist Accelerate"
+          created="12/31/2024"
+          owner="0x2F...3235"
+          treasury="0x19...4fa7"
+          token="0X2B...F12D"
+          tradingEnds="7/1/2025, 12:11:37 AM"
+          ethRaised="50 ETH"
+        />
 
       </div>
     </PageLayout >
