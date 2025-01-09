@@ -35,7 +35,7 @@ export const AppNavbar: React.FC = () => {
 
       {/* The "Join Waiting" button that opens the modal */}
       <div className="justify-center items-center gap-4 w-min flex">
-        <ConnectWalletButton />
+        <ConnectWalletButton icons={true} />
       </div>
 
       {/*<div className="block lg:hidden">

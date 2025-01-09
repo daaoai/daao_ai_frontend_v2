@@ -42,7 +42,7 @@ export const HeaderSheet: React.FC = () => {
         </div>
 
         <div className="flex flex-col items-stretch gap-2">
-          <ConnectWalletButton />
+          <ConnectWalletButton icons={true} />
           <MobileNavLinks />
         </div>
 

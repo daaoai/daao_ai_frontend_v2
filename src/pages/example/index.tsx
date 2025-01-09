@@ -6,7 +6,7 @@ import { Typography } from "@/components/ui/typography";
 import { ConnectButton } from "@rainbow-me/rainbowkit";
 import { NextPage } from "next";
 
-interface Props {}
+interface Props { }
 
 /**
  * This is an example page
@@ -15,7 +15,7 @@ interface Props {}
  * - It shows how to use the PageLayout component
  */
 
-const ExamplePage: NextPage<Props> = ({}) => {
+const ExamplePage: NextPage<Props> = ({ }) => {
   return (
     <PageLayout
       title="Example Page"
@@ -56,7 +56,7 @@ const ExamplePage: NextPage<Props> = ({}) => {
         <Button variant="ghost">Ghost Button</Button>
         <Button variant="link">Link Button</Button>
         <ConnectButton />
-        <ConnectWalletButton />
+        <ConnectWalletButton icons={true} />
       </div>
     </PageLayout>
   );
