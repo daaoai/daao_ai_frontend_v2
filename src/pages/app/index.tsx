@@ -60,14 +60,18 @@ const AppHome: React.FC = () => {
           <div className="justify-start items-center gap-7 inline-flex px-16">
             <div className="justify-start items-center gap-10 flex">
               {Array.from({ length: 3 }).map((_, index) => (
-                <FundCard
-                  key={index} // Use index as key
-                  title="Soul Dogs"
-                  buzz="1423"
-                  token="FDREAM"
-                  isLive={true}
-                  imgSrc="/roman-guy.svg"
-                />
+                <Link
+                  href={`/app/dashboard/1`}
+                >
+                  <FundCard
+                    key={index} // Use index as key
+                    title="Soul Dogs"
+                    buzz="1423"
+                    token="FDREAM"
+                    isLive={true}
+                    imgSrc="/roman-guy.svg"
+                  />
+                </Link>
               ))}
             </div>
           </div>
