@@ -32,8 +32,8 @@
     "siwe": "^2.3.2",
     "tailwind-merge": "^2.6.0",
     "tailwindcss-animate": "^1.0.7",
-    "viem": "2.17.0",
-    "wagmi": "^2.14.6"
+    "viem": "^2.17.0",
+    "wagmi": "^2.14.7"
   },
   "devDependencies": {
     "@types/node": "^20.17.12",
