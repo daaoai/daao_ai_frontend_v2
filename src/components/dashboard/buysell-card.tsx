@@ -1,15 +1,13 @@
-import * as React from "react"
 import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
 import { Card, CardContent } from "@/components/ui/card"
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { ConnectButton } from "@rainbow-me/rainbowkit"
 import { ConnectWalletButton } from "../ui/connect-button"
 import { workSans } from "@/pages/app"
 import { EthereumIcon } from "../dashboard/ethereum-icon";
+import { useState } from "react"
 
 const Buysell = () => {
-  const [activeTab, setActiveTab] = React.useState("buy")
+  const [activeTab, setActiveTab] = useState("buy")
   const amounts = ["0.1", "0.25", "0.5", "1", "5"]
 
   return (
