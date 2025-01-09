@@ -22,10 +22,10 @@ export const gold = Goldman({
 
 const HomePage: NextPage = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [publicKey, setPublicKey] = useState("");
+  const [email, setEmail] = useState("");
   const [statusMsg, setStatusMsg] = useState("");
 
-  const isValiedPublickey = (value: string) => {
+  const isValidEmail = (value: string) => {
     // Check if the address starts with '0x' and is 42 characters long
     if (value.length !== 42 || !value.startsWith('0x')) {
       return false;
@@ -40,13 +40,13 @@ const HomePage: NextPage = () => {
 
   // Function to handle the API call
   const handleJoinWaitlist = async () => {
-    if (!publicKey.trim()) {
+    if (!email.trim()) {
       setStatusMsg("Please enter your mode address")
       return;
     }
 
     // Check if email is valid
-    if (!isValiedPublickey(publicKey)) {
+    if (!isValidEmail(email)) {
       setStatusMsg("Please enter a valid mode address");
       return;
     }
@@ -56,9 +56,8 @@ const HomePage: NextPage = () => {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ publicKey }),
+        body: JSON.stringify({ email }),
       });
-      console.log("response", response);
 
       if (!response.ok) {
         const err = await response.json();
@@ -68,9 +67,10 @@ const HomePage: NextPage = () => {
       }
 
       // Clear the input
-      setPublicKey("");
+      setEmail("");
       setStatusMsg("You have been added to the waitlist!");
     } catch (error) {
+      // console.error("Error joining waitlist:", error);
       setStatusMsg("Something went wrong, please try again later");
     }
   };
@@ -152,8 +152,8 @@ const HomePage: NextPage = () => {
             <input
               type="email"
               placeholder="Mode address"
-              value={publicKey}
-              onChange={(e) => setPublicKey(e.target.value)}
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
               className="bg-transparent text-[#9e9e9e] text-sm sm:text-base font-normal leading-tight outline-none w-full placeholder:text-[#9e9e9e]"
             />
           </div>
