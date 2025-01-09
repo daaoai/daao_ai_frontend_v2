@@ -5,9 +5,10 @@
 // Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
 
 datasource db {
-  provider = "mysql"
-  url      = "mysql://root:a@localhost:3306/WaitingList?schema=public"
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
 }
+
 
 generator client {
   provider = "prisma-client-js"
