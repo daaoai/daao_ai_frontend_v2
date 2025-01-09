@@ -1,9 +1,9 @@
-name: Continuous Deployment
+name: DEV ~ Continuous Deployment
 
 on:
   push:
     branches:
-      - 'main'
+      - 'dev'
 
 jobs:
   pull:
@@ -16,16 +16,16 @@ jobs:
         env:
           PROJECT_DIR: ${{ secrets.PROJECT_DIR }}
         with:
-          host: ${{ secrets.EC2_HOST }}
+          host: ${{ secrets.DEV_EC2_HOST }}
           username: ${{ secrets.EC2_USERNAME }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           envs: PROJECT_DIR
           script_stop: true
           script: |
             cd "${PROJECT_DIR}/"
-            git checkout main
+            git checkout dev
             git fetch origin
-            git reset --hard origin/main
+            git reset --hard origin/dev
 
   build:
     name: Build Stage
@@ -38,7 +38,7 @@ jobs:
         env:
           PROJECT_DIR: ${{ secrets.PROJECT_DIR }}
         with:
-          host: ${{ secrets.EC2_HOST }}
+          host: ${{ secrets.DEV_EC2_HOST }}
           username: ${{ secrets.EC2_USERNAME }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           envs: PROJECT_DIR
@@ -58,7 +58,7 @@ jobs:
         env:
           PROJECT_DIR: ${{ secrets.PROJECT_DIR }}
         with:
-          host: ${{ secrets.EC2_HOST }}
+          host: ${{ secrets.DEV_EC2_HOST }}
           username: ${{ secrets.EC2_USERNAME }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           envs: PROJECT_DIR
@@ -80,7 +80,7 @@ jobs:
         env:
           PROJECT_DIR: ${{ secrets.PROJECT_DIR }}
         with:
-          host: ${{ secrets.EC2_HOST }}
+          host: ${{ secrets.DEV_EC2_HOST }}
           username: ${{ secrets.EC2_USERNAME }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           envs: PROJECT_DIR
