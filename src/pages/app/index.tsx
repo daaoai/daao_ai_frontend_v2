@@ -66,7 +66,7 @@ const AppHome: React.FC = () => {
                   buzz="1423"
                   token="FDREAM"
                   isLive={true}
-                  imgSrc="http://localhost:3000/roman-guy.svg"
+                  imgSrc="/roman-guy.svg"
                 />
               ))}
             </div>
