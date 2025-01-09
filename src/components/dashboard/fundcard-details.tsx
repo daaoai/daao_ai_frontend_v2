@@ -4,7 +4,7 @@ import Image from 'next/image';
 import { Copy } from 'lucide-react';
 import { workSans } from '@/pages/app';
 
-type Props = {
+export type Props = {
   icon: string; // icon image url
   shortname: string; // eg $ALCH
   longname: string; // eg Alchemist Accelerate
@@ -57,7 +57,7 @@ const FundDetails: React.FC<Props> = (props: Props) => {
               <CardContent className="space-y-2 sm:space-y-4 px-2 sm:px-3">
                 <div>
                   <p className="text-[#aeb3b6] text-sm sm:text-base md:text-lg lg:text-xl">Your Holdings</p>
-                  <p className="text-lg sm:text-2xl md:text-3xl lg:text-4xl font-bold">{props.holdings} {props.shortname} <span className="text-sm sm:text-lg md:text-xl lg:text-2xl">(0%)</span></p>
+                  <p className="text-lg sm:text-2xl md:text-3xl lg:text-4xl font-semibold">{props.holdings} {props.shortname} <span className="text-sm sm:text-lg md:text-xl lg:text-2xl">(0%)</span></p>
                 </div>
                 <div>
                   <p className="text-[#aeb3b6] text-sm sm:text-base md:text-lg lg:text-xl">Your Market Value</p>
