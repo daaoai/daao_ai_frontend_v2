@@ -3,13 +3,13 @@
 // Import necessary components and hooks from libraries
 import { ConnectButton } from "@rainbow-me/rainbowkit";
 import { Button } from "./button"; // Custom Button component
-import { mainnet, goerli, sepolia } from "wagmi/chains"; // Import networks
+import { modeTestnet, goerli, sepolia } from "wagmi/chains"; // Import networks
 import Image from "next/image"; // Import Image component for displaying chain icons
 import { workSans } from "@/pages/app";
 import { Text, Wallet } from "lucide-react";
 
 // Array containing Ethereum chain IDs (mainnet, goerli, sepolia)
-const ethChainIds: number[] = [mainnet.id, goerli.id, sepolia.id];
+const ethChainIds: number[] = [modeTestnet.id, goerli.id, sepolia.id];
 
 // Main ConnectWalletButton component
 export const ConnectWalletButton = () => {

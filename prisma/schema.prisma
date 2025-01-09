@@ -5,8 +5,8 @@
 // Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
 
 datasource db {
-  provider = "postgresql"
-  url      = env("DATABASE_URL")
+  provider = "mysql"
+  url      = "mysql://root:a@localhost:3306/WaitingList?schema=public"
 }
 
 generator client {
@@ -15,6 +15,6 @@ generator client {
 
 model WaitingList {
   id        Int      @id @default(autoincrement())
-  email     String
+  publicKey String   @unique
   createdAt DateTime @default(now())
 }
