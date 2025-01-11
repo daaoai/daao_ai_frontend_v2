@@ -1,16 +1,6 @@
 import { PageLayout } from '@/components/page-layout';
 import React from 'react';
-
-import { Work_Sans } from 'next/font/google';
-export const workSans = Work_Sans({
-  subsets: ["latin"],
-  weight: "400",
-})
-import { Anek_Latin } from 'next/font/google';
-export const anekLatin = Anek_Latin({
-  subsets: ["latin"],
-  weight: "600",
-})
+import { anekLatin, workSans } from '.';
 
 const Leaderboard: React.FC = () => {
   return (

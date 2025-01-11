@@ -9,7 +9,7 @@ interface Props {
   height: number
 }
 
-const Logo: React.FC<Props> = ({ width, height }: Props) => (
+const Logo: React.FC<Props> = ({ width = 32, height = 32 }: Props) => (
   <div className="flex items-center space-x-2">
     <Image
       src={logo}
