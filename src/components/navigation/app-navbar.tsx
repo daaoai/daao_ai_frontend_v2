@@ -34,7 +34,7 @@ export const AppNavbar: React.FC = () => {
 
       {/* Center Navigation Links */}
       <div className={`hidden lg:flex gap-12 w-full justify-end items-center ${workSans.className}`}>
-        <Link
+        {/*<Link
           href="#rewards"
           className="text-white text-xl font-medium leading-9"
         >
@@ -45,7 +45,7 @@ export const AppNavbar: React.FC = () => {
           className="text-white text-xl font-medium leading-9"
         >
           Forum
-        </Link>
+        </Link>*/}
         <Link
           href="/app/farm"
           className="text-white text-xl font-medium leading-9"
