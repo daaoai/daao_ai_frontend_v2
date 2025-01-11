@@ -1,6 +1,6 @@
 import { PageLayout } from '@/components/page-layout';
 import React from 'react';
-import FundCard from '@/components/fund-card';
+import FundCard from '@/components/dashboard/fund-card';
 
 import { Work_Sans } from 'next/font/google';
 export const workSans = Work_Sans({
@@ -10,6 +10,7 @@ export const workSans = Work_Sans({
 import { Anek_Latin } from 'next/font/google';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
+import { FUND_CARD_PLACEHOLDER_IMAGE } from '@/lib/links';
 export const anekLatin = Anek_Latin({
   subsets: ["latin"],
   weight: "600",
@@ -69,7 +70,7 @@ const AppHome: React.FC = () => {
                     buzz="1423"
                     token="FDREAM"
                     isLive={true}
-                    imgSrc="/roman-guy.svg"
+                    imgSrc={FUND_CARD_PLACEHOLDER_IMAGE}
                   />
                 </Link>
               ))}
@@ -99,7 +100,7 @@ const AppHome: React.FC = () => {
                     buzz="1423"
                     token="FDREAM"
                     isLive={true}
-                    imgSrc="/roman-guy.svg"
+                    imgSrc={FUND_CARD_PLACEHOLDER_IMAGE}
                   />
                 </Link>
               ))}

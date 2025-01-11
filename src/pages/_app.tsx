@@ -1,18 +1,6 @@
 import "../styles/globals.css";
 import "@rainbow-me/rainbowkit/styles.css";
 import { AppProps } from "next/app";
-import { Syne_Mono, Goldman } from "next/font/google";
-
-// Define font instances
-const syneMono = Syne_Mono({
-  subsets: ["latin"],
-  weight: "400",
-});
-
-const goldman = Goldman({
-  subsets: ["latin"],
-  weight: "400",
-});
 
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { WagmiProvider } from "wagmi";
@@ -26,6 +14,7 @@ import { SessionProvider } from "next-auth/react";
 import { config } from "../wagmi";
 
 import { ThemeProvider } from "@/components/theme-provider";
+import { gold, syne } from ".";
 
 const client = new QueryClient();
 
@@ -36,7 +25,7 @@ const getSiweMessageOptions: GetSiweMessageOptions = () => ({
 // TODO: wagmi to change default theme based on the user's system preference
 
 function MyApp({ Component, pageProps }: AppProps) {
-  const fontChoice = pageProps.useSyneMono ? syneMono.className : goldman.className;
+  const fontChoice = pageProps.useSyneMono ? syne.className : gold.className;
 
 
   return (
@@ -67,7 +56,7 @@ function MyApp({ Component, pageProps }: AppProps) {
 
 function Layout({ children, font }: { children: React.ReactNode; font?: string }) {
   return (
-    <div className={font || goldman.className}>
+    <div className={font || gold.className}>
       {children}
     </div>
   );

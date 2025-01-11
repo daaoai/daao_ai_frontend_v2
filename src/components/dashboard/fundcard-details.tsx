@@ -4,15 +4,7 @@ import Image from 'next/image';
 import { Copy } from 'lucide-react';
 import { workSans } from '@/pages/app';
 
-export type Props = {
-  icon: string; // icon image url
-  shortname: string; // eg $ALCH
-  longname: string; // eg Alchemist Accelerate
-  description: string;
-  holdings: number; // 0 ALCH
-}
-
-const FundDetails: React.FC<Props> = (props: Props) => {
+const FundDetails: React.FC<FundDetailsProps> = (props) => {
 
   return (
     <>

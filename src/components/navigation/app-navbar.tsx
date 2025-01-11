@@ -2,7 +2,7 @@ import Link from "next/link";
 import React from "react";
 // import { HeaderSheet } from "./header-sheet";
 import { ConnectWalletButton } from "@/components/ui/connect-button";
-import Logo from '../logo';
+import Logo from "../logo-component";
 import { workSans } from "@/pages/app";
 
 export const AppNavbar: React.FC = () => {

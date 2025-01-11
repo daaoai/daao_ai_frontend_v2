@@ -1,3 +1,6 @@
+export const WHITEPAPER_URL = "https://docsend.com/view/z9eqsrurcmdky2dn"
+export const FUND_CARD_PLACEHOLDER_IMAGE: string = "/images/roman-guy.svg"
+
 import {
   // GitHubIcon,
   TelegramIcon,
@@ -32,4 +35,3 @@ export const RNDLinks: FooterData[] = [
   },
 ]
 
-export const WHITEPAPER_URL = "https://docsend.com/view/z9eqsrurcmdky2dn"

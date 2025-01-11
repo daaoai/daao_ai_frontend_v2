@@ -2,12 +2,6 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Separator } from "@/components/ui/separator"
 import { Bitcoin, Copy } from 'lucide-react'
 
-interface InfoRowProps {
-  label: string
-  value: string
-  mode?: boolean
-}
-
 const InfoRow = ({ label, value, mode }: InfoRowProps) => (
   <div className="space-y-1">
     <div className="text-[#aeb3b6] text-left flex justify-between items-center">
@@ -22,16 +16,6 @@ const InfoRow = ({ label, value, mode }: InfoRowProps) => (
     <Separator />
   </div>
 )
-
-interface OrderbookProps {
-  name: string
-  created: string
-  owner: string
-  treasury: string
-  token: string
-  tradingEnds: string
-  ethRaised: string
-}
 
 const Orderbook = ({
   name,

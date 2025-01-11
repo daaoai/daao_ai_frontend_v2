@@ -1,6 +1,6 @@
 import Image from "next/image";
 import React from "react";
-import logo from '@/assets/images/logo.svg';
+import logo from "../assets/icons/logo.svg";
 import { Typography } from "./ui/typography";
 import { gold } from "@/pages";
 

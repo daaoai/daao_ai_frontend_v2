@@ -1,5 +1,5 @@
 import Link from "next/link";
-import Logo from "./logo";
+import Logo from "./logo-component";
 
 import { Plus_Jakarta_Sans } from "next/font/google";
 import { socialLinks } from "@/lib/links";

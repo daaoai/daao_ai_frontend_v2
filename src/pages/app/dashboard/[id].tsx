@@ -1,14 +1,14 @@
 import { PageLayout } from '@/components/page-layout';
 import React, { useState } from 'react';
 import { workSans } from '..';
-import FundDetails, { Props } from '@/components/dashboard/fundcard-details';
+import FundDetails from '@/components/dashboard/fundcard-details';
 import Buysell from '@/components/dashboard/buysell-card';
 import { Tabs, TabsList, TabsTrigger } from '@radix-ui/react-tabs';
 import Orderbook from '@/components/dashboard/orderbook';
 
-const Dashboard: React.FC<Props> = () => {
+const Dashboard: React.FC = () => {
 
-  const props: Props = {
+  const props: FundDetailsProps = {
     icon: "https://via.placeholder.com/70x70", // Placeholder image URL
     shortname: "ALCH",
     longname: "Alchemist Accelerate",
@@ -68,7 +68,7 @@ const Dashboard: React.FC<Props> = () => {
           {/* Right Section - 30% */}
           <div className="md:col-span-3">
             <Orderbook
-              name="Alchemist Accelerate"
+              name={props.longname}
               created="12/31/2024"
               owner="0x2F...3235"
               treasury="0x19...4fa7"

@@ -1,10 +1,10 @@
+import { useState } from "react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { ConnectWalletButton } from "../ui/connect-button"
 import { workSans } from "@/pages/app"
-import { EthereumIcon } from "../dashboard/ethereum-icon";
-import { useState } from "react"
+import { EthereumIcon } from "@/assets/icons/ethereum-icon"
 
 const Buysell = () => {
   const [activeTab, setActiveTab] = useState("buy")

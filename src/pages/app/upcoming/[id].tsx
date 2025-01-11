@@ -3,29 +3,18 @@ import React from 'react';
 import { workSans } from '..';
 import UpcomingFunds from '@/components/dashboard/upcoming-card';
 import BurnCard from '@/components/dashboard/burncard';
+import { FUND_CARD_PLACEHOLDER_IMAGE } from '@/lib/links';
 
-type Props = {
-  shortname: string;
-  twitter: string;
-  telegram: string;
-  website: string;
-  description: string;
-  // startDate: Date;
-  // endDate: Date;
-  fundingProgress: number;
-  logo: string;
-}
+const Upcoming: React.FC = () => {
 
-const Upcoming: React.FC<Props> = () => {
-
-  const props: Props = {
+  const props: UpcomingFundDetailsProps = {
     shortname: "3BC",
     twitter: "username",
     telegram: "telegram",
     website: "https://example.com",
     description: "Lorem ipsum odor amet, consectetuer adipiscing elit. Sit eu primis ipsum ante malesuada. Conubia laoreet id vivamus ultrices fringilla suspendisse.",
     fundingProgress: 80,
-    logo: "/roman-guy.svg"
+    logo: FUND_CARD_PLACEHOLDER_IMAGE
   };
 
   return (

@@ -2,16 +2,7 @@ import React from 'react';
 import { PageLayout } from '@/components/page-layout';
 import { workSans } from '.';
 import { FarmCard } from '@/components/dashboard/farm-card';
-import { Info, TriangleAlert } from 'lucide-react';
-
-interface FarmCardProps {
-  name: string
-  description: string
-  apr: string
-  tvl: string
-  stakeInfo: string
-  earnInfo: string
-}
+import { TriangleAlert } from 'lucide-react';
 
 const Farms: React.FC = () => {
 

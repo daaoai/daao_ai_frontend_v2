@@ -2,7 +2,6 @@ import Link from "next/link";
 import React, { useState } from "react";
 import { Button } from "../ui/button";
 // import { HeaderSheet } from "./header-sheet";
-// import { ConnectWalletButton } from "@/components/ui/connect-button";
 import {
   NavigationMenu,
   NavigationMenuItem,
@@ -10,9 +9,9 @@ import {
   NavigationMenuList,
   navigationMenuTriggerStyle,
 } from "@/components/ui/navigation-menu";
-import Logo from '../logo';
+import Logo from "../logo-component";
 import { socialLinks } from "@/lib/links";
-import WaitlistModal from "../waitlist-modal";
+import WaitlistModal from "../landing/waitlist-modal";
 
 interface NavLink {
   label: string;

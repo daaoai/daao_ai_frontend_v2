@@ -6,22 +6,22 @@ import { Typography } from "@/components/ui/typography";
 import Link from "next/link";
 import Image from "next/image";
 import { ArrowRight } from "lucide-react";
-import { RNDLinks, socialLinks, WHITEPAPER_URL } from "@/lib/links";
+import { RNDLinks, WHITEPAPER_URL } from "@/lib/links";
+import { FooterIconLink } from "@/components/footer";
+
 import { Syne_Mono } from "next/font/google";
 export const syne = Syne_Mono({
   subsets: ["latin"],
   weight: "400",
 })
+
 import { Goldman } from "next/font/google";
-import WaitlistModal from "@/components/waitlist-modal";
-import { FooterIconLink } from "@/components/footer";
 export const gold = Goldman({
   subsets: ["latin"],
   weight: "400",
 })
 
 const HomePage: NextPage = () => {
-  const [isModalOpen, setIsModalOpen] = useState(false);
   const [email, setEmail] = useState("");
   const [statusMsg, setStatusMsg] = useState("");
 
@@ -82,7 +82,7 @@ const HomePage: NextPage = () => {
       {/* Star Image */}
       <div className="sm:my-[-40px] relative flex justify-center items-center h-max">
         <Image
-          src="/star-1-with-ellipse.svg"
+          src="/assets/star-1-with-ellipse.svg"
           alt="Star"
           width={950}
           height={950}
@@ -135,7 +135,7 @@ const HomePage: NextPage = () => {
       >
         <div className="h-min flex-col justify-center items-center gap-2.5 flex">
           <div className={`w-2/3 sm:w-1/2 max-w-xs md:max-w-sm lg:max-w-md h-52 sm:h-56 md:h-64 lg:h-72 bg-purple/50 rounded-md flex-col justify-center items-center inline-flex overflow-hidden`}>
-            <img className="w-full h-full" src="/microscope.png" />
+            <img className="w-full h-full" src="/images/microscope.png" />
           </div>
           <div className="text-center text-white text-lg sm:text-xl md:text-2xl font-normal">
             Onchain Research DAO ($RND)

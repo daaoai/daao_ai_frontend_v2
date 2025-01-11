@@ -7,20 +7,7 @@ import Link from "next/link"
 import { Clock, Globe } from 'lucide-react'
 import { TelegramIcon, XIcon } from "@/assets/icons/social"
 
-type Props = {
-  shortname: string;
-  twitter: string;
-  telegram: string;
-  website: string;
-  description: string;
-  // startDate: Date;
-  // endDate: Date;
-  fundingProgress: number;
-  logo: string;
-}
-
-
-export default function UpcomingFunds(props: Props) {
+export default function UpcomingFunds(props: UpcomingFundDetailsProps) {
   return (
     <Card className="w-full max-w-3xl bg-[#0d0d0d] border-[#383838] text-white font-['Work Sans'] h-min">
       <CardHeader className="space-y-4 sm:space-y-6">
