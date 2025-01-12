@@ -61,7 +61,7 @@ export default function UpcomingFunds(props: UpcomingFundDetailsProps) {
             <span>Funding Progress</span>
             <span>{props.fundingProgress}%</span>
           </div>
-          <Progress value={props.fundingProgress} className="h-4 sm:h-5 bg-[#409cff]" />
+          <Progress value={props.fundingProgress} className="h-4 sm:h-5 [&>div]:bg-[#409cff] bg-[#2b4977]" />
         </div>
       </CardContent>
     </Card >
