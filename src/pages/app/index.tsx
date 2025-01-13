@@ -11,6 +11,7 @@ import { Anek_Latin } from 'next/font/google';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { FUND_CARD_PLACEHOLDER_IMAGE } from '@/lib/links';
+import Image from 'next/image';
 export const anekLatin = Anek_Latin({
   subsets: ["latin"],
   weight: "600",
@@ -19,9 +20,21 @@ export const anekLatin = Anek_Latin({
 const AppHome: React.FC = () => {
   return (
     <PageLayout title="App" description="main-app" app={true}>
-      <div className={`gap-20 ${workSans.className} flex flex-col justify-center items-center py-16 px-2 lg:px-44`}>
+      {/* Watermark */}
+      <div className="mr-[-30%] mt-[-20%] absolute top-0 right-0 w-full h-full pointer-events-none z-0">
+        <Image
+          src="/assets/star-1-with-purple-star.svg"
+          alt="Watermark"
+          layout="fill"
+          objectFit="contain"
+          objectPosition="right top"
+        />
+      </div>
+
+      <div className={`z-10 relative gap-20 ${workSans.className} flex flex-col justify-center items-center py-16 px-2 lg:px-44`}>
+
         {/*hero section ish*/}
-        <div className='flex flex-col justify-center items-center gap-10 px-4'>
+        <div className='z-10 flex flex-col justify-center items-center gap-10 px-4'>
           <div className='flex flex-col items-center justify-between gap-6'>
             <div className={`self-stretch text-white text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-semibold ${anekLatin.className} `}>
               The future of investing in Daaos world
