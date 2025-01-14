@@ -1,7 +1,7 @@
 import React, { useState,useEffect } from "react";
 import { ethers } from "ethers";
 import Web3 from "web3";
-import { requestAccounts } from "./requestAccount";
+import { requestAccounts } from "../../utils/requestAccount";
 
 const contractABI = [
     {
