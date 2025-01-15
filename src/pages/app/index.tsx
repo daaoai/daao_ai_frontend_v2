@@ -49,9 +49,11 @@ const AppHome: React.FC = () => {
               Create or join memecoin & AI hedgefunds
             </p>
             <div className="flex flex-col sm:flex-row justify-center items-center gap-4 w-full max-w-md">
-              <Button className="w-[125px] sm:w-auto bg-white text-black hover:bg-white/90 text-sm sm:text-base font-semibold px-6 py-2 sm:px-8 sm:py-3">
-                DASHBOARD
-              </Button>
+              <Link href="/app/dashboard" className="w-full sm:w-auto">
+                <Button className="w-[125px] sm:w-auto bg-white text-black hover:bg-white/90 text-sm sm:text-base font-semibold px-6 py-2 sm:px-8 sm:py-3">
+                  DASHBOARD
+                </Button>
+              </Link>
               <Link href="/app/leaderboard" className="w-full sm:w-auto">
                 <Button className="w-[125px] sm:w-auto bg-[#28282c] hover:bg-[#28282c]/90 text-white text-sm sm:text-base font-semibold px-6 py-2 sm:px-8 sm:py-3">
                   LEADERBOARD

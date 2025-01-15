@@ -49,3 +49,7 @@ interface leaderboardData {
   dayVol: number;
   marketCap: number;
 }
+
+type dashboardData = {
+  address: string,
+}
