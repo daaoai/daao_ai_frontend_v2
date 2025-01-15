@@ -43,7 +43,7 @@ const Farms: React.FC = () => {
 
   return (
     <PageLayout title="App" description="main-app" app={true}>
-      <div className={`gap-20 ${workSans.className} flex flex-col justify-center items-center py-16 px-2 lg:px-44`}>
+      <div className={`w-screen overflow-hidden gap-20 ${workSans.className} flex flex-col justify-center items-center py-16 px-2 lg:px-44`}>
 
         <div className="container mx-auto px-4 py-8">
           <h1 className="text-3xl font-bold mb-8 text-left">Farming Pools</h1>

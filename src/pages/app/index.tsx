@@ -29,7 +29,7 @@ const AppHome: React.FC = () => {
     <PageLayout title="App" description="main-app" app={true}>
       <div className="relative min-h-screen w-screen overflow-hidden">
         {/* Watermark */}
-        <div className="scale-110 sm:scale-100 mr-[-20%] sm:mr-[-30%] sm:mt-[-20%] absolute top-0 right-0 w-full h-full pointer-events-none z-0">
+        <div className="scale-150 sm:scale-100 mr-[-20%] sm:mr-[-30%] mt-[80%] sm:mt-[-20%] absolute top-0 right-0 w-full h-full pointer-events-none z-0">
           <Image
             src="/assets/star-1-with-purple-star.svg"
             alt="Watermark"
@@ -49,11 +49,11 @@ const AppHome: React.FC = () => {
               Create or join memecoin & AI hedgefunds
             </p>
             <div className="flex flex-col sm:flex-row justify-center items-center gap-4 w-full max-w-md">
-              <Button className="w-1/3 sm:w-auto bg-white text-black hover:bg-white/90 text-sm sm:text-base font-semibold px-6 py-2 sm:px-8 sm:py-3">
+              <Button className="w-[125px] sm:w-auto bg-white text-black hover:bg-white/90 text-sm sm:text-base font-semibold px-6 py-2 sm:px-8 sm:py-3">
                 DASHBOARD
               </Button>
               <Link href="/app/leaderboard" className="w-full sm:w-auto">
-                <Button className="w-1/3 sm:w-auto bg-[#28282c] hover:bg-[#28282c]/90 text-white text-sm sm:text-base font-semibold px-6 py-2 sm:px-8 sm:py-3">
+                <Button className="w-[125px] sm:w-auto bg-[#28282c] hover:bg-[#28282c]/90 text-white text-sm sm:text-base font-semibold px-6 py-2 sm:px-8 sm:py-3">
                   LEADERBOARD
                 </Button>
               </Link>
