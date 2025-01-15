@@ -1,8 +1,198 @@
 import { PageLayout } from '@/components/page-layout';
 import React from 'react';
 import { anekLatin, workSans } from '@/lib/fonts';
+import { leaderboardData } from '@/lib/types';
+import { LeaderboardDataTable } from '@/components/table/leaderboard-table';
+import { LeaderboardColumns } from '@/components/table/leaderboard-columns';
+
+function getLeaderboardData(): leaderboardData[] {
+  return [
+    {
+      id: 1,
+      icon: "https://via.placeholder.com/50",
+      name: "CryptoKing",
+      creator: "Alice",
+      price: 0.015,
+      dayVol: 12.5,
+      marketCap: 100,
+    },
+    {
+      id: 2,
+      icon: "https://via.placeholder.com/50",
+      name: "DeFiStar",
+      creator: "Bob",
+      price: 0.03,
+      dayVol: 8.9,
+      marketCap: 75,
+    },
+    {
+      id: 3,
+      icon: "https://via.placeholder.com/50",
+      name: "TokenX",
+      creator: "Charlie",
+      price: 0.00075,
+      dayVol: 120,
+      marketCap: 250,
+    },
+    {
+      id: 4,
+      icon: "https://via.placeholder.com/50",
+      name: "MetaCoin",
+      creator: "Dana",
+      price: 0.002,
+      dayVol: 5.6,
+      marketCap: 32,
+    },
+    {
+      id: 5,
+      icon: "https://via.placeholder.com/50",
+      name: "GalaxyToken",
+      creator: "Eve",
+      price: 0.0075,
+      dayVol: 2.3,
+      marketCap: 8.5,
+    },
+    {
+      id: 1,
+      icon: "https://via.placeholder.com/50",
+      name: "CryptoKing",
+      creator: "Alice",
+      price: 0.015,
+      dayVol: 12.5,
+      marketCap: 100,
+    },
+    {
+      id: 2,
+      icon: "https://via.placeholder.com/50",
+      name: "DeFiStar",
+      creator: "Bob",
+      price: 0.03,
+      dayVol: 8.9,
+      marketCap: 75,
+    },
+    {
+      id: 3,
+      icon: "https://via.placeholder.com/50",
+      name: "TokenX",
+      creator: "Charlie",
+      price: 0.00075,
+      dayVol: 120,
+      marketCap: 250,
+    },
+    {
+      id: 4,
+      icon: "https://via.placeholder.com/50",
+      name: "MetaCoin",
+      creator: "Dana",
+      price: 0.002,
+      dayVol: 5.6,
+      marketCap: 32,
+    },
+    {
+      id: 5,
+      icon: "https://via.placeholder.com/50",
+      name: "GalaxyToken",
+      creator: "Eve",
+      price: 0.0075,
+      dayVol: 2.3,
+      marketCap: 8.5,
+    },
+    {
+      id: 1,
+      icon: "https://via.placeholder.com/50",
+      name: "CryptoKing",
+      creator: "Alice",
+      price: 0.015,
+      dayVol: 12.5,
+      marketCap: 100,
+    },
+    {
+      id: 2,
+      icon: "https://via.placeholder.com/50",
+      name: "DeFiStar",
+      creator: "Bob",
+      price: 0.03,
+      dayVol: 8.9,
+      marketCap: 75,
+    },
+    {
+      id: 3,
+      icon: "https://via.placeholder.com/50",
+      name: "TokenX",
+      creator: "Charlie",
+      price: 0.00075,
+      dayVol: 120,
+      marketCap: 250,
+    },
+    {
+      id: 4,
+      icon: "https://via.placeholder.com/50",
+      name: "MetaCoin",
+      creator: "Dana",
+      price: 0.002,
+      dayVol: 5.6,
+      marketCap: 32,
+    },
+    {
+      id: 5,
+      icon: "https://via.placeholder.com/50",
+      name: "GalaxyToken",
+      creator: "Eve",
+      price: 0.0075,
+      dayVol: 2.3,
+      marketCap: 8.5,
+    },
+    {
+      id: 1,
+      icon: "https://via.placeholder.com/50",
+      name: "CryptoKing",
+      creator: "Alice",
+      price: 0.015,
+      dayVol: 12.5,
+      marketCap: 100,
+    },
+    {
+      id: 2,
+      icon: "https://via.placeholder.com/50",
+      name: "DeFiStar",
+      creator: "Bob",
+      price: 0.03,
+      dayVol: 8.9,
+      marketCap: 75,
+    },
+    {
+      id: 3,
+      icon: "https://via.placeholder.com/50",
+      name: "TokenX",
+      creator: "Charlie",
+      price: 0.00075,
+      dayVol: 120,
+      marketCap: 250,
+    },
+    {
+      id: 4,
+      icon: "https://via.placeholder.com/50",
+      name: "MetaCoin",
+      creator: "Dana",
+      price: 0.002,
+      dayVol: 5.6,
+      marketCap: 32,
+    },
+    {
+      id: 5,
+      icon: "https://via.placeholder.com/50",
+      name: "GalaxyToken",
+      creator: "Eve",
+      price: 0.0075,
+      dayVol: 2.3,
+      marketCap: 8.5,
+    },
+  ];
+}
 
 const Leaderboard: React.FC = () => {
+  const data = getLeaderboardData()
+
   return (
     <PageLayout title="App" description="main-app" app={true}>
       <div className={`gap-20 ${workSans.className} flex flex-col justify-center items-center py-16 px-2 lg:px-44`}>
@@ -28,6 +218,10 @@ const Leaderboard: React.FC = () => {
               </span>
             </button>
           </div>
+        </div>
+
+        <div className="container mx-auto py-10">
+          <LeaderboardDataTable columns={LeaderboardColumns} data={data} />
         </div>
 
       </div>

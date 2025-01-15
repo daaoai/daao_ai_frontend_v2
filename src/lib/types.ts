@@ -40,3 +40,12 @@ interface OrderbookProps {
   ethRaised: string
 }
 
+export interface leaderboardData {
+  id: number;
+  icon: string;
+  name: string;
+  creator: string;
+  price: number;
+  dayVol: number;
+  marketCap: number;
+}
