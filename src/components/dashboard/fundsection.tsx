@@ -73,8 +73,8 @@ export function FundSection({ title, subtitle, funds, linkPrefix = "dashboard" }
             </CarouselItem>
           ))}
         </CarouselContent>
-        <CarouselPrevious />
-        <CarouselNext />
+        <CarouselPrevious className="hidden sm:visible" />
+        <CarouselNext className="hidden sm:visible" />
       </Carousel>
       <div className="py-2 text-center text-sm text-muted-foreground">
         Slide {current} of {count}
