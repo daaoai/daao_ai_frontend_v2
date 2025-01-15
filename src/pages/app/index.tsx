@@ -29,7 +29,7 @@ const AppHome: React.FC = () => {
     <PageLayout title="App" description="main-app" app={true}>
       <div className="relative min-h-screen w-screen overflow-hidden">
         {/* Watermark */}
-        <div className="scale-110 sm:scale-100 mr-[-20%] sm:mr-[-30%] sm:mt-[-20%] absolute top-0 right-0 w-full h-full pointer-events-none z-0">
+        <div className="scale-125 sm:scale-100 mr-[-20%] sm:mr-[-30%] mt-[40%] sm:mt-[-20%] absolute top-0 right-0 w-full h-full pointer-events-none z-0">
           <Image
             src="/assets/star-1-with-purple-star.svg"
             alt="Watermark"
