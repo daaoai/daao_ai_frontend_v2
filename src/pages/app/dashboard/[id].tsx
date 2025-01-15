@@ -20,7 +20,7 @@ const Dashboard: React.FC = () => {
 
   return (
     <PageLayout title="App" description="main-app" app={true}>
-      <div className={`gap-20 ${workSans.className} flex flex-col justify-center items-center py-16 px-2 lg:px-44`}>
+      <div className={`w-screen overflow-hidden gap-20 ${workSans.className} flex flex-col justify-center items-center py-16 px-2 lg:px-44`}>
 
         <div
           className="grid gap-2 md:gap-3 lg:grid-cols-[60%_40%] lg:items-stretch"
