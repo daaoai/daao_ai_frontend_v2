@@ -40,7 +40,7 @@ interface OrderbookProps {
   ethRaised: string
 }
 
-export interface leaderboardData {
+interface leaderboardData {
   id: number;
   icon: string;
   name: string;

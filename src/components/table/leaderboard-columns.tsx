@@ -2,7 +2,6 @@
 
 import { EthereumIcon } from "@/assets/icons/ethereum-icon"
 import { workSans } from "@/lib/fonts"
-import { leaderboardData } from "@/lib/types"
 import { ColumnDef } from "@tanstack/react-table"
 import { Button } from "../ui/button"
 import { ArrowUpDown } from "lucide-react"

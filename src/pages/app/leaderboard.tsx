@@ -1,7 +1,6 @@
 import { PageLayout } from '@/components/page-layout';
 import React from 'react';
 import { anekLatin, workSans } from '@/lib/fonts';
-import { leaderboardData } from '@/lib/types';
 import { LeaderboardDataTable } from '@/components/table/leaderboard-table';
 import { LeaderboardColumns } from '@/components/table/leaderboard-columns';
 import Image from 'next/image';
