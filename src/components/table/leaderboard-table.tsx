@@ -2,9 +2,11 @@
 
 import {
   ColumnDef,
+  SortingState,
   flexRender,
   getCoreRowModel,
   getPaginationRowModel,
+  getSortedRowModel,
   useReactTable,
 } from "@tanstack/react-table"
 
@@ -17,6 +19,8 @@ import {
   TableRow,
 } from "@/components/ui/table"
 import { Button } from "../ui/button";
+import { useState } from "react";
+import { workSans } from "@/lib/fonts";
 
 interface LeaderboardTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
@@ -27,22 +31,30 @@ export function LeaderboardDataTable<TData, TValue>({
   columns,
   data,
 }: LeaderboardTableProps<TData, TValue>) {
+
+  const [sorting, setSorting] = useState<SortingState>([])
+
   const table = useReactTable({
     data,
     columns,
     getCoreRowModel: getCoreRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
+    onSortingChange: setSorting,
+    getSortedRowModel: getSortedRowModel(),
+    state: {
+      sorting,
+    },
   })
 
   return (
-    <div className="rounded-md border">
+    <div className="rounded-md border bg-[#191919]">
       <Table>
         <TableHeader>
           {table.getHeaderGroups().map((headerGroup) => (
-            <TableRow key={headerGroup.id}>
+            <TableRow key={headerGroup.id} className={`border-b border-black mb-2 text-[#e4e6e7] text-bold ${workSans.className}`}>
               {headerGroup.headers.map((header) => {
                 return (
-                  <TableHead key={header.id} className="p-4 text-left">
+                  <TableHead key={header.id} className={`mb-2 text-[#e4e6e7] text-bold ${workSans.className} p-4 text-left`}>
                     {header.isPlaceholder
                       ? null
                       : flexRender(
@@ -80,6 +92,10 @@ export function LeaderboardDataTable<TData, TValue>({
         </TableBody>
       </Table>
       <div className="flex items-center justify-end space-x-2 p-4">
+        <div className="flex w-[100px] items-center justify-center text-sm font-medium">
+          Page {table.getState().pagination.pageIndex + 1} of{" "}
+          {table.getPageCount()}
+        </div>
         <Button
           variant="outline"
           size="sm"

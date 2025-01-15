@@ -4,6 +4,8 @@ import { EthereumIcon } from "@/assets/icons/ethereum-icon"
 import { workSans } from "@/lib/fonts"
 import { leaderboardData } from "@/lib/types"
 import { ColumnDef } from "@tanstack/react-table"
+import { Button } from "../ui/button"
+import { ArrowUpDown } from "lucide-react"
 // import Image from "next/image"
 
 export const LeaderboardColumns: ColumnDef<leaderboardData>[] = [
@@ -35,7 +37,17 @@ export const LeaderboardColumns: ColumnDef<leaderboardData>[] = [
   },
   {
     accessorKey: "price",
-    header: "Price",
+    header: ({ column }) => {
+      return (
+        <Button
+          variant="ghost"
+          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+        >
+          Price
+          <ArrowUpDown className="ml-2 h-4 w-4" />
+        </Button>
+      )
+    },
     cell: ({ row }) => {
       return (
         <div className="flex flex-row justify-start items-center gap-2">
@@ -47,7 +59,17 @@ export const LeaderboardColumns: ColumnDef<leaderboardData>[] = [
   },
   {
     accessorKey: "dayVol",
-    header: "24H Vol",
+    header: ({ column }) => {
+      return (
+        <Button
+          variant="ghost"
+          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+        >
+          24H Vol
+          <ArrowUpDown className="ml-2 h-4 w-4" />
+        </Button>
+      )
+    },
     cell: ({ row }) => {
       return (
         <div className="flex flex-row justify-start items-center gap-2">
@@ -60,7 +82,17 @@ export const LeaderboardColumns: ColumnDef<leaderboardData>[] = [
   },
   {
     accessorKey: "marketCap",
-    header: "Mcap",
+    header: ({ column }) => {
+      return (
+        <Button
+          variant="ghost"
+          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+        >
+          Mcap
+          <ArrowUpDown className="ml-2 h-4 w-4" />
+        </Button>
+      )
+    },
     cell: ({ row }) => {
       return (
         <div className="flex flex-row justify-start items-center gap-2">
