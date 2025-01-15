@@ -14,7 +14,7 @@ import { SessionProvider } from "next-auth/react";
 import { config } from "../wagmi";
 
 import { ThemeProvider } from "@/components/theme-provider";
-import { gold, syne } from ".";
+import { gold, syne } from "@/lib/fonts";
 
 const client = new QueryClient();
 

@@ -8,18 +8,7 @@ import Image from "next/image";
 import { ArrowRight } from "lucide-react";
 import { RNDLinks, WHITEPAPER_URL } from "@/lib/links";
 import { FooterIconLink } from "@/components/footer";
-
-import { Syne_Mono } from "next/font/google";
-export const syne = Syne_Mono({
-  subsets: ["latin"],
-  weight: "400",
-})
-
-import { Goldman } from "next/font/google";
-export const gold = Goldman({
-  subsets: ["latin"],
-  weight: "400",
-})
+import { gold, syne } from "@/lib/fonts";
 
 const HomePage: NextPage = () => {
   const [email, setEmail] = useState("");
@@ -107,7 +96,7 @@ const HomePage: NextPage = () => {
                 variant="connect"
                 className={`w-full py-4 sm:py-6 px-6 sm:px-10 bg-white rounded-lg sm:rounded-xl border border-[#bedaff] flex justify-center items-center max-w-xs sm:max-w-none`}
               >
-                <div className="text-center text-black text-base sm:text-xl font-normal goldman leading-tight tracking-wide">
+                <div className={`text-center text-black text-base sm:text-xl font-normal ${gold.className} leading-tight tracking-wide`}>
                   Whitepaper
                 </div>
               </Button>

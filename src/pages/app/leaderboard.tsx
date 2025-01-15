@@ -1,6 +1,6 @@
 import { PageLayout } from '@/components/page-layout';
 import React from 'react';
-import { anekLatin, workSans } from '.';
+import { anekLatin, workSans } from '@/lib/fonts';
 
 const Leaderboard: React.FC = () => {
   return (

@@ -2,7 +2,7 @@ import Image from "next/image";
 import React from "react";
 import logo from "../assets/icons/logo.svg";
 import { Typography } from "./ui/typography";
-import { gold } from "@/pages";
+import { gold } from "@/lib/fonts";
 
 interface Props {
   width: number,

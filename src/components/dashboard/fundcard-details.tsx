@@ -2,7 +2,7 @@ import React from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import Image from 'next/image';
 import { Copy } from 'lucide-react';
-import { workSans } from '@/pages/app';
+import { workSans } from '@/lib/fonts';
 
 const FundDetails: React.FC<FundDetailsProps> = (props) => {
 

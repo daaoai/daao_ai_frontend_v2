@@ -6,7 +6,7 @@ import { cn } from "@/lib/utils";
 import { Button } from "./button"; // Custom Button component
 import { modeTestnet, goerli, sepolia } from "wagmi/chains"; // Import networks
 import Image from "next/image"; // Import Image component for displaying chain icons
-import { workSans } from "@/pages/app";
+import { workSans } from "@/lib/fonts";
 
 // Array containing Ethereum chain IDs (mainnet, goerli, sepolia)
 const ethChainIds: number[] = [modeTestnet.id, goerli.id, sepolia.id];

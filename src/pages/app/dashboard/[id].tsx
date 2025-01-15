@@ -1,6 +1,6 @@
 import { PageLayout } from '@/components/page-layout';
 import React, { useState } from 'react';
-import { workSans } from '..';
+import { workSans } from '@/lib/fonts';
 import FundDetails from '@/components/dashboard/fundcard-details';
 import Buysell from '@/components/dashboard/buysell-card';
 import { Tabs, TabsList, TabsTrigger } from '@radix-ui/react-tabs';

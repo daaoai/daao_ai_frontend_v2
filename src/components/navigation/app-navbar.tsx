@@ -3,7 +3,7 @@ import React from "react";
 // import { HeaderSheet } from "./header-sheet";
 import { ConnectWalletButton } from "@/components/ui/connect-button";
 import Logo from "../logo-component";
-import { workSans } from "@/pages/app";
+import { workSans } from "@/lib/fonts";
 
 export const AppNavbar: React.FC = () => {
   // const [search, setSearch] = useState("")

@@ -1,6 +1,6 @@
 import React from 'react';
 import { PageLayout } from '@/components/page-layout';
-import { workSans } from '.';
+import { workSans } from '@/lib/fonts';
 import { FarmCard } from '@/components/dashboard/farm-card';
 import { TriangleAlert } from 'lucide-react';
 

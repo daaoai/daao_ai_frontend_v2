@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { ConnectWalletButton } from "../ui/connect-button"
-import { workSans } from "@/pages/app"
+import { workSans } from "@/lib/fonts"
 import { EthereumIcon } from "@/assets/icons/ethereum-icon"
 
 const Buysell = () => {

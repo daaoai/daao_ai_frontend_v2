@@ -1,6 +1,6 @@
 import { PageLayout } from '@/components/page-layout';
 import React from 'react';
-import { workSans } from '..';
+import { workSans } from '@/lib/fonts';
 import UpcomingFunds from '@/components/dashboard/upcoming-card';
 import BurnCard from '@/components/dashboard/burncard';
 import { FUND_CARD_PLACEHOLDER_IMAGE } from '@/lib/links';
