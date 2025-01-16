@@ -10,9 +10,9 @@ const Dashboard: React.FC = () => {
 
   const props: FundDetailsProps = {
     icon: "https://via.placeholder.com/70x70", // Placeholder image URL
-    shortname: "ALCH",
-    longname: "Alchemist Accelerate",
-    description: "A cutting-edge platform focused on accelerating innovation in decentralized finance and blockchain technologies.",
+    shortname: "TBA",
+    longname: "To Be Announced",
+    description: "This DAO has not been announced yet",
     holdings: 0, // Initial holdings of ALCH
   };
 

@@ -9,22 +9,23 @@ import { FundSection } from '@/components/dashboard/fundsection';
 import { FUND_CARD_PLACEHOLDER_IMAGE } from '@/lib/links';
 import { anekLatin, workSans } from '@/lib/fonts';
 
-const FEATURED_FUNDS = [
-  { id: '1', title: 'Soul Dogs', buzz: '1423', token: 'FDREAM', isLive: true, imgSrc: FUND_CARD_PLACEHOLDER_IMAGE },
-  { id: '2', title: 'Crypto Cats', buzz: '982', token: 'CCAT', isLive: true, imgSrc: FUND_CARD_PLACEHOLDER_IMAGE },
-  { id: '3', title: 'Meme Machines', buzz: '1756', token: 'MEME', isLive: true, imgSrc: FUND_CARD_PLACEHOLDER_IMAGE },
-  { id: '4', title: 'DeFi Dragons', buzz: '2103', token: 'DDRG', isLive: true, imgSrc: FUND_CARD_PLACEHOLDER_IMAGE },
-  { id: '5', title: 'Yield Yetis', buzz: '1234', token: 'YETI', isLive: true, imgSrc: FUND_CARD_PLACEHOLDER_IMAGE },
-  { id: '6', title: 'Staking Sharks', buzz: '987', token: 'SHRK', isLive: true, imgSrc: FUND_CARD_PLACEHOLDER_IMAGE },
-];
+const getFeaturedFunds = () => {
+  return [
+    { id: '1', title: 'To Be Announced', buzz: '6969', token: 'TBA', isLive: false, imgSrc: FUND_CARD_PLACEHOLDER_IMAGE },
+  ];
+}
 
-const UPCOMING_FUNDS = [
-  { id: '1', title: 'NFT Ninjas', buzz: '876', token: 'NINJA', isLive: false, imgSrc: FUND_CARD_PLACEHOLDER_IMAGE },
-  { id: '2', title: 'Blockchain Bunnies', buzz: '654', token: 'BNNY', isLive: false, imgSrc: FUND_CARD_PLACEHOLDER_IMAGE },
-  { id: '3', title: 'AI Alpacas', buzz: '1098', token: 'AIAP', isLive: false, imgSrc: FUND_CARD_PLACEHOLDER_IMAGE },
-];
+const getUpcomingFunds = () => {
+  return [
+    { id: '1', title: 'Upcoming Fund', buzz: '6969', token: 'TBA', isLive: false, imgSrc: FUND_CARD_PLACEHOLDER_IMAGE },
+  ];
+}
+
 
 const AppHome: React.FC = () => {
+  const FEATURED_FUNDS = getFeaturedFunds();
+  const UPCOMING_FUNDS = getUpcomingFunds();
+
   return (
     <PageLayout title="App" description="main-app" app={true}>
       <div className="relative min-h-screen w-screen overflow-hidden">

@@ -40,12 +40,12 @@ export const AppNavbar: React.FC = () => {
         >
           Rewards
         </Link>*/}
-        <Link
+        {/*<Link
           href="/app/dashboard"
           className="text-white sm:text-base md:text-lg lg:text-xl font-medium leading-9"
         >
           Dashboard
-        </Link>
+        </Link>*/}
         <Link
           href="/app/farm"
           className="text-white sm:text-base md:text-lg lg:text-xl font-medium leading-9"
