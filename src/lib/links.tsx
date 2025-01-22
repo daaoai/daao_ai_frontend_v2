@@ -10,6 +10,7 @@ import {
   // DiscordIcon,
 } from "@/assets/icons/social";
 import { FooterData } from "@/components/footer";
+import { Link } from "lucide-react";
 
 export const socialLinks: FooterData[] = [
   {
@@ -38,6 +39,11 @@ export const RNDLinks: FooterData[] = [
 ]
 
 export const DefaiCartelLinks: FooterData[] = [
+  {
+    label: "Website",
+    href: "https://www.defaicartel.xyz/",
+    children: <Link />,
+  },
   {
     label: "Telegram",
     href: "https://t.me/defaicartel",

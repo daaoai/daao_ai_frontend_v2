@@ -96,7 +96,7 @@ const HomePage: NextPage = () => {
             >
               <Button
                 variant="connect"
-                className={`w-full py-4 sm:py-6 px-6 sm:px-10 bg-white rounded-lg sm:rounded-xl border border-[#bedaff] flex justify-center items-center max-w-xs sm:max-w-none`}
+                className={`w-full py-4 sm:py-6 px-6 sm:px-10 bg-white rounded-lg border border-[#bedaff] flex justify-center items-center max-w-xs sm:max-w-none`}
               >
                 <div className={`text-center text-black text-base sm:text-xl font-normal ${gold.className} leading-tight tracking-wide`}>
                   Whitepaper
@@ -108,7 +108,7 @@ const HomePage: NextPage = () => {
             >
               <Button
                 variant="connect"
-                className={`py-4 sm:py-6 px-6 sm:px-10 bg-transparent rounded-lg sm:rounded-xl border border-[#bedaff] flex justify-center items-center max-w-xs sm:max-w-none`}
+                className={`py-4 sm:py-6 px-6 sm:px-10 bg-transparent rounded-lg border border-[#bedaff] flex justify-center items-center max-w-xs sm:max-w-none`}
               >
                 <div className="flex justify-center items-center gap-2 text-center text-white text-sm sm:text-base font-normal goldman leading-tight tracking-wide">
                   Register for whitelist <ArrowRight />
