@@ -6,65 +6,65 @@ import { Typography } from "@/components/ui/typography";
 import Link from "next/link";
 import Image from "next/image";
 import { ArrowRight } from "lucide-react";
-import { CURRENT_DAO_IMAGE, CURRENT_DAO_LINK, DefaiCartel, DefaiCartelLinks, RNDLinks, WHITEPAPER_URL } from "@/lib/links";
+import { CURRENT_DAO_IMAGE, CURRENT_DAO_LINK, DefaiCartelLinks, WHITEPAPER_URL } from "@/lib/links";
 import { FooterIconLink } from "@/components/footer";
 import { gold, syne } from "@/lib/fonts";
-import { Input } from "@/components/ui/input";
+// import { Input } from "@/components/ui/input";
 import { Card, CardContent } from "@/components/ui/card";
 
 const HomePage: NextPage = () => {
-  const [email, setEmail] = useState("");
-  const [statusMsg, setStatusMsg] = useState("");
+  // const [email, setEmail] = useState("");
+  // const [statusMsg, setStatusMsg] = useState("");
 
-  const isValidEmail = (value: string) => {
-    // Check if the address starts with '0x' and is 42 characters long
-    if (value.length !== 42 || !value.startsWith('0x')) {
-      return false;
-    }
-
-    // Check if the remaining characters are valid hexadecimal characters
-    const hexPart = value.slice(2); // Remove '0x'
-    const hexRegex = /^[0-9a-fA-F]+$/;
-
-    return hexRegex.test(hexPart);
-  };
+  // const isValidEmail = (value: string) => {
+  //   // Check if the address starts with '0x' and is 42 characters long
+  //   if (value.length !== 42 || !value.startsWith('0x')) {
+  //     return false;
+  //   }
+  //
+  //   // Check if the remaining characters are valid hexadecimal characters
+  //   const hexPart = value.slice(2); // Remove '0x'
+  //   const hexRegex = /^[0-9a-fA-F]+$/;
+  //
+  //   return hexRegex.test(hexPart);
+  // };
 
   // Function to handle the API call
-  const handleJoinWaitlist = async () => {
-    if (!email.trim()) {
-      setStatusMsg("Please enter your mode address")
-      return;
-    }
-
-    // Check if email is valid
-    if (!isValidEmail(email)) {
-      setStatusMsg("Please enter a valid mode address");
-      return;
-    }
-    try {
-      const response = await fetch("/api/auth/joinWaitList", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ email }),
-      });
-
-      if (!response.ok) {
-        const err = await response.json();
-        console.error("Error: ", err.error);
-        setStatusMsg("Failed to join waitlist");
-        return;
-      }
-
-      // Clear the input
-      setEmail("");
-      setStatusMsg("You have been added to the waitlist!");
-    } catch (error) {
-      // console.error("Error joining waitlist:", error);
-      setStatusMsg("Something went wrong, please try again later");
-    }
-  };
+  // const handleJoinWaitlist = async () => {
+  //   if (!email.trim()) {
+  //     setStatusMsg("Please enter your mode address")
+  //     return;
+  //   }
+  //
+  //   // Check if email is valid
+  //   if (!isValidEmail(email)) {
+  //     setStatusMsg("Please enter a valid mode address");
+  //     return;
+  //   }
+  //   try {
+  //     const response = await fetch("/api/auth/joinWaitList", {
+  //       method: "POST",
+  //       headers: {
+  //         "Content-Type": "application/json",
+  //       },
+  //       body: JSON.stringify({ email }),
+  //     });
+  //
+  //     if (!response.ok) {
+  //       const err = await response.json();
+  //       console.error("Error: ", err.error);
+  //       setStatusMsg("Failed to join waitlist");
+  //       return;
+  //     }
+  //
+  //     // Clear the input
+  //     setEmail("");
+  //     setStatusMsg("You have been added to the waitlist!");
+  //   } catch (error) {
+  //     // console.error("Error joining waitlist:", error);
+  //     setStatusMsg("Something went wrong, please try again later");
+  //   }
+  // };
 
 
 
