@@ -14,28 +14,34 @@ export interface FooterData {
   children?: React.ReactNode;
 }
 
+type FooterProps = {
+  app?: boolean,
+}
+
 const footerLinks: FooterData[] = [
 ];
 
-export const Footer: React.FC = () => {
+export const Footer: React.FC<FooterProps> = ({ app }) => {
   return (
     <FooterContainer>
       <div className={`${jakarta.className} text-sm flex flex-col justify-center items-center gap-4 w-full`}>
-        <FooterTopContent />
+        <FooterTopContent app={app} />
         <FooterBottomContent />
       </div>
     </FooterContainer>
   );
 };
 
-const FooterTopContent: React.FC = () => {
+const FooterTopContent: React.FC<FooterProps> = ({ app }) => {
   return (
     <div className="flex flex-col md:flex-row justify-between items-center gap-4 w-full p-4 border-b border-[#212121]">
       {/* logo */}
       <div className="flex flex-col justify-center items-center text-muted-foreground">
         <Logo
-          width={32}
-          height={32}
+          width={100}
+          height={100}
+          footer={true}
+          app={app}
         />
       </div>
 

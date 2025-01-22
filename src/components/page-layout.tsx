@@ -95,7 +95,7 @@ const MainContainer: React.FC<LayoutProps & { children: React.ReactNode }> = ({
           {children}
         </div>
       </main >
-      <Footer />
+      <Footer app={app} />
     </>
   );
 };

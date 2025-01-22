@@ -15,6 +15,7 @@ export const AppNavbar: React.FC = () => {
           <Logo
             width={32}
             height={32}
+            app={true}
           />
         </Link>
       </div>
