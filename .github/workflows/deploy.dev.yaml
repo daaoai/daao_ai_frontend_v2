@@ -1,0 +1,90 @@
+name: DEV ~ Continuous Deployment
+
+on:
+  push:
+    branches:
+      - 'dev'
+
+jobs:
+  pull:
+    name: Pull Stage
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Sync with remote repository
+        uses: appleboy/ssh-action@master
+        env:
+          PROJECT_DIR: ${{ secrets.PROJECT_DIR }}
+        with:
+          host: ${{ secrets.DEV_EC2_HOST }}
+          username: ${{ secrets.EC2_USERNAME }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          envs: PROJECT_DIR
+          script_stop: true
+          script: |
+            cd "${PROJECT_DIR}/"
+            git checkout dev
+            git fetch origin
+            git reset --hard origin/dev
+
+  build:
+    name: Build Stage
+    needs: pull
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Build the latest app
+        uses: appleboy/ssh-action@master
+        env:
+          PROJECT_DIR: ${{ secrets.PROJECT_DIR }}
+        with:
+          host: ${{ secrets.DEV_EC2_HOST }}
+          username: ${{ secrets.EC2_USERNAME }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          envs: PROJECT_DIR
+          script_stop: true
+          script: |
+            cd "${PROJECT_DIR}/"
+            docker compose build
+
+  db-migrate:
+    name: DB Migration Stage
+    needs: build
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Apply database changes
+        uses: appleboy/ssh-action@master
+        env:
+          PROJECT_DIR: ${{ secrets.PROJECT_DIR }}
+        with:
+          host: ${{ secrets.DEV_EC2_HOST }}
+          username: ${{ secrets.EC2_USERNAME }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          envs: PROJECT_DIR
+          script_stop: true
+          script: |
+            cd "${PROJECT_DIR}/"
+            docker compose up -d
+            docker exec daao-app npx prisma generate
+            docker exec daao-app npx prisma migrate deploy
+
+  deploy:
+    name: Deploy Stage
+    needs: db-migrate
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Deploy the latest build
+        uses: appleboy/ssh-action@master
+        env:
+          PROJECT_DIR: ${{ secrets.PROJECT_DIR }}
+        with:
+          host: ${{ secrets.DEV_EC2_HOST }}
+          username: ${{ secrets.EC2_USERNAME }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          envs: PROJECT_DIR
+          script_stop: true
+          script: |
+            cd "${PROJECT_DIR}/"
+            docker compose restart

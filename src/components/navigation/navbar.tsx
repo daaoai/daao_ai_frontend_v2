@@ -2,7 +2,6 @@ import Link from "next/link";
 import React, { useState } from "react";
 import { Button } from "../ui/button";
 // import { HeaderSheet } from "./header-sheet";
-// import { ConnectWalletButton } from "@/components/ui/connect-button";
 import {
   NavigationMenu,
   NavigationMenuItem,
@@ -10,9 +9,9 @@ import {
   NavigationMenuList,
   navigationMenuTriggerStyle,
 } from "@/components/ui/navigation-menu";
-import Logo from '../logo';
-import { socialLinks } from "@/lib/links";
-import WaitlistModal from "../waitlist-modal";
+import Logo from "../logo-component";
+import { CURRENT_DAO_LINK, socialLinks } from "@/lib/links";
+import WaitlistModal from "../landing/waitlist-modal";
 
 interface NavLink {
   label: string;
@@ -52,7 +51,7 @@ export const MobileNavLinks: React.FC = () => (
 
 export const Navbar: React.FC = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [email, setEmail] = useState("");
+  const [publickey, setPublicKey] = useState("");
 
   return (
     <div className={`fixed z-50 flex w-full justify-between items-center border-b border-[#212121] p-4 bg-[#010d1f] md:px-16 md:py-4`}>
@@ -80,7 +79,7 @@ export const Navbar: React.FC = () => {
       {/* The "Join Waiting" button that opens the modal */}
       <div className="justify-center items-center gap-4 w-min flex">
         <Link
-          href="#waitlist"
+          href={CURRENT_DAO_LINK}
         >
           <Button
             variant="connect"
@@ -101,8 +100,8 @@ export const Navbar: React.FC = () => {
       <WaitlistModal
         isOpen={isModalOpen}
         setIsOpen={setIsModalOpen}
-        email={email}
-        setEmail={setEmail}
+        publicKey={publickey}
+        setPublicKey={setPublicKey}
       />
     </div>
   );

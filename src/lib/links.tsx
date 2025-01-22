@@ -1,8 +1,13 @@
+export const WHITEPAPER_URL = "https://docsend.com/view/z9eqsrurcmdky2dn"
+export const FUND_CARD_PLACEHOLDER_IMAGE: string = "/images/roman-guy.svg"
+export const CURRENT_DAO_LINK = "https://app.deform.cc/form/58ec6db5-98e0-45a1-b9f4-de018af4a6fa"
+export const CURRENT_DAO_IMAGE = "/images/defai-cartel.png"
+
 import {
   // GitHubIcon,
+  XIcon,
   TelegramIcon,
   // DiscordIcon,
-  XIcon,
 } from "@/assets/icons/social";
 import { FooterData } from "@/components/footer";
 
@@ -32,4 +37,15 @@ export const RNDLinks: FooterData[] = [
   },
 ]
 
-export const WHITEPAPER_URL = "https://docsend.com/view/z9eqsrurcmdky2dn"
+export const DefaiCartelLinks: FooterData[] = [
+  {
+    label: "Telegram",
+    href: "https://t.me/defaicartel",
+    children: <TelegramIcon />,
+  },
+  {
+    label: "Twitter/X",
+    href: "https://x.com/DeFAICartel",
+    children: <XIcon />,
+  },
+]

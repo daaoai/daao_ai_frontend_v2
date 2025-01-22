@@ -1,16 +1,15 @@
 import Link from "next/link";
-import React, { useState } from "react";
+import React from "react";
 // import { HeaderSheet } from "./header-sheet";
 import { ConnectWalletButton } from "@/components/ui/connect-button";
-import { Search } from "lucide-react";
-import Logo from '../logo';
-import { workSans } from "@/pages/app";
+import Logo from "../logo-component";
+import { workSans } from "@/lib/fonts";
 
 export const AppNavbar: React.FC = () => {
-  const [search, setSearch] = useState("")
+  // const [search, setSearch] = useState("")
 
   return (
-    <div className={`gap-4 sm:gap-4 fixed z-50 flex w-full md:justify-between justify-center items-center border-b border-[#212121] p-2 bg-black px-4 sm:px-[50px] md:px-[100px] lg:px-[200px] md:py-4`}>
+    <div className={`gap-6 sm:gap-12 fixed z-50 flex w-full justify-between items-center border-b border-[#212121] p-2 bg-black px-4 sm:px-8 md:px-24 lg:px-48 md:py-4`}>
       <div className="block">
         <Link href="/" className="flex items-center justify-start">
           <Logo
@@ -21,7 +20,7 @@ export const AppNavbar: React.FC = () => {
       </div>
 
       {/* Search Bar */}
-      <div className="h-min flex-1 flex items-center justify-center w-full">
+      {/*<div className="h-min flex-1 flex items-center justify-center w-full">
         <div className="relative w-full max-w-2xl">
           <Search className="absolute top-1 left-3 text-[#d3d6d8]" />
           <input
@@ -31,11 +30,34 @@ export const AppNavbar: React.FC = () => {
             className={`${workSans.className} pl-12 h-8 w-full p-2 rounded-full border border-[#27292a] bg-black/0 text-[#d3d6d8] focus:outline-none focus:ring focus:ring-white/5`}
           />
         </div>
+      </div>*/}
+
+      {/* Center Navigation Links */}
+      <div className={`hidden sm:flex gap-12 w-full justify-end items-center ${workSans.className}`}>
+        {/*<Link
+          href="#rewards"
+          className="text-white text-xl font-medium leading-9"
+        >
+          Rewards
+        </Link>*/}
+        {/*<Link
+          href="/app/dashboard"
+          className="text-white sm:text-base md:text-lg lg:text-xl font-medium leading-9"
+        >
+          Dashboard
+        </Link>*/}
+        <Link
+          href="/app/farm"
+          className="text-white sm:text-base md:text-lg lg:text-xl font-medium leading-9"
+        >
+          Farms
+        </Link>
       </div>
+
 
       {/* The "Join Waiting" button that opens the modal */}
       <div className="justify-center items-center gap-4 w-min flex">
-        <ConnectWalletButton />
+        <ConnectWalletButton icons={true} />
       </div>
 
       {/*<div className="block lg:hidden">

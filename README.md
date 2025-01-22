@@ -1,6 +1,20 @@
+<a id="readme-top"></a>
+
+<br />
+<div align="center">
+  <a href="https://github.com/daaoai/daao_ai_frontend_v2">
+    <img src="./src/assets/logo.svg" alt="Logo" width="80" height="80">
+  </a>
+
+  <h3 align="center">Daao.ai</h3>
+
+</div>
+ 
+---
+
 # **Next.js + Rainbowkit + SIWE + shadcn**
 
-Live Demo: [link-here](link-here)
+<!-- Live Demo: [link-here](link-here) -->
 
 A **Next.js** frontend for the DAAO project, powered by **TypeScript**, **RainbowKit**, **Wagmi**, **Shadcn**, and **TailwindCSS**. 
 
@@ -31,8 +45,8 @@ Includes the following features:
 
    Alternatively, you can clone the repository using the CLI:
 
-   ```bash
-   git clone git-link-here daao_frontend
+   ```sh
+   git clone https://github.com/daaoai/daao_ai_frontend_v2.git daao_frontend
    cd daao_frontend 
 
    ```
@@ -56,9 +70,16 @@ cp .env.example .env.local
 ```
 
 - Start the development server:
-
+  - Make sure you do this from the root of the project and not from some subdirectory
 ```bash
 bun run dev
+```
+
+- To build the project instead do
+
+```sh
+bun run build
+bun run start
 ```
 
 - Open http://localhost:3000 to view the app.
@@ -70,39 +91,32 @@ bun run dev
 daao_ai_frontend/
 │
 ├── public/                # Public assets (e.g., favicon)
-│   └── favicon.ico
+│   ├── favicon.ico        # favicon
+│   ├── assets/            # assets used in design (svg)
+│   └── images/            # images served public (jpg/webm if possible)
 ├── src/                   # Source files
-│   ├── assets/            # Other assets
+│   ├── assets/            # Other assets (not much)
 │   │   ├── icons/         # Icon assets
-│   │   │   └── social.tsx
 │   │   └── images/        # Image assets
-│   ├── components/        # UI components
-│   │   ├── navigation/    # Navigation elements
-│   │   │   ├── header-sheet.tsx
-│   │   │   ├── navbar.tsx
-│   │   │   └── navigation-menu.tsx
-│   │   └── ui/            # UI elements and components
-│   │       ├── button.tsx
-│   │       ├── connect-button.tsx
-│   │       ├── dropdown-menu.tsx
-│   │       ├── separator.tsx
-│   │       ├── sheet.tsx
-│   │       ├── theme-toggler.tsx
-│   │       ├── typography.tsx
-│   │       └── footer.tsx
+│   ├── components/
+│   │   ├── dashboard/
+│   │   ├── landing/
+│   │   ├── navigation/
+│   │   ├── table/
+│   │   ├── ui/            # shadcn installs, don't mess
+│   │   ├── footer.tsx
+│   │   ├── head-component.tsx
+│   │   ├── logo-component.tsx
+│   │   ├── page-layout.tsx
+│   │   └── theme-provider.tsx
 │   ├── lib/               # Utility functions and configurations
-│   │   └── utils.ts
+│   │   ├── links.tsx
+│   │   └── utils.ts
 │   ├── pages/             # Next.js pages and API routes
 │   │   ├── api/           # API routes (e.g., NextAuth)
-│   │   │   └── auth/
-│   │   │       └── [...nextauth].ts
-│   │   ├── example/       # Example pages
-│   │   │   └── index.tsx
 │   │   ├── _app.tsx       # Next.js custom App component
 │   │   ├── 404.tsx        # 404 page
 │   │   └── index.tsx      # Homepage
-│   ├── styles/            # Global and module styles
-│   │   └── globals.css
 │   └── wagmi.ts           # Wagmi configuration for Web3
 ├── .env.example           # Example environment variables
 ├── .gitignore             # Files and directories to ignore in Git
@@ -126,6 +140,6 @@ This project is licensed under the [MIT License](LICENSE).
 
 ---
 
-## 📢 **Contact**
-
-For any questions or inquiries, feel free to reach out via GitHub issues or open a discussion. We're happy to hear from the community and help with any issues you may encounter.
+<!-- ## 📢 **Contact** -->
+<!---->
+<!-- For any questions or inquiries, feel free to reach out via GitHub issues or open a discussion. We're happy to hear from the community and help with any issues you may encounter. -->

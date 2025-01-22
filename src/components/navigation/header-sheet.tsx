@@ -1,5 +1,4 @@
 import { useState } from "react";
-import Image from "next/image";
 import { MenuIcon } from "lucide-react";
 import { VisuallyHidden } from "@radix-ui/react-visually-hidden";
 import {
@@ -12,7 +11,7 @@ import {
 import { ThemeToggler } from "../ui/theme-toggler";
 import { ConnectWalletButton } from "../ui/connect-button";
 import { MobileNavLinks } from "./navbar";
-import Logo from "../logo";
+import Logo from "../logo-component";
 
 export const HeaderSheet: React.FC = () => {
   const [isNavbarOpen, setIsNavbarOpen] = useState(false);
@@ -42,7 +41,7 @@ export const HeaderSheet: React.FC = () => {
         </div>
 
         <div className="flex flex-col items-stretch gap-2">
-          <ConnectWalletButton />
+          <ConnectWalletButton icons={true} />
           <MobileNavLinks />
         </div>
 

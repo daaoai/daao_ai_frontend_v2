@@ -74,7 +74,7 @@ const MainContainer: React.FC<LayoutProps & { children: React.ReactNode }> = ({
     <>
       {app ? <AppNavbar /> : <Navbar />}
       <main
-        className={`relative min-h-screen flex flex-wrap flex-${flexDirection} ${justifyClass} ${alignClass} gap-${gap} pt-16`}
+        className={`sm:overflow-hidden relative min-h-screen flex flex-wrap flex-${flexDirection} ${justifyClass} ${alignClass} gap-${gap} pt-16`}
       >
         {/*background stuff */}
         {app ? (
