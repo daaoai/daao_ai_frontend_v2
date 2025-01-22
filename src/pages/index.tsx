@@ -6,9 +6,11 @@ import { Typography } from "@/components/ui/typography";
 import Link from "next/link";
 import Image from "next/image";
 import { ArrowRight } from "lucide-react";
-import { RNDLinks, WHITEPAPER_URL } from "@/lib/links";
+import { CURRENT_DAO_IMAGE, CURRENT_DAO_LINK, DefaiCartel, DefaiCartelLinks, RNDLinks, WHITEPAPER_URL } from "@/lib/links";
 import { FooterIconLink } from "@/components/footer";
 import { gold, syne } from "@/lib/fonts";
+import { Input } from "@/components/ui/input";
+import { Card, CardContent } from "@/components/ui/card";
 
 const HomePage: NextPage = () => {
   const [email, setEmail] = useState("");
@@ -102,7 +104,7 @@ const HomePage: NextPage = () => {
               </Button>
             </Link>
             <Link
-              href="#waitlist"
+              href={CURRENT_DAO_LINK}
             >
               <Button
                 variant="connect"
@@ -118,55 +120,59 @@ const HomePage: NextPage = () => {
       </div>
 
       {/*waitlist*/}
-      <div
-        id="waitlist"
-        className="z-10 lg:[600px] md:w-[550px] sm:w-[500px] w-[350px] min-h-min px-6 pb-16 pt-4 bg-gradient-to-br from-black via-[#061023] to-[#0e070e] rounded-3xl shadow-[0px_4px_36px_0px_rgba(255,255,255,0.10)] border border-[#212121] flex-col justify-center items-center gap-9 inline-flex"
-      >
-        <div className="h-min flex-col justify-center items-center gap-2.5 flex">
-          <div className={`w-2/3 sm:w-1/2 max-w-xs md:max-w-sm lg:max-w-md h-52 sm:h-56 md:h-64 lg:h-72 bg-purple/50 rounded-md flex-col justify-center items-center inline-flex overflow-hidden`}>
-            <img className="w-full h-full" src="/images/microscope.png" />
+      <Card className="w-full max-w-[500px] bg-gradient-to-br from-black via-[#061023] to-[#0e070e] rounded-2xl shadow-[0px_4px_36px_0px_rgba(255,255,255,0.10)] border border-[#212121]">
+        <CardContent className="flex flex-col items-center justify-center gap-6 p-6 sm:p-8">
+          <div className="relative w-full max-w-[250px] aspect-square rounded-xl overflow-hidden">
+            <Image
+              src={CURRENT_DAO_IMAGE}
+              alt="DeFAI Cartel"
+              layout="fill"
+              objectFit="cover"
+            />
           </div>
-          <div className="text-center text-white text-lg sm:text-xl md:text-2xl font-normal">
-            Onchain Research DAO ($RND)
+
+          <div className="flex flex-col items-center gap-2">
+            <h2 className={`text-center text-white text-xl sm:text-2xl font-normal ${gold.className} leading-tight tracking-wide`}>
+              DeFAI Cartel
+            </h2>
+            <p className={`text-[#d1ea48] text-lg sm:text-xl font-normal ${gold.className}`}>
+              $CARTEL
+            </p>
           </div>
-          <div className="px-2 sm:px-4 md:px-6 text-center text-white text-xs sm:text-sm font-normal">
-            Finding and funding cutting-edge experimental onchain AI across the Ethereum and EVM community.
-          </div>
-        </div>
-        <div className={`flex flex-col gap-4 text-center ${statusMsg.includes("added") ? "text-green-700" : "text-red-700"} text-xl font-normal`}>
-          {statusMsg}
-        </div>
-        <div className="flex items-center">
-          <div className="h-10 sm:h-12 px-5 py-3.5 bg-[#212121] rounded-l-full flex items-center">
-            <input
+
+          {/*
+          {statusMsg && (
+            <div className={`text-center ${statusMsg.includes("added") ? "text-green-500" : "text-red-500"} text-sm font-normal`}>
+              {statusMsg}
+            </div>
+          )}
+
+          <div className="flex flex-col items-center gap-3 w-full max-w-[300px]">
+            <Input
               type="email"
               placeholder="Mode address"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              className="bg-transparent text-[#9e9e9e] text-sm sm:text-base font-normal leading-tight outline-none w-full placeholder:text-[#9e9e9e]"
+              className="bg-[#212121] text-[#9e9e9e] placeholder:text-[#9e9e9e] rounded-full text-sm"
             />
+            <Button
+              className="w-full rounded-full bg-white text-black hover:bg-gray-200 text-sm"
+              onClick={handleJoinWaitlist}
+            >
+              <ArrowRight className="w-4 h-4 mr-2" />
+              <span>Join whitelist</span>
+            </Button>
           </div>
-          <button
-            className="flex items-center px-4 sm:py-2 py-1 bg-white rounded-full ml-[-20px] shadow-md"
-            onClick={handleJoinWaitlist}
-          >
-            <div className="w-8 h-8 flex justify-center items-center bg-white rounded-full border border-black">
-              <ArrowRight className="w-4 h-4 text-black" />
-            </div>
-            <span className="text-black md:text-base text-sm font-medium leading-tight ml-2">
-              Join whitelist
-            </span>
-          </button>
-        </div>
-        {/* Social Icons */}
-        <div className="flex flex-row gap-4">
-          {RNDLinks.map((social, index) => (
-            <FooterIconLink key={index} href={social.href} label={social.label}>
-              {social.children}
-            </FooterIconLink>
-          ))}
-        </div>
-      </div>
+            */}
+          <div className="flex flex-wrap justify-center gap-4">
+            {DefaiCartelLinks.map((social, index) => (
+              <FooterIconLink key={index} href={social.href} label={social.label}>
+                {social.children}
+              </FooterIconLink>
+            ))}
+          </div>
+        </CardContent>
+      </Card>
     </PageLayout>
   );
 };

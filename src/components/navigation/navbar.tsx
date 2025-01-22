@@ -10,7 +10,7 @@ import {
   navigationMenuTriggerStyle,
 } from "@/components/ui/navigation-menu";
 import Logo from "../logo-component";
-import { socialLinks } from "@/lib/links";
+import { CURRENT_DAO_LINK, socialLinks } from "@/lib/links";
 import WaitlistModal from "../landing/waitlist-modal";
 
 interface NavLink {
@@ -79,7 +79,7 @@ export const Navbar: React.FC = () => {
       {/* The "Join Waiting" button that opens the modal */}
       <div className="justify-center items-center gap-4 w-min flex">
         <Link
-          href="#waitlist"
+          href={CURRENT_DAO_LINK}
         >
           <Button
             variant="connect"
