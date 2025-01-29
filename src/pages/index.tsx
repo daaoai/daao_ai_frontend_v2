@@ -6,15 +6,18 @@ import { Typography } from "@/components/ui/typography";
 import Link from "next/link";
 import Image from "next/image";
 import { ArrowRight } from "lucide-react";
-import { CURRENT_DAO_IMAGE, CURRENT_DAO_LINK, DefaiCartelLinks, WHITEPAPER_URL } from "@/lib/links";
+import { CURRENT_DAO_IMAGE, DefaiCartelLinks, WHITEPAPER_URL } from "@/lib/links";
 import { FooterIconLink } from "@/components/footer";
 import { gold, syne } from "@/lib/fonts";
 // import { Input } from "@/components/ui/input";
 import { Card, CardContent } from "@/components/ui/card";
+import CheckWaitlistModal from "@/components/landing/waitlist-modal";
 
 const HomePage: NextPage = () => {
   // const [email, setEmail] = useState("");
   // const [statusMsg, setStatusMsg] = useState("");
+
+  const [isOpen, setIsOpen] = useState(false);
 
   // const isValidEmail = (value: string) => {
   //   // Check if the address starts with '0x' and is 42 characters long
@@ -103,24 +106,26 @@ const HomePage: NextPage = () => {
                 </div>
               </Button>
             </Link>
-            <Link
-              href={CURRENT_DAO_LINK}
+            <Button
+              variant="connect"
+              className={`py-4 sm:py-6 px-6 sm:px-10 bg-transparent rounded-lg xl border border-[#bedaff] flex justify-center items-center max-w-xs sm:max-w-none`}
+              onClick={() => setIsOpen(true)}
             >
-              <Button
-                variant="connect"
-                className={`py-4 sm:py-6 px-6 sm:px-10 bg-transparent rounded-lg border border-[#bedaff] flex justify-center items-center max-w-xs sm:max-w-none`}
-              >
-                <div className="flex justify-center items-center gap-2 text-center text-white text-sm sm:text-base font-normal goldman leading-tight tracking-wide">
-                  Register for whitelist <ArrowRight />
-                </div>
-              </Button>
-            </Link>
+              <div className="flex justify-center items-center gap-2 text-center text-white text-sm sm:text-base font-normal goldman leading-tight tracking-wide">
+                Check whitelist <ArrowRight />
+              </div>
+            </Button>
           </div>
         </div>
       </div>
 
+      <CheckWaitlistModal
+        isOpen={isOpen}
+        setIsOpen={setIsOpen}
+      />
+
       {/*waitlist*/}
-      <Card className="w-full max-w-[500px] bg-gradient-to-br from-black via-[#061023] to-[#0e070e] rounded-2xl shadow-[0px_4px_36px_0px_rgba(255,255,255,0.10)] border border-[#212121]">
+      <Card className="w-[calc(100%-2rem)] max-w-[500px] bg-gradient-to-br from-black via-[#061023] to-[#0e070e] rounded-2xl shadow-[0px_4px_36px_0px_rgba(255,255,255,0.10)] border border-[#212121]">
         <CardContent className="flex flex-col items-center justify-center gap-6 p-6 sm:p-8">
           <div className="relative w-full max-w-[250px] aspect-square rounded-xl overflow-hidden">
             <Image
