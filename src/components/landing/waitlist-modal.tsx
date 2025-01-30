@@ -9,6 +9,8 @@ import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import { gold } from "@/lib/fonts"
 
+const successMessage = "You are whitelisted!";
+
 interface CheckWhitelistModalProps {
   isOpen: boolean
   setIsOpen: (open: boolean) => void
@@ -35,16 +37,20 @@ const CheckWaitlistModal: React.FC<CheckWhitelistModalProps> = ({ isOpen, setIsO
     }
 
     try {
-      // Placeholder for API call
-      // const response = await fetch("/api/auth/checkwhitelist", {
-      //   method: "POST",
-      //   headers: { "Content-Type": "application/json" },
-      //   body: JSON.stringify({ modeAddress }),
-      // })
-      // if (!response.ok) throw new Error("Failed to check whitelist")
-      // const data = await response.json()
-      // setStatusMsg(data.message)
-      setStatusMsg("whitelist check successful!") // Placeholder success message
+      const response = await fetch("/api/checkWaitlist", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ modeAddress }),
+      })
+      if (!response.ok) {
+        throw new Error("Failed to check whitelist");
+      }
+      const data = await response.json();
+      if (data.exists) {
+        setStatusMsg(successMessage) // Placeholder success message
+      } else {
+        setStatusMsg("You are not in the whitelist") // Placeholder success message
+      }
     } catch (error) {
       console.error("Error checking whitelist:", error)
       setStatusMsg("Something went wrong, please try again later")
@@ -65,7 +71,7 @@ const CheckWaitlistModal: React.FC<CheckWhitelistModalProps> = ({ isOpen, setIsO
             <form onSubmit={handleCheckwhitelist} className="space-y-4">
               {statusMsg && (
                 <p
-                  className={`text-center ${statusMsg.includes("successful") ? "text-green-500" : "text-red-500"} text-sm`}
+                  className={`text-center ${statusMsg.includes(successMessage) ? "text-green-500" : "text-red-500"} text-sm`}
                 >
                   {statusMsg}
                 </p>
