@@ -3,7 +3,7 @@ import {
   connectorsForWallets,
 
 } from '@rainbow-me/rainbowkit';
-import { modeTestnet,sepolia,mainnet } from 'wagmi/chains';
+import { mode , mainnet} from 'wagmi/chains';
 import {
   metaMaskWallet,
   coinbaseWallet,
@@ -15,13 +15,9 @@ import { http, createConfig } from 'wagmi'
 export const config = getDefaultConfig({
   appName: 'RainbowKit App',
   projectId: 'YOUR_PROJECT_ID',
-  chains: [modeTestnet,sepolia],
-  ssr: true,
-  // transports: {
-  //   [mainnet.id]: http(),
-  //   [sepolia.id]: http(),
-  //   [mode.id]: http(),
-  // },
+  chains: [mode],
+  ssr: false,
+  
   wallets: [
     {
       groupName: 'Recommended',
@@ -33,4 +29,8 @@ export const config = getDefaultConfig({
       ],
     },
   ],
+  transports: {
+    [mode.id]: http(mode.rpcUrls.default.http[0]), // Ensure RPC is set correctly
+  },
+  
 });

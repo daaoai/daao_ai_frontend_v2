@@ -26,7 +26,7 @@ const getSiweMessageOptions: GetSiweMessageOptions = () => ({
 
 function MyApp({ Component, pageProps }: AppProps) {
   const fontChoice = pageProps.useSyneMono ? syne.className : gold.className;
-
+  console.log('Mode chain ID', config);
 
   return (
     <WagmiProvider config={config}>

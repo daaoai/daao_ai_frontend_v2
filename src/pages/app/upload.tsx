@@ -67,6 +67,8 @@ const ProfileHeader: React.FC<ProfileHeaderProps> = ({ onImageUpload }) => {
     multiple: false,
   })
 
+  
+
   return (
     <Card className="w-full h-[200px] md:h-[320px] relative mb-20 md:mb-24">
       <div className="w-full h-full bg-[#0d0d0d] flex items-center justify-center">

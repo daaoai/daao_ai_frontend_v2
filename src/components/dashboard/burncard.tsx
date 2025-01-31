@@ -2,14 +2,66 @@ import { Card, CardContent, CardHeader } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import { Separator } from "@/components/ui/separator"
+import { handleContribute } from "@/contributeFund"
+import { useEffect, useState } from "react"
+import { ethers } from "ethers" 
+import { getTier } from "@/getterFunctions"
+import { set } from "date-fns"
 
 export default function BurnCard() {
+  const [amount, setAmount]=useState(0);
+  const [balance, setBalance]=useState("");
+  const [tier, setTier]=useState("");
+
+  const fetchBalance = async () => {
+    try {
+      if (!window.ethereum) {
+        console.log("MetaMask is not installed");
+        return;
+      }
+
+      const provider = new ethers.providers.Web3Provider(window.ethereum);
+      const signer = provider.getSigner();
+      const tierr = await getTier();
+      setTier(tierr.userTierLabel);
+
+
+      const address = await signer.getAddress();
+      const balanceInWei = await provider.getBalance(address);
+      const balanceInEth = ethers.utils.formatEther(balanceInWei);
+      setBalance(balanceInEth);
+    } catch (error) {
+      console.error("Error fetching balance:", error);
+    }
+  };
+  useEffect(() => {
+    fetchBalance();
+    console.log("balance is ",balance)
+  }, []);
+
+
+
+
+
+  const handleInputChange = (e:any) =>{
+    console.log("amount is ",e.target.value)
+    setAmount(e.target.value);
+  }
+
+  const handleContributefunction = async () => {
+    try {
+      await handleContribute(amount.toString());
+    } catch (error) {
+      console.error("Error contributing to fund:", error);
+    }
+  }
+
   return (
     <Card className="text-left w-full max-w-3xl bg-[#0d0d0d] border-[#383838] text-white font-['Work Sans']">
       <CardHeader className="space-y-9">
         <div className="flex items-center gap-3">
-          <span className="text-[#409cff] text-2xl sm:text-3xl font-semibold">$DWL</span>
-          <h2 className="text-2xl sm:text-3xl font-semibold">Burn</h2>
+          <span className="text-[#409cff] text-2xl sm:text-3xl font-semibold">$ETH</span>
+          <h2 className="text-2xl sm:text-3xl font-semibold">Contribute</h2>
         </div>
         <div className="space-y-6">
           <div className="flex justify-between items-center p-4 bg-black rounded border border-[#383838]">
@@ -17,13 +69,16 @@ export default function BurnCard() {
               type="number"
               placeholder="0"
               className="appearance-none bg-transparent border-none text-[#e4e6e7] text-lg sm:text-xl font-medium w-full focus:outline-none"
+              value = {amount}
+              onChange = {handleInputChange}
             />
             <span className="text-[#e4e6e7] text-sm sm:text-base font-medium">MAX</span>
           </div>
           <div className="space-y-3">
-            <label className="text-base sm:text-lg">Balance</label>
-            <Button variant="outline" className="w-full h-12 bg-white text-black text-lg sm:text-xl font-semibold hover:bg-[#409cff]/50">
-              Burn
+            <label className="text-base sm:text-lg">Balance: {balance}</label>
+            <label className="text-base sm:text-lg">Tier: {tier}</label>
+            <Button variant="outline" className="w-full h-12 bg-white text-black text-lg sm:text-xl font-semibold hover:bg-[#409cff]/50" onClick={handleContributefunction} >
+              contribute
             </Button>
           </div>
         </div>
