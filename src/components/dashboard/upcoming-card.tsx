@@ -6,19 +6,31 @@ import { Separator } from "@/components/ui/separator"
 import Link from "next/link"
 import { Clock, Globe } from 'lucide-react'
 import { TelegramIcon, XIcon } from "@/assets/icons/social"
-import { useState,useEffect } from "react"
+import { useState, useEffect } from "react"
 import { getContractData } from "../../getterFunctions";
-import { set } from "date-fns"
+// import { set } from "date-fns"
 
 
 export default function UpcomingFunds(props: UpcomingFundDetailsProps) {
-  const [endFTime, setEndFTime] = useState("");
+  const [endFTime, setEndFTime] = useState<number>(Date.now());
+
+  function getTimeRemaining(endTimestamp: number): string {
+    console.log(endFTime);
+    console.log(Date.now());
+    const now = Date.now();
+    const diff = Math.max(endTimestamp - now, 0);
+    const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+    const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+    const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+
+    return `${days} days, ${hours} hours, ${minutes} minutes`;
+  }
 
   useEffect(() => {
     const fetchContractData = async () => {
       try {
         const data = await getContractData();
-        setEndFTime(data.endDate);
+        setEndFTime(Number(data.endDate));
         console.log("Data is ", data)
       } catch (error) {
         console.error("Error fetching contract data:", error);
@@ -72,7 +84,7 @@ export default function UpcomingFunds(props: UpcomingFundDetailsProps) {
               <label className="text-sm sm:text-base lg:text-lg">{label}</label>
               <div className="px-2 py-2 sm:py-3 bg-[#121212] rounded border border-[#383838] text-[#aeb3b6] text-xs sm:text-sm">
                 <Clock className="inline-block w-4 h-4 mr-2" />
-                {index === 0 ? '0 days, 11 hours, 5 minutes, 20 seconds' : endFTime}
+                {index === 0 ? '0 days, 11 hours, 5 minutes' : getTimeRemaining(endFTime)}
               </div>
             </div>
           ))}
