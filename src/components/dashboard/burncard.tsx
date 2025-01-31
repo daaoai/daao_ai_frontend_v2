@@ -4,14 +4,15 @@ import { Button } from "@/components/ui/button"
 import { Separator } from "@/components/ui/separator"
 import { handleContribute } from "@/contributeFund"
 import { useEffect, useState } from "react"
-import { ethers } from "ethers" 
+import { ethers } from "ethers"
 import { getTier } from "@/getterFunctions"
-import { set } from "date-fns"
+// import { set } from "date-fns"
+// import { EthereumIcon } from "@/assets/icons/ethereum-icon"
 
 export default function BurnCard() {
-  const [amount, setAmount]=useState(0);
-  const [balance, setBalance]=useState("");
-  const [tier, setTier]=useState("");
+  const [amount, setAmount] = useState(0);
+  const [balance, setBalance] = useState("");
+  const [tier, setTier] = useState("");
 
   const fetchBalance = async () => {
     try {
@@ -36,15 +37,15 @@ export default function BurnCard() {
   };
   useEffect(() => {
     fetchBalance();
-    console.log("balance is ",balance)
+    console.log("balance is ", balance)
   }, []);
 
 
 
 
 
-  const handleInputChange = (e:any) =>{
-    console.log("amount is ",e.target.value)
+  const handleInputChange = (e: any) => {
+    console.log("amount is ", e.target.value)
     setAmount(e.target.value);
   }
 
@@ -69,16 +70,20 @@ export default function BurnCard() {
               type="number"
               placeholder="0"
               className="appearance-none bg-transparent border-none text-[#e4e6e7] text-lg sm:text-xl font-medium w-full focus:outline-none"
-              value = {amount}
-              onChange = {handleInputChange}
+              value={amount}
+              onChange={handleInputChange}
             />
             <span className="text-[#e4e6e7] text-sm sm:text-base font-medium">MAX</span>
           </div>
           <div className="space-y-3">
-            <label className="text-base sm:text-lg">Balance: {balance}</label>
-            <label className="text-base sm:text-lg">Tier: {tier}</label>
-            <Button variant="outline" className="w-full h-12 bg-white text-black text-lg sm:text-xl font-semibold hover:bg-[#409cff]/50" onClick={handleContributefunction} >
-              contribute
+            <p className="text-base sm:text-lg font-medium">Balance: <span className="font-semibold">{balance}</span></p>
+            <p className="text-base sm:text-lg font-medium">Tier: <span className="font-semibold">{tier}</span></p>
+            <Button
+              variant="outline"
+              className="w-full h-12 bg-white text-black text-lg sm:text-xl font-semibold hover:bg-white/80 hover:text-black/90"
+              onClick={handleContributefunction}
+            >
+              Contribute
             </Button>
           </div>
         </div>
