@@ -9,7 +9,7 @@ import { getTier } from "@/getterFunctions"
 // import { set } from "date-fns"
 // import { EthereumIcon } from "@/assets/icons/ethereum-icon"
 
-export default function BurnCard() {
+export default function BurnCard({ fundingProgess }: { fundingProgess: number }) {
   const [amount, setAmount] = useState(0);
   const [balance, setBalance] = useState("");
   const [tier, setTier] = useState("");
@@ -59,36 +59,42 @@ export default function BurnCard() {
 
   return (
     <Card className="text-left w-full max-w-3xl bg-[#0d0d0d] border-[#383838] text-white font-['Work Sans']">
-      <CardHeader className="space-y-9">
-        <div className="flex items-center gap-3">
-          <span className="text-[#409cff] text-2xl sm:text-3xl font-semibold">$ETH</span>
-          <h2 className="text-2xl sm:text-3xl font-semibold">Contribute</h2>
-        </div>
-        <div className="space-y-6">
-          <div className="flex justify-between items-center p-4 bg-black rounded border border-[#383838]">
-            <Input
-              type="number"
-              placeholder="0"
-              className="appearance-none bg-transparent border-none text-[#e4e6e7] text-lg sm:text-xl font-medium w-full focus:outline-none"
-              value={amount}
-              onChange={handleInputChange}
-            />
-            <span className="text-[#e4e6e7] text-sm sm:text-base font-medium">MAX</span>
-          </div>
-          <div className="space-y-3">
-            <p className="text-base sm:text-lg font-medium">Balance: <span className="font-semibold">{balance}</span></p>
-            <p className="text-base sm:text-lg font-medium">Tier: <span className="font-semibold">{tier}</span></p>
-            <Button
-              variant="outline"
-              className="w-full h-12 bg-white text-black text-lg sm:text-xl font-semibold hover:bg-white/80 hover:text-black/90"
-              onClick={handleContributefunction}
-            >
-              Contribute
-            </Button>
-          </div>
-        </div>
-      </CardHeader>
-      <Separator className="bg-[#383838]" />
+      {fundingProgess <= 100 ? (
+        <>
+          <CardHeader className="space-y-9">
+            <div className="flex items-center gap-3">
+              <span className="text-[#409cff] text-2xl sm:text-3xl font-semibold">$ETH</span>
+              <h2 className="text-2xl sm:text-3xl font-semibold">Contribute</h2>
+            </div>
+            <div className="space-y-6">
+              <div className="flex justify-between items-center p-4 bg-black rounded border border-[#383838]">
+                <Input
+                  type="number"
+                  placeholder="0"
+                  className="appearance-none bg-transparent border-none text-[#e4e6e7] text-lg sm:text-xl font-medium w-full focus:outline-none"
+                  value={amount}
+                  onChange={handleInputChange}
+                />
+                <span className="text-[#e4e6e7] text-sm sm:text-base font-medium">MAX</span>
+              </div>
+              <div className="space-y-3">
+                <p className="text-base sm:text-lg font-medium">Balance: <span className="font-semibold">{balance}</span></p>
+                <p className="text-base sm:text-lg font-medium">Tier: <span className="font-semibold">{tier}</span></p>
+                <Button
+                  variant="outline"
+                  className="w-full h-12 bg-white text-black text-lg sm:text-xl font-semibold hover:bg-white/80 hover:text-black/90"
+                  onClick={handleContributefunction}
+                >
+                  Contribute
+                </Button>
+              </div>
+            </div>
+          </CardHeader>
+          <Separator className="bg-[#383838]" />
+        </>
+      ) : (
+        <></>
+      )}
       <CardContent className="space-y-8 mt-8">
         <div className="space-y-4">
           <h3 className="text-[#409cff] text-xl sm:text-2xl font-semibold">About Token</h3>

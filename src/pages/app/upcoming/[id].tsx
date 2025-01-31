@@ -69,7 +69,9 @@ const Upcoming: React.FC = () => {
           <UpcomingFunds
             {...props}
           />
-          <BurnCard />
+          <BurnCard
+            fundingProgess={fundraisingPercent}
+          />
         </div>
 
       </div>

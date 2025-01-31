@@ -89,13 +89,19 @@ export default function UpcomingFunds(props: UpcomingFundDetailsProps) {
             </div>
           ))}
         </div>
-        <div className="space-y-2 sm:space-y-3">
-          <div className="flex justify-between items-center text-sm sm:text-base lg:text-lg">
-            <span>Funding Progress</span>
-            <span>{props.fundingProgress}%</span>
+        {props.fundingProgress > 100 ? (
+          <div className="text-lg sm:text-xl font-semibold text-green-500">
+            Funding Goal Reached 🎉
           </div>
-          <Progress value={props.fundingProgress} className="h-4 sm:h-5 [&>div]:bg-[#409cff] bg-[#2b4977]" />
-        </div>
+        ) : (
+          <div className="space-y-2 sm:space-y-3">
+            <div className="flex justify-between items-center text-sm sm:text-base lg:text-lg">
+              <span>Funding Progress</span>
+              <span>{props.fundingProgress}%</span>
+            </div>
+            <Progress value={props.fundingProgress >= 0 ? props.fundingProgress : 0} className="h-4 sm:h-5 [&>div]:bg-[#409cff] bg-[#2b4977]" />
+          </div>
+        )}
       </CardContent>
     </Card >
   )
