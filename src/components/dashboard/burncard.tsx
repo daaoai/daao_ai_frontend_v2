@@ -59,7 +59,7 @@ export default function BurnCard({ fundingProgess }: { fundingProgess: number })
 
   return (
     <Card className="text-left w-full max-w-3xl bg-[#0d0d0d] border-[#383838] text-white font-['Work Sans']">
-      {fundingProgess <= 100 ? (
+      {fundingProgess < 100 ? (
         <>
           <CardHeader className="space-y-9">
             <div className="flex items-center gap-3">

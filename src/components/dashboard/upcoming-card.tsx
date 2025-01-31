@@ -89,7 +89,7 @@ export default function UpcomingFunds(props: UpcomingFundDetailsProps) {
             </div>
           ))}
         </div>
-        {props.fundingProgress > 100 ? (
+        {props.fundingProgress >= 100 ? (
           <div className="text-lg sm:text-xl font-semibold text-green-500">
             Funding Goal Reached 🎉
           </div>
