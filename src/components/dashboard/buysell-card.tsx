@@ -56,7 +56,9 @@ const Buysell = () => {
           </div>
         </div>
 
-        <ConnectWalletButton icons={false} className="w-full bg-white text-black hover:bg-gray-200" />
+        <Button className="w-full bg-white text-black hover:bg-gray-200" >
+          Swap
+          </Button>
       </CardContent>
     </Card>
   )

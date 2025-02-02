@@ -8,6 +8,8 @@ import { Button } from '@/components/ui/button';
 import { FundSection } from '@/components/dashboard/fundsection';
 import { FUND_CARD_PLACEHOLDER_IMAGE } from '@/lib/links';
 import { anekLatin, workSans } from '@/lib/fonts';
+import { useAccount } from "wagmi";
+import { useRouter } from 'next/navigation';
 
 const getFeaturedFunds = () => {
   return [
@@ -22,10 +24,25 @@ const getUpcomingFunds = () => {
 }
 
 
+
+
 const AppHome: React.FC = () => {
+  const { isConnected } = useAccount();
+  const router = useRouter();
+  console.log(isConnected);
   const FEATURED_FUNDS = getFeaturedFunds();
   const UPCOMING_FUNDS = getUpcomingFunds();
 
+  const onFundClick = (fundId: string, type: 'dashboard' | 'upcoming') => {
+    if (!isConnected) {
+      alert('Please connect your wallet first.');
+      return;
+    }
+    // Navigate to the fund page if connected
+    router.push(`/app/${type}/${fundId}`);
+  };
+
+  
   return (
     <PageLayout title="App" description="main-app" app={true}>
       <div className="relative min-h-screen w-screen overflow-hidden">
@@ -62,12 +79,14 @@ const AppHome: React.FC = () => {
               </Link>
             </div>
           </section>
+          
 
           {/* Featured funds */}
           <FundSection
             title="Featured Funds"
             subtitle="In-demand hedgefunds"
             funds={FEATURED_FUNDS}
+            onFundClick={(fundId) => onFundClick(fundId, 'dashboard')}
           />
 
           {/* Upcoming funds */}
@@ -76,6 +95,7 @@ const AppHome: React.FC = () => {
             subtitle="Hedgefunds launching soon"
             funds={UPCOMING_FUNDS}
             linkPrefix="upcoming"
+            onFundClick={(fundId) => onFundClick(fundId, 'upcoming')}
           />
         </div>
       </div>

@@ -24,9 +24,10 @@ interface FundSectionProps {
     imgSrc: string
   }>
   linkPrefix?: string
+  onFundClick: (fundId: string) => void
 }
 
-export function FundSection({ title, subtitle, funds, linkPrefix = "dashboard" }: FundSectionProps) {
+export function FundSection({ title, subtitle, funds, linkPrefix = "dashboard",onFundClick }: FundSectionProps) {
   const [api, setApi] = React.useState<any>()
   const [current, setCurrent] = React.useState(0)
   const [count, setCount] = React.useState(0)
@@ -56,10 +57,18 @@ export function FundSection({ title, subtitle, funds, linkPrefix = "dashboard" }
       </div>
       <Carousel setApi={setApi} className="w-full">
         <CarouselContent className="-ml-2 md:-ml-4">
-          {funds.map((fund, index) => (
+        {funds.map((fund) => (
             <CarouselItem key={fund.id} className="pl-2 md:pl-4 basis-full sm:basis-1/2 lg:basis-1/3">
               <div className="p-1">
-                <Link href={`/app/${linkPrefix}/${fund.id}`}>
+                <button
+                  onClick={(e) => {
+                    if (onFundClick) {
+                      e.preventDefault(); // Prevent default link behavior
+                      onFundClick(fund.id);
+                    }
+                  }}
+                  className="w-full"
+                >
                   <FundCard
                     key={fund.id}
                     title={fund.title}
@@ -68,7 +77,7 @@ export function FundSection({ title, subtitle, funds, linkPrefix = "dashboard" }
                     isLive={fund.isLive}
                     imgSrc={fund.imgSrc}
                   />
-                </Link>
+                </button>
               </div>
             </CarouselItem>
           ))}
