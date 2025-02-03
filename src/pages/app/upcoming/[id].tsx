@@ -6,49 +6,29 @@ import BurnCard from '@/components/dashboard/burncard';
 import { FUND_CARD_PLACEHOLDER_IMAGE } from '@/lib/links';
 import { handleContribute } from "../../../contributeFund";
 import { getContractData } from "../../../getterFunctions";
+import {useAccount} from "wagmi";
 
 const Upcoming: React.FC = () => {
-  const [isWalletConnected, setIsWalletConnected] = useState<boolean>(false);
+  const {isConnected} = useAccount();
   const [fundraisingPercent, setFundraisingPercent] = useState<number>(0);
-
-  useEffect(() => {
-    const checkWalletConnection = async () => {
-      try {
-        if ((window as any).ethereum) {
-
-          const accounts = await (window as any).ethereum.request({
-            method: 'eth_accounts',
-          });
-          if (accounts && accounts.length > 0) {
-            setIsWalletConnected(true);
-            console.log("accounts are ", accounts)
-          }
-        } else {
-          console.warn("MetaMask not detected. Please install MetaMask.");
-        }
-      } catch (error) {
-        console.error("Error checking wallet connection:", error);
-      }
-    };
-
-    checkWalletConnection();
-  }, []);
-
 
   useEffect(() => {
     const fetchContractData = async () => {
       try {
         const data = await getContractData();
-        setFundraisingPercent((Number(data.totalRaised) / Number(data.fundraisingGoal)) * 100);
-        console.log("Data is ", data)
+        setFundraisingPercent(
+          ((Number(data.totalRaised)) / Number(data.fundraisingGoal)) * 100
+        );
+        console.log("Contract data:", data);
       } catch (error) {
         console.error("Error fetching contract data:", error);
       }
     };
 
-    fetchContractData();
-  }, []);
-
+    if (isConnected) {
+      fetchContractData();
+    }
+  }, [isConnected]);
 
 
   const props: UpcomingFundDetailsProps = {
