@@ -6,6 +6,7 @@ import { handleContribute } from "@/contributeFund"
 import { useEffect, useState } from "react"
 import { ethers } from "ethers"
 import { getTier } from "@/getterFunctions"
+import { useAccount } from "wagmi";
 // import { set } from "date-fns"
 // import { EthereumIcon } from "@/assets/icons/ethereum-icon"
 
@@ -13,6 +14,7 @@ export default function BurnCard({ fundingProgess }: { fundingProgess: number })
   const [amount, setAmount] = useState(0);
   const [balance, setBalance] = useState("");
   const [tier, setTier] = useState("");
+  const { isConnected } = useAccount();
 
   const fetchBalance = async () => {
     try {
@@ -22,10 +24,20 @@ export default function BurnCard({ fundingProgess }: { fundingProgess: number })
       }
 
       const provider = new ethers.providers.Web3Provider(window.ethereum);
+
+      // Check if an account is connected without triggering a popup.
+      const accounts = await provider.listAccounts();
+      if (!accounts.length) {
+        console.log("No connected accounts found");
+        return;
+      }
+
+      // Use the connected account
       const signer = provider.getSigner();
+
+      // Get user tier using your getter function.
       const tierr = await getTier();
       setTier(tierr.userTierLabel);
-
 
       const address = await signer.getAddress();
       const balanceInWei = await provider.getBalance(address);
@@ -36,10 +48,10 @@ export default function BurnCard({ fundingProgess }: { fundingProgess: number })
     }
   };
   useEffect(() => {
-    fetchBalance();
-    console.log("balance is ", balance)
-  }, []);
-
+    if (isConnected) {
+      fetchBalance();
+    }
+  }, [isConnected]);
 
 
 
@@ -50,6 +62,7 @@ export default function BurnCard({ fundingProgess }: { fundingProgess: number })
   }
 
   const handleContributefunction = async () => {
+    
     try {
       await handleContribute(amount.toString());
     } catch (error) {

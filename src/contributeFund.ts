@@ -1,70 +1,116 @@
 import Web3 from "web3";
 import { requestAccounts } from "./utils/requestAccount";
 import abi from "./abi.json"
+import ercAbi from "./erc20Abi.json"
+
 
 const contractABI = abi;
-const contractAddress = "0x91d21E16A91F74dF076a9cA52cc401e1898FEa62";
+const contractAddress = "0xb728B1fB0779AAd53359a7472845b2e1a1A2e2B2";
+const tokenAddress = "0xDfc7C877a950e49D2610114102175A06C2e3167a"; 
  
 let web3: Web3 | null = null;
 
 //Contribute to Dao
 export const handleContribute = async (amount: string) => {
-  web3 = new Web3((window as any).ethereum);
+  if (!window.ethereum) {
+    throw new Error("No Ethereum provider found.");
+  }
+  if (!web3) {
+    web3 = new Web3(window.ethereum);
+  }
+
   try {
     
-    if (!web3) {
-      throw new Error("Web3 is not initialized. Call `initializeWeb3()` first.");
-    }
-
     console.log("Connecting to the blockchain...");
 
-    const accounts = await requestAccounts();
+    const accounts = await web3.eth.getAccounts();
     if (accounts.length === 0) {
-    
-      throw new Error("No accounts found in MetaMask.");
+      throw new Error("No connected accounts found. Please connect your wallet.");
     }
 
     const contributor = accounts[0];
     console.log("Preparing transaction for account:", contributor);
 
-  
-    const weiAmount = web3.utils.toWei(amount, "ether");
+    const weiAmount = web3.utils.toWei(amount.toString(), "ether");
     console.log("Converting amount to wei:", weiAmount);
 
     const daosContract = new web3.eth.Contract(contractABI as any, contractAddress);
     console.log("Contract object created:", daosContract);
 
-    const gasEstimate = await daosContract.methods.contribute().estimateGas({
+    const tokenContract = new web3.eth.Contract(ercAbi as any, tokenAddress);
+
+    const currentAllowanceRaw = await tokenContract.methods.allowance(contributor, contractAddress).call();
+ 
+   
+    const currentAllowance = BigInt(
+      typeof currentAllowanceRaw === "string" && currentAllowanceRaw !== ""
+        ? currentAllowanceRaw
+        : "0"
+    );
+    
+
+    if (BigInt(currentAllowance) < BigInt(weiAmount)) {
+      console.log("Approving token spend...");
+      const approveTx = {
+        from: contributor,
+        to: tokenAddress,
+        data: tokenContract.methods.approve(contractAddress, weiAmount).encodeABI(),
+        gas: "50000", // Adjust gas limit accordingly
+      };
+      const approveTxHash = await window.ethereum.request({
+        method: "eth_sendTransaction",
+        params: [approveTx],
+      });
+      console.log("Waiting for approval transaction to be mined...");
+      let approvalReceipt = null;
+      while (approvalReceipt === null) {
+        approvalReceipt = await window.ethereum.request({
+          method: "eth_getTransactionReceipt",
+          params: [approveTxHash],
+        });
+        await new Promise((resolve) => setTimeout(resolve, 2000));
+      }
+      console.log("Approval Successful!", approvalReceipt);
+    } else {
+      console.log("Approval already sufficient, skipping...");
+    }
+
+
+
+
+
+
+    const gasEstimate = await daosContract.methods.contribute(parseInt(weiAmount)).estimateGas({
       from: contributor,
-      value: weiAmount,
     });
     console.log("Estimated Gas:", gasEstimate);
 
     console.log("Sending transaction...");
-
-    const transactionResult = await web3.eth.sendTransaction({
-      from: contributor,
+    const transactionParameters = {
+      from: accounts[0],
       to: contractAddress,
-      value: weiAmount,
-      gas: gasEstimate,
-      gasPrice: "800000",
-    });
+      data: daosContract.methods.contribute(parseInt(weiAmount)).encodeABI(),
+      gas: String(gasEstimate),
+      gasPrice: '800000',
+  };
+   
+    console.log("Transaction result:", transactionParameters);
 
-    console.log("Transaction result:", transactionResult);
-
-    const txHash = transactionResult.transactionHash;
-    console.log("Waiting for transaction to be mined. Hash:", txHash);
-
+    const txHash = await window.ethereum.request({
+      method: 'eth_sendTransaction',
+      params: [transactionParameters],
+  })
     let receipt = null;
-    while (!receipt) {
-      receipt = await (window as any).ethereum.request({
-        method: "eth_getTransactionReceipt",
-        params: [txHash],
+    while (receipt === null) {
+      receipt = await window.ethereum.request({
+          method: 'eth_getTransactionReceipt',
+          params: [txHash],
       });
-      if (!receipt) {
-        await new Promise((resolve) => setTimeout(resolve, 2000));
-      }
-    }
+      console.log(receipt);
+      console.log("Waiting for transaction to be mined...");
+      await new Promise((resolve) => setTimeout(resolve, 2000));
+
+  }
 
     console.log("Transaction Receipt:", receipt);
     console.log("Contribution successful!");

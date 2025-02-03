@@ -1,7 +1,7 @@
 import { ethers } from "ethers";
 import contractABI from "./abi.json";
 
-const CONTRACT_ADDRESS = "0x91d21E16A91F74dF076a9cA52cc401e1898FEa62"; ``
+const CONTRACT_ADDRESS = "0xb728B1fB0779AAd53359a7472845b2e1a1A2e2B2"; ``
 const TIER_LABELS = ["None", "Platinum", "Gold", "Silver"];
 export const getContractData = async () => {
   if (!(window as any).ethereum) {
@@ -23,8 +23,8 @@ export const getContractData = async () => {
   const end = (await contract.fundraisingDeadline());
   const fundraisingGoal = (await contract.fundraisingGoal()).toString();
   const totalRaised = (await contract.totalRaised()).toString();
-  const userTiers = parseInt(await contract.userTiers(userAddress));
-  const userTierLabel = TIER_LABELS[userTiers];
+  const userTiers = await contract.getWhitelistInfo(userAddress);
+  const userTierLabel = TIER_LABELS[userTiers.tier];
   console.log("userTiers is ", userTierLabel)
 
 
@@ -60,8 +60,8 @@ export const getTier = async () => {
   const contract = new ethers.Contract(CONTRACT_ADDRESS, contractABI, provider);
   console.log("Contract object created:", contract);
 
-  const userTiers = parseInt(await contract.userTiers(userAddress));
-  const userTierLabel = TIER_LABELS[userTiers];
+  const userTiers = await contract.getWhitelistInfo(userAddress);
+  const userTierLabel = TIER_LABELS[userTiers.tier];
   console.log("userTiers is ", userTierLabel)
 
   return {

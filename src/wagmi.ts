@@ -9,6 +9,7 @@ import {
   coinbaseWallet,
   walletConnectWallet,
   injectedWallet,
+  rabbyWallet
 } from '@rainbow-me/rainbowkit/wallets';
 import { http, createConfig } from 'wagmi'
 
@@ -26,6 +27,8 @@ export const config = getDefaultConfig({
         coinbaseWallet,
         walletConnectWallet,
         injectedWallet,
+        rabbyWallet
+        
       ],
     },
   ],
