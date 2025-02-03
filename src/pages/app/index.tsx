@@ -10,6 +10,8 @@ import { FUND_CARD_PLACEHOLDER_IMAGE } from '@/lib/links';
 import { anekLatin, workSans } from '@/lib/fonts';
 import { useAccount } from "wagmi";
 import { useRouter } from 'next/navigation';
+import { useToast } from '@/hooks/use-toast';
+import { ConnectWalletButton } from '@/components/ui/connect-button';
 
 const getFeaturedFunds = () => {
   return [
@@ -23,26 +25,31 @@ const getUpcomingFunds = () => {
   ];
 }
 
-
-
-
 const AppHome: React.FC = () => {
   const { isConnected } = useAccount();
   const router = useRouter();
+  const { toast } = useToast();
   console.log(isConnected);
   const FEATURED_FUNDS = getFeaturedFunds();
   const UPCOMING_FUNDS = getUpcomingFunds();
 
   const onFundClick = (fundId: string, type: 'dashboard' | 'upcoming') => {
     if (!isConnected) {
-      alert('Please connect your wallet first.');
+      // alert('Please connect your wallet first.');
+      toast({
+        title: "Please connect your wallet first",
+        description: "It looks like your wallet isn't connected",
+        variant: "destructive",
+        action: <ConnectWalletButton icons={false} className='bg-white text-black' />,
+        className: `${workSans.className}`
+      })
       return;
     }
     // Navigate to the fund page if connected
     router.push(`/app/${type}/${fundId}`);
   };
 
-  
+
   return (
     <PageLayout title="App" description="main-app" app={true}>
       <div className="relative min-h-screen w-screen overflow-hidden">
@@ -79,7 +86,7 @@ const AppHome: React.FC = () => {
               </Link>
             </div>
           </section>
-          
+
 
           {/* Featured funds */}
           <FundSection

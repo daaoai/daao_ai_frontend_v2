@@ -4,6 +4,7 @@ import React from "react";
 import { Navbar } from "./navigation/navbar";
 import { Footer } from "./footer";
 import { AppNavbar } from "./navigation/app-navbar";
+import { Toaster } from "./ui/toaster";
 
 interface LayoutProps {
   flexDirection?: "row" | "col";
@@ -95,6 +96,7 @@ const MainContainer: React.FC<LayoutProps & { children: React.ReactNode }> = ({
           {children}
         </div>
       </main >
+      <Toaster />
       <Footer app={app} />
     </>
   );
