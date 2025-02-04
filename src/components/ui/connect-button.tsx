@@ -62,7 +62,7 @@ export const ConnectWalletButton: React.FC<ConnectWalletButtonProps> = ({ classN
                       {icons ? <Wallet className="w-3 h-3" /> : <></>}
                       <span className={`test-white ${workSans.className} font-semibold`}>Connect Wallet</span>
                     </Button>
-                    {icons ? <Text className="w-5 h-5" /> : <></>}
+                    {/*{icons ? <Text className="w-5 h-5" /> : <></>}*/}
                   </div>
                 );
               }

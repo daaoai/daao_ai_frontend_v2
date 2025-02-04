@@ -1,8 +1,7 @@
 type FundCardProps = { // main app page card props
   title: string;
-  buzz: string;
   token: string;
-  isLive: boolean;
+  status: "live" | "pending" | "soon";
   imgSrc: string;
 }
 

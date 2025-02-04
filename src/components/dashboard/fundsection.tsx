@@ -1,7 +1,7 @@
 'use client'
 
 import * as React from 'react'
-import Link from 'next/link'
+// import Link from 'next/link'
 import {
   Carousel,
   CarouselContent,
@@ -18,33 +18,15 @@ interface FundSectionProps {
   funds: Array<{
     id: string
     title: string
-    buzz: string
     token: string
-    isLive: boolean
+    status: "live" | "pending" | "soon"
     imgSrc: string
   }>
   linkPrefix?: string
   onFundClick: (fundId: string) => void
 }
 
-export function FundSection({ title, subtitle, funds, linkPrefix = "dashboard",onFundClick }: FundSectionProps) {
-  const [api, setApi] = React.useState<any>()
-  const [current, setCurrent] = React.useState(0)
-  const [count, setCount] = React.useState(0)
-
-  React.useEffect(() => {
-    if (!api) {
-      return
-    }
-
-    setCount(api.scrollSnapList().length)
-    setCurrent(api.selectedScrollSnap() + 1)
-
-    api.on("select", () => {
-      setCurrent(api.selectedScrollSnap() + 1)
-    })
-  }, [api])
-
+export function FundSection({ title, subtitle, funds, linkPrefix = "dashboard", onFundClick }: FundSectionProps) {
   return (
     <section className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-16">
       <div className="mb-8 text-left">
@@ -55,9 +37,9 @@ export function FundSection({ title, subtitle, funds, linkPrefix = "dashboard",o
           {subtitle}
         </p>
       </div>
-      <Carousel setApi={setApi} className="w-full">
+      <Carousel className="w-full">
         <CarouselContent className="-ml-2 md:-ml-4">
-        {funds.map((fund) => (
+          {funds.map((fund) => (
             <CarouselItem key={fund.id} className="pl-2 md:pl-4 basis-full sm:basis-1/2 lg:basis-1/3">
               <div className="p-1">
                 <button
@@ -72,9 +54,8 @@ export function FundSection({ title, subtitle, funds, linkPrefix = "dashboard",o
                   <FundCard
                     key={fund.id}
                     title={fund.title}
-                    buzz={fund.buzz}
                     token={fund.token}
-                    isLive={fund.isLive}
+                    status={fund.status}
                     imgSrc={fund.imgSrc}
                   />
                 </button>
@@ -85,9 +66,6 @@ export function FundSection({ title, subtitle, funds, linkPrefix = "dashboard",o
         <CarouselPrevious className="sm:visible" />
         <CarouselNext className="sm:visible" />
       </Carousel>
-      <div className="py-2 text-center text-sm text-muted-foreground">
-        Slide {current} of {count}
-      </div>
     </section>
   )
 }
