@@ -28,12 +28,12 @@ const Dashboard: React.FC = () => {
       <div className={`w-screen overflow-hidden gap-20 ${workSans.className} flex flex-col justify-center items-center py-16 px-2 lg:px-44`}>
 
         <div
-          className="grid gap-2 md:gap-3 lg:grid-cols-[60%_40%] lg:items-stretch"
+          className="grid gap-2 md:gap-3 lg:grid-cols-[60%_40%] w-full"
         >
-          <div className="p-4 flex items-center justify-center">
+          <div className="p-2 sm:p-4 flex items-center justify-center">
             <FundDetails {...props} />
           </div>
-          <div className="p-4 flex items-center justify-center">
+          <div className="p-2 sm:p-4 flex items-center justify-center">
             <Buysell />
           </div>
         </div>

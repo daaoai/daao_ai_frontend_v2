@@ -69,7 +69,7 @@ const FundDetails: React.FC<FundDetailsProps> = (props) => {
   }, []);
   return (
     <>
-      <Card className="bg-[#0d0d0d] text-white p-4 sm:p-6 max-w-2xl mx-auto">
+      <Card className="bg-[#0d0d0d] text-white sm:p-2 max-w-xl lg:max-w-2xl mx-auto w-full">
         <CardHeader className="flex flex-row items-center gap-4 sm:gap-6 pb-4 sm:pb-6">
           <div className="w-12 h-12 sm:w-16 sm:h-16 bg-white rounded-full flex-shrink-0 overflow-hidden">
             <Image
@@ -92,16 +92,16 @@ const FundDetails: React.FC<FundDetailsProps> = (props) => {
           </Card>
 
           <div className="text-left flex flex-row gap-4 sm:gap-6">
-            <div className='flex flex-col gap-4 sm:gap-7 justify-start items-center w-full'>
+            <div className="grid grid-rows-[80%_20%] gap-2 sm:gap-4 w-full">
               <Card className="bg-[#1b1c1d] border-[#27292a] p-2 sm:p-4 w-full">
                 <CardContent className="space-y-1 sm:space-y-2 px-2 sm:px-3">
                   <p className="text-[#aeb3b6] text-sm sm:text-base md:text-lg lg:text-xl">Market Cap</p>
-                  <p className="text-lg sm:text-2xl md:text-3xl lg:text-4xl font-bold">${marketCap}</p>
+                  <p className="text-lg sm:text-2xl md:text-3xl lg:text-4xl font-semibold">${marketCap}</p>
                 </CardContent>
               </Card>
-              <div className="flex items-center gap-2 text-[#498ff8] text-sm sm:text-base md:text-xl">
+              <div className="h-min flex justify-center items-center gap-2 text-[#498ff8] text-sm sm:text-base md:text-xl">
                 <span>{shortenAddress(props.modeAddress)}</span>
-                <Copy className="w-4 h-4 sm:w-5 sm:h-5" onClick={() => handleCopy(props.modeAddress)} />
+                <Copy className="w-4 h-4 sm:w-5 sm:h-5 hover:cursor-pointer" onClick={() => handleCopy(props.modeAddress)} />
               </div>
             </div>
 
@@ -113,14 +113,13 @@ const FundDetails: React.FC<FundDetailsProps> = (props) => {
                 </div>
                 <div>
                   <p className="text-[#aeb3b6] text-sm sm:text-base md:text-lg lg:text-xl">Your Market Value</p>
-                  <p className="text-lg sm:text-2xl md:text-3xl lg:text-4xl font-bold">${(Number(daoHoldings) * Number(price)).toFixed(2)}</p>
+                  <p className="text-lg sm:text-2xl md:text-3xl lg:text-4xl font-semibold">${(Number(daoHoldings) * Number(price)).toFixed(2)}</p>
                 </div>
               </CardContent>
             </Card>
           </div>
         </CardContent>
       </Card>
-
     </>
   );
 };

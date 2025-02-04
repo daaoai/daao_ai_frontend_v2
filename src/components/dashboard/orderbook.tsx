@@ -35,7 +35,7 @@ const Orderbook = ({
   ethRaised,
 }: OrderbookProps) => {
   return (
-    <Card className="w-full max-w-md bg-[#1b1c1d] text-card-foreground">
+    <Card className="w-full max-w-md bg-[#1b1c1d] text-card-foreground mx-auto">
       <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
         <CardTitle className="text-lg font-semibold">{name}</CardTitle>
         <div className="relative h-10 w-10 overflow-hidden rounded-full bg-[#f7931a]">
