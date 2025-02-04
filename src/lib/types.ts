@@ -15,11 +15,15 @@ type FundDetailsProps = { // fund dashboard info card props
 }
 
 type UpcomingFundDetailsProps = {
+  longname: string;
   shortname: string;
-  twitter: string;
-  telegram: string;
+  twitterUsername: string;
+  twitterLink: string;
+  telegramUsername: string;
+  telegramLink: string;
   website: string;
   description: string;
+  aboutToken: string;
   fundingProgress: number;
   logo: string;
 }

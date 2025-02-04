@@ -6,22 +6,23 @@ import Link from 'next/link';
 import { PageLayout } from '@/components/page-layout';
 import { Button } from '@/components/ui/button';
 import { FundSection } from '@/components/dashboard/fundsection';
-import { FUND_CARD_PLACEHOLDER_IMAGE } from '@/lib/links';
+import { CURRENT_DAO_IMAGE } from '@/lib/links';
+// import { FUND_CARD_PLACEHOLDER_IMAGE } from '@/lib/links';
 import { anekLatin, workSans } from '@/lib/fonts';
 import { useAccount } from "wagmi";
 import { useRouter } from 'next/navigation';
 import { useToast } from '@/hooks/use-toast';
 import { ConnectWalletButton } from '@/components/ui/connect-button';
 
-const getFeaturedFunds = () => {
-  return [
-    { id: '1', title: 'To Be Announced', buzz: '6969', token: 'TBA', isLive: false, imgSrc: FUND_CARD_PLACEHOLDER_IMAGE },
-  ];
-}
+// const getFeaturedFunds = () => {
+//   return [
+//     { id: '1', title: 'To Be Announced', buzz: '6969', token: 'TBA', isLive: false, imgSrc: FUND_CARD_PLACEHOLDER_IMAGE },
+//   ];
+// }
 
 const getUpcomingFunds = () => {
   return [
-    { id: '1', title: 'Upcoming Fund', buzz: '6969', token: 'TBA', isLive: false, imgSrc: FUND_CARD_PLACEHOLDER_IMAGE },
+    { id: '1', title: 'DeFAI Cartel', buzz: '6969', token: 'CARTEL', isLive: false, imgSrc: CURRENT_DAO_IMAGE },
   ];
 }
 
@@ -30,7 +31,7 @@ const AppHome: React.FC = () => {
   const router = useRouter();
   const { toast } = useToast();
   console.log(isConnected);
-  const FEATURED_FUNDS = getFeaturedFunds();
+  // const FEATURED_FUNDS = getFeaturedFunds();
   const UPCOMING_FUNDS = getUpcomingFunds();
 
   const onFundClick = (fundId: string, type: 'dashboard' | 'upcoming') => {
@@ -88,13 +89,13 @@ const AppHome: React.FC = () => {
           </section>
 
 
-          {/* Featured funds */}
+          {/* Featured funds 
           <FundSection
             title="Featured Funds"
             subtitle="In-demand hedgefunds"
             funds={FEATURED_FUNDS}
             onFundClick={(fundId) => onFundClick(fundId, 'dashboard')}
-          />
+          />*/}
 
           {/* Upcoming funds */}
           <FundSection

@@ -12,7 +12,7 @@ const MODE_TOKEN_ADDRESS = "0xDfc7C877a950e49D2610114102175A06C2e3167a";
 // import { set } from "date-fns"
 // import { EthereumIcon } from "@/assets/icons/ethereum-icon"
 
-export default function BurnCard({ fundingProgess }: { fundingProgess: number }) {
+export default function BurnCard(props: UpcomingFundDetailsProps) {
   const [amount, setAmount] = useState(0);
   const [balance, setBalance] = useState("");
   const [tier, setTier] = useState("");
@@ -60,7 +60,7 @@ export default function BurnCard({ fundingProgess }: { fundingProgess: number })
   }
 
   const handleContributefunction = async () => {
-    
+
     try {
       setIsContributing(true);
       await handleContribute(amount.toString());
@@ -74,7 +74,7 @@ export default function BurnCard({ fundingProgess }: { fundingProgess: number })
 
   return (
     <Card className="text-left w-full max-w-3xl bg-[#0d0d0d] border-[#383838] text-white font-['Work Sans']">
-      {fundingProgess < 100 ? (
+      {props.fundingProgress < 100 ? (
         <>
           <CardHeader className="space-y-9">
             <div className="flex items-center gap-3">
@@ -101,7 +101,7 @@ export default function BurnCard({ fundingProgess }: { fundingProgess: number })
                   onClick={handleContributefunction}
                   disabled={isContributing || amount <= 0}
                 >
-                   {isContributing ? "Contributing..." : "Contribute"}
+                  {isContributing ? "Contributing..." : "Contribute"}
                 </Button>
               </div>
             </div>
@@ -113,12 +113,23 @@ export default function BurnCard({ fundingProgess }: { fundingProgess: number })
       )}
       <CardContent className="space-y-8 mt-8">
         <div className="space-y-4">
-          <h3 className="text-[#409cff] text-xl sm:text-2xl font-semibold">About Token</h3>
+          <h3 className="text-[#409cff] text-xl sm:text-2xl font-semibold">
+            About Token
+          </h3>
           <p className="text-base sm:text-lg">
-            Corem ipsum dolor sit amet, consectetur adipiscing elit. Nunc vulputate libero et velit interdum, ac aliquet odio mattis.
+            {
+              props.aboutToken.trim()
+                .split("\n")
+                .map((paragraph, index) => (
+                  <p key={index} className="text-base sm:text-lg">
+                    {paragraph}
+                    <br />
+                  </p>
+                ))
+            }
           </p>
         </div>
-        <div className="grid sm:grid-cols-2 gap-6">
+        {/*<div className="grid sm:grid-cols-2 gap-6">
           {['How to Earn', 'Whitelist Mechanics'].map((title) => (
             <div key={title} className="space-y-4">
               <h4 className="text-[#409cff] text-base sm:text-lg font-semibold">{title}</h4>
@@ -134,7 +145,7 @@ export default function BurnCard({ fundingProgess }: { fundingProgess: number })
         </div>
         <p className="text-sm sm:text-base">
           Porem ipsum dolor sit amet, consectetur adipiscing elit.
-        </p>
+        </p>*/}
       </CardContent>
     </Card>
   )

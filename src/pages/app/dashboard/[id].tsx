@@ -1,5 +1,5 @@
 import { PageLayout } from '@/components/page-layout';
-import React, { useState,useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { workSans } from '@/lib/fonts';
 import FundDetails from '@/components/dashboard/fundcard-details';
 import Buysell from '@/components/dashboard/buysell-card';
@@ -10,7 +10,7 @@ import Orderbook from '@/components/dashboard/orderbook';
 
 
 const Dashboard: React.FC = () => {
-  
+
 
   const props: FundDetailsProps = {
     icon: "https://via.placeholder.com/70x70", // Placeholder image URL
@@ -18,7 +18,7 @@ const Dashboard: React.FC = () => {
     longname: "To Be Announced",
     description: "This DAO has not been announced yet",
     holdings: 0
-    
+
   };
 
   const [activeTab, setActiveTab] = useState("trades")
