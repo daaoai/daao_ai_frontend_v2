@@ -27,15 +27,12 @@ export default function BurnCard({ fundingProgess }: { fundingProgess: number })
       }
 
       const provider = new ethers.providers.Web3Provider(window.ethereum);
-
-      // Check if an account is connected without triggering a popup.
       const accounts = await provider.listAccounts();
       if (!accounts.length) {
         console.log("No connected accounts found");
         return;
       }
 
-      // Use the connected account
       const signer = provider.getSigner();
       const address = await signer.getAddress();
 
