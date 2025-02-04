@@ -265,7 +265,7 @@ const Buysell = () => {
                 type="number"
                 placeholder="0"
                 value={amountTo}
-                onChange={(e) => setAmountTo(e.target.value)}
+                onChange={(e) => setAmountTo(Number(e.target.value))}
                 className={`appearance-none bg-transparent border-0 p-0 text-3xl w-24 focus-visible:ring-0 focus-visible:ring-offset-0 ${workSans.className}`}
               />
             </div>
