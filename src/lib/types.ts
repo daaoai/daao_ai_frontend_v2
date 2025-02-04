@@ -38,7 +38,6 @@ interface OrderbookProps {
   name: string
   created: string
   owner: string
-  treasury: string
   token: string
   tradingEnds: string
   ethRaised: string

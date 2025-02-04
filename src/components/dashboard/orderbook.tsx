@@ -3,21 +3,44 @@ import { Separator } from "@/components/ui/separator"
 import { Bitcoin, Copy } from 'lucide-react'
 import ModeImage from '../../assets/icons/mode.png'
 import Image from 'next/image';
+import { toast } from "@/hooks/use-toast";
+import { workSans } from "@/lib/fonts";
 
-const InfoRow = ({ label, value, mode }: InfoRowProps) => (
-  <div className="space-y-1">
-    <div className="text-[#aeb3b6] text-left flex justify-between items-center">
-      <span className="text-muted-foreground">{label}</span>
-      <div className="flex items-center gap-2">
-        <span className="text-right text-foreground">{value}</span>
-        {mode && (
-          <Copy className="h-4 w-4 text-muted-foreground hover:text-foreground transition-colors" />
-        )}
+const InfoRow = ({ label, value, mode }: InfoRowProps) => {
+  const handleCopy = async () => {
+    try {
+      await navigator.clipboard.writeText(value);
+      toast({
+        description: "Mode copied to clipboard!",
+        className: `${workSans.className} bg-[#2ca585]`
+      });
+    } catch (error) {
+      toast({
+        variant: "destructive",
+        description: "Failed to copy",
+        className: `${workSans.className}`
+      });
+    }
+  };
+
+  return (
+    <div className="space-y-1">
+      <div className="text-[#aeb3b6] text-left flex justify-between items-center">
+        <span className="text-muted-foreground">{label}</span>
+        <div className="flex items-center gap-2">
+          <span className="text-right text-foreground">{value}</span>
+          {mode && (
+            <Copy
+              className="h-4 w-4 text-muted-foreground hover:text-foreground transition-colors"
+              onClick={handleCopy}
+            />
+          )}
+        </div>
       </div>
+      <Separator />
     </div>
-    <Separator />
-  </div>
-)
+  )
+}
 
 const Orderbook = ({
   name,
@@ -32,7 +55,7 @@ const Orderbook = ({
       <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
         <CardTitle className="text-lg font-semibold">{name}</CardTitle>
         <div className="relative h-10 w-10 overflow-hidden rounded-full bg-[#f7931a]">
-        <Image
+          <Image
             src={ModeImage}
             alt="Mode Token"
             layout="fill" // This ensures the image fills the parent container
