@@ -8,6 +8,7 @@ import { EthereumIcon } from "@/assets/icons/ethereum-icon"
 import { ethers } from "ethers";
 import poolAbi from "../../poolABI.json"
 import router from "../../router.json"
+import modeABI from "../../modeABI.json"
 import { FiSettings } from "react-icons/fi"  
 
 const CL_POOL_ROUTER_ADDRESS = "0xC3a15f812901205Fc4406Cd0dC08Fe266bF45a1E"; 
@@ -340,7 +341,7 @@ const Buysell = () => {
         <Button 
           className="w-full bg-white text-black hover:bg-gray-200" 
           onClick={handleSwap}
-          disabled={isSwapping} // disable while swapping
+          disabled={isSwapping} 
         >
           {isSwapping ? "Swapping..." : "Swap"}
         </Button>
