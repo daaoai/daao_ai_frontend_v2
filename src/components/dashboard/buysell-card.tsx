@@ -10,22 +10,25 @@ import poolAbi from "../../poolABI.json"
 import router from "../../router.json"
 import { FiSettings } from "react-icons/fi"  
 
-const CL_POOL_ROUTER_ADDRESS = "0xC3a15f812901205Fc4406Cd0dC08Fe266bF45a1E"; // Your deployed CLPoolRouter address
+const CL_POOL_ROUTER_ADDRESS = "0xC3a15f812901205Fc4406Cd0dC08Fe266bF45a1E"; 
 const CL_POOL_ADDRESS = "0x7E7985c745F016696e35a92c582c030C69803C01";   
+const MODE_TOKEN_ADDRESS="0xDfc7C877a950e49D2610114102175A06C2e3167a";
 
 const Buysell = () => {
   const [activeTab, setActiveTab] = useState<"buy" | "sell">("buy");
   const [amountFrom, setAmountFrom] = useState("");
   const [amountTo, setAmountTo] = useState(0);
   const amounts = ["0.1", "0.25", "0.5", "1", "5"];
+  const [firstTokenMode, setFirstTokenMode] = useState(false);
   const [currentSqrtPrice, setCurrentSqrtPrice] = useState<string>("");
-  const zeroForOne = activeTab === "buy"; 
-  const [slippageOpen, setSlippageOpen] = useState(false)          // toggles the popover/modal
-  const [slippageTolerance, setSlippageTolerance] = useState("1")   // store in % (string) for the input, default "1" => 1%
+  const [slippageOpen, setSlippageOpen] = useState(false)          
+  const [slippageTolerance, setSlippageTolerance] = useState("1") 
+  const [isSwapping, setIsSwapping] = useState(false)
 
 
   useEffect(() => {
-       fetchSlot0();
+    fetchPoolTokens();
+    fetchSlot0();
   }, []);
 
    async function fetchSlot0() {
@@ -40,6 +43,35 @@ const Buysell = () => {
     }
   }
 
+
+  async function fetchPoolTokens() {
+    if (!window.ethereum) return;
+    const provider = new ethers.providers.Web3Provider(window.ethereum);
+    const poolContract = new ethers.Contract(CL_POOL_ADDRESS, poolAbi, provider);
+    const t0 = await poolContract.token0();
+    const t1 = await poolContract.token1();
+    if(t0 === MODE_TOKEN_ADDRESS){
+      setFirstTokenMode(true)
+    }
+    else if(t1 === MODE_TOKEN_ADDRESS){
+      setFirstTokenMode(false) 
+    }
+  }
+
+
+  function computeZeroForOne() {
+    if (firstTokenMode === null) {
+      return false
+    }
+    if (firstTokenMode) {
+      return activeTab === "buy" ? true : false
+    } else {
+      return activeTab === "buy" ? false : true
+    }
+  }
+
+  const zeroForOne = computeZeroForOne();
+
   async function simulateSwap(newFromValue: string) {
     try {
       if (!window.ethereum) return
@@ -52,11 +84,8 @@ const Buysell = () => {
         router,
         signer
       )
-
       const amountSpecified = ethers.utils.parseUnits(newFromValue , 18)
-
       const minOutput = 0
-
       if (!currentSqrtPrice) return
       const sqrtPriceBN = ethers.BigNumber.from(currentSqrtPrice)
       let sqrtPriceLimitBN: ethers.BigNumber
@@ -66,7 +95,6 @@ const Buysell = () => {
       } else {
         sqrtPriceLimitBN = sqrtPriceBN.mul(100 + slippageBps).div(100)
       }
-      // const sqrtPriceLimitX96 = sqrtPriceLimitBN.toString()
       const sqrtPriceLimitX96 = "4295128750"
       const deadline = Math.floor(Date.now() / 1000) + 5 * 60
       const [amount0, amount1, newSqrtPrice] = await clPoolRouter.callStatic.getSwapResult(
@@ -77,12 +105,21 @@ const Buysell = () => {
         minOutput,
         deadline
       );
-
-      const outTokens = -(ethers.utils.formatUnits(amount1, 18))
+      let outBn
+      if (zeroForOne) {
+        outBn = amount1
+      } else {
+        outBn = amount0
+      }
+      let outBnAbs = outBn
+      if (outBnAbs.lt(0)) {
+        outBnAbs = outBnAbs.mul(-1)
+      }
+      const outTokens = ethers.utils.formatUnits(outBnAbs, 18)
 
       console.log("Simulated swap output:", outTokens)
-      setAmountTo(outTokens)
-    } catch (err) {
+      setAmountTo(parseFloat(outTokens))
+    } catch (err){
       console.error("Error simulating swap:", err)
       setAmountTo(0)
     }
@@ -91,21 +128,18 @@ const Buysell = () => {
   function handleFromChange(e: React.ChangeEvent<HTMLInputElement>) {
     const val = e.target.value;
     setAmountFrom(val);
-
-    // If user empties the field, reset the "TO" value
     if (!val) {
       setAmountTo(0);
       return;
     }
-
-    // Otherwise, call simulateSwap to get the dynamic quote
     simulateSwap(val);
   }
 
 
-
   async function handleSwap() {
     try {
+      setIsSwapping(true) 
+
       if (!window.ethereum) throw new Error("No Ethereum provider found");
       await window.ethereum.request({ method: "eth_requestAccounts" });
       const provider = new ethers.providers.Web3Provider(window.ethereum);
@@ -116,16 +150,14 @@ const Buysell = () => {
 
       const slipDecimal = parseFloat(slippageTolerance) / 100
       console.log("Slippage decimal:", slipDecimal)
-      const expectedOutput = parseFloat(amountTo.toString()) || 0
-      const minOutputNumber = expectedOutput * (1 - slipDecimal)
+      const quotedOut = amountTo
+      const minOutputNumber = quotedOut * (1 - slipDecimal)
       const minOutputBN = ethers.utils.parseUnits(
-        minOutputNumber.toFixed(6), // round to 6 decimals or so
+        minOutputNumber.toFixed(6), 
         18
       )
       console.log("minOutput:", minOutputBN)
 
-
-      //deadline
       const deadline = Math.floor(Date.now() / 1000) + 60 * 5;
       console.log("deadline:", deadline);
       if (!currentSqrtPrice) {
@@ -155,6 +187,8 @@ const Buysell = () => {
       
 
       const receipt = await tx.wait();
+      alert(`Swap successful!\nTransaction Hash: ${receipt.transactionHash}`)
+
       await fetchSlot0();
       setAmountFrom("");
       setAmountTo(0);
@@ -163,14 +197,20 @@ const Buysell = () => {
     } catch (error) {
       console.error("Error during swap:", error);
     }
+    finally {
+      setIsSwapping(false)
+    }
+
+
   }
+  const fromLabel = activeTab === "buy" ? "MODE" : "DAO"
+  const toLabel = activeTab === "buy" ? "DAO" : "MODE"
 
 
+  
   return (
     <Card className="h-full w-full max-w-xl bg-[#0e0e0e] text-white">
       <CardContent className="p-6 space-y-6">
-
-        {/* -- Top Row: Tab ("Buy"/"Sell") + Settings Icon -- */}
         <div className="flex items-center justify-between">
           <Tabs
             value={activeTab}
@@ -193,7 +233,6 @@ const Buysell = () => {
             </TabsList>
           </Tabs>
 
-          {/* --- Gear Icon --- */}
           <button
             onClick={() => setSlippageOpen(!slippageOpen)}
             className="p-2 hover:bg-[#1b1c1d] rounded-md"
@@ -202,7 +241,6 @@ const Buysell = () => {
           </button>
         </div>
 
-        {/* --- SLIPPAGE POPOVER / SETTINGS --- */}
         {slippageOpen && (
           <div className="border p-3 bg-[#1b1c1d] rounded-md">
             <label className="block text-sm text-[#aeb3b6] mb-1">
@@ -221,7 +259,6 @@ const Buysell = () => {
           </div>
         )}
 
-        {/* FROM Input */}
         <Card className="bg-[#1b1c1d] border-0">
           <CardContent className="p-4 flex justify-between items-center">
             <div>
@@ -240,7 +277,10 @@ const Buysell = () => {
                 <Button
                   variant="link"
                   className="text-[#39db83] p-0 h-auto font-normal"
-                  onClick={() => setAmountFrom("1")}
+                  onClick={() => {
+                    setAmountFrom("1")
+                    simulateSwap("1")
+                  }}
                 >
                   MAX
                 </Button>
@@ -250,13 +290,12 @@ const Buysell = () => {
                 className="bg-transparent border-[#242626] hover:bg-[#242626] hover:text-white"
               >
                 <EthereumIcon className="mr-2 h-4 w-4" />
-                {zeroForOne ? "MODE" : "DAO"}
+                {fromLabel}
               </Button>
             </div>
           </CardContent>
         </Card>
 
-        {/* TO Input */}
         <Card className="bg-[#1b1c1d] border-0">
           <CardContent className="p-4 flex justify-between items-center">
             <div>
@@ -281,19 +320,11 @@ const Buysell = () => {
                 className="bg-transparent border-[#242626] hover:bg-[#242626] hover:text-white"
               >
                 <EthereumIcon className="mr-2 h-4 w-4" />
-                {zeroForOne ? "DAO" : "MODE"}
+                {toLabel}
               </Button>
             </div>
           </CardContent>
         </Card>
-
-        {/* Display slot0 sqrt price */}
-        <div className="text-sm">
-          <p className="text-[#aeb3b6] mb-1">Current Sqrt Ratio (slot0):</p>
-          <p className="text-white">
-            {currentSqrtPrice ? currentSqrtPrice : "Loading..."}
-          </p>
-        </div>
 
         <div className="flex justify-between text-sm">
           <div className="text-left space-y-1">
@@ -306,8 +337,12 @@ const Buysell = () => {
           </div>
         </div>
 
-        <Button className="w-full bg-white text-black hover:bg-gray-200" onClick={handleSwap}>
-          Swap
+        <Button 
+          className="w-full bg-white text-black hover:bg-gray-200" 
+          onClick={handleSwap}
+          disabled={isSwapping} // disable while swapping
+        >
+          {isSwapping ? "Swapping..." : "Swap"}
         </Button>
       </CardContent>
     </Card>

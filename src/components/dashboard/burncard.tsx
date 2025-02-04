@@ -7,6 +7,8 @@ import { useEffect, useState } from "react"
 import { ethers } from "ethers"
 import { getTier } from "@/getterFunctions"
 import { useAccount } from "wagmi";
+import modeABI from "../../modeABI.json";
+const MODE_TOKEN_ADDRESS = "0xDfc7C877a950e49D2610114102175A06C2e3167a";
 // import { set } from "date-fns"
 // import { EthereumIcon } from "@/assets/icons/ethereum-icon"
 
@@ -15,6 +17,7 @@ export default function BurnCard({ fundingProgess }: { fundingProgess: number })
   const [balance, setBalance] = useState("");
   const [tier, setTier] = useState("");
   const { isConnected } = useAccount();
+  const [isContributing, setIsContributing] = useState(false);
 
   const fetchBalance = async () => {
     try {
@@ -34,15 +37,15 @@ export default function BurnCard({ fundingProgess }: { fundingProgess: number })
 
       // Use the connected account
       const signer = provider.getSigner();
+      const address = await signer.getAddress();
 
-      // Get user tier using your getter function.
+      const modeContract = new ethers.Contract(MODE_TOKEN_ADDRESS, modeABI, signer);
+      const rawBalance = await modeContract.balanceOf(address);
+      const decimals = await modeContract.decimals();
+      const modeBalance = ethers.utils.formatUnits(rawBalance, decimals);
       const tierr = await getTier();
       setTier(tierr.userTierLabel);
-
-      const address = await signer.getAddress();
-      const balanceInWei = await provider.getBalance(address);
-      const balanceInEth = ethers.utils.formatEther(balanceInWei);
-      setBalance(balanceInEth);
+      setBalance(modeBalance);
     } catch (error) {
       console.error("Error fetching balance:", error);
     }
@@ -54,8 +57,6 @@ export default function BurnCard({ fundingProgess }: { fundingProgess: number })
   }, [isConnected]);
 
 
-
-
   const handleInputChange = (e: any) => {
     console.log("amount is ", e.target.value)
     setAmount(e.target.value);
@@ -64,9 +65,13 @@ export default function BurnCard({ fundingProgess }: { fundingProgess: number })
   const handleContributefunction = async () => {
     
     try {
+      setIsContributing(true);
       await handleContribute(amount.toString());
+      setIsContributing(false);
+      window.location.reload();
     } catch (error) {
       console.error("Error contributing to fund:", error);
+      setIsContributing(false);
     }
   }
 
@@ -76,7 +81,7 @@ export default function BurnCard({ fundingProgess }: { fundingProgess: number })
         <>
           <CardHeader className="space-y-9">
             <div className="flex items-center gap-3">
-              <span className="text-[#409cff] text-2xl sm:text-3xl font-semibold">$ETH</span>
+              <span className="text-[#409cff] text-2xl sm:text-3xl font-semibold">$MODE</span>
               <h2 className="text-2xl sm:text-3xl font-semibold">Contribute</h2>
             </div>
             <div className="space-y-6">
@@ -97,8 +102,9 @@ export default function BurnCard({ fundingProgess }: { fundingProgess: number })
                   variant="outline"
                   className="w-full h-12 bg-white text-black text-lg sm:text-xl font-semibold hover:bg-white/80 hover:text-black/90"
                   onClick={handleContributefunction}
+                  disabled={isContributing || amount <= 0}
                 >
-                  Contribute
+                   {isContributing ? "Contributing..." : "Contribute"}
                 </Button>
               </div>
             </div>
