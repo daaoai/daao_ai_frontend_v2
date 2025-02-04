@@ -19,7 +19,7 @@ const FundDetails: React.FC<FundDetailsProps> = (props) => {
  
 
   useEffect(() => {
-    const fetchModeBalance = async () => {
+    const fetchDaoBalance = async () => {
       try {
         if ((window as any).ethereum) {
           await (window as any).ethereum.request({ method: 'eth_requestAccounts' });
@@ -39,7 +39,7 @@ const FundDetails: React.FC<FundDetailsProps> = (props) => {
       }
     };
 
-    fetchModeBalance();
+    fetchDaoBalance();
   }, []);
 
   useEffect(() => {

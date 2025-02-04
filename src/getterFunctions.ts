@@ -28,12 +28,13 @@ export const getContractData = async () => {
   console.log("userTiers is ", userTierLabel)
 
 
-  console.log("end is ", end)
+  console.log("end is ", end.toString())
   console.log("fundraisingGoal is ", fundraisingGoal)
   console.log("totalRaised is ", totalRaised)
 
 
-  const endDate = new Date(end.toNumber());
+  const endDate = new Date(end.toNumber()* 1000);
+  console.log("endDate is ", endDate)
 
   // 6. Return all data in an object
   return {

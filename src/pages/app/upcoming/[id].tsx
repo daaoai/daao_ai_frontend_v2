@@ -37,7 +37,7 @@ const Upcoming: React.FC = () => {
     telegram: "telegram",
     website: "https://example.com",
     description: "Lorem ipsum odor amet, consectetuer adipiscing elit. Sit eu primis ipsum ante malesuada. Conubia laoreet id vivamus ultrices fringilla suspendisse.",
-    fundingProgress: fundraisingPercent,
+    fundingProgress: parseInt(fundraisingPercent.toFixed(2)),
     logo: FUND_CARD_PLACEHOLDER_IMAGE
   };
 

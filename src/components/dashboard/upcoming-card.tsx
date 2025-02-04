@@ -14,17 +14,21 @@ import { getContractData } from "../../getterFunctions";
 export default function UpcomingFunds(props: UpcomingFundDetailsProps) {
   const [endFTime, setEndFTime] = useState<number>(Date.now());
 
-  function getTimeRemaining(endTimestamp: number): string {
-    console.log(endFTime);
-    console.log(Date.now());
+  const getTimeRemaining = (endTime: number) => {
     const now = Date.now();
-    const diff = Math.max(endTimestamp - now, 0);
-    const days = Math.floor(diff / (1000 * 60 * 60 * 24));
-    const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-    const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
-
+    const difference = endTime - now;
+  
+    if (difference <= 0) {
+      return "Event has ended";
+    }
+  
+    const days = Math.floor(difference / (1000 * 60 * 60 * 24));
+    const hours = Math.floor((difference % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+    const minutes = Math.floor((difference % (1000 * 60 * 60)) / (1000 * 60));
+  
     return `${days} days, ${hours} hours, ${minutes} minutes`;
-  }
+  };
+  
 
   useEffect(() => {
     const fetchContractData = async () => {

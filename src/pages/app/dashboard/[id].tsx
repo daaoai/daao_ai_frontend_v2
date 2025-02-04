@@ -8,6 +8,7 @@ import Orderbook from '@/components/dashboard/orderbook';
 
 
 
+
 const Dashboard: React.FC = () => {
   
 
@@ -74,11 +75,10 @@ const Dashboard: React.FC = () => {
             <Orderbook
               name={props.longname}
               created="12/31/2024"
-              owner="0x2F...3235"
-              treasury="0x19...4fa7"
-              token="0X2B...F12D"
+              owner="0x11fd8f7B4e8Acf54Be24EE85517b90F8755E7A96"
+              token="0xeadDc1199350bC3eAa586124eC84821b3fe586a1"
               tradingEnds="7/1/2025, 12:11:37 AM"
-              ethRaised="50 ETH"
+              ethRaised="100 MODE"
             />
           </div>
         </div>
