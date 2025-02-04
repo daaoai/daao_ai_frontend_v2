@@ -17,8 +17,8 @@ const Dashboard: React.FC = () => {
     shortname: "DAO",
     longname: "To Be Announced",
     description: "This DAO has not been announced yet",
-    holdings: 0
-
+    holdings: 0,
+    modeAddress: "0x11fd8f7B4e8Acf54Be24EE85517b90F8755E7A96",
   };
 
   const [activeTab, setActiveTab] = useState("trades")

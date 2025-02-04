@@ -2,21 +2,24 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import Image from 'next/image';
 import { Copy } from 'lucide-react';
 import { workSans } from '@/lib/fonts';
-import React, { useState,useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { ethers } from 'ethers';
 import daoABI from "../../DaoABI.json"
+import { handleCopy, shortenAddress } from '@/lib/utils';
 
 
-const DAO_TOKEN_ADDRESS = '0xeadDc1199350bC3eAa586124eC84821b3fe586a1';
+const DAO_TOKEN_ADDRESS = '0xeadDc1199350bC3eAa586124eC84821b3fe586a1212';
 
 const FundDetails: React.FC<FundDetailsProps> = (props) => {
 
+
+
   const [marketCap, setMarketCap] = useState<number | null>(null);
-  const [price,setPrice] = useState<number | null>(null);
-  
+  const [price, setPrice] = useState<number | null>(null);
+
 
   const [daoHoldings, setDaoHoldings] = useState('0');
- 
+
 
   useEffect(() => {
     const fetchDaoBalance = async () => {
@@ -46,14 +49,14 @@ const FundDetails: React.FC<FundDetailsProps> = (props) => {
     const fetchMarketCap = async () => {
       try {
         const response = await fetch(
-          'https://api.dexscreener.com/tokens/v1/mode/0xeadDc1199350bC3eAa586124eC84821b3fe586a1?include_market_cap=true'
+          `https://api.dexscreener.com/tokens/v1/mode/${props.modeAddress}?include_market_cap=true`
         );
         const data = await response.json();
         console.log(data);
         if (data) {
           setMarketCap(data[0].marketCap);
           setPrice(data[0].priceUsd);
-         
+
         } else {
           console.warn('Market cap data not found for my-token');
         }
@@ -97,8 +100,8 @@ const FundDetails: React.FC<FundDetailsProps> = (props) => {
                 </CardContent>
               </Card>
               <div className="flex items-center gap-2 text-[#498ff8] text-sm sm:text-base md:text-xl">
-                <span>0xD0...85b9</span>
-                <Copy className="w-4 h-4 sm:w-5 sm:h-5" />
+                <span>{shortenAddress(props.modeAddress)}</span>
+                <Copy className="w-4 h-4 sm:w-5 sm:h-5" onClick={() => handleCopy(props.modeAddress)} />
               </div>
             </div>
 

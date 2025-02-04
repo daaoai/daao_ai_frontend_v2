@@ -12,6 +12,7 @@ type FundDetailsProps = { // fund dashboard info card props
   longname: string;
   description: string;
   holdings: number;
+  modeAddress: string;
 }
 
 type UpcomingFundDetailsProps = {

@@ -3,36 +3,20 @@ import { Separator } from "@/components/ui/separator"
 import { Bitcoin, Copy } from 'lucide-react'
 import ModeImage from '../../assets/icons/mode.png'
 import Image from 'next/image';
-import { toast } from "@/hooks/use-toast";
-import { workSans } from "@/lib/fonts";
+import { handleCopy, shortenAddress } from "@/lib/utils";
 
 const InfoRow = ({ label, value, mode }: InfoRowProps) => {
-  const handleCopy = async () => {
-    try {
-      await navigator.clipboard.writeText(value);
-      toast({
-        description: "Mode copied to clipboard!",
-        className: `${workSans.className} bg-[#2ca585]`
-      });
-    } catch (error) {
-      toast({
-        variant: "destructive",
-        description: "Failed to copy",
-        className: `${workSans.className}`
-      });
-    }
-  };
 
   return (
     <div className="space-y-1">
       <div className="text-[#aeb3b6] text-left flex justify-between items-center">
         <span className="text-muted-foreground">{label}</span>
         <div className="flex items-center gap-2">
-          <span className="text-right text-foreground">{value}</span>
+          <span className="text-right text-foreground">{mode ? shortenAddress(value) : value}</span>
           {mode && (
             <Copy
               className="h-4 w-4 text-muted-foreground hover:text-foreground transition-colors"
-              onClick={handleCopy}
+              onClick={() => handleCopy(value)}
             />
           )}
         </div>
