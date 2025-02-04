@@ -1,19 +1,23 @@
 import { PageLayout } from '@/components/page-layout';
-import React, { useState } from 'react';
+import React, { useState,useEffect } from 'react';
 import { workSans } from '@/lib/fonts';
 import FundDetails from '@/components/dashboard/fundcard-details';
 import Buysell from '@/components/dashboard/buysell-card';
 import { Tabs, TabsList, TabsTrigger } from '@radix-ui/react-tabs';
 import Orderbook from '@/components/dashboard/orderbook';
 
+
+
 const Dashboard: React.FC = () => {
+  
 
   const props: FundDetailsProps = {
     icon: "https://via.placeholder.com/70x70", // Placeholder image URL
-    shortname: "TBA",
+    shortname: "DAO",
     longname: "To Be Announced",
     description: "This DAO has not been announced yet",
-    holdings: 0, // Initial holdings of ALCH
+    holdings: 0
+    
   };
 
   const [activeTab, setActiveTab] = useState("trades")
@@ -61,7 +65,7 @@ const Dashboard: React.FC = () => {
           <div className="md:col-span-7">
             <iframe
               className="h-[400px] w-full border-0 sm:h-[600px]"
-              src="https://dexscreener.com/base/0x2b0772BEa2757624287ffc7feB92D03aeAE6F12D?embed=1&amp;info=0&amp;trades=0"
+              src="https://dexscreener.com/mode/0x7E7985c745F016696e35a92c582c030C69803C01?embed=1&loadChartSettings=0&trades=0&tabs=0&info=0&chartLeftToolbar=0&chartTheme=dark&theme=dark&chartStyle=0&chartType=usd&interval=15"
             ></iframe>
           </div>
 
