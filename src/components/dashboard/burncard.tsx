@@ -116,7 +116,7 @@ export default function BurnCard(props: UpcomingFundDetailsProps) {
           <h3 className="text-[#409cff] text-xl sm:text-2xl font-semibold">
             About Token
           </h3>
-          <p className="text-base sm:text-lg">
+          <div className="text-base sm:text-lg">
             {
               props.aboutToken.trim()
                 .split("\n")
@@ -127,7 +127,7 @@ export default function BurnCard(props: UpcomingFundDetailsProps) {
                   </p>
                 ))
             }
-          </p>
+          </div>
         </div>
         {/*<div className="grid sm:grid-cols-2 gap-6">
           {['How to Earn', 'Whitelist Mechanics'].map((title) => (
