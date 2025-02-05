@@ -66,7 +66,7 @@ const Dashboard: React.FC = () => {
           <div className="md:col-span-7">
             <iframe
               className="h-[400px] w-full border-0 sm:h-[600px]"
-              src="https://dexscreener.com/mode/0x7E7985c745F016696e35a92c582c030C69803C01?embed=1&loadChartSettings=0&trades=0&tabs=0&info=0&chartLeftToolbar=0&chartTheme=dark&theme=dark&chartStyle=0&chartType=usd&interval=15"
+              src="https://dexscreener.com/mode/0x5edbe707191Ae3A5bd5FEa5EDa0586f7488bD961?embed=1&loadChartSettings=0&trades=0&tabs=0&info=0&chartLeftToolbar=0&chartTheme=dark&theme=dark&chartStyle=0&chartType=usd&interval=15"
             ></iframe>
           </div>
 

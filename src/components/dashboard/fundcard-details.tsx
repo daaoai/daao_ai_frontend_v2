@@ -8,7 +8,7 @@ import daoABI from "../../DaoABI.json"
 import { handleCopy, shortenAddress } from '@/lib/utils';
 
 
-const DAO_TOKEN_ADDRESS = '0xeadDc1199350bC3eAa586124eC84821b3fe586a1212';
+const DAO_TOKEN_ADDRESS = '0x5edbe707191Ae3A5bd5FEa5EDa0586f7488bD961';
 
 const FundDetails: React.FC<FundDetailsProps> = (props) => {
 
@@ -49,7 +49,7 @@ const FundDetails: React.FC<FundDetailsProps> = (props) => {
     const fetchMarketCap = async () => {
       try {
         const response = await fetch(
-          `https://api.dexscreener.com/tokens/v1/mode/${props.modeAddress}?include_market_cap=true`
+          `https://api.dexscreener.com/tokens/v1/mode/0x5edbe707191Ae3A5bd5FEa5EDa0586f7488bD961`
         );
         const data = await response.json();
         console.log(data);

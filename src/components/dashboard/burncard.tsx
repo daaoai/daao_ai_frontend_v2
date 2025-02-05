@@ -5,16 +5,19 @@ import { Separator } from "@/components/ui/separator"
 import { handleContribute } from "@/contributeFund"
 import { useEffect, useState } from "react"
 import { ethers } from "ethers"
-import { getTier } from "@/getterFunctions"
+import { getTier,getContractData } from "@/getterFunctions"
 import { useAccount } from "wagmi";
 import modeABI from "../../modeABI.json";
+import Link from "next/link"
 const MODE_TOKEN_ADDRESS = "0xDfc7C877a950e49D2610114102175A06C2e3167a";
+
 // import { set } from "date-fns"
 // import { EthereumIcon } from "@/assets/icons/ethereum-icon"
 
 export default function BurnCard(props: UpcomingFundDetailsProps) {
   const [amount, setAmount] = useState(0);
   const [balance, setBalance] = useState("");
+  const [goalReached,setGoalReached] = useState(false);
   const [tier, setTier] = useState("");
   const { isConnected } = useAccount();
   const [isContributing, setIsContributing] = useState(false);
@@ -52,6 +55,23 @@ export default function BurnCard(props: UpcomingFundDetailsProps) {
       fetchBalance();
     }
   }, [isConnected]);
+
+  useEffect(() => {
+    const fetchContractData = async () => {
+      try {
+        const data = await getContractData();
+        if(data.goalReached && data.finalisedFundraising){
+          setGoalReached(true);
+        }
+        console.log("Data is ", data)
+      } catch (error) {
+        console.error("Error fetching contract data:", error);
+      }
+    };
+
+    fetchContractData();
+  }
+  , []);
 
 
   const handleInputChange = (e: any) => {
@@ -93,7 +113,7 @@ export default function BurnCard(props: UpcomingFundDetailsProps) {
                 <span className="text-[#e4e6e7] text-sm sm:text-base font-medium">MAX</span>
               </div>
               <div className="space-y-3">
-                <p className="text-base sm:text-lg font-medium">Balance: <span className="font-semibold">{balance}</span></p>
+                <p className="text-base sm:text-lg font-medium">Balance: <span className="font-semibold">{Number(balance).toFixed(3)}</span></p>
                 <p className="text-base sm:text-lg font-medium">Tier: <span className="font-semibold">{tier}</span></p>
                 <Button
                   variant="outline"
@@ -113,6 +133,19 @@ export default function BurnCard(props: UpcomingFundDetailsProps) {
       )}
       <CardContent className="space-y-8 mt-8">
         <div className="space-y-4">
+        <h3 className="text-[#409cff] text-xl sm:text-lg font-semibold">
+            Goal Has Been Reached 
+
+          </h3>
+        
+          <Link href="/app/dashboard/1">
+            <Button
+            
+              className="bg-[#409cff] text-white text-lg sm:text-xl font-semibold hover:bg-[#307bcc] w-full"
+            >
+              Go to Token Dashboard
+            </Button>
+          </Link>
           <h3 className="text-[#409cff] text-xl sm:text-2xl font-semibold">
             About Token
           </h3>

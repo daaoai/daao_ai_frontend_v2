@@ -17,11 +17,11 @@ import { set } from "date-fns"
 import DaoTokenLogo from "../../assets/icons/logo.svg";
 
 
-const DAO_TOKEN_ADDRESS = '0xeadDc1199350bC3eAa586124eC84821b3fe586a1';
+const DAO_TOKEN_ADDRESS = '0x5edbe707191Ae3A5bd5FEa5EDa0586f7488bD961';
 
 
 const CL_POOL_ROUTER_ADDRESS = "0xC3a15f812901205Fc4406Cd0dC08Fe266bF45a1E";
-const CL_POOL_ADDRESS = "0x7E7985c745F016696e35a92c582c030C69803C01";
+const CL_POOL_ADDRESS = "0x6Ffc554157E44699641B47EE279c9BbB8AaAb4e5";
 const MODE_TOKEN_ADDRESS = "0xDfc7C877a950e49D2610114102175A06C2e3167a";
 
 const Buysell = () => {
@@ -165,7 +165,7 @@ const Buysell = () => {
       } else {
         sqrtPriceLimitBN = sqrtPriceBN.mul(100 + slippageBps).div(100)
       }
-      const sqrtPriceLimitX96 = "4295128750"
+      const sqrtPriceLimitX96 = "1461446703485210103287273052203988822378723970300"
       const deadline = Math.floor(Date.now() / 1000) + 5 * 60
       const [amount0, amount1, newSqrtPrice] = await clPoolRouter.callStatic.getSwapResult(
         CL_POOL_ADDRESS,
@@ -243,7 +243,8 @@ const Buysell = () => {
       } else {
         sqrtPriceLimitBN = sqrtPriceBN.mul(100 + slippageBps).div(100);
       }
-      const sqrtPriceLimitX96 = "4295128750"
+      //4295128750
+      const sqrtPriceLimitX96 = "1461446703485210103287273052203988822378723970300"
       console.log("sqrtPriceLimitX96:", sqrtPriceLimitX96);
 
       const tx = await clPoolRouter.getSwapResult(

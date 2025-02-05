@@ -23,8 +23,12 @@ export const getContractData = async () => {
   const end = (await contract.fundraisingDeadline());
   const fundraisingGoal = (await contract.fundraisingGoal()).toString();
   const totalRaised = (await contract.totalRaised()).toString();
+  const goalReached = (await contract.goalReached());
+  const finalisedFundraising = (await contract.fundraisingFinalized());
   const userTiers = await contract.getWhitelistInfo(userAddress);
   const userTierLabel = TIER_LABELS[userTiers.tier];
+  console.log("userTiers is ", goalReached, finalisedFundraising)
+
   console.log("userTiers is ", userTierLabel)
 
 
@@ -33,11 +37,13 @@ export const getContractData = async () => {
   console.log("totalRaised is ", totalRaised)
 
 
-  const endDate = new Date(end.toNumber()* 1000);
+  const endDate = new Date(end.toNumber() * 1000);
   console.log("endDate is ", endDate)
 
   // 6. Return all data in an object
   return {
+    goalReached,
+    finalisedFundraising,
     endDate,
     fundraisingGoal,
     totalRaised,
