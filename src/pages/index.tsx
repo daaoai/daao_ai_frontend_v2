@@ -135,15 +135,18 @@ const HomePage: NextPage = () => {
               objectFit="cover"
             />
           </div>
-
+          <Link href="/app">
           <div className="flex flex-col items-center gap-2">
+        
             <h2 className={`text-center text-white text-xl sm:text-2xl font-normal ${gold.className} leading-tight tracking-wide`}>
               DeFAI Cartel
             </h2>
+          
             <p className={`text-[#d1ea48] text-lg sm:text-xl font-normal ${gold.className}`}>
               $CARTEL
             </p>
           </div>
+          </Link>
 
           {/*
           {statusMsg && (
