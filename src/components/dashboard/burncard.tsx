@@ -17,7 +17,7 @@ const MODE_TOKEN_ADDRESS = "0xDfc7C877a950e49D2610114102175A06C2e3167a";
 export default function BurnCard(props: UpcomingFundDetailsProps) {
   const [amount, setAmount] = useState(0);
   const [balance, setBalance] = useState("");
-  const [goalReached,setGoalReached] = useState(false);
+  const [goalReached,setGoalReached] = useState(true);
   const [tier, setTier] = useState("");
   const { isConnected } = useAccount();
   const [isContributing, setIsContributing] = useState(false);
@@ -94,7 +94,7 @@ export default function BurnCard(props: UpcomingFundDetailsProps) {
 
   return (
     <Card className="text-left w-full max-w-3xl bg-[#0d0d0d] border-[#383838] text-white font-['Work Sans']">
-      {props.fundingProgress < 100 ? (
+      {props.fundingProgress < 100 || !goalReached? (
         <>
           <CardHeader className="space-y-9">
             <div className="flex items-center gap-3">
@@ -129,11 +129,9 @@ export default function BurnCard(props: UpcomingFundDetailsProps) {
           <Separator className="bg-[#383838]" />
         </>
       ) : (
-        <></>
-      )}
-      <CardContent className="space-y-8 mt-8">
-        <div className="space-y-4">
-        <h3 className="text-[#409cff] text-xl sm:text-lg font-semibold">
+        <>
+          <div className="space-y-10">
+          <h3 className="text-[#409cff] text-2xl sm:text-2xl font-semibold mt-7 mx-4 my-6">
             Goal Has Been Reached 
 
           </h3>
@@ -141,11 +139,17 @@ export default function BurnCard(props: UpcomingFundDetailsProps) {
           <Link href="/app/dashboard/1">
             <Button
             
-              className="bg-[#409cff] text-white text-lg sm:text-xl font-semibold hover:bg-[#307bcc] w-full"
+              className="bg-[#409cff] text-white text-lg sm:text-xl font-semibold hover:bg-[#307bcc] w-100 mx-8"
             >
               Go to Token Dashboard
             </Button>
           </Link>
+          </div>
+          </>
+      )}
+      <CardContent className="space-y-8 mt-8">
+        <div className="space-y-4">
+      
           <h3 className="text-[#409cff] text-xl sm:text-2xl font-semibold">
             About Token
           </h3>

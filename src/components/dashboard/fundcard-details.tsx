@@ -6,67 +6,72 @@ import React, { useState, useEffect } from 'react';
 import { ethers } from 'ethers';
 import daoABI from "../../DaoABI.json"
 import { handleCopy, shortenAddress } from '@/lib/utils';
+import {getContractData} from "../../getterFunctions"
 
-
-const DAO_TOKEN_ADDRESS = '0x5edbe707191Ae3A5bd5FEa5EDa0586f7488bD961';
 
 const FundDetails: React.FC<FundDetailsProps> = (props) => {
-
-
-
   const [marketCap, setMarketCap] = useState<number | null>(null);
+  const [daoTokenAddress, setDaoTokenAddress] = useState('');
   const [price, setPrice] = useState<number | null>(null);
-
-
   const [daoHoldings, setDaoHoldings] = useState('0');
-
+  useEffect(() => {
+    const fetchContractData = async () => {
+      try {
+        const data = await getContractData()
+        if (data?.daoToken) {
+          setDaoTokenAddress(data.daoToken)
+        }
+      } catch (error) {
+        console.error('Error fetching contract data:', error)
+      }
+    }
+    fetchContractData()
+  }, [])
 
   useEffect(() => {
     const fetchDaoBalance = async () => {
+      if (!daoTokenAddress) return 
+      if (typeof window === 'undefined' || !(window as any).ethereum) return
+
       try {
-        if ((window as any).ethereum) {
-          await (window as any).ethereum.request({ method: 'eth_requestAccounts' });
+        await (window as any).ethereum.request({ method: 'eth_requestAccounts' })
+        const provider = new ethers.providers.Web3Provider((window as any).ethereum)
+        const signer = provider.getSigner()
+        const userAddress = await signer.getAddress()
 
-          const provider = new ethers.providers.Web3Provider((window as any).ethereum);
-          const signer = provider.getSigner();
-          const userAddress = await signer.getAddress();
-          const daoContract = new ethers.Contract(DAO_TOKEN_ADDRESS, daoABI, provider);
-          const balanceBN = await daoContract.balanceOf(userAddress);
-          const balanceFormatted = ethers.utils.formatUnits(balanceBN, 18);
-          setDaoHoldings(balanceFormatted);
-        } else {
-          console.warn('No crypto wallet (window.ethereum) found');
-        }
+        const daoContract = new ethers.Contract(daoTokenAddress, daoABI, provider)
+        const balanceBN = await daoContract.balanceOf(userAddress)
+        const balanceFormatted = ethers.utils.formatUnits(balanceBN, 18)
+        setDaoHoldings(balanceFormatted)
       } catch (error) {
-        console.error('Error fetching DAO balance:', error);
+        console.error('Error fetching DAO balance:', error)
       }
-    };
-
-    fetchDaoBalance();
-  }, []);
+    }
+    fetchDaoBalance()
+  }, [daoTokenAddress])
 
   useEffect(() => {
-    const fetchMarketCap = async () => {
+    const fetchMarketData = async () => {
       try {
+        // Replace with your actual endpoint or logic
         const response = await fetch(
-          `https://api.dexscreener.com/tokens/v1/mode/0x5edbe707191Ae3A5bd5FEa5EDa0586f7488bD961`
-        );
-        const data = await response.json();
-        console.log(data);
-        if (data) {
-          setMarketCap(data[0].marketCap);
-          setPrice(data[0].priceUsd);
+          'https://api.dexscreener.com/tokens/v1/mode/$`{daoTokenAddress}`'
+        )
+        const data = await response.json()
 
+        // Example shape: data[0].marketCap, data[0].priceUsd
+        if (data && Array.isArray(data) && data[0]) {
+          setMarketCap(data[0].marketCap)
+          setPrice(data[0].priceUsd)
         } else {
-          console.warn('Market cap data not found for my-token');
+          console.warn('Market data not in expected format.')
         }
       } catch (error) {
-        console.error('Error fetching market cap:', error);
+        console.error('Error fetching market data:', error)
       }
-    };
-
-    fetchMarketCap();
-  }, []);
+    }
+    fetchMarketData()
+  }, [])
   return (
     <>
       <Card className="bg-[#0d0d0d] text-white sm:p-2 max-w-xl lg:max-w-2xl mx-auto w-full">

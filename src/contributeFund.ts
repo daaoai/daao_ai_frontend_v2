@@ -5,7 +5,7 @@ import ercAbi from "./erc20Abi.json"
 
 
 const contractABI = abi;
-const contractAddress = "0xb728B1fB0779AAd53359a7472845b2e1a1A2e2B2";
+const contractAddress = "0xE441a0d919e1d96aCeFD390B0A458a388bc5Ff42";
 const tokenAddress = "0xDfc7C877a950e49D2610114102175A06C2e3167a"; 
  
 let web3: Web3 | null = null;

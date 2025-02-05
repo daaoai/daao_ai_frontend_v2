@@ -1,7 +1,7 @@
 import { ethers } from "ethers";
 import contractABI from "./abi.json";
 
-const CONTRACT_ADDRESS = "0xb728B1fB0779AAd53359a7472845b2e1a1A2e2B2"; ``
+const CONTRACT_ADDRESS = "0xE441a0d919e1d96aCeFD390B0A458a388bc5Ff42"; ``
 const TIER_LABELS = ["None", "Platinum", "Gold", "Silver"];
 export const getContractData = async () => {
   if (!(window as any).ethereum) {
@@ -25,6 +25,9 @@ export const getContractData = async () => {
   const totalRaised = (await contract.totalRaised()).toString();
   const goalReached = (await contract.goalReached());
   const finalisedFundraising = (await contract.fundraisingFinalized());
+  const daoToken = (await contract.daoToken());
+  const veloFactory = (await contract.VELODROME_FACTORY());
+
   const userTiers = await contract.getWhitelistInfo(userAddress);
   const userTierLabel = TIER_LABELS[userTiers.tier];
   console.log("userTiers is ", goalReached, finalisedFundraising)
@@ -42,6 +45,8 @@ export const getContractData = async () => {
 
   // 6. Return all data in an object
   return {
+    veloFactory,
+    daoToken,
     goalReached,
     finalisedFundraising,
     endDate,
