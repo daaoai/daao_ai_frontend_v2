@@ -269,7 +269,8 @@ const Buysell = () => {
 
 
       const receipt = await tx.wait();
-      alert(`Swap successful!\nTransaction Hash: ${receipt.transactionHash}`)
+      // alert(`Swap successful!\nTransaction Hash: ${receipt.transactionHash}`)
+      window.location.reload();
 
       await fetchSlot0();
       setAmountFrom("");
