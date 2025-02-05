@@ -37,11 +37,14 @@ const Buysell = () => {
   const [modeBalance, setModeBalance] = useState("0"); 
   const [daoBalance, setDaoBalance] = useState("0");
 
-
+  
   useEffect(() => {
     fetchPoolTokens();
     fetchSlot0();
     fetchBalances();
+    setAmountFrom("");
+    setAmountTo(0);
+
   }, [activeTab]);
   const fetchDaoBalance = async () => {
     try {
@@ -96,7 +99,9 @@ const Buysell = () => {
       const provider = new ethers.providers.Web3Provider(window.ethereum)
       const poolContract = new ethers.Contract(CL_POOL_ADDRESS, poolAbi, provider)
       const [sqrtPriceX96] = await poolContract.slot0()
-      setCurrentSqrtPrice(sqrtPriceX96.toString())
+
+      // setCurrentSqrtPrice(sqrtPriceX96.toString())
+      setCurrentSqrtPrice(activeTab === "buy" ? "1461446703485210103287273052203988822378723970300": "4295128750");
     } catch (error) {
       console.error("Error fetching slot0:", error)
     }
@@ -165,7 +170,9 @@ const Buysell = () => {
       } else {
         sqrtPriceLimitBN = sqrtPriceBN.mul(100 + slippageBps).div(100)
       }
-      const sqrtPriceLimitX96 = "1461446703485210103287273052203988822378723970300"
+      console.log("sqrtPriceLimitBN:", currentSqrtPrice)
+      console.log("zeroForOne:", zeroForOne)
+      const sqrtPriceLimitX96 = currentSqrtPrice
       const deadline = Math.floor(Date.now() / 1000) + 5 * 60
       const [amount0, amount1, newSqrtPrice] = await clPoolRouter.callStatic.getSwapResult(
         CL_POOL_ADDRESS,
@@ -244,8 +251,12 @@ const Buysell = () => {
         sqrtPriceLimitBN = sqrtPriceBN.mul(100 + slippageBps).div(100);
       }
       //4295128750
-      const sqrtPriceLimitX96 = "1461446703485210103287273052203988822378723970300"
+      const sqrtPriceLimitX96 = currentSqrtPrice
+      console.log("zeroforone is",zeroForOne);
       console.log("sqrtPriceLimitX96:", sqrtPriceLimitX96);
+      console.log(amountSpecified);
+      console.log(minOutputBN);
+      console.log(deadline);
 
       const tx = await clPoolRouter.getSwapResult(
         CL_POOL_ADDRESS,
