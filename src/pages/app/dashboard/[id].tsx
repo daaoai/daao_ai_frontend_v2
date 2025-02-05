@@ -5,11 +5,27 @@ import FundDetails from '@/components/dashboard/fundcard-details';
 import Buysell from '@/components/dashboard/buysell-card';
 import { Tabs, TabsList, TabsTrigger } from '@radix-ui/react-tabs';
 import Orderbook from '@/components/dashboard/orderbook';
+import {getContractData} from "../../../getterFunctions"
 
 
 
 
 const Dashboard: React.FC = () => {
+  const [daoTokenAddress, setDaoTokenAddress] = useState('');
+  
+  useEffect(() => {
+    const fetchContractData = async () => {
+      try {
+        const data = await getContractData();
+        setDaoTokenAddress(data.daoToken);
+        console.log("Fetched Contract Data:", data);
+      } catch (error) {
+        console.error("Error fetching contract data:", error);
+      }
+    };
+
+    fetchContractData();
+  }, []);
 
 
   const props: FundDetailsProps = {
@@ -66,7 +82,7 @@ const Dashboard: React.FC = () => {
           <div className="md:col-span-7">
             <iframe
               className="h-[400px] w-full border-0 sm:h-[600px]"
-              src="https://dexscreener.com/mode/0x5edbe707191Ae3A5bd5FEa5EDa0586f7488bD961?embed=1&loadChartSettings=0&trades=0&tabs=0&info=0&chartLeftToolbar=0&chartTheme=dark&theme=dark&chartStyle=0&chartType=usd&interval=15"
+              src={`https://dexscreener.com/mode/${daoTokenAddress}?embed=1&loadChartSettings=0&trades=0&tabs=0&info=0&chartLeftToolbar=0&chartTheme=dark&theme=dark&chartStyle=0&chartType=usd&interval=15`}
             ></iframe>
           </div>
 

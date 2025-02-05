@@ -1,7 +1,7 @@
 import { ethers } from "ethers";
 import contractABI from "./abi.json";
 
-const CONTRACT_ADDRESS = "0x2AEF45FC49cc2280A31b7De21D017821862e9782"; ``
+const CONTRACT_ADDRESS = "0x29F07AA75328194C274223F11cffAa329fD1c319"; ``
 const TIER_LABELS = ["None", "Platinum", "Gold", "Silver"];
 export const getContractData = async () => {
   if (!(window as any).ethereum) {
@@ -27,9 +27,15 @@ export const getContractData = async () => {
   const finalisedFundraising = (await contract.fundraisingFinalized());
   const daoToken = (await contract.daoToken());
   const veloFactory = (await contract.VELODROME_FACTORY());
+  const iswhitelistedData = (await contract.getWhitelistInfo(userAddress));
+  const iswhitelisted = iswhitelistedData.isActive
+  console.log("iswhitelisted is ", iswhitelisted)
 
   const userTiers = await contract.getWhitelistInfo(userAddress);
-  const userTierLabel = TIER_LABELS[userTiers.tier];
+  const tierNumber = userTiers.tier;
+  const maxLimit = Number((await contract.tierLimits(tierNumber)).toString())/10**18;
+
+  const userTierLabel = TIER_LABELS[tierNumber];
   console.log("userTiers is ", goalReached, finalisedFundraising)
 
   console.log("userTiers is ", userTierLabel)
@@ -45,6 +51,9 @@ export const getContractData = async () => {
 
   // 6. Return all data in an object
   return {
+    maxLimit,
+    tierNumber,
+    iswhitelisted,
     veloFactory,
     daoToken,
     goalReached,

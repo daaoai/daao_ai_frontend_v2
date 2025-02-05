@@ -6,7 +6,7 @@ import React, { useState, useEffect } from 'react';
 import { ethers } from 'ethers';
 import daoABI from "../../DaoABI.json"
 import { handleCopy, shortenAddress } from '@/lib/utils';
-import {getContractData} from "../../getterFunctions"
+import { getContractData } from "../../getterFunctions"
 
 
 const FundDetails: React.FC<FundDetailsProps> = (props) => {
@@ -30,7 +30,7 @@ const FundDetails: React.FC<FundDetailsProps> = (props) => {
 
   useEffect(() => {
     const fetchDaoBalance = async () => {
-      if (!daoTokenAddress) return 
+      if (!daoTokenAddress) return
       if (typeof window === 'undefined' || !(window as any).ethereum) return
 
       try {
@@ -52,14 +52,18 @@ const FundDetails: React.FC<FundDetailsProps> = (props) => {
 
   useEffect(() => {
     const fetchMarketData = async () => {
+      if (!daoTokenAddress) return
+      console.log("daoTokenAddress is ", daoTokenAddress)
+      const url = `https://api.dexscreener.com/token-pairs/v1/mode/${daoTokenAddress}`
+      console.log("url is ", url)
       try {
         // Replace with your actual endpoint or logic
         const response = await fetch(
-          'https://api.dexscreener.com/tokens/v1/mode/$`{daoTokenAddress}`'
+          url,
         )
         const data = await response.json()
+        console.log("Data is ", data)
 
-        // Example shape: data[0].marketCap, data[0].priceUsd
         if (data && Array.isArray(data) && data[0]) {
           setMarketCap(data[0].marketCap)
           setPrice(data[0].priceUsd)
@@ -71,7 +75,7 @@ const FundDetails: React.FC<FundDetailsProps> = (props) => {
       }
     }
     fetchMarketData()
-  }, [])
+  }, [daoTokenAddress])
   return (
     <>
       <Card className="bg-[#0d0d0d] text-white sm:p-2 max-w-xl lg:max-w-2xl mx-auto w-full">

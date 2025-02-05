@@ -8,11 +8,10 @@ import { Clock, Globe } from 'lucide-react'
 import { TelegramIcon, XIcon } from "@/assets/icons/social"
 import { useState, useEffect } from "react"
 import { getContractData } from "../../getterFunctions";
-// import { set } from "date-fns"
-
 
 export default function UpcomingFunds(props: UpcomingFundDetailsProps) {
   const [endFTime, setEndFTime] = useState<number>(Date.now());
+  const [fundrasingGoal, setFundraisingGoal] = useState<number>(0);
 
   const getTimeRemaining = (endTime: number) => {
     const now = Date.now();
@@ -35,6 +34,7 @@ export default function UpcomingFunds(props: UpcomingFundDetailsProps) {
       try {
         const data = await getContractData();
         setEndFTime(Number(data.endDate));
+        setFundraisingGoal(Number(data.fundraisingGoal));
         console.log("Data is ", data)
       } catch (error) {
         console.error("Error fetching contract data:", error);
@@ -102,7 +102,7 @@ export default function UpcomingFunds(props: UpcomingFundDetailsProps) {
         ) : (
           <div className="space-y-2 sm:space-y-3">
             <div className="flex justify-between items-center text-sm sm:text-base lg:text-lg">
-              <span>Funding Progress</span>
+              <span>Funding Progress ({(fundrasingGoal/10**18).toFixed(0)} Mode)</span>
               <span>{props.fundingProgress}%</span>
             </div>
             <Progress value={props.fundingProgress >= 0 ? props.fundingProgress : 0} className="h-4 sm:h-5 [&>div]:bg-[#409cff] bg-[#2b4977]" />

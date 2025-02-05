@@ -12,19 +12,22 @@ import modeABI from "../../modeABI.json"
 import { FiSettings } from "react-icons/fi"
 import ModeTokenLogo from "../../assets/icons/mode.png";
 import Image from "next/image";
-import daoABI from "../../DaoABI.json"
-import { set } from "date-fns"
+import daoABI from "../../DaoABI.json";
 import DaoTokenLogo from "../../assets/icons/logo.svg";
 import {getContractData} from "../../getterFunctions"
 import velodromeFactoryABI from "../../veloABI.json"
+import swapRouter from "../../swapSimulateABI.json"
+import { useToast } from '@/hooks/use-toast';
 
 const TICK_SPACING = 100;
 const VELODROME_FACTORY_ADDRESS = "0x04625B046C69577EfC40e6c0Bb83CDBAfab5a55F"
 const CL_POOL_ROUTER_ADDRESS = "0xC3a15f812901205Fc4406Cd0dC08Fe266bF45a1E";
+const SWAP_ROUTER_ADDRESS = "0xB11f2310D1b3FF589af56b981c17BC57dee1D488"
 const MODE_TOKEN_ADDRESS = "0xDfc7C877a950e49D2610114102175A06C2e3167a";
 
 const Buysell = () => {
-
+  
+  const { toast } = useToast();
   const [activeTab, setActiveTab] = useState<"buy" | "sell">("buy");
   const [amountFrom, setAmountFrom] = useState("");
   const [amountTo, setAmountTo] = useState(0);
@@ -111,12 +114,12 @@ const Buysell = () => {
         const balanceBN = await daoContract.balanceOf(userAddress);
         const balanceFormatted = ethers.utils.formatUnits(balanceBN, 18);
         return balanceFormatted;
-      
     } catch (error) {
       console.error('Error fetching DAO balance:', error);
       return "0";
     }
   };
+
   async function fetchModeBalance(): Promise<string> {
      if (!window.ethereum) return "0"
     try {
@@ -135,7 +138,6 @@ const Buysell = () => {
     }
   };
 
-
   async function fetchSlot0() {
     if (!poolAddress) return
     if (!window.ethereum) return
@@ -143,14 +145,11 @@ const Buysell = () => {
       const provider = new ethers.providers.Web3Provider(window.ethereum)
       const poolContract = new ethers.Contract(poolAddress, poolAbi, provider)
       const [sqrtPriceX96] = await poolContract.slot0()
-
-      // setCurrentSqrtPrice(sqrtPriceX96.toString())
       setCurrentSqrtPrice(activeTab === "buy" ? "1461446703485210103287273052203988822378723970300": "4295128750");
     } catch (error) {
       console.error("Error fetching slot0:", error)
     }
   }
-
 
   async function fetchPoolTokens() {
     if (!poolAddress) return
@@ -170,7 +169,7 @@ const Buysell = () => {
       console.error("Error fetching pool tokens:", error)
     }
   }
-  
+
   async function fetchBalances() {
     if (!window.ethereum) return;
     if (activeTab === "buy") {
@@ -199,15 +198,13 @@ const Buysell = () => {
   const zeroForOne = computeZeroForOne();
 
   async function simulateSwap(newFromValue: string) {
+    if (!window.ethereum || !poolAddress || !currentSqrtPrice) return
     try {
-      if (!window.ethereum) return
-      if (!currentSqrtPrice) return;
       const provider = new ethers.providers.Web3Provider(window.ethereum)
       const signer = provider.getSigner()
-
       const clPoolRouter = new ethers.Contract(
-        CL_POOL_ROUTER_ADDRESS,
-        router,
+        SWAP_ROUTER_ADDRESS,
+        swapRouter,
         signer
       )
       const amountSpecified = ethers.utils.parseUnits(newFromValue, 18)
@@ -225,21 +222,14 @@ const Buysell = () => {
       console.log("zeroForOne:", zeroForOne)
       const sqrtPriceLimitX96 = currentSqrtPrice
       const deadline = Math.floor(Date.now() / 1000) + 5 * 60
-      const [amount0, amount1, newSqrtPrice] = await clPoolRouter.callStatic.getSwapResult(
+      const amount1 = await clPoolRouter.callStatic.quoteExactInputSingle(
         poolAddress,
         zeroForOne,
         amountSpecified,
-        sqrtPriceLimitX96,
-        minOutput,
-        deadline
+        sqrtPriceLimitX96
       );
-      let outBn
-      if (zeroForOne) {
-        outBn = amount1
-      } else {
-        outBn = amount0
-      }
-      let outBnAbs = outBn
+    
+      let outBnAbs = amount1
       if (outBnAbs.lt(0)) {
         outBnAbs = outBnAbs.mul(-1)
       }
@@ -263,15 +253,87 @@ const Buysell = () => {
     simulateSwap(val);
   }
 
+  async function checkAndApproveDAO(signer: ethers.Signer) {
+    if (!daoTokenAddress) return
+    const userAddress = await signer.getAddress()
+    const daoTokenContract = new ethers.Contract(daoTokenAddress, daoABI, signer)
+
+    const requiredAmountBN = ethers.utils.parseUnits(amountFrom || "0", 18)
+
+    const currentAllowance: ethers.BigNumber = await daoTokenContract.allowance(
+      userAddress,
+      CL_POOL_ROUTER_ADDRESS
+    )
+    if (currentAllowance.lt(requiredAmountBN)) {
+      console.log("Approving DAO tokens...")
+      const approveTx = await daoTokenContract.approve(
+        CL_POOL_ROUTER_ADDRESS,
+        requiredAmountBN
+      )
+      await approveTx.wait()
+      console.log("DAO token approval completed!")
+    }
+  }
+
+  async function checkAndApproveMODE(signer: ethers.Signer) {
+    if (!daoTokenAddress) return
+    const userAddress = await signer.getAddress()
+    const ModeTokenContract = new ethers.Contract(MODE_TOKEN_ADDRESS, modeABI, signer)
+
+    const requiredAmountBN = ethers.utils.parseUnits(amountFrom || "0", 18)
+
+    const currentAllowance: ethers.BigNumber = await ModeTokenContract.allowance(
+      userAddress,
+      MODE_TOKEN_ADDRESS
+    )
+    if (currentAllowance.lt(requiredAmountBN)) {
+      console.log("Approving DAO tokens...")
+      const approveTx = await ModeTokenContract.approve(
+        MODE_TOKEN_ADDRESS,
+        requiredAmountBN
+      )
+      await approveTx.wait()
+      console.log("DAO token approval completed!")
+    }
+  }
 
   async function handleSwap() {
     try {
       setIsSwapping(true)
 
       if (!window.ethereum) throw new Error("No Ethereum provider found");
+      if (!amountFrom){
+         toast({
+          title: "No amount specified",
+        })
+        return 
+      }
+      if (amountFrom === "0"){
+        toast({
+          title: "Amount must be greater than 0",
+        })
+        return 
+      }
+      if(activeTab==="buy" && Number(modeBalance) < Number(amountFrom)){
+        toast({
+          title: "Insufficient balance",
+        })
+        return 
+      }
+      if(activeTab==="sell" && Number(daoBalance) < Number(amountFrom)){
+        toast({
+          title: "Insufficient balance",
+        })
+        return 
+      }
       await window.ethereum.request({ method: "eth_requestAccounts" });
       const provider = new ethers.providers.Web3Provider(window.ethereum);
       const signer = provider.getSigner();
+      if (activeTab === "sell") {
+        await checkAndApproveDAO(signer)
+      } else if (activeTab === "buy") {
+        await checkAndApproveMODE(signer)
+      }
       const clPoolRouter = new ethers.Contract(CL_POOL_ROUTER_ADDRESS, router, signer);
       const amountSpecified = ethers.utils.parseUnits(amountFrom || "0", "ether");
       console.log("amountSpecified:", amountSpecified.toString());
@@ -404,8 +466,8 @@ const Buysell = () => {
                 onChange={handleFromChange}
                 className={`appearance-none bg-transparent border-0 p-0 text-3xl w-24 focus-visible:ring-0 focus-visible:ring-offset-0 ${workSans.className}`}
                 style={{
-                  minWidth: "60px",  // Set a reasonable minimum width
-                  width: `${amountTo.toString().length + 0.2}ch`, // Dynamically adjust width
+                  minWidth: "100px",  // Set a reasonable minimum width
+                  width: `${amountTo.toString().length + 2}ch`, // Dynamically adjust width
                 }}
               />
             </div>
@@ -451,7 +513,7 @@ const Buysell = () => {
                 onChange={(e) => setAmountTo(Number(e.target.value))}
                 className={`appearance-none bg-transparent border-0 p-0 text-3xl w-24 focus-visible:ring-0 focus-visible:ring-offset-0 ${workSans.className}`}
                 style={{
-                  minWidth: "60px",  // Set a reasonable minimum width
+                  minWidth: "500px",  // Set a reasonable minimum width
                   width: `${amountTo.toString().length + 0.2}ch`, // Dynamically adjust width
                 }}
               />
@@ -480,12 +542,12 @@ const Buysell = () => {
 
         <div className="flex justify-between text-sm">
           <div className="text-left space-y-1">
-            <p className="text-[#aeb3b6]">Price Impact</p>
-            <p className="text-[#aeb3b6]">Exchange</p>
+            {/* <p className="text-[#aeb3b6]">Price Impact</p>
+            <p className="text-[#aeb3b6]">Exchange</p> */}
           </div>
           <div className="space-y-1 text-right">
-            <p>0.00%</p>
-            <p className="text-2xl">-</p>
+            {/* <p>0.00%</p>
+            <p className="text-2xl">-</p> */}
           </div>
         </div>
 

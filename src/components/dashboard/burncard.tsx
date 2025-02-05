@@ -9,18 +9,38 @@ import { getTier,getContractData } from "@/getterFunctions"
 import { useAccount } from "wagmi";
 import modeABI from "../../modeABI.json";
 import Link from "next/link"
+import { useToast } from '@/hooks/use-toast';
 const MODE_TOKEN_ADDRESS = "0xDfc7C877a950e49D2610114102175A06C2e3167a";
 
 // import { set } from "date-fns"
 // import { EthereumIcon } from "@/assets/icons/ethereum-icon"
 
 export default function BurnCard(props: UpcomingFundDetailsProps) {
+  const { toast } = useToast();
   const [amount, setAmount] = useState(0);
   const [balance, setBalance] = useState("");
-  const [goalReached,setGoalReached] = useState(true);
+  const [goalReached,setGoalReached] = useState(false);
   const [tier, setTier] = useState("");
   const { isConnected } = useAccount();
   const [isContributing, setIsContributing] = useState(false);
+  const [isWhitelisted, setisWhitelisted] = useState(false);
+  const [maxLimit, setMaxLimit] = useState(0);
+
+  const checkFinalisedFundraising = async () => {
+    try {
+      const data = await getContractData();
+      if(data.finalisedFundraising){
+        window.location.href = "/app/dashboard/1"
+      }
+      else{
+        toast({
+          title: "Fundraising is not finalised yet",
+        })
+      }
+    } catch (error) {
+      console.error("Error fetching contract data:", error);
+    }
+  }
 
   const fetchBalance = async () => {
     try {
@@ -63,6 +83,8 @@ export default function BurnCard(props: UpcomingFundDetailsProps) {
         if(data.goalReached && data.finalisedFundraising){
           setGoalReached(true);
         }
+        setisWhitelisted(data.iswhitelisted);
+        setMaxLimit(data.maxLimit);
         console.log("Data is ", data)
       } catch (error) {
         console.error("Error fetching contract data:", error);
@@ -82,6 +104,25 @@ export default function BurnCard(props: UpcomingFundDetailsProps) {
   const handleContributefunction = async () => {
 
     try {
+      if(amount > Number(balance)){
+        toast({
+          title: "You do not have enough balance to contribute this amount",
+        })
+        
+        return;
+      }
+      if(!isWhitelisted){
+        toast({
+          title: "You are not whitelisted to contribute to this fund",
+        })
+        return;
+      }
+      if(amount > maxLimit){
+        toast({
+          title: "You are exceeding the maximum limit for your tier",
+        })
+        return;
+      }
       setIsContributing(true);
       await handleContribute(amount.toString());
       setIsContributing(false);
@@ -94,7 +135,7 @@ export default function BurnCard(props: UpcomingFundDetailsProps) {
 
   return (
     <Card className="text-left w-full max-w-3xl bg-[#0d0d0d] border-[#383838] text-white font-['Work Sans']">
-      {props.fundingProgress < 100 || !goalReached? (
+      {props.fundingProgress < 100 && !goalReached? (
         <>
           <CardHeader className="space-y-9">
             <div className="flex items-center gap-3">
@@ -136,14 +177,16 @@ export default function BurnCard(props: UpcomingFundDetailsProps) {
 
           </h3>
         
-          <Link href="/app/dashboard/1">
+         
             <Button
             
               className="bg-[#409cff] text-white text-lg sm:text-xl font-semibold hover:bg-[#307bcc] w-100 mx-8"
+              onClick={checkFinalisedFundraising}
             >
+
               Go to Token Dashboard
             </Button>
-          </Link>
+         
           </div>
           </>
       )}
