@@ -15,10 +15,10 @@ const Dashboard: React.FC = () => {
   const props: FundDetailsProps = {
     icon: "https://via.placeholder.com/70x70", // Placeholder image URL
     shortname: "DAO",
-    longname: "To Be Announced",
-    description: "This DAO has not been announced yet",
+    longname: "",
+    description: "This DAO has Has been announced, you can swap here",
     holdings: 0,
-    modeAddress: "0x11fd8f7B4e8Acf54Be24EE85517b90F8755E7A96",
+    modeAddress: "0x5edbe707191Ae3A5bd5FEa5EDa0586f7488bD961",
   };
 
   const [activeTab, setActiveTab] = useState("trades")
@@ -74,10 +74,10 @@ const Dashboard: React.FC = () => {
           <div className="md:col-span-3">
             <Orderbook
               name={props.longname}
-              created="12/31/2024"
-              owner="0x11fd8f7B4e8Acf54Be24EE85517b90F8755E7A96"
-              token="0xeadDc1199350bC3eAa586124eC84821b3fe586a1"
-              tradingEnds="7/1/2025, 12:11:37 AM"
+              created="1/31/2025"
+              owner="0x6F1313f206dB52139EB6892Bfd88aC9Ae36Dc54E"
+              token="0x5edbe707191Ae3A5bd5FEa5EDa0586f7488bD961"
+              tradingEnds="7/2/2025, 12:11:37 AM"
               ethRaised="100 MODE"
             />
           </div>

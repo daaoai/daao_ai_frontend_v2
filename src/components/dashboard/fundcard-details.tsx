@@ -81,7 +81,7 @@ const FundDetails: React.FC<FundDetailsProps> = (props) => {
             />
           </div>
           <CardTitle className={`text-xl sm:text-2xl md:text-3xl font-semibold ${workSans.className}`}>
-            ${props.shortname} ({props.longname})
+            ${props.shortname} {props.longname}
           </CardTitle>
         </CardHeader>
         <CardContent className="space-y-4 sm:space-y-6">

@@ -352,6 +352,10 @@ const Buysell = () => {
                 value={amountFrom}
                 onChange={handleFromChange}
                 className={`appearance-none bg-transparent border-0 p-0 text-3xl w-24 focus-visible:ring-0 focus-visible:ring-offset-0 ${workSans.className}`}
+                style={{
+                  minWidth: "60px",  // Set a reasonable minimum width
+                  width: `${amountTo.toString().length + 0.2}ch`, // Dynamically adjust width
+                }}
               />
             </div>
             <div className="space-y-2 text-right">
@@ -388,13 +392,17 @@ const Buysell = () => {
         <Card className="bg-[#1b1c1d] border-0">
           <CardContent className="p-4 flex justify-between items-center">
             <div>
-              <p className="text-left text-[#aeb3b6] text-sm">TO</p>
+              <p className="text-left  text-[#aeb3b6] text-sm">TO</p>
               <input
                 type="number"
                 placeholder="0"
                 value={amountTo}
                 onChange={(e) => setAmountTo(Number(e.target.value))}
                 className={`appearance-none bg-transparent border-0 p-0 text-3xl w-24 focus-visible:ring-0 focus-visible:ring-offset-0 ${workSans.className}`}
+                style={{
+                  minWidth: "60px",  // Set a reasonable minimum width
+                  width: `${amountTo.toString().length + 0.2}ch`, // Dynamically adjust width
+                }}
               />
             </div>
             <div className="space-y-2 text-right">
