@@ -1,19 +1,40 @@
 import { PageLayout } from '@/components/page-layout';
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { workSans } from '@/lib/fonts';
 import FundDetails from '@/components/dashboard/fundcard-details';
 import Buysell from '@/components/dashboard/buysell-card';
 import { Tabs, TabsList, TabsTrigger } from '@radix-ui/react-tabs';
 import Orderbook from '@/components/dashboard/orderbook';
+import {getContractData} from "../../../getterFunctions"
+
+
+
 
 const Dashboard: React.FC = () => {
+  const [daoTokenAddress, setDaoTokenAddress] = useState('');
+  
+  useEffect(() => {
+    const fetchContractData = async () => {
+      try {
+        const data = await getContractData();
+        setDaoTokenAddress(data.daoToken);
+        console.log("Fetched Contract Data:", data);
+      } catch (error) {
+        console.error("Error fetching contract data:", error);
+      }
+    };
+
+    fetchContractData();
+  }, []);
+
 
   const props: FundDetailsProps = {
     icon: "https://via.placeholder.com/70x70", // Placeholder image URL
-    shortname: "TBA",
-    longname: "To Be Announced",
-    description: "This DAO has not been announced yet",
-    holdings: 0, // Initial holdings of ALCH
+    shortname: "DAO",
+    longname: "",
+    description: "This DAO has Has been announced, you can swap here",
+    holdings: 0,
+    modeAddress: "0x5edbe707191Ae3A5bd5FEa5EDa0586f7488bD961",
   };
 
   const [activeTab, setActiveTab] = useState("trades")
@@ -23,12 +44,12 @@ const Dashboard: React.FC = () => {
       <div className={`w-screen overflow-hidden gap-20 ${workSans.className} flex flex-col justify-center items-center py-16 px-2 lg:px-44`}>
 
         <div
-          className="grid gap-2 md:gap-3 lg:grid-cols-[60%_40%] lg:items-stretch"
+          className="grid gap-2 md:gap-3 lg:grid-cols-[60%_40%] w-full"
         >
-          <div className="p-4 flex items-center justify-center">
+          <div className="p-2 sm:p-4 flex items-center justify-center">
             <FundDetails {...props} />
           </div>
-          <div className="p-4 flex items-center justify-center">
+          <div className="p-2 sm:p-4 flex items-center justify-center">
             <Buysell />
           </div>
         </div>
@@ -48,9 +69,6 @@ const Dashboard: React.FC = () => {
                 value="assets"
                 className="px-4 py-3 bg-[#27292a] rounded flex justify-center items-center gap-2 data-[state=active]:bg-white text-[#aeb3b6] data-[state=active]:text-black"
               >
-                <div className="text-center text-xl font-semibold font-['Work Sans'] tracking-tight">
-                  Assets
-                </div>
               </TabsTrigger>
             </TabsList>
           </Tabs>
@@ -61,7 +79,7 @@ const Dashboard: React.FC = () => {
           <div className="md:col-span-7">
             <iframe
               className="h-[400px] w-full border-0 sm:h-[600px]"
-              src="https://dexscreener.com/base/0x2b0772BEa2757624287ffc7feB92D03aeAE6F12D?embed=1&amp;info=0&amp;trades=0"
+              src={`https://dexscreener.com/mode/${daoTokenAddress}?embed=1&loadChartSettings=0&trades=0&tabs=0&info=0&chartLeftToolbar=0&chartTheme=dark&theme=dark&chartStyle=0&chartType=usd&interval=15`}
             ></iframe>
           </div>
 
@@ -69,12 +87,11 @@ const Dashboard: React.FC = () => {
           <div className="md:col-span-3">
             <Orderbook
               name={props.longname}
-              created="12/31/2024"
-              owner="0x2F...3235"
-              treasury="0x19...4fa7"
-              token="0X2B...F12D"
-              tradingEnds="7/1/2025, 12:11:37 AM"
-              ethRaised="50 ETH"
+              created="1/31/2025"
+              owner="0x6F1313f206dB52139EB6892Bfd88aC9Ae36Dc54E"
+              token="0x5edbe707191Ae3A5bd5FEa5EDa0586f7488bD961"
+              tradingEnds="7/2/2025, 12:11:37 AM"
+              ethRaised="100 MODE"
             />
           </div>
         </div>

@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { ethers } from "ethers";
 import Web3 from "web3";
 
-const DeployDAO: React.FC = () => {
+const DeployDAO: React.FC = (fundraisingGoal,maxWhitelistAmount,) => {
   const [daoName, setDaoName] = useState<string>("");
   const [daoSymbol, setDaoSymbol] = useState<string>("");
   const [tokenName, setTokenName] = useState<string>("");
@@ -39,10 +39,6 @@ const DeployDAO: React.FC = () => {
       }
 
       setStatus("Deploying contracts...");
-
-      //TYTL
-      // const lockerFactoryAddress = "0x1d2aCE3BccE9E1321a2AB8eaf9e3241dAc71b8fD";
-      // const daoTokenAddress = "0x462B0cB16834E33654265380999A9B6310C709B9";
 
       const daosAbi = [
         {

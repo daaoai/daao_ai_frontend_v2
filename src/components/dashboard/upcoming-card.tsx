@@ -6,31 +6,71 @@ import { Separator } from "@/components/ui/separator"
 import Link from "next/link"
 import { Clock, Globe } from 'lucide-react'
 import { TelegramIcon, XIcon } from "@/assets/icons/social"
+import { useState, useEffect } from "react"
+import { getContractData } from "../../getterFunctions";
+import { useAccount, useReadContracts } from 'wagmi'
+import {useFetchBalance} from "./fetchBalance"
+import { set } from "date-fns"
 
 export default function UpcomingFunds(props: UpcomingFundDetailsProps) {
+  const [endFTime, setEndFTime] = useState<number>(Date.now());
+  const [fundrasingGoal, setFundraisingGoal] = useState<number>(0);
+  const account = useAccount();
+
+  const accountAddress = account.address as `0x${string}` ;
+  const fetchedData = useFetchBalance(accountAddress);
+  
+  const getTimeRemaining = (endTime: number) => {
+    console.log("endTime is ", endTime)
+    const now = Date.now();
+    console.log("now is ", now)
+    const difference = endTime - now;
+
+    if (difference <= 0) {
+      return "Event has ended";
+    }
+
+    const days = Math.floor(difference / (1000 * 60 * 60 * 24));
+    const hours = Math.floor((difference % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+    const minutes = Math.floor((difference % (1000 * 60 * 60)) / (1000 * 60));
+
+    return `${days} days, ${hours} hours, ${minutes} minutes`;
+  };
+  
+  useEffect(() => {
+    if (fetchedData) {
+      setEndFTime(Number(fetchedData.endDate));
+      setFundraisingGoal(Number(fetchedData.fundraisingGoal));
+    }
+  }, [fetchedData]);
+ 
+
+
   return (
     <Card className="w-full max-w-3xl bg-[#0d0d0d] border-[#383838] text-white font-['Work Sans'] h-min">
       <CardHeader className="space-y-4 sm:space-y-6">
         <div className="flex flex-wrap items-center gap-2 sm:gap-3">
-          <h2 className="text-xl sm:text-2xl lg:text-3xl font-semibold">Heading</h2>
+          <h2 className="text-xl sm:text-2xl lg:text-3xl font-semibold">
+            {props.longname}
+          </h2>
           <Badge variant="secondary" className="text-[#409cff] text-base sm:text-lg lg:text-2xl font-semibold">
             ${props.shortname}
           </Badge>
         </div>
         <div className="flex flex-wrap items-center gap-3 sm:gap-6 text-sm sm:text-base lg:text-lg">
           <div className="flex items-center gap-1.5">
-            <Link href={props.twitter} className="flex items-center gap-1.5">
+            <Link href={props.twitterLink} className="flex items-center gap-1.5">
               <XIcon />
-              <span>@username</span>
+              <span className="text-[#92c5fd]">@{props.twitterUsername}</span>
             </Link>
           </div>
-          <Link href={props.telegram} className="flex items-center gap-1.5">
+          <Link href={props.telegramLink} className="flex items-center gap-1.5">
             <TelegramIcon />
-            <span>telegram</span>
+            <span className="text-[#92c5fd]">t.me/{props.telegramUsername}</span>
           </Link>
-          <Link href={props.telegram} className="flex items-center gap-1.5 text-[#92c5fd]">
+          <Link href={props.website} className="flex items-center gap-1.5">
             <Globe className="w-5 h-5 sm:w-6 sm:h-6" />
-            <span>Website</span>
+            <span className=" text-[#92c5fd]">Website</span>
           </Link>
         </div>
       </CardHeader>
@@ -51,20 +91,28 @@ export default function UpcomingFunds(props: UpcomingFundDetailsProps) {
               <label className="text-sm sm:text-base lg:text-lg">{label}</label>
               <div className="px-2 py-2 sm:py-3 bg-[#121212] rounded border border-[#383838] text-[#aeb3b6] text-xs sm:text-sm">
                 <Clock className="inline-block w-4 h-4 mr-2" />
-                {index === 0 ? '0 days, 11 hours, 5 minutes, 20 seconds' : '6 days, 20 hours, 1 minutes, 6 seconds'}
+                {index === 0 ? 'Event has started!' : getTimeRemaining(endFTime)}
               </div>
             </div>
           ))}
         </div>
-        <div className="space-y-2 sm:space-y-3">
-          <div className="flex justify-between items-center text-sm sm:text-base lg:text-lg">
-            <span>Funding Progress</span>
-            <span>{props.fundingProgress}%</span>
+        {props.fundingProgress >= 100 ? (
+          <div className="text-lg sm:text-xl font-semibold text-green-500">
+            Funding Goal Reached 🎉
           </div>
-          <Progress value={props.fundingProgress} className="h-4 sm:h-5 [&>div]:bg-[#409cff] bg-[#2b4977]" />
-        </div>
+        ) : (
+          <div className="space-y-2 sm:space-y-3">
+            <div className="flex justify-between items-center text-sm sm:text-base lg:text-lg">
+              <span>Funding Progress ({(fundrasingGoal/10**18).toFixed(0)} Mode)</span>
+              <span>{props.fundingProgress}%</span>
+            </div>
+            <Progress value={props.fundingProgress >= 0 ? props.fundingProgress : 0} className="h-4 sm:h-5 [&>div]:bg-[#409cff] bg-[#2b4977]" />
+          </div>
+        )}
       </CardContent>
     </Card >
   )
 }
+
+
 

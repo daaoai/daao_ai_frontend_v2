@@ -1,14 +1,84 @@
-import React from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import Image from 'next/image';
 import { Copy } from 'lucide-react';
 import { workSans } from '@/lib/fonts';
+import React, { useState, useEffect } from 'react';
+import { ethers } from 'ethers';
+import daoABI from "../../DaoABI.json"
+import { handleCopy, shortenAddress } from '@/lib/utils';
+import { getContractData } from "../../getterFunctions"
+
 
 const FundDetails: React.FC<FundDetailsProps> = (props) => {
+  const [marketCap, setMarketCap] = useState<number | null>(null);
+  const [daoTokenAddress, setDaoTokenAddress] = useState('');
+  const [price, setPrice] = useState<number | null>(null);
+  const [daoHoldings, setDaoHoldings] = useState('0');
+  useEffect(() => {
+    const fetchContractData = async () => {
+      try {
+        const data = await getContractData()
+        if (data?.daoToken) {
+          setDaoTokenAddress(data.daoToken)
+        }
+      } catch (error) {
+        console.error('Error fetching contract data:', error)
+      }
+    }
+    fetchContractData()
+  }, [])
 
+  useEffect(() => {
+    const fetchDaoBalance = async () => {
+      if (!daoTokenAddress) return
+      if (typeof window === 'undefined' || !(window as any).ethereum) return
+
+      try {
+        await (window as any).ethereum.request({ method: 'eth_requestAccounts' })
+        const provider = new ethers.providers.Web3Provider((window as any).ethereum)
+        const signer = provider.getSigner()
+        const userAddress = await signer.getAddress()
+
+        const daoContract = new ethers.Contract(daoTokenAddress, daoABI, provider)
+        const balanceBN = await daoContract.balanceOf(userAddress)
+        const balanceFormatted = ethers.utils.formatUnits(balanceBN, 18)
+        setDaoHoldings(balanceFormatted)
+      } catch (error) {
+        console.error('Error fetching DAO balance:', error)
+      }
+    }
+    fetchDaoBalance()
+  }, [daoTokenAddress])
+
+  useEffect(() => {
+    const fetchMarketData = async () => {
+      if (!daoTokenAddress) return
+      console.log("daoTokenAddress is ", daoTokenAddress)
+      const url = `https://api.dexscreener.com/token-pairs/v1/mode/${daoTokenAddress}`
+      console.log("url is ", url)
+      try {
+        // Replace with your actual endpoint or logic
+        const response = await fetch(
+          url,
+        )
+        const data = await response.json()
+        console.log("Data is ", data)
+
+        if (data && Array.isArray(data) && data[0]) {
+          setMarketCap(data[0].marketCap)
+          setPrice(data[0].priceUsd)
+        } else {
+          console.warn('Market data not in expected format.')
+        }
+      } catch (error) {
+        console.error('Error fetching market data:', error)
+      }
+    }
+    fetchMarketData()
+  }, [daoTokenAddress])
   return (
     <>
-      <Card className="bg-[#0d0d0d] text-white p-4 sm:p-6 max-w-2xl mx-auto">
+      <Card className="bg-[#0d0d0d] text-white sm:p-2 max-w-xl lg:max-w-2xl mx-auto w-full">
         <CardHeader className="flex flex-row items-center gap-4 sm:gap-6 pb-4 sm:pb-6">
           <div className="w-12 h-12 sm:w-16 sm:h-16 bg-white rounded-full flex-shrink-0 overflow-hidden">
             <Image
@@ -20,7 +90,7 @@ const FundDetails: React.FC<FundDetailsProps> = (props) => {
             />
           </div>
           <CardTitle className={`text-xl sm:text-2xl md:text-3xl font-semibold ${workSans.className}`}>
-            ${props.shortname} ({props.longname})
+            ${props.shortname} {props.longname}
           </CardTitle>
         </CardHeader>
         <CardContent className="space-y-4 sm:space-y-6">
@@ -31,17 +101,16 @@ const FundDetails: React.FC<FundDetailsProps> = (props) => {
           </Card>
 
           <div className="text-left flex flex-row gap-4 sm:gap-6">
-            <div className='flex flex-col gap-4 sm:gap-7 justify-start items-center w-full'>
+            <div className="grid grid-rows-[80%_20%] gap-2 sm:gap-4 w-full">
               <Card className="bg-[#1b1c1d] border-[#27292a] p-2 sm:p-4 w-full">
                 <CardContent className="space-y-1 sm:space-y-2 px-2 sm:px-3">
                   <p className="text-[#aeb3b6] text-sm sm:text-base md:text-lg lg:text-xl">Market Cap</p>
-                  <p className="text-lg sm:text-2xl md:text-3xl lg:text-4xl font-bold">$2,500,139</p>
-                  <p className="text-[#39db83] text-xs sm:text-sm md:text-lg lg:text-xl">+2,391,285 (1283%)</p>
+                  <p className="text-lg sm:text-2xl md:text-3xl lg:text-4xl font-semibold">${marketCap}</p>
                 </CardContent>
               </Card>
-              <div className="flex items-center gap-2 text-[#498ff8] text-sm sm:text-base md:text-xl">
-                <span>0xD0...85b9</span>
-                <Copy className="w-4 h-4 sm:w-5 sm:h-5" />
+              <div className="h-min flex justify-center items-center gap-2 text-[#498ff8] text-sm sm:text-base md:text-xl">
+                <span>{shortenAddress(props.modeAddress)}</span>
+                <Copy className="w-4 h-4 sm:w-5 sm:h-5 hover:cursor-pointer" onClick={() => handleCopy(props.modeAddress)} />
               </div>
             </div>
 
@@ -49,18 +118,17 @@ const FundDetails: React.FC<FundDetailsProps> = (props) => {
               <CardContent className="space-y-2 sm:space-y-4 px-2 sm:px-3">
                 <div>
                   <p className="text-[#aeb3b6] text-sm sm:text-base md:text-lg lg:text-xl">Your Holdings</p>
-                  <p className="text-lg sm:text-2xl md:text-3xl lg:text-4xl font-semibold">{props.holdings} {props.shortname} <span className="text-sm sm:text-lg md:text-xl lg:text-2xl">(0%)</span></p>
+                  <p className="text-lg sm:text-2xl md:text-3xl lg:text-4xl font-semibold">{Number(daoHoldings).toFixed(3)} {props.shortname} <span className="text-sm sm:text-lg md:text-xl lg:text-2xl"></span></p>
                 </div>
                 <div>
                   <p className="text-[#aeb3b6] text-sm sm:text-base md:text-lg lg:text-xl">Your Market Value</p>
-                  <p className="text-lg sm:text-2xl md:text-3xl lg:text-4xl font-bold">$0.00</p>
+                  <p className="text-lg sm:text-2xl md:text-3xl lg:text-4xl font-semibold">${(Number(daoHoldings) * Number(price)).toFixed(2)}</p>
                 </div>
               </CardContent>
             </Card>
           </div>
         </CardContent>
       </Card>
-
     </>
   );
 };

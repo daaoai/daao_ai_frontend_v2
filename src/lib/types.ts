@@ -1,8 +1,7 @@
 type FundCardProps = { // main app page card props
   title: string;
-  buzz: string;
   token: string;
-  isLive: boolean;
+  status: "live" | "pending" | "soon";
   imgSrc: string;
 }
 
@@ -12,14 +11,19 @@ type FundDetailsProps = { // fund dashboard info card props
   longname: string;
   description: string;
   holdings: number;
+  modeAddress: string;
 }
 
 type UpcomingFundDetailsProps = {
+  longname: string;
   shortname: string;
-  twitter: string;
-  telegram: string;
+  twitterUsername: string;
+  twitterLink: string;
+  telegramUsername: string;
+  telegramLink: string;
   website: string;
   description: string;
+  aboutToken: string;
   fundingProgress: number;
   logo: string;
 }
@@ -34,7 +38,6 @@ interface OrderbookProps {
   name: string
   created: string
   owner: string
-  treasury: string
   token: string
   tradingEnds: string
   ethRaised: string

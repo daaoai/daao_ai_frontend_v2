@@ -10,8 +10,8 @@ import {
   navigationMenuTriggerStyle,
 } from "@/components/ui/navigation-menu";
 import Logo from "../logo-component";
-import { CURRENT_DAO_LINK, socialLinks } from "@/lib/links";
-import WaitlistModal from "../landing/waitlist-modal";
+import { socialLinks } from "@/lib/links";
+import CheckWaitlistModal from "../landing/waitlist-modal";
 
 interface NavLink {
   label: string;
@@ -51,7 +51,6 @@ export const MobileNavLinks: React.FC = () => (
 
 export const Navbar: React.FC = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [publickey, setPublicKey] = useState("");
 
   return (
     <div className={`fixed z-50 flex w-full justify-between items-center border-b border-[#212121] p-4 bg-[#010d1f] md:px-16 md:py-4`}>
@@ -78,18 +77,15 @@ export const Navbar: React.FC = () => {
 
       {/* The "Join Waiting" button that opens the modal */}
       <div className="justify-center items-center gap-4 w-min flex">
-        <Link
-          href={CURRENT_DAO_LINK}
+        <Button
+          variant="connect"
+          onClick={() => setIsModalOpen(!isModalOpen)}
+          className={`w-full py-4 md:py-2 md:px-6 px-4 bg-white rounded-lg sm:rounded-xl border border-[#bedaff] flex justify-center items-center max-w-xs sm:max-w-none`}
         >
-          <Button
-            variant="connect"
-            className={`w-full py-4 md:py-2 md:px-6 px-4 bg-white rounded-lg sm:rounded-xl border border-[#bedaff] flex justify-center items-center max-w-xs sm:max-w-none`}
-          >
-            <div className="text-center text-black text-xs sm:text-base font-normal goldman leading-tight tracking-wide">
-              Register for whitelist
-            </div>
-          </Button>
-        </Link>
+          <div className="text-center text-black text-xs sm:text-base font-normal goldman leading-tight tracking-wide">
+            Check whitelist
+          </div>
+        </Button>
       </div>
 
       {/*<div className="block lg:hidden">
@@ -97,11 +93,9 @@ export const Navbar: React.FC = () => {
       </div>*/}
 
       {/* Conditional Rendering of the Modal */}
-      <WaitlistModal
+      <CheckWaitlistModal
         isOpen={isModalOpen}
         setIsOpen={setIsModalOpen}
-        publicKey={publickey}
-        setPublicKey={setPublicKey}
       />
     </div>
   );

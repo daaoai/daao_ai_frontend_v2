@@ -4,12 +4,12 @@ import { ConnectButton } from "@rainbow-me/rainbowkit";
 import { Wallet, Text } from 'lucide-react';
 import { cn } from "@/lib/utils";
 import { Button } from "./button"; // Custom Button component
-import { modeTestnet, goerli, sepolia } from "wagmi/chains"; // Import networks
+import { mode, goerli, sepolia } from "wagmi/chains"; // Import networks
 import Image from "next/image"; // Import Image component for displaying chain icons
 import { workSans } from "@/lib/fonts";
 
 // Array containing Ethereum chain IDs (mainnet, goerli, sepolia)
-const ethChainIds: number[] = [modeTestnet.id, goerli.id, sepolia.id];
+const ethChainIds: number[] = [mode.id, goerli.id, sepolia.id];
 
 interface ConnectWalletButtonProps {
   className?: string;
@@ -62,7 +62,7 @@ export const ConnectWalletButton: React.FC<ConnectWalletButtonProps> = ({ classN
                       {icons ? <Wallet className="w-3 h-3" /> : <></>}
                       <span className={`test-white ${workSans.className} font-semibold`}>Connect Wallet</span>
                     </Button>
-                    {icons ? <Text className="w-5 h-5" /> : <></>}
+                    {/*{icons ? <Text className="w-5 h-5" /> : <></>}*/}
                   </div>
                 );
               }

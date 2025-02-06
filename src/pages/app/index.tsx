@@ -6,25 +6,53 @@ import Link from 'next/link';
 import { PageLayout } from '@/components/page-layout';
 import { Button } from '@/components/ui/button';
 import { FundSection } from '@/components/dashboard/fundsection';
-import { FUND_CARD_PLACEHOLDER_IMAGE } from '@/lib/links';
+import { CURRENT_DAO_IMAGE, FUND_CARD_PLACEHOLDER_IMAGE } from '@/lib/links';
+// import { FUND_CARD_PLACEHOLDER_IMAGE } from '@/lib/links';
 import { anekLatin, workSans } from '@/lib/fonts';
+import { useAccount } from "wagmi";
+import { useRouter } from 'next/navigation';
+import { useToast } from '@/hooks/use-toast';
+import { ConnectWalletButton } from '@/components/ui/connect-button';
 
-const getFeaturedFunds = () => {
-  return [
-    { id: '1', title: 'To Be Announced', buzz: '6969', token: 'TBA', isLive: false, imgSrc: FUND_CARD_PLACEHOLDER_IMAGE },
-  ];
-}
+// const getFeaturedFunds = () => {
+//   return [
+// { id: '1', title: 'To Be Announced', token: 'TBA', status: false, imgSrc: FUND_CARD_PLACEHOLDER_IMAGE },
+//   ];
+// }
 
 const getUpcomingFunds = () => {
   return [
-    { id: '1', title: 'Upcoming Fund', buzz: '6969', token: 'TBA', isLive: false, imgSrc: FUND_CARD_PLACEHOLDER_IMAGE },
+    { id: '1', title: 'DeFAI Cartel', token: 'CARTEL', status: "live" as "live", imgSrc: CURRENT_DAO_IMAGE },
+    { id: '2', title: 'To Be Announced', token: 'TBA', status: "soon" as "soon", imgSrc: FUND_CARD_PLACEHOLDER_IMAGE },
+    { id: '3', title: 'To Be Announced', token: 'TBA', status: "soon" as "soon", imgSrc: FUND_CARD_PLACEHOLDER_IMAGE },
+    { id: '4', title: 'To Be Announced', token: 'TBA', status: "soon" as "soon", imgSrc: FUND_CARD_PLACEHOLDER_IMAGE },
   ];
 }
 
-
 const AppHome: React.FC = () => {
-  const FEATURED_FUNDS = getFeaturedFunds();
+  const { isConnected } = useAccount();
+  const router = useRouter();
+  const { toast } = useToast();
+  console.log(isConnected);
+  // const FEATURED_FUNDS = getFeaturedFunds();
   const UPCOMING_FUNDS = getUpcomingFunds();
+
+  const onFundClick = (fundId: string, type: 'dashboard' | 'upcoming') => {
+    if (!isConnected) {
+      // alert('Please connect your wallet first.');
+      toast({
+        title: "Please connect your wallet first",
+        description: "It looks like your wallet isn't connected",
+        variant: "destructive",
+        action: <ConnectWalletButton icons={false} className='bg-white text-black' />,
+        className: `${workSans.className}`
+      })
+      return;
+    }
+    // Navigate to the fund page if connected
+    router.push(`/app/${type}/${fundId}`);
+  };
+
 
   return (
     <PageLayout title="App" description="main-app" app={true}>
@@ -49,7 +77,7 @@ const AppHome: React.FC = () => {
             <p className={`text-white text-base sm:text-lg md:text-xl lg:text-2xl font-normal tracking-wide`}>
               Create or join memecoin & AI hedgefunds
             </p>
-            <div className="flex flex-col sm:flex-row justify-center items-center gap-4 w-full max-w-md">
+            {/*<div className="flex flex-col sm:flex-row justify-center items-center gap-4 w-full max-w-md">
               <Link href="/app/dashboard" className="w-full sm:w-auto">
                 <Button className="w-[125px] sm:w-auto bg-white text-black hover:bg-white/90 text-sm sm:text-base font-semibold px-6 py-2 sm:px-8 sm:py-3">
                   DASHBOARD
@@ -60,15 +88,17 @@ const AppHome: React.FC = () => {
                   LEADERBOARD
                 </Button>
               </Link>
-            </div>
+            </div>*/}
           </section>
 
-          {/* Featured funds */}
+
+          {/* Featured funds 
           <FundSection
             title="Featured Funds"
             subtitle="In-demand hedgefunds"
             funds={FEATURED_FUNDS}
-          />
+            onFundClick={(fundId) => onFundClick(fundId, 'dashboard')}
+          />*/}
 
           {/* Upcoming funds */}
           <FundSection
@@ -76,6 +106,7 @@ const AppHome: React.FC = () => {
             subtitle="Hedgefunds launching soon"
             funds={UPCOMING_FUNDS}
             linkPrefix="upcoming"
+            onFundClick={(fundId) => onFundClick(fundId, 'upcoming')}
           />
         </div>
       </div>
