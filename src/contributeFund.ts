@@ -42,7 +42,10 @@ export const handleContribute = async (amount: string) => {
 
     const userTiers = await daosContract.methods.getWhitelistInfo(contributor).call();
 
-   
+    if (!userTiers || typeof userTiers !== "object" || !("tier" in userTiers)) {
+      console.log("Error: Invalid userTiers response", userTiers);
+      return 0; 
+    }
 
     const tierNumber = Number(userTiers.tier);
 
