@@ -21,6 +21,7 @@ const client = new QueryClient();
 const getSiweMessageOptions: GetSiweMessageOptions = () => ({
   statement: "Sign in to Rainbowkit with Ethereum",
 });
+import { FundProvider } from "../components/dashboard/FundContext";
 
 // TODO: wagmi to change default theme based on the user's system preference
 
@@ -43,7 +44,9 @@ function MyApp({ Component, pageProps }: AppProps) {
                 disableTransitionOnChange
               >
                 <Layout font={fontChoice}>
+                <FundProvider>
                   <Component {...pageProps} />
+                  </FundProvider>
                 </Layout>
               </ThemeProvider>
             </RainbowKitProvider>

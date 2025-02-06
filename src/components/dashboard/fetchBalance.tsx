@@ -40,7 +40,7 @@ export const useFetchBalance = (accountAddress: `0x${string}` | undefined) => {
     });
 
 
-    const { data: contractData, error } = useReadContracts({
+    const { data: contractData, error,refetch } = useReadContracts({
         contracts: [
             // Fetch balance
             {
@@ -99,7 +99,7 @@ export const useFetchBalance = (accountAddress: `0x${string}` | undefined) => {
         ],
     });
     console.log("data is", data)
-    const { data: tierLimitData } = useReadContracts({
+    const { data: tierLimitData, refetch:refetchTierLimit } = useReadContracts({
         contracts: [
             {
                 ...wagmiDaoContract,
@@ -157,7 +157,14 @@ export const useFetchBalance = (accountAddress: `0x${string}` | undefined) => {
                 setData((prev) => ({ ...prev, maxLimit }));
             }
         }
-    }, [contractData, error]);
+    }, [contractData,tierLimitData, error]);
 
-    return data;
+    const refreshData = async () => {
+        console.log("🔄 Refetching contract data...");
+        await refetch();
+        await refetchTierLimit();
+    };
+
+    
+    return { data, refreshData };
 };

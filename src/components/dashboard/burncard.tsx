@@ -8,6 +8,8 @@ import { useToast } from '@/hooks/use-toast';
 import { useAccount, useReadContracts } from 'wagmi'
 import contractABI from "../../abi.json";
 import {useFetchBalance} from "./fetchBalance"
+import { useFundContext } from "./FundContext";
+
 
 
 const wagmiDaoContract = {
@@ -19,22 +21,32 @@ const wagmiDaoContract = {
 
 export default function BurnCard(props: UpcomingFundDetailsProps) {
   const { toast } = useToast();
-  const account = useAccount();
+  const { fetchedData, refreshData, updateTotalContributed } = useFundContext();
   const [amount, setAmount] = useState(0);
   const [balance, setBalance] = useState("");
   const [goalReached,setGoalReached] = useState(false);
   const [tier, setTier] = useState("");
-  const { isConnected } = useAccount();
   const [isContributing, setIsContributing] = useState(false);
   const [isWhitelisted, setisWhitelisted] = useState(false);
   const [maxLimit, setMaxLimit] = useState(0);
   const [fundraisingFinalized, setFundraisingFinalized] = useState(false);
 
-  const accountAddress = account.address as `0x${string}` ;
-  const fetchedData = useFetchBalance(accountAddress);
-  
+  useEffect(() => {
+    if (fetchedData) {
+      if(balance === "" || tier === "" || isWhitelisted === false || maxLimit === 0){
+      setBalance(fetchedData.balance);
+      setTier(fetchedData.userTierLabel);
+      setisWhitelisted(fetchedData.isWhitelisted);
+      setMaxLimit(fetchedData.maxLimit);
+      }
+      if(fetchedData.goalReached){
+        setGoalReached(true);
+      };
+      console.log("Balance is ", balance);
+    }
+  }, [fetchedData]);
 
-  const {data,error,refetch} = useReadContracts({
+  const {data, error,refetch} = useReadContracts({
     contracts: [
       {
         ...wagmiDaoContract,
@@ -48,7 +60,6 @@ export default function BurnCard(props: UpcomingFundDetailsProps) {
   }
 
   const checkFinalisedFundraising = async () => {
-    
     await refetch(); 
     if (fundraisingFinalized) {
       window.location.href = "/app/dashboard/1";
@@ -59,23 +70,6 @@ export default function BurnCard(props: UpcomingFundDetailsProps) {
     }
   };
 
-
-
-  useEffect(() => {
-    if (fetchedData) {
-
-      if(balance === "" || tier === "" || isWhitelisted === false || maxLimit === 0){
-      setBalance(fetchedData.balance);
-      setTier(fetchedData.userTierLabel);
-      setisWhitelisted(fetchedData.isWhitelisted);
-      setMaxLimit(fetchedData.maxLimit);
-      }
-      if(fetchedData.goalReached){
-        setGoalReached(true);
-      };
-      console.log("Balance is ", balance);
-    }
-  }, [fetchedData]);
 
   const handleInputChange = (e: any) => {
     console.log("amount is ", e.target.value)
@@ -98,12 +92,23 @@ export default function BurnCard(props: UpcomingFundDetailsProps) {
         return;
       }
       setIsContributing(true);
-      await handleContribute(amount.toString());
+     
+      const tx = await handleContribute(amount.toString());
+      if (tx===0){
+        toast({
+          title: "Amount exceeds tier limit",
+        });
+        setIsContributing(false);
+        return;
+      }
+    
       setIsContributing(false);
       toast({
         title: "Successfully contributed to the fund",
-      })
-      window.location.reload();
+      });
+      await refreshData();
+      setBalance((prev) => (Number(prev) - Number(amount)).toFixed(3));
+      updateTotalContributed(amount);
     } catch (error) {
       console.error("Error contributing to fund:", error);
       setIsContributing(false);

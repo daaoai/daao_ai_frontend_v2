@@ -52,7 +52,7 @@ const Buysell = () => {
 
 
   const accountAddress = account.address as `0x${string}` ;
-  const fetchedData = useFetchBalance(accountAddress);
+  const {data:fetchedData,refreshData} = useFetchBalance(accountAddress);
 
 
   useEffect(() => {
