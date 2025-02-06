@@ -1,5 +1,7 @@
 FROM node:alpine
 
+RUN docker system prune -af
+RUN docker volume prune -f
 # Install Python, make, and build dependencies (required for prisma)
 RUN apk add --no-cache \
   python3 \
