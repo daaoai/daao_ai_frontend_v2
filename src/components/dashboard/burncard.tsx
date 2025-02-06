@@ -4,22 +4,22 @@ import { Button } from "@/components/ui/button"
 import { Separator } from "@/components/ui/separator"
 import { handleContribute } from "@/contributeFund"
 import { useEffect, useState } from "react"
-import { ethers } from "ethers"
-import { getTier,getContractData } from "@/getterFunctions"
-import { useAccount } from "wagmi";
-import modeABI from "../../modeABI.json";
-import Link from "next/link"
 import { useToast } from '@/hooks/use-toast';
-const MODE_TOKEN_ADDRESS = "0xDfc7C877a950e49D2610114102175A06C2e3167a";
+import { useAccount, useReadContracts } from 'wagmi'
+import contractABI from "../../abi.json";
+import {useFetchBalance} from "./fetchBalance"
 
 
+const wagmiDaoContract = {
+  address: "0x0e0cfb2B5d4564B5bf8458782033090ef730a8cB",
+  abi: contractABI
 
-  
-// import { set } from "date-fns"
-// import { EthereumIcon } from "@/assets/icons/ethereum-icon"
+} as const;
+
 
 export default function BurnCard(props: UpcomingFundDetailsProps) {
   const { toast } = useToast();
+  const account = useAccount();
   const [amount, setAmount] = useState(0);
   const [balance, setBalance] = useState("");
   const [goalReached,setGoalReached] = useState(false);
@@ -28,79 +28,54 @@ export default function BurnCard(props: UpcomingFundDetailsProps) {
   const [isContributing, setIsContributing] = useState(false);
   const [isWhitelisted, setisWhitelisted] = useState(false);
   const [maxLimit, setMaxLimit] = useState(0);
+  const [fundraisingFinalized, setFundraisingFinalized] = useState(false);
+
+  const accountAddress = account.address as `0x${string}` ;
+  const fetchedData = useFetchBalance(accountAddress);
+  
+
+  const {data,error,refetch} = useReadContracts({
+    contracts: [
+      {
+        ...wagmiDaoContract,
+        functionName: "fundraisingFinalized",
+      }
+    ],
+  })
+  
+  if (data && typeof data[0]?.result === "boolean" && data[0]?.result !== fundraisingFinalized) {
+    setFundraisingFinalized(data[0]?.result);
+  }
 
   const checkFinalisedFundraising = async () => {
-    try {
-      const data = await getContractData();
-      if(data.finalisedFundraising){
-        window.location.href = "/app/dashboard/1"
-      }
-      else{
-        toast({
-          title: "Fundraising is not finalised yet",
-        })
-      }
-    } catch (error) {
-      console.error("Error fetching contract data:", error);
-    }
-  }
-
-  const fetchBalance = async () => {
-    try {
-      if (!window.ethereum) {
-        console.log("MetaMask is not installed");
-        return;
-      }
-
-      const provider = new ethers.providers.Web3Provider(window.ethereum);
-      const accounts = await provider.listAccounts();
-      if (!accounts.length) {
-        console.log("No connected accounts found");
-        return;
-      }
-
-      const signer = provider.getSigner();
-      const address = await signer.getAddress();
-
-      const modeContract = new ethers.Contract(MODE_TOKEN_ADDRESS, modeABI, signer);
-      const rawBalance = await modeContract.balanceOf(address);
-      const decimals = await modeContract.decimals();
-      const modeBalance = ethers.utils.formatUnits(rawBalance, decimals);
-      const tierr = await getTier();
-      setTier(tierr.userTierLabel);
-      setBalance(modeBalance);
-    } catch (error) {
-      console.error("Error fetching balance:", error);
+    
+    await refetch(); 
+    if (fundraisingFinalized) {
+      window.location.href = "/app/dashboard/1";
+    } else {
+      toast({
+        title: "Fundraising is not finalised yet",
+      });
     }
   };
-  useEffect(() => {
-    if (isConnected) {
-      fetchBalance();
-    }
-  }, [isConnected]);
+
+
 
   useEffect(() => {
-    if(isConnected){
-      return;
-    }
-    const fetchContractData = async () => {
-      try {
-        const data = await getContractData();
-        if(data.goalReached && data.finalisedFundraising){
-          setGoalReached(true);
-        }
-        setisWhitelisted(data.iswhitelisted);
-        setMaxLimit(data.maxLimit);
-        console.log("Data is ", data)
-      } catch (error) {
-        console.error("Error fetching contract data:", error);
+    if (fetchedData) {
+
+      if(balance === "" || tier === "" || isWhitelisted === false || maxLimit === 0){
+      setBalance(fetchedData.balance);
+      setTier(fetchedData.userTierLabel);
+      setisWhitelisted(fetchedData.isWhitelisted);
+      setMaxLimit(fetchedData.maxLimit);
       }
-    };
-
-    fetchContractData();
-  }
-  , [isConnected]);
-
+      if(fetchedData.goalReached){
+        setGoalReached(true);
+      };
+      console.log("Balance is ", balance);
+    }
+  }, [fetchedData]);
 
   const handleInputChange = (e: any) => {
     console.log("amount is ", e.target.value)
@@ -108,7 +83,6 @@ export default function BurnCard(props: UpcomingFundDetailsProps) {
   }
 
   const handleContributefunction = async () => {
-
     try {
       if(amount > Number(balance)){
         toast({
@@ -125,13 +99,17 @@ export default function BurnCard(props: UpcomingFundDetailsProps) {
       }
       if(amount > maxLimit){
         toast({
-          title: "You are exceeding the maximum limit for your tier",
+          title: "You are not approved this much amount to contribute",
         })
         return;
+        
       }
       setIsContributing(true);
       await handleContribute(amount.toString());
       setIsContributing(false);
+      toast({
+        title: "Successfully contributed to the fund",
+      })
       window.location.reload();
     } catch (error) {
       console.error("Error contributing to fund:", error);
@@ -215,23 +193,6 @@ export default function BurnCard(props: UpcomingFundDetailsProps) {
             }
           </div>
         </div>
-        {/*<div className="grid sm:grid-cols-2 gap-6">
-          {['How to Earn', 'Whitelist Mechanics'].map((title) => (
-            <div key={title} className="space-y-4">
-              <h4 className="text-[#409cff] text-base sm:text-lg font-semibold">{title}</h4>
-              <ul className="space-y-2">
-                {[1, 2, 3].map((item) => (
-                  <li key={item} className="text-sm sm:text-base">
-                    - Yorem ipsum dolor sit amet, consectetur adipiscing elit.
-                  </li>
-                ))}
-              </ul>
-            </div>
-          ))}
-        </div>
-        <p className="text-sm sm:text-base">
-          Porem ipsum dolor sit amet, consectetur adipiscing elit.
-        </p>*/}
       </CardContent>
     </Card>
   )

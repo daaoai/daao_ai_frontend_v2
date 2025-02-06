@@ -8,13 +8,22 @@ import { Clock, Globe } from 'lucide-react'
 import { TelegramIcon, XIcon } from "@/assets/icons/social"
 import { useState, useEffect } from "react"
 import { getContractData } from "../../getterFunctions";
+import { useAccount, useReadContracts } from 'wagmi'
+import {useFetchBalance} from "./fetchBalance"
+import { set } from "date-fns"
 
 export default function UpcomingFunds(props: UpcomingFundDetailsProps) {
   const [endFTime, setEndFTime] = useState<number>(Date.now());
   const [fundrasingGoal, setFundraisingGoal] = useState<number>(0);
+  const account = useAccount();
 
+  const accountAddress = account.address as `0x${string}` ;
+  const fetchedData = useFetchBalance(accountAddress);
+  
   const getTimeRemaining = (endTime: number) => {
+    console.log("endTime is ", endTime)
     const now = Date.now();
+    console.log("now is ", now)
     const difference = endTime - now;
 
     if (difference <= 0) {
@@ -27,22 +36,14 @@ export default function UpcomingFunds(props: UpcomingFundDetailsProps) {
 
     return `${days} days, ${hours} hours, ${minutes} minutes`;
   };
-
-
+  
   useEffect(() => {
-    const fetchContractData = async () => {
-      try {
-        const data = await getContractData();
-        setEndFTime(Number(data.endDate));
-        setFundraisingGoal(Number(data.fundraisingGoal));
-        console.log("Data is ", data)
-      } catch (error) {
-        console.error("Error fetching contract data:", error);
-      }
-    };
-
-    fetchContractData();
-  }, []);
+    if (fetchedData) {
+      setEndFTime(Number(fetchedData.endDate));
+      setFundraisingGoal(Number(fetchedData.fundraisingGoal));
+    }
+  }, [fetchedData]);
+ 
 
 
   return (
@@ -112,4 +113,6 @@ export default function UpcomingFunds(props: UpcomingFundDetailsProps) {
     </Card >
   )
 }
+
+
 

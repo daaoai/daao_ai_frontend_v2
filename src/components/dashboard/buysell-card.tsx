@@ -18,6 +18,12 @@ import {getContractData} from "../../getterFunctions"
 import velodromeFactoryABI from "../../veloABI.json"
 import swapRouter from "../../swapSimulateABI.json"
 import { useToast } from '@/hooks/use-toast';
+import { parseAbi } from 'viem'
+import { useAccount, useReadContracts } from 'wagmi'
+import contractABI from "../../abi.json";
+import {useFetchBalance} from "./fetchBalance"
+import { fetchData } from "next-auth/client/_utils"
+
 
 const TICK_SPACING = 100;
 const VELODROME_FACTORY_ADDRESS = "0x04625B046C69577EfC40e6c0Bb83CDBAfab5a55F"
@@ -25,9 +31,12 @@ const CL_POOL_ROUTER_ADDRESS = "0xC3a15f812901205Fc4406Cd0dC08Fe266bF45a1E";
 const SWAP_ROUTER_ADDRESS = "0xB11f2310D1b3FF589af56b981c17BC57dee1D488"
 const MODE_TOKEN_ADDRESS = "0xDfc7C877a950e49D2610114102175A06C2e3167a";
 
+
+
 const Buysell = () => {
   
   const { toast } = useToast();
+  const account = useAccount();
   const [activeTab, setActiveTab] = useState<"buy" | "sell">("buy");
   const [amountFrom, setAmountFrom] = useState("");
   const [amountTo, setAmountTo] = useState(0);
@@ -41,19 +50,16 @@ const Buysell = () => {
   const [daoTokenAddress, setDaoTokenAddress] = useState("");
   const [poolAddress, setPoolAddress] = useState("");
 
-  useEffect(() => {
-    const fetchContractData = async () => {
-      try {
-        const data = await getContractData();
-        setDaoTokenAddress(data.daoToken);
-        console.log("Fetched Contract Data:", data);
-      } catch (error) {
-        console.error("Error fetching contract data:", error);
-      }
-    };
 
-    fetchContractData();
-  }, []);
+  const accountAddress = account.address as `0x${string}` ;
+  const fetchedData = useFetchBalance(accountAddress);
+
+
+  useEffect(() => {
+    if (fetchedData) {
+      setDaoTokenAddress(fetchedData.daoToken)
+    }
+  }, [fetchedData]);
 
   useEffect(() => {
     const fetchPoolAddress = async () => {

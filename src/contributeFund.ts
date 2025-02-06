@@ -2,10 +2,12 @@ import Web3 from "web3";
 import { requestAccounts } from "./utils/requestAccount";
 import abi from "./abi.json"
 import ercAbi from "./erc20Abi.json"
+import { parseAbi } from 'viem'
+import { useAccount, useReadContracts } from 'wagmi'
 
 
 const contractABI = abi;
-const contractAddress = "0x29F07AA75328194C274223F11cffAa329fD1c319";
+const contractAddress = "0x0e0cfb2B5d4564B5bf8458782033090ef730a8cB";
 const tokenAddress = "0xDfc7C877a950e49D2610114102175A06C2e3167a"; 
  
 let web3: Web3 | null = null;
@@ -75,11 +77,6 @@ export const handleContribute = async (amount: string) => {
       console.log("Approval already sufficient, skipping...");
     }
 
-
-
-
-
-
     const gasEstimate = await daosContract.methods.contribute(parseInt(weiAmount)).estimateGas({
       from: contributor,
     });
@@ -111,7 +108,6 @@ export const handleContribute = async (amount: string) => {
       await new Promise((resolve) => setTimeout(resolve, 2000));
 
   }
-
     console.log("Transaction Receipt:", receipt);
     console.log("Contribution successful!");
     return receipt;
