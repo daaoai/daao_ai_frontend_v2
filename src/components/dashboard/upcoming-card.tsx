@@ -11,15 +11,15 @@ import { getContractData } from "../../getterFunctions";
 import { useAccount, useReadContracts } from 'wagmi'
 import {useFetchBalance} from "./fetchBalance"
 import { set } from "date-fns"
+import { useFundContext } from "./FundContext";
 
 export default function UpcomingFunds(props: UpcomingFundDetailsProps) {
   const [endFTime, setEndFTime] = useState<number>(Date.now());
   const [fundrasingGoal, setFundraisingGoal] = useState<number>(0);
   const account = useAccount();
+  const { fetchedData } = useFundContext(); 
 
   const accountAddress = account.address as `0x${string}` ;
-  const fetchedData = useFetchBalance(accountAddress);
-  
   const getTimeRemaining = (endTime: number) => {
     console.log("endTime is ", endTime)
     const now = Date.now();

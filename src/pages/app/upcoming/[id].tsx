@@ -7,30 +7,26 @@ import { CURRENT_DAO_IMAGE, CURRENT_DAO_LINK } from '@/lib/links';
 import { handleContribute } from "../../../contributeFund";
 import { getContractData } from "../../../getterFunctions";
 import { useAccount } from "wagmi";
+import { useFundContext } from "../../../components/dashboard/FundContext";
+import { set } from 'date-fns';
 
 const Upcoming: React.FC = () => {
   const { isConnected } = useAccount();
   const [fundraisingPercent, setFundraisingPercent] = useState<number>(0);
+  const { fetchedData,totalContributed } = useFundContext();
+  const [totalRaised, setTotalRaised] = useState(0);
+
 
   useEffect(() => {
     if(!isConnected) return;
     console.log("Connected");
-    const fetchContractData = async () => {
-      try {
-        const data = await getContractData();
-        setFundraisingPercent(
-          ((Number(data.totalRaised)) / Number(data.fundraisingGoal)) * 100
-        );
-        console.log("Contract data:", data);
-      } catch (error) {
-        console.error("Error fetching contract data:", error);
-      }
-    };
-
-    if (isConnected) {
-      fetchContractData();
-    }
-  }, [isConnected]);
+    const fundraisingGoal = fetchedData?.fundraisingGoal;
+    const totalRaised = fetchedData?.totalRaised;
+    setTotalRaised(Number(totalRaised));
+    setFundraisingPercent(
+      ((Number(totalRaised)) / Number(fundraisingGoal)) * 100
+    );
+  }, [isConnected,totalContributed]);
 
 
   const props: UpcomingFundDetailsProps = {
