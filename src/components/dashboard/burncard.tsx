@@ -42,7 +42,7 @@ export default function BurnCard(props: UpcomingFundDetailsProps) {
       }
     ],
   })
-  
+
   if (data && typeof data[0]?.result === "boolean" && data[0]?.result !== fundraisingFinalized) {
     setFundraisingFinalized(data[0]?.result);
   }
@@ -96,13 +96,6 @@ export default function BurnCard(props: UpcomingFundDetailsProps) {
           title: "You are not whitelisted to contribute to this fund",
         })
         return;
-      }
-      if(amount > maxLimit){
-        toast({
-          title: "You are not approved this much amount to contribute",
-        })
-        return;
-        
       }
       setIsContributing(true);
       await handleContribute(amount.toString());
