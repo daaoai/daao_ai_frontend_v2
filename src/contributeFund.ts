@@ -7,7 +7,7 @@ import { useAccount, useReadContracts } from 'wagmi'
 
 
 const contractABI = abi;
-const contractAddress = "0x0e0cfb2B5d4564B5bf8458782033090ef730a8cB";
+const contractAddress = "0x29F07AA75328194C274223F11cffAa329fD1c319";
 const tokenAddress = "0xDfc7C877a950e49D2610114102175A06C2e3167a"; 
  
 let web3: Web3 | null = null;
