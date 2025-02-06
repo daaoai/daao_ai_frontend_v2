@@ -69,7 +69,6 @@ const Dashboard: React.FC = () => {
                 value="assets"
                 className="px-4 py-3 bg-[#27292a] rounded flex justify-center items-center gap-2 data-[state=active]:bg-white text-[#aeb3b6] data-[state=active]:text-black"
               >
-              
               </TabsTrigger>
             </TabsList>
           </Tabs>
