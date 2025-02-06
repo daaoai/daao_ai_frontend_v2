@@ -49,7 +49,7 @@ const CheckWaitlistModal: React.FC<CheckWhitelistModalProps> = ({ isOpen, setIsO
       if (data.exists) {
         setStatusMsg(successMessage) // Placeholder success message
       } else {
-        setStatusMsg("You are not in the whitelist") // Placeholder success message
+        setStatusMsg("You are not on the whitelist") // Placeholder success message
       }
     } catch (error) {
       console.error("Error checking whitelist:", error)

@@ -4,12 +4,13 @@ import abi from "./abi.json"
 import ercAbi from "./erc20Abi.json"
 import { parseAbi } from 'viem'
 import { useAccount, useReadContracts } from 'wagmi'
+import { object } from "zod";
 
 
 const contractABI = abi;
 const contractAddress = "0x29F07AA75328194C274223F11cffAa329fD1c319";
-const tokenAddress = "0xDfc7C877a950e49D2610114102175A06C2e3167a"; 
- 
+const tokenAddress = "0xDfc7C877a950e49D2610114102175A06C2e3167a";
+
 let web3: Web3 | null = null;
 
 //Contribute to Dao
@@ -22,7 +23,7 @@ export const handleContribute = async (amount: string) => {
   }
 
   try {
-    
+
     console.log("Connecting to the blockchain...");
 
     const accounts = await web3.eth.getAccounts();
@@ -39,30 +40,47 @@ export const handleContribute = async (amount: string) => {
     const daosContract = new web3.eth.Contract(contractABI as any, contractAddress);
     console.log("Contract object created:", daosContract);
 
+    const userTiers = await daosContract.methods.getWhitelistInfo(contributor).call();
+
+    if (!userTiers || typeof userTiers !== "object" || !("tier" in userTiers)) {
+      console.log("Error: Invalid userTiers response", userTiers);
+      return 0; 
+    }
+
+    const tierNumber = Number(userTiers.tier);
+
+    const tierLimit = await daosContract.methods.tierLimits(Number(tierNumber)).call();
+    const maxLimit = Number(tierLimit)/10**18;
+
+    if(Number(amount) > maxLimit){
+      console.log("Amount exceeds tier limit")
+      return 0;
+    }
+
     const tokenContract = new web3.eth.Contract(ercAbi as any, tokenAddress);
 
-    const currentAllowanceRaw = await tokenContract.methods.allowance(contributor, contractAddress).call();
- 
-   
-    const currentAllowance = BigInt(
-      typeof currentAllowanceRaw === "string" && currentAllowanceRaw !== ""
-        ? currentAllowanceRaw
-        : "0"
-    );
-    
 
-    if (BigInt(currentAllowance) < BigInt(weiAmount)) {
-      console.log("Approving token spend...");
+    const currentAllowanceRaw = await tokenContract.methods.allowance(contributor, contractAddress).call();
+    console.log("Current allowance raw:", Number(currentAllowanceRaw));
+    const currentAllowance = Number(currentAllowanceRaw)
+    console.log("Current allowance:", currentAllowance);
+
+    if (currentAllowance < Number(weiAmount)) {
+      console.log("Insufficient allowance. Approving required tokens...");
+      const requiredApproval = (Number(weiAmount) - currentAllowance).toString();
+
       const approveTx = {
         from: contributor,
         to: tokenAddress,
-        data: tokenContract.methods.approve(contractAddress, weiAmount).encodeABI(),
-        gas: "50000", // Adjust gas limit accordingly
+        data: tokenContract.methods.approve(contractAddress, requiredApproval).encodeABI(),
+        gas: "60000",
       };
+
       const approveTxHash = await window.ethereum.request({
         method: "eth_sendTransaction",
         params: [approveTx],
       });
+
       console.log("Waiting for approval transaction to be mined...");
       let approvalReceipt = null;
       while (approvalReceipt === null) {
@@ -89,25 +107,25 @@ export const handleContribute = async (amount: string) => {
       data: daosContract.methods.contribute(parseInt(weiAmount)).encodeABI(),
       gas: String(gasEstimate),
       gasPrice: '800000',
-  };
-   
+    };
+
     console.log("Transaction result:", transactionParameters);
 
     const txHash = await window.ethereum.request({
       method: 'eth_sendTransaction',
       params: [transactionParameters],
-  })
+    })
     let receipt = null;
     while (receipt === null) {
       receipt = await window.ethereum.request({
-          method: 'eth_getTransactionReceipt',
-          params: [txHash],
+        method: 'eth_getTransactionReceipt',
+        params: [txHash],
       });
       console.log(receipt);
       console.log("Waiting for transaction to be mined...");
       await new Promise((resolve) => setTimeout(resolve, 2000));
 
-  }
+    }
     console.log("Transaction Receipt:", receipt);
     console.log("Contribution successful!");
     return receipt;
