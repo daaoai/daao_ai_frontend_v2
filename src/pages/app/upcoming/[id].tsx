@@ -13,6 +13,8 @@ const Upcoming: React.FC = () => {
   const [fundraisingPercent, setFundraisingPercent] = useState<number>(0);
 
   useEffect(() => {
+    if(!isConnected) return;
+    console.log("Connected");
     const fetchContractData = async () => {
       try {
         const data = await getContractData();

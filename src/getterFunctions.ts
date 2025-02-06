@@ -1,20 +1,29 @@
 import { ethers } from "ethers";
 import contractABI from "./abi.json";
+import Web3 from "web3";
+
+let web3: Web3 | null = null;
 
 const CONTRACT_ADDRESS = "0x29F07AA75328194C274223F11cffAa329fD1c319"; ``
 const TIER_LABELS = ["None", "Platinum", "Gold", "Silver"];
-export const getContractData = async () => {
-  if (!(window as any).ethereum) {
-    throw new Error("Ethereum wallet provider not found. Please install MetaMask.");
-  }
 
+export const getContractData = async () => {
+  if (!window.ethereum) {
+    throw new Error("No Ethereum provider found.");
+  }
+  if (!web3) {
+    web3 = new Web3(window.ethereum);
+  }
 
   const provider = new ethers.providers.Web3Provider((window as any).ethereum);
   console.log("Provider object created:", provider);
+  await window.ethereum.request({ method: 'eth_requestAccounts' });
+  const accounts = await web3.eth.getAccounts();
+    if (accounts.length === 0) {
+      throw new Error("No connected accounts found. Please connect your wallet.");
+    }
 
-  const signer = provider.getSigner();
-  console.log("Signer object created:", signer);
-  const userAddress = await signer.getAddress();
+  const userAddress = accounts[0];
 
   const contract = new ethers.Contract(CONTRACT_ADDRESS, contractABI, provider);
   console.log("Contract object created:", contract);

@@ -12,6 +12,9 @@ import Link from "next/link"
 import { useToast } from '@/hooks/use-toast';
 const MODE_TOKEN_ADDRESS = "0xDfc7C877a950e49D2610114102175A06C2e3167a";
 
+
+
+  
 // import { set } from "date-fns"
 // import { EthereumIcon } from "@/assets/icons/ethereum-icon"
 
@@ -77,6 +80,9 @@ export default function BurnCard(props: UpcomingFundDetailsProps) {
   }, [isConnected]);
 
   useEffect(() => {
+    if(isConnected){
+      return;
+    }
     const fetchContractData = async () => {
       try {
         const data = await getContractData();
@@ -93,7 +99,7 @@ export default function BurnCard(props: UpcomingFundDetailsProps) {
 
     fetchContractData();
   }
-  , []);
+  , [isConnected]);
 
 
   const handleInputChange = (e: any) => {
