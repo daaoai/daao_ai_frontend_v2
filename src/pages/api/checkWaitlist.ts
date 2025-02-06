@@ -4,7 +4,7 @@ import { ModeAddresses } from "../../utils/data";
 export default function handler(req: NextApiRequest, res: NextApiResponse) {
   if (req.method === 'POST') {
     const { modeAddress }: { modeAddress: string } = req.body;
-    const exists = ModeAddresses.includes(modeAddress.toUpperCase());
+    const exists = ModeAddresses.includes(modeAddress);
     res.status(200).json({ exists });
   } else {
     res.setHeader('Allow', ['POST']);
