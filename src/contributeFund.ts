@@ -40,6 +40,9 @@ export const handleContribute = async (amount: string) => {
     const daosContract = new web3.eth.Contract(contractABI as any, contractAddress);
     console.log("Contract object created:", daosContract);
 
+    const contributedAmountYetRaw = await daosContract.methods.contributions(contributor).call();
+    const contributedAmountYet = Number(contributedAmountYetRaw) / 10 ** 18;
+    
     const userTiers = await daosContract.methods.getWhitelistInfo(contributor).call();
 
     if (!userTiers || typeof userTiers !== "object" || !("tier" in userTiers)) {
@@ -51,6 +54,11 @@ export const handleContribute = async (amount: string) => {
 
     const tierLimit = await daosContract.methods.tierLimits(Number(tierNumber)).call();
     const maxLimit = Number(tierLimit) / 10 ** 18;
+    if(Number(amount)+contributedAmountYet > maxLimit){
+      console.log("Amount exceeds tier limit")
+      return 4;
+    }
+
 
     if (Number(amount) > maxLimit) {
       console.log("Amount exceeds tier limit")
@@ -68,6 +76,7 @@ export const handleContribute = async (amount: string) => {
     if (currentAllowance < Number(weiAmount)) {
       console.log("Insufficient allowance. Approving required tokens...");
       const requiredApproval = (Number(weiAmount) - currentAllowance).toString();
+      
       const gasEstimate = await tokenContract.methods.approve(contractAddress, requiredApproval).estimateGas({
         from: contributor,
       });

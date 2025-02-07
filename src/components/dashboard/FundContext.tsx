@@ -17,7 +17,10 @@ export const FundProvider = ({ children }: { children: ReactNode }) => {
   const accountAddress = account.address as `0x${string}`;
   const { data: fetchedData, refreshData } = useFetchBalance(accountAddress);
 
-  const [totalContributed, setTotalContributed] = useState(0);
+  const totalraised = fetchedData.totalRaised;
+ 
+
+  const [totalContributed, setTotalContributed] = useState(Number(totalraised));
   const updateTotalContributed = (amount: number) => {
     setTotalContributed((prev) => prev + amount);
     refreshData(); 

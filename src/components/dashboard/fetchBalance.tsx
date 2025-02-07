@@ -29,7 +29,7 @@ export const useFetchBalance = (accountAddress: `0x${string}` | undefined) => {
         tierNumber: 0,
         isWhitelisted: false,
         maxLimit: 0,
-        veloFactory: "",
+        contributedAmountYet: 0,
         daoToken: "",
         goalReached: false,
         finalisedFundraising: false,
@@ -90,12 +90,12 @@ export const useFetchBalance = (accountAddress: `0x${string}` | undefined) => {
                 functionName: "daoToken",
                 args: [],
             },
-            // Fetch VELODROME Factory Address
+            //Contributions
             {
                 ...wagmiDaoContract,
-                functionName: "VELODROME_FACTORY",
-                args: [],
-            },
+                functionName: "contributions",
+                args: accountAddress ? [accountAddress] : [],
+            }
         ],
     });
     console.log("data is", data)
@@ -128,12 +128,13 @@ export const useFetchBalance = (accountAddress: `0x${string}` | undefined) => {
             const finalisedFundraising = contractData[5]?.result as boolean;
             const end = contractData[6]?.result as bigint;
             const daoToken = contractData[7]?.result as string;
-            const veloFactory = contractData[8]?.result as string;
+            const contributedAmountYet = Number(contractData[8]?.result )/10**18;
 
             const modeBalance = balanceRaw ? ethers.utils.formatUnits(balanceRaw, 18) : "0";
 
             const isWhitelisted = whitelistInfoData ? whitelistInfoData[0] : false;
             const tierNumber = whitelistInfoData ? Number(whitelistInfoData[1]) : 0;
+         
 
 
             const userTierLabel = TIER_LABELS[tierNumber] || "None";
@@ -142,7 +143,7 @@ export const useFetchBalance = (accountAddress: `0x${string}` | undefined) => {
                 balance: modeBalance,
                 tierNumber,
                 isWhitelisted,
-                veloFactory,
+                contributedAmountYet,
                 daoToken,
                 goalReached,
                 finalisedFundraising,
