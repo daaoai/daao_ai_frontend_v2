@@ -13,6 +13,7 @@ import { gold, syne } from "@/lib/fonts";
 import { Card, CardContent } from "@/components/ui/card";
 import CheckWaitlistModal from "@/components/landing/waitlist-modal";
 
+
 const HomePage: NextPage = () => {
   // const [email, setEmail] = useState("");
   // const [statusMsg, setStatusMsg] = useState("");
@@ -69,6 +70,9 @@ const HomePage: NextPage = () => {
   //   }
   // };
 
+  const handleGoToApp = async () => {
+      window.location.href = "/app/";
+  };
 
 
   return (
@@ -109,10 +113,11 @@ const HomePage: NextPage = () => {
             <Button
               variant="connect"
               className={`py-4 sm:py-6 px-6 sm:px-10 bg-transparent rounded-lg xl border border-[#bedaff] flex justify-center items-center max-w-xs sm:max-w-none`}
-              onClick={() => setIsOpen(true)}
+              onClick={handleGoToApp}
             >
               <div className="flex justify-center items-center gap-2 text-center text-white text-sm sm:text-base font-normal goldman leading-tight tracking-wide">
-                Check whitelist <ArrowRight />
+
+                Go To App <ArrowRight />
               </div>
             </Button>
           </div>
