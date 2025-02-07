@@ -67,7 +67,7 @@ export default function BurnCard(props: UpcomingFundDetailsProps) {
 
   const checkFinalisedFundraising = async () => {
     await refetch();
-    if (fundraisingFinalized) {
+    if (fetchedData?.finalisedFundraising) {
       window.location.href = "/app/dashboard/1";
     } else {
       toast({
@@ -167,13 +167,15 @@ export default function BurnCard(props: UpcomingFundDetailsProps) {
         className: `${workSans.className} bg-[#2ca585]`
       });
       await refreshData();
-      setBalance((prev) => (Number(prev) - Number(amount)).toFixed(3));
-      setLeftoutAmount((prev) => Number((Number(prev) - Number(amount)).toFixed(3)));
       updateTotalContributed(amount);
       setAmount(0);
     } catch (error) {
       console.error("Error contributing to fund:", error);
       setIsContributing(false);
+    }
+    finally{
+      setBalance((prev) => (Number(prev) - Number(amount)).toFixed(3));
+      setLeftoutAmount((prev) => Number((Number(prev) - Number(amount)).toFixed(3)));
     }
   }
 
