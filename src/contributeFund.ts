@@ -8,7 +8,7 @@ import { object } from "zod";
 
 
 const contractABI = abi;
-const contractAddress = "0x050b5729e2c46769Fe1b175644ec2aD45B3BCa9A";
+const contractAddress = "0x42eD8781f42b91e0250b5159C072D4Cc9d2c116E";
 const tokenAddress = "0xDfc7C877a950e49D2610114102175A06C2e3167a";
 
 let web3: Web3 | null = null;
