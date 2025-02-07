@@ -69,8 +69,9 @@ const FundDetails: React.FC<FundDetailsProps> = (props) => {
         console.log("Data from api is  is ", data)
 
         if (data && Array.isArray(data) && data[0]) {
-          setMarketCap(data[0].marketCap)
           setPrice(data[0].priceUsd)
+          const marketCap = (Number(data[0].priceUsd)*10**9).toFixed(0)
+          setMarketCap(Number(marketCap))
         } else {
           console.warn('Market data not in expected format.')
         }

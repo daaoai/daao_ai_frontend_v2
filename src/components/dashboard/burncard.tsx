@@ -14,7 +14,7 @@ import { workSans } from "@/lib/fonts"
 
 
 const wagmiDaoContract = {
-  address: "0x42eD8781f42b91e0250b5159C072D4Cc9d2c116E",
+  address: "0xEc7b0FD288E87eBC1C301E360092c645567e79B9",
   abi: contractABI
 
 } as const;
