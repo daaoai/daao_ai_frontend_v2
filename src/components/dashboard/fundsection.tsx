@@ -19,7 +19,7 @@ interface FundSectionProps {
     id: string
     title: string
     token: string
-    status: "live" | "pending" | "soon"
+    status: "live" | "funding" | "soon"
     imgSrc: string
   }>
   linkPrefix?: string
@@ -38,10 +38,10 @@ export function FundSection({ title, subtitle, funds, linkPrefix = "dashboard", 
         </p>
       </div>
       <Carousel className="w-full">
-        <CarouselContent className="-ml-2 md:-ml-4">
+        <CarouselContent className="-ml-2 md:-ml-4 h-full">
           {funds.map((fund) => (
             <CarouselItem key={fund.id} className="pl-2 md:pl-4 basis-full sm:basis-1/2 lg:basis-1/3">
-              <div className="p-1">
+              <div className="p-1 h-full">
                 <button
                   onClick={(e) => {
                     if (onFundClick) {
@@ -49,7 +49,7 @@ export function FundSection({ title, subtitle, funds, linkPrefix = "dashboard", 
                       onFundClick(fund.id);
                     }
                   }}
-                  className="w-full"
+                  className="w-full h-full"
                 >
                   <FundCard
                     key={fund.id}

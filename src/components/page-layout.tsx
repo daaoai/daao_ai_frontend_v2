@@ -5,6 +5,7 @@ import { Navbar } from "./navigation/navbar";
 import { Footer } from "./footer";
 import { AppNavbar } from "./navigation/app-navbar";
 import { Toaster } from "./ui/toaster";
+import Image from "next/image";
 
 interface LayoutProps {
   flexDirection?: "row" | "col";
@@ -79,7 +80,18 @@ const MainContainer: React.FC<LayoutProps & { children: React.ReactNode }> = ({
       >
         {/*background stuff */}
         {app ? (
-          <div className="absolute inset-0 bg-black h-full">
+          <div className="absolute inset-0 bg-black h-full overflow-hidden">
+            {/* Star background */}
+            <div className="absolute top-0 right-0 w-full h-full">
+              <div className="relative w-[100%] h-[100%] -right-1/4 lg:-right-[1/2] -top-1/8 lg:-top-1/4 lg:mt-[100px]">
+                <Image
+                  src="/assets/star-1-with-purple-star.svg"
+                  alt=""
+                  width={2000}
+                  height={2000}
+                />
+              </div>
+            </div>
           </div>
         ) : (
           <div className="absolute inset-0 bg-gradient-to-b from-[#000e22] to-[#010101] h-full">
@@ -92,7 +104,7 @@ const MainContainer: React.FC<LayoutProps & { children: React.ReactNode }> = ({
         )}
 
         {/*rest of the stuff*/}
-        <div className="h-min relative z-10 flex flex-col flex-wrap items-center justify-center text-center pb-64">
+        <div className="h-min relative z-10 flex flex-col flex-wrap items-center justify-center text-center pb-8">
           {children}
         </div>
       </main >

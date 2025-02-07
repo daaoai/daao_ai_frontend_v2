@@ -8,7 +8,7 @@ import { Button } from '@/components/ui/button';
 import { FundSection } from '@/components/dashboard/fundsection';
 import { CURRENT_DAO_IMAGE, FUND_CARD_PLACEHOLDER_IMAGE } from '@/lib/links';
 // import { FUND_CARD_PLACEHOLDER_IMAGE } from '@/lib/links';
-import { anekLatin, workSans } from '@/lib/fonts';
+import { inter, workSans } from '@/lib/fonts';
 import { useAccount } from "wagmi";
 import { useRouter } from 'next/navigation';
 import { useToast } from '@/hooks/use-toast';
@@ -22,7 +22,7 @@ import { ConnectWalletButton } from '@/components/ui/connect-button';
 
 const getUpcomingFunds = () => {
   return [
-    { id: '1', title: 'DeFAI Cartel', token: 'CARTEL', status: "live" as "live", imgSrc: CURRENT_DAO_IMAGE },
+    { id: '1', title: 'DeFAI Cartel', token: 'CARTEL', status: "soon" as "soon", imgSrc: CURRENT_DAO_IMAGE },
     { id: '2', title: 'To Be Announced', token: 'TBA', status: "soon" as "soon", imgSrc: FUND_CARD_PLACEHOLDER_IMAGE },
     { id: '3', title: 'To Be Announced', token: 'TBA', status: "soon" as "soon", imgSrc: FUND_CARD_PLACEHOLDER_IMAGE },
     { id: '4', title: 'To Be Announced', token: 'TBA', status: "soon" as "soon", imgSrc: FUND_CARD_PLACEHOLDER_IMAGE },
@@ -57,25 +57,15 @@ const AppHome: React.FC = () => {
   return (
     <PageLayout title="App" description="main-app" app={true}>
       <div className="relative min-h-screen w-screen overflow-hidden">
-        {/* Watermark */}
-        <div className="scale-150 sm:scale-100 mr-[-20%] sm:mr-[-30%] mt-[80%] sm:mt-[-20%] absolute top-0 right-0 w-full h-full pointer-events-none z-0">
-          <Image
-            src="/assets/star-1-with-purple-star.svg"
-            alt="Watermark"
-            layout="fill"
-            objectPosition="right top"
-            className="object-contain"
-          />
-        </div>
 
         <div className={`${workSans.className} relative flex flex-col justify-center items-center w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 md:py-16 space-y-12 md:space-y-24`}>
           {/* Hero section */}
           <section className='flex flex-col justify-center items-center gap-6 md:gap-10 text-center max-w-4xl'>
-            <h1 className={`text-white text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-semibold ${anekLatin.className} leading-tight`}>
-              The future of investing in Daaos world
+            <h1 className={`text-white text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-semibold ${inter.className} leading-tight`}>
+              The Future of DeFAI DAOs
             </h1>
             <p className={`text-white text-base sm:text-lg md:text-xl lg:text-2xl font-normal tracking-wide`}>
-              Create or join memecoin & AI hedgefunds
+              Create your AI fund
             </p>
             {/*<div className="flex flex-col sm:flex-row justify-center items-center gap-4 w-full max-w-md">
               <Link href="/app/dashboard" className="w-full sm:w-auto">
