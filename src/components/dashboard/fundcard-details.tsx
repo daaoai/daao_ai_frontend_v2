@@ -80,6 +80,7 @@ const FundDetails: React.FC<FundDetailsProps> = (props) => {
     }
     fetchMarketData()
   }, [daoTokenAddress])
+
   return (
     <>
       <Card className="bg-[#0d0d0d] text-white sm:p-2 max-w-xl lg:max-w-2xl mx-auto w-full">
@@ -98,11 +99,7 @@ const FundDetails: React.FC<FundDetailsProps> = (props) => {
           </CardTitle>
         </CardHeader>
         <CardContent className="space-y-4 sm:space-y-6">
-          <Card className="bg-[#1b1c1d] border-[#27292a] p-3 sm:p-4">
-            <CardDescription className={`text-left text-white text-sm sm:text-base md:text-lg font-normal ${workSans.className}`}>
-              {props.description}
-            </CardDescription>
-          </Card>
+        
 
           <div className="text-left flex flex-row gap-4 sm:gap-6">
             <div className="grid grid-rows-[80%_20%] gap-2 sm:gap-4 w-full">

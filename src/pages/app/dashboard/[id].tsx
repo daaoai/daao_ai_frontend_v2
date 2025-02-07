@@ -8,7 +8,7 @@ import Orderbook from '@/components/dashboard/orderbook';
 import {getContractData} from "../../../getterFunctions"
 import { useFetchBalance } from "../../../components/dashboard/fetchBalance"
 import { useAccount } from "wagmi";
-
+import { CURRENT_DAO_IMAGE, FUND_CARD_PLACEHOLDER_IMAGE } from '@/lib/links';
 
 
 const Dashboard: React.FC = () => {
@@ -18,19 +18,7 @@ const Dashboard: React.FC = () => {
   const [daoTokenAddress, setDaoTokenAddress] = useState('');
 
   
-  useEffect(() => {
-    const fetchContractData = async () => {
-      try {
-        const data = await getContractData();
-        setDaoTokenAddress(data.daoToken);
-        console.log("Fetched Contract Data:", data);
-      } catch (error) {
-        console.error("Error fetching contract data:", error);
-      }
-    };
-
-    fetchContractData();
-  }, []);
+ 
   useEffect(() => {
     console.log("daoToken is", fetchedData?.daoToken)
     if(!fetchedData) return;
@@ -42,10 +30,10 @@ const Dashboard: React.FC = () => {
 
 
   const props: FundDetailsProps = {
-    icon: "https://via.placeholder.com/70x70", // Placeholder image URL
-    shortname: "DAO",
+    icon: CURRENT_DAO_IMAGE, // Placeholder image URL
+    shortname: "CARTEL",
     longname: "",
-    description: "This DAO has Has been announced, you can swap here",
+    description: "",
     holdings: 0,
     modeAddress: "0x5edbe707191Ae3A5bd5FEa5EDa0586f7488bD961",
   };

@@ -145,7 +145,7 @@ const Buysell = () => {
       const provider = new ethers.providers.Web3Provider(window.ethereum)
       const poolContract = new ethers.Contract(poolAddress, poolAbi, provider)
       const [sqrtPriceX96] = await poolContract.slot0()
-      setCurrentSqrtPrice(activeTab === "buy" ? "1461446703485210103287273052203988822378723970300" : "4295128750");
+      setCurrentSqrtPrice(activeTab === "buy" ? "4295128750" : "1461446703485210103287273052203988822378723970300");
     } catch (error) {
       console.error("Error fetching slot0:", error)
     }
@@ -508,9 +508,9 @@ const Buysell = () => {
                 placeholder="0"
                 value={amountFrom}
                 onChange={handleFromChange}
-                className={`appearance-none bg-transparent border-0 p-0 text-3xl w-24 focus-visible:ring-0 focus-visible:ring-offset-0 ${workSans.className}`}
+                className={`appearance-none bg-transparent border-0 p-0 text-3xl w-100 f${workSans.className}`}
                 style={{
-                  minWidth: "100px",  // Set a reasonable minimum width
+                  minWidth: "140px",  // Set a reasonable minimum width
                   width: `${amountTo.toString().length + 2}ch`, // Dynamically adjust width
                 }}
               />
@@ -557,7 +557,7 @@ const Buysell = () => {
                 onChange={(e) => setAmountTo(Number(e.target.value))}
                 className={`appearance-none bg-transparent border-0 p-0 text-3xl w-24 focus-visible:ring-0 focus-visible:ring-offset-0 ${workSans.className}`}
                 style={{
-                  minWidth: "500px",  // Set a reasonable minimum width
+                  minWidth: "140px",  // Set a reasonable minimum width
                   width: `${amountTo.toString().length + 0.2}ch`, // Dynamically adjust width
                 }}
               />

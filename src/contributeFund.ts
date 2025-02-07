@@ -149,7 +149,7 @@ export const handleContribute = async (amount: string) => {
     console.log("Transaction Receipt:", receipt);
     console.log("Contribution successful!");
 
-    return receipt;
+    return 5;
   } catch (error: any) {
     console.error("Error during contribution:", error);
     console.log("error is ", error)

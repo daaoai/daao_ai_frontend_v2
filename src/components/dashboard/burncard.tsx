@@ -142,6 +142,11 @@ export default function BurnCard(props: UpcomingFundDetailsProps) {
         return;
       }
 
+      if(tx===5){
+       setBalance((prev) => (Number(prev) - Number(amount)).toFixed(3));
+      setLeftoutAmount((prev) => Number((Number(prev) - Number(amount)).toFixed(3)));
+      }
+
       if (tx === 1) {
         toast({
           title: "Error contributing to fund",
@@ -173,10 +178,7 @@ export default function BurnCard(props: UpcomingFundDetailsProps) {
       console.error("Error contributing to fund:", error);
       setIsContributing(false);
     }
-    finally{
-      setBalance((prev) => (Number(prev) - Number(amount)).toFixed(3));
-      setLeftoutAmount((prev) => Number((Number(prev) - Number(amount)).toFixed(3)));
-    }
+   
   }
 
   return (
