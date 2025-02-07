@@ -8,7 +8,7 @@ import { Button } from '@/components/ui/button';
 import { FundSection } from '@/components/dashboard/fundsection';
 import { CURRENT_DAO_IMAGE, FUND_CARD_PLACEHOLDER_IMAGE } from '@/lib/links';
 // import { FUND_CARD_PLACEHOLDER_IMAGE } from '@/lib/links';
-import { inter,workSans } from '@/lib/fonts';
+import { inter, workSans } from '@/lib/fonts';
 import { useAccount } from "wagmi";
 import { useRouter } from 'next/navigation';
 import { useToast } from '@/hooks/use-toast';
@@ -22,7 +22,7 @@ import { ConnectWalletButton } from '@/components/ui/connect-button';
 
 const getUpcomingFunds = () => {
   return [
-    { id: '1', title: 'DeFAI Cartel', token: 'CARTEL', status: "soon" as "soon", imgSrc: CURRENT_DAO_IMAGE },
+    { id: '1', title: 'DeFAI Cartel', token: 'CARTEL', status: "funding" as "funding", imgSrc: CURRENT_DAO_IMAGE },
     { id: '2', title: 'To Be Announced', token: 'TBA', status: "soon" as "soon", imgSrc: FUND_CARD_PLACEHOLDER_IMAGE },
     { id: '3', title: 'To Be Announced', token: 'TBA', status: "soon" as "soon", imgSrc: FUND_CARD_PLACEHOLDER_IMAGE },
     { id: '4', title: 'To Be Announced', token: 'TBA', status: "soon" as "soon", imgSrc: FUND_CARD_PLACEHOLDER_IMAGE },
