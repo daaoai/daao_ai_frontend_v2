@@ -106,7 +106,7 @@ const HomePage: NextPage = () => {
               </Button>
             </Link>
             <Link
-              href={"#"}
+              href="/app"
               className="w-full"
             >
               <Button
@@ -115,7 +115,7 @@ const HomePage: NextPage = () => {
               >
                 <div className="flex justify-center items-center gap-2 text-center text-white text-sm sm:text-base font-normal goldman leading-tight tracking-wide">
 
-                  Coming Soon <ArrowRight />
+                  Go to app <ArrowRight />
                 </div>
               </Button>
             </Link>
