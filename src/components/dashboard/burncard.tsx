@@ -22,8 +22,9 @@ const wagmiDaoContract = {
 
 export default function BurnCard(props: UpcomingFundDetailsProps) {
   const { toast } = useToast();
+  const {isConnected} = useAccount();
   const { fetchedData, refreshData, updateTotalContributed } = useFundContext();
-  const [amount, setAmount] = useState<number | undefined>();
+  const [amount, setAmount] = useState<number>(0);
   const [balance, setBalance] = useState("");
   const [goalReached, setGoalReached] = useState(false);
   const [tier, setTier] = useState("");
@@ -73,14 +74,31 @@ export default function BurnCard(props: UpcomingFundDetailsProps) {
     }
   };
 
-
-  const handleInputChange = (e: any) => {
-    console.log("amount is ", e.target.value)
-    setAmount(e.target.value);
-  }
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value ? parseFloat(e.target.value) : 0;
+    setAmount(value);
+  };
 
   const handleContributefunction = async () => {
     try {
+      if (!isConnected) {
+        toast({
+          title: "Please connect your wallet first",
+          description: "It looks like your wallet isn't connected",
+          variant: "destructive",
+          className: `${workSans.className}`
+        })
+        return;
+      }
+      if (!amount || amount <= 0) {
+        toast({
+          title: "Invalid Amount",
+          description: "Please enter a valid amount to contribute.",
+          variant: "destructive",
+        });
+        return;
+      }
+
       if (amount > Number(balance)) {
         toast({
           title: "You do not have enough balance to contribute this amount",
@@ -111,6 +129,16 @@ export default function BurnCard(props: UpcomingFundDetailsProps) {
         return;
       }
 
+      if (tx === 1) {
+        toast({
+          title: "Error contributing to fund",
+          variant: "destructive",
+          className: `${workSans.className}`
+        });
+        setIsContributing(false);
+        return;
+      }
+
       setIsContributing(false);
       toast({
         title: "Successfully contributed to the fund",
@@ -119,6 +147,7 @@ export default function BurnCard(props: UpcomingFundDetailsProps) {
       await refreshData();
       setBalance((prev) => (Number(prev) - Number(amount)).toFixed(3));
       updateTotalContributed(amount);
+      setAmount(0);
     } catch (error) {
       console.error("Error contributing to fund:", error);
       setIsContributing(false);
