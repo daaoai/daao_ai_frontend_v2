@@ -7,7 +7,7 @@ import contractABI from "../../abi.json";
 import { ethers } from 'ethers';
 
 const MODE_TOKEN_ADDRESS = "0xDfc7C877a950e49D2610114102175A06C2e3167a";
-const DAO_CONTRACT_ADDRESS = "0x29F07AA75328194C274223F11cffAa329fD1c319";
+const DAO_CONTRACT_ADDRESS = "0x050b5729e2c46769Fe1b175644ec2aD45B3BCa9A";
 
 
 const wagmiModeContract = {
@@ -27,7 +27,7 @@ export const useFetchBalance = (accountAddress: `0x${string}` | undefined) => {
     const [data, setData] = useState({
         balance: "0",
         tierNumber: 0,
-        
+
         isWhitelisted: false,
         maxLimit: 0,
         contributedAmountYet: 0,

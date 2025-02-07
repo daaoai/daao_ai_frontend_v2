@@ -1,7 +1,7 @@
 import { ethers } from "ethers";
 import contractABI from "./abi.json";
 
-const CONTRACT_ADDRESS = "0x29F07AA75328194C274223F11cffAa329fD1c319"; ``
+const CONTRACT_ADDRESS = "0x050b5729e2c46769Fe1b175644ec2aD45B3BCa9A"; ``
 const TIER_LABELS = ["None", "Platinum", "Gold", "Silver"];
 export const getContractData = async () => {
   if (!(window as any).ethereum) {

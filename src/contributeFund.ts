@@ -8,7 +8,7 @@ import { object } from "zod";
 
 
 const contractABI = abi;
-const contractAddress = "0x29F07AA75328194C274223F11cffAa329fD1c319";
+const contractAddress = "0x050b5729e2c46769Fe1b175644ec2aD45B3BCa9A";
 const tokenAddress = "0xDfc7C877a950e49D2610114102175A06C2e3167a";
 
 let web3: Web3 | null = null;
@@ -76,7 +76,7 @@ export const handleContribute = async (amount: string) => {
     if (currentAllowance < Number(weiAmount)) {
       console.log("Insufficient allowance. Approving required tokens...");
       const requiredApproval = (Number(weiAmount) - currentAllowance).toString();
-      
+
       const gasEstimate = await tokenContract.methods.approve(contractAddress, requiredApproval).estimateGas({
         from: contributor,
       });
