@@ -106,7 +106,7 @@ const Dashboard: React.FC = () => {
               created="7/02/2025"
               owner="0xb51eC6F7D3E0D0FEae495eFe1f0751dE66b6be95"
               token={daoTokenAddress}
-              tradingEnds="7/3/2025"
+              tradingEnds="10/3/2025"
               ethRaised="100 MODE"
             />
           </div>
