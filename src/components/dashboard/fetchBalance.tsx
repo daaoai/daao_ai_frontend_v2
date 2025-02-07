@@ -27,6 +27,7 @@ export const useFetchBalance = (accountAddress: `0x${string}` | undefined) => {
     const [data, setData] = useState({
         balance: "0",
         tierNumber: 0,
+        
         isWhitelisted: false,
         maxLimit: 0,
         contributedAmountYet: 0,
@@ -95,7 +96,7 @@ export const useFetchBalance = (accountAddress: `0x${string}` | undefined) => {
                 ...wagmiDaoContract,
                 functionName: "contributions",
                 args: accountAddress ? [accountAddress] : [],
-            }
+            },
         ],
     });
     console.log("data is", data)
@@ -127,6 +128,7 @@ export const useFetchBalance = (accountAddress: `0x${string}` | undefined) => {
             const goalReached = contractData[4]?.result as boolean;
             const finalisedFundraising = contractData[5]?.result as boolean;
             const end = contractData[6]?.result as bigint;
+            const endDate = new Date(Number(end) * 1000);
             const daoToken = contractData[7]?.result as string;
             const contributedAmountYet = Number(contractData[8]?.result )/10**18;
 
@@ -140,6 +142,7 @@ export const useFetchBalance = (accountAddress: `0x${string}` | undefined) => {
             const userTierLabel = TIER_LABELS[tierNumber] || "None";
             setData((prev) => ({
                 ...prev,
+                
                 balance: modeBalance,
                 tierNumber,
                 isWhitelisted,

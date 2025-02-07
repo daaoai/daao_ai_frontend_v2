@@ -8,9 +8,8 @@ export function cn(...inputs: ClassValue[]) {
 }
 
 export function shortenAddress(address: string) {
-  if (typeof address !== "string" || !address.startsWith("0x") || address.length != 42) {
-    throw new Error("Invalid address");
-  }
+  console.log("Address is ", address)
+
   return `${address.slice(0, 4)}...${address.slice(-4)}`;
 }
 

@@ -22,7 +22,10 @@ import { useToast } from '@/hooks/use-toast';
 import { useAccount, useReadContracts } from 'wagmi'
 // import contractABI from "../../abi.json";
 import { useFetchBalance } from "./fetchBalance"
+import { set } from "date-fns"
 // import { fetchData } from "next-auth/client/_utils"
+import { useFundContext } from "./FundContext";
+
 
 
 const TICK_SPACING = 100;
@@ -30,7 +33,6 @@ const VELODROME_FACTORY_ADDRESS = "0x04625B046C69577EfC40e6c0Bb83CDBAfab5a55F"
 const CL_POOL_ROUTER_ADDRESS = "0xC3a15f812901205Fc4406Cd0dC08Fe266bF45a1E";
 const SWAP_ROUTER_ADDRESS = "0xB11f2310D1b3FF589af56b981c17BC57dee1D488"
 const MODE_TOKEN_ADDRESS = "0xDfc7C877a950e49D2610114102175A06C2e3167a";
-
 
 
 const Buysell = () => {
@@ -46,20 +48,45 @@ const Buysell = () => {
   const [slippageTolerance, setSlippageTolerance] = useState("1")
   const [isSwapping, setIsSwapping] = useState(false)
   const [modeBalance, setModeBalance] = useState("0");
-  const [daoBalance, setDaoBalance] = useState("0");
   const [daoTokenAddress, setDaoTokenAddress] = useState("");
   const [poolAddress, setPoolAddress] = useState("");
+  const [fetcher, setFetcher] = useState(false)
+  const { daoBalance,setDaoBalance } = useFundContext();
 
 
   const accountAddress = account.address as `0x${string}`;
   const { data: fetchedData, refreshData } = useFetchBalance(accountAddress);
 
+  const { data: daoReadData,refetch } = useReadContracts({
+    contracts: daoTokenAddress ? [
+      {
+        address: daoTokenAddress as `0x${string}`,
+        abi: daoABI,
+        functionName: "balanceOf",
+        args: [accountAddress]
+      }
+    ]
+      : []
+  });
 
   useEffect(() => {
-    if (fetchedData) {
-      setDaoTokenAddress(fetchedData.daoToken)
+    console.log("daoToken is", fetchedData?.daoToken)
+    if(!fetchedData) return;
+    if (!daoTokenAddress) {
+      setDaoTokenAddress(fetchedData?.daoToken)
     }
-  }, [fetchedData]);
+    setModeBalance(fetchedData.balance)
+  }, [fetchedData,daoTokenAddress,activeTab]);
+
+
+  useEffect(() => {
+    if (daoReadData && daoReadData[0]?.result) {
+      const rawBal = daoReadData[0].result as bigint;
+      const formatted = ethers.utils.formatUnits(rawBal, 18);
+      setDaoBalance(formatted);
+    }
+  }, [daoReadData, setDaoBalance,activeTab]);
+
 
   useEffect(() => {
     const fetchPoolAddress = async () => {
@@ -109,40 +136,7 @@ const Buysell = () => {
 
   }, [activeTab, poolAddress]);
 
-  async function fetchDaoBalance(): Promise<string> {
-    if (!daoTokenAddress) return "0"
-    if (!window.ethereum) return "0"
-    try {
-      const provider = new ethers.providers.Web3Provider((window as any).ethereum);
-      const signer = provider.getSigner();
-      const userAddress = await signer.getAddress();
-      const daoContract = new ethers.Contract(daoTokenAddress, daoABI, provider);
-      const balanceBN = await daoContract.balanceOf(userAddress);
-      const balanceFormatted = ethers.utils.formatUnits(balanceBN, 18);
-      return balanceFormatted;
-    } catch (error) {
-      console.error('Error fetching DAO balance:', error);
-      return "0";
-    }
-  };
 
-  async function fetchModeBalance(): Promise<string> {
-    if (!window.ethereum) return "0"
-    try {
-      const provider = new ethers.providers.Web3Provider(window.ethereum);
-      const accounts = await provider.listAccounts();
-      const signer = provider.getSigner();
-      const userAddress = await signer.getAddress()
-      const modeContract = new ethers.Contract(MODE_TOKEN_ADDRESS, modeABI, signer);
-      const rawBalance = await modeContract.balanceOf(userAddress);
-      const decimals = await modeContract.decimals();
-      const modeBalance = ethers.utils.formatUnits(rawBalance, decimals);
-      return modeBalance;
-    } catch (error) {
-      console.error("Error fetching balance:", error);
-      return "0";
-    }
-  };
 
   async function fetchSlot0() {
     if (!poolAddress) return
@@ -180,12 +174,7 @@ const Buysell = () => {
   async function fetchBalances() {
     if (!window.ethereum) return;
     if (activeTab === "buy") {
-      const modeBalance = await fetchModeBalance();
-      setModeBalance(modeBalance ? modeBalance : "0");
-      setDaoBalance("0");
     } else {
-      const daoBalance = await fetchDaoBalance();
-      setDaoBalance(daoBalance ? daoBalance : "0");
       setModeBalance("0");
     }
   }
@@ -207,6 +196,28 @@ const Buysell = () => {
   async function simulateSwap(newFromValue: string) {
     if (!window.ethereum || !poolAddress || !currentSqrtPrice) return
     try {
+      if(activeTab === "buy"){
+        if(Number(modeBalance)<Number(newFromValue)){
+          toast({
+            title: "Insufficient balance",
+            variant: "destructive",
+            className: `${workSans.className}`
+          })
+          setAmountTo(0)
+          return
+        }
+      }
+      if(activeTab === "sell"){
+        if(Number(daoBalance)<Number(newFromValue)){
+          toast({
+            title: "Insufficient balance",
+            variant: "destructive",
+            className: `${workSans.className}`
+          })
+          setAmountTo(0)
+          return
+        }
+      }
       const provider = new ethers.providers.Web3Provider(window.ethereum)
       const signer = provider.getSigner()
       const clPoolRouter = new ethers.Contract(
@@ -291,12 +302,13 @@ const Buysell = () => {
 
     const currentAllowance: ethers.BigNumber = await ModeTokenContract.allowance(
       userAddress,
-      MODE_TOKEN_ADDRESS
+      CL_POOL_ROUTER_ADDRESS
     )
+    console.log("Current allowance:", currentAllowance.toString())
     if (currentAllowance.lt(requiredAmountBN)) {
       console.log("Approving DAO tokens...")
       const approveTx = await ModeTokenContract.approve(
-        MODE_TOKEN_ADDRESS,
+        CL_POOL_ROUTER_ADDRESS,
         requiredAmountBN
       )
       await approveTx.wait()
@@ -357,6 +369,7 @@ const Buysell = () => {
       console.log("Slippage decimal:", slipDecimal)
       const quotedOut = amountTo
       const minOutputNumber = quotedOut * (1 - slipDecimal)
+      console.log("minOutputNumber:", minOutputNumber)
       const minOutputBN = ethers.utils.parseUnits(
         minOutputNumber.toFixed(6),
         18
@@ -398,18 +411,34 @@ const Buysell = () => {
 
       const receipt = await tx.wait();
       // alert(`Swap successful!\nTransaction Hash: ${receipt.transactionHash}`)
-      window.location.reload();
 
       await fetchSlot0();
       setAmountFrom("");
       setAmountTo(0);
       console.log("Swap successful!", receipt);
 
+
     } catch (error) {
       console.error("Error during swap:", error);
     }
     finally {
+
+      if (activeTab === "buy") {
+        // Spent MODE
+        setModeBalance((prev) => (Number(prev) - Number(amountFrom)).toString());
+        // Gained DAO
+        setDaoBalance((prev) => (Number(prev) + Number(amountTo)).toString());
+      } else {
+        // Spent DAO
+        setDaoBalance((prev) => (Number(prev) - Number(amountFrom)).toString());
+        // Gained MODE
+        setModeBalance((prev) => (Number(prev) + Number(amountTo)).toString());
+      }
+      refetch();
+      refreshData();
       setIsSwapping(false)
+      setAmountFrom("");
+      setAmountTo(0);
     }
 
 

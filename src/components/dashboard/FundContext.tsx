@@ -7,7 +7,8 @@ interface FundContextType {
   refreshData: () => Promise<void>;
   totalContributed: number;
   updateTotalContributed: (amount: number) => void;
-
+  daoBalance: string;
+  setDaoBalance: React.Dispatch<React.SetStateAction<string>>;
 }
 
 const FundContext = createContext<FundContextType | undefined>(undefined);
@@ -25,8 +26,9 @@ export const FundProvider = ({ children }: { children: ReactNode }) => {
     setTotalContributed((prev) => prev + amount);
     refreshData(); 
   };
+  const [daoBalance, setDaoBalance] = useState("0");
   return (
-    <FundContext.Provider value={{ fetchedData, refreshData,totalContributed, updateTotalContributed }}>
+    <FundContext.Provider value={{ fetchedData, refreshData,totalContributed, updateTotalContributed,  daoBalance , setDaoBalance}}>
       {children}
     </FundContext.Provider>
   );
