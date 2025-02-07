@@ -7,7 +7,7 @@ import contractABI from "../../abi.json";
 import { ethers } from 'ethers';
 
 const MODE_TOKEN_ADDRESS = "0xDfc7C877a950e49D2610114102175A06C2e3167a";
-const DAO_CONTRACT_ADDRESS = "0x42eD8781f42b91e0250b5159C072D4Cc9d2c116E";
+const DAO_CONTRACT_ADDRESS = "0xEc7b0FD288E87eBC1C301E360092c645567e79B9";
 
 
 const wagmiModeContract = {
