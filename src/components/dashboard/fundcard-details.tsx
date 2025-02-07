@@ -10,12 +10,14 @@ import { getContractData } from "../../getterFunctions"
 import { useFundContext } from "./FundContext";
 
 
+
 const FundDetails: React.FC<FundDetailsProps> = (props) => {
   const { daoBalance } = useFundContext();
   const [marketCap, setMarketCap] = useState<number | null>(null);
   const [daoTokenAddress, setDaoTokenAddress] = useState('');
   const [price, setPrice] = useState<number | null>(null);
   const [daoHoldings, setDaoHoldings] = useState('0');
+  const { priceUsd, setPriceUsd } = useFundContext();
   useEffect(() => {
     const fetchContractData = async () => {
       try {
@@ -70,6 +72,7 @@ const FundDetails: React.FC<FundDetailsProps> = (props) => {
 
         if (data && Array.isArray(data) && data[0]) {
           setPrice(data[0].priceUsd)
+          setPriceUsd(data[0].priceUsd)
           const marketCap = (Number(data[0].priceUsd) * 10 ** 9).toFixed(0)
           setMarketCap(Number(marketCap))
         } else {
@@ -80,7 +83,7 @@ const FundDetails: React.FC<FundDetailsProps> = (props) => {
       }
     }
     fetchMarketData()
-  }, [daoTokenAddress])
+  }, [daoTokenAddress,setPriceUsd])
 
   return (
     <Card className="bg-[#0d0d0d] text-white sm:p-2 max-w-xl lg:max-w-2xl w-full">
