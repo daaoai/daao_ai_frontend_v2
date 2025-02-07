@@ -13,7 +13,7 @@ import { FiSettings } from "react-icons/fi"
 import ModeTokenLogo from "../../assets/icons/mode.png";
 import Image from "next/image";
 import daoABI from "../../DaoABI.json";
-import DaoTokenLogo from "../../assets/icons/logo.svg";
+import { CURRENT_DAO_IMAGE, FUND_CARD_PLACEHOLDER_IMAGE } from '@/lib/links';
 // import {getContractData} from "../../getterFunctions"
 import velodromeFactoryABI from "../../veloABI.json"
 import swapRouter from "../../swapSimulateABI.json"
@@ -145,7 +145,7 @@ const Buysell = () => {
       const provider = new ethers.providers.Web3Provider(window.ethereum)
       const poolContract = new ethers.Contract(poolAddress, poolAbi, provider)
       const [sqrtPriceX96] = await poolContract.slot0()
-      setCurrentSqrtPrice(activeTab === "buy" ? "4295128750" : "1461446703485210103287273052203988822378723970300");
+      setCurrentSqrtPrice(zeroForOne === true ? "4295128750" : "1461446703485210103287273052203988822378723970300");
     } catch (error) {
       console.error("Error fetching slot0:", error)
     }
@@ -443,8 +443,8 @@ const Buysell = () => {
 
 
   }
-  const fromLabel = activeTab === "buy" ? "MODE" : "DAO"
-  const toLabel = activeTab === "buy" ? "DAO" : "MODE"
+  const fromLabel = activeTab === "buy" ? "MODE" : "CARTEL"
+  const toLabel = activeTab === "buy" ? "CARTEL" : "MODE"
 
 
 
@@ -534,7 +534,7 @@ const Buysell = () => {
                 className="bg-transparent border-[#242626] hover:bg-[#242626] hover:text-white"
               >
                 <Image
-                  src={activeTab === "buy" ? ModeTokenLogo : DaoTokenLogo}
+                  src={activeTab === "buy" ? ModeTokenLogo : CURRENT_DAO_IMAGE}
                   alt={activeTab === "buy" ? "MODE Token" : "DAO Token"}
                   width={16}
                   height={16}
@@ -572,7 +572,7 @@ const Buysell = () => {
                 className="bg-transparent border-[#242626] hover:bg-[#242626] hover:text-white"
               >
                 <Image
-                  src={activeTab === "buy" ? DaoTokenLogo : ModeTokenLogo}
+                  src={activeTab === "buy" ? CURRENT_DAO_IMAGE : ModeTokenLogo}
                   alt={activeTab === "buy" ? "DAO Token" : "MODE Token"}
                   width={16}
                   height={16}
