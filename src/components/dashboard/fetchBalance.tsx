@@ -1,7 +1,7 @@
 
 import { useEffect, useState } from 'react';
 import modeABI from "../../modeABI.json";
-import { useToast } from '@/hooks/use-toast';
+// import { useToast } from '@/hooks/use-toast';
 import { useAccount, useReadContracts } from 'wagmi'
 import contractABI from "../../abi.json";
 import { ethers } from 'ethers';
@@ -40,7 +40,7 @@ export const useFetchBalance = (accountAddress: `0x${string}` | undefined) => {
     });
 
 
-    const { data: contractData, error,refetch } = useReadContracts({
+    const { data: contractData, error, refetch } = useReadContracts({
         contracts: [
             // Fetch balance
             {
@@ -99,7 +99,7 @@ export const useFetchBalance = (accountAddress: `0x${string}` | undefined) => {
         ],
     });
     console.log("data is", data)
-    const { data: tierLimitData, refetch:refetchTierLimit } = useReadContracts({
+    const { data: tierLimitData, refetch: refetchTierLimit } = useReadContracts({
         contracts: [
             {
                 ...wagmiDaoContract,
@@ -109,7 +109,7 @@ export const useFetchBalance = (accountAddress: `0x${string}` | undefined) => {
         ],
     });
 
-    
+
     useEffect(() => {
         if (error) {
             console.error("Error fetching contract data:", error);
@@ -134,10 +134,10 @@ export const useFetchBalance = (accountAddress: `0x${string}` | undefined) => {
 
             const isWhitelisted = whitelistInfoData ? whitelistInfoData[0] : false;
             const tierNumber = whitelistInfoData ? Number(whitelistInfoData[1]) : 0;
-     
+
 
             const userTierLabel = TIER_LABELS[tierNumber] || "None";
-            setData((prev)=>({
+            setData((prev) => ({
                 ...prev,
                 balance: modeBalance,
                 tierNumber,
@@ -146,7 +146,7 @@ export const useFetchBalance = (accountAddress: `0x${string}` | undefined) => {
                 daoToken,
                 goalReached,
                 finalisedFundraising,
-                endDate: (Number(end)*1000).toString(),
+                endDate: (Number(end) * 1000).toString(),
                 fundraisingGoal,
                 totalRaised,
                 userTierLabel,
@@ -157,7 +157,7 @@ export const useFetchBalance = (accountAddress: `0x${string}` | undefined) => {
                 setData((prev) => ({ ...prev, maxLimit }));
             }
         }
-    }, [contractData,tierLimitData, error]);
+    }, [contractData, tierLimitData, error]);
 
     const refreshData = async () => {
         console.log("🔄 Refetching contract data...");
@@ -165,6 +165,6 @@ export const useFetchBalance = (accountAddress: `0x${string}` | undefined) => {
         await refetchTierLimit();
     };
 
-    
+
     return { data, refreshData };
 };
