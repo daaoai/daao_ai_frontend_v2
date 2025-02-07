@@ -22,7 +22,7 @@ import { ConnectWalletButton } from '@/components/ui/connect-button';
 
 const getUpcomingFunds = () => {
   return [
-    { id: '1', title: 'DeFAI Cartel', token: 'CARTEL', status: "live" as "live", imgSrc: CURRENT_DAO_IMAGE },
+    { id: '1', title: 'DeFAI Cartel', token: 'CARTEL', status: "soon" as "soon", imgSrc: CURRENT_DAO_IMAGE },
     { id: '2', title: 'To Be Announced', token: 'TBA', status: "soon" as "soon", imgSrc: FUND_CARD_PLACEHOLDER_IMAGE },
     { id: '3', title: 'To Be Announced', token: 'TBA', status: "soon" as "soon", imgSrc: FUND_CARD_PLACEHOLDER_IMAGE },
     { id: '4', title: 'To Be Announced', token: 'TBA', status: "soon" as "soon", imgSrc: FUND_CARD_PLACEHOLDER_IMAGE },

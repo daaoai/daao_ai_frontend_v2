@@ -3,7 +3,7 @@ import React from "react";
 const FundCard: React.FC<FundCardProps> = (props) => {
   const statusStyles = {
     live: "bg-[#f3aeae] text-[#af0505]",
-    pending: "bg-[#ebb6ff] text-[#6e0892]",
+    funding: "bg-[#ebb6ff] text-[#6e0892]",
     soon: "bg-[#e4e4e4] text-[#5f5e60]",   // Red background, white text
   };
 
