@@ -85,7 +85,6 @@ const Dashboard: React.FC = () => {
             )
 }
           </div>
-           
 
           {/* Right Section - 30% */}
           <div className="md:col-span-3">
@@ -95,7 +94,7 @@ const Dashboard: React.FC = () => {
               owner="0xb51eC6F7D3E0D0FEae495eFe1f0751dE66b6be95"
               token={daoTokenAddress}
               tradingEnds="10/3/2025"
-              ethRaised="100 MODE"
+              ethRaised="1,000,000 MODE"
             />
           </div>
         </div>
