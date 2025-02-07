@@ -75,7 +75,7 @@ export const handleContribute = async (amount: string) => {
 
     if (currentAllowance < Number(weiAmount)) {
       console.log("Insufficient allowance. Approving required tokens...");
-      const requiredApproval = (Number(weiAmount) - currentAllowance).toString();
+      const requiredApproval = weiAmount;
 
       const gasEstimate = await tokenContract.methods.approve(contractAddress, requiredApproval).estimateGas({
         from: contributor,
@@ -111,7 +111,7 @@ export const handleContribute = async (amount: string) => {
     console.log("Contribution amount:", weiAmount);
     let gasEstimate;
     try {
-      gasEstimate = await daosContract.methods.contribute(parseInt(weiAmount)).estimateGas({
+      gasEstimate = await daosContract.methods.contribute(weiAmount).estimateGas({
         from: contributor,
       });
     } catch (error) {
@@ -124,7 +124,7 @@ export const handleContribute = async (amount: string) => {
     const transactionParameters = {
       from: accounts[0],
       to: contractAddress,
-      data: daosContract.methods.contribute(parseInt(weiAmount)).encodeABI(),
+      data: daosContract.methods.contribute(weiAmount).encodeABI(),
       gas: String(gasEstimate),
       gasPrice: '800000',
     };
