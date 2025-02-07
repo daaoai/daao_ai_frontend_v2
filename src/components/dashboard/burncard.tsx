@@ -22,6 +22,7 @@ const wagmiDaoContract = {
 
 export default function BurnCard(props: UpcomingFundDetailsProps) {
   const { toast } = useToast();
+  const {isConnected} = useAccount();
   const { fetchedData, refreshData, updateTotalContributed } = useFundContext();
   const [amount, setAmount] = useState<number>(0);
   const [balance, setBalance] = useState("");
@@ -80,6 +81,15 @@ export default function BurnCard(props: UpcomingFundDetailsProps) {
 
   const handleContributefunction = async () => {
     try {
+      if (!isConnected) {
+        toast({
+          title: "Please connect your wallet first",
+          description: "It looks like your wallet isn't connected",
+          variant: "destructive",
+          className: `${workSans.className}`
+        })
+        return;
+      }
       if (!amount || amount <= 0) {
         toast({
           title: "Invalid Amount",
