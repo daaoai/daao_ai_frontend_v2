@@ -70,11 +70,6 @@ const HomePage: NextPage = () => {
   //   }
   // };
 
-  const handleGoToApp = async () => {
-      window.location.href = "/app/";
-  };
-
-
   return (
     <PageLayout title="Homepage" description="Welcome to a Network of Decentralized Autonomous Agentic Organizations">
       {/* Star Image */}
@@ -110,16 +105,20 @@ const HomePage: NextPage = () => {
                 </div>
               </Button>
             </Link>
-            <Button
-              variant="connect"
-              className={`py-4 sm:py-6 px-6 sm:px-10 bg-transparent rounded-lg xl border border-[#bedaff] flex justify-center items-center max-w-xs sm:max-w-none`}
-              onClick={handleGoToApp}
+            <Link
+              href="/app"
+              className="w-full"
             >
-              <div className="flex justify-center items-center gap-2 text-center text-white text-sm sm:text-base font-normal goldman leading-tight tracking-wide">
+              <Button
+                variant="connect"
+                className={`py-4 sm:py-6 px-6 sm:px-10 bg-transparent rounded-lg xl border border-[#bedaff] flex justify-center items-center max-w-xs sm:max-w-none`}
+              >
+                <div className="flex justify-center items-center gap-2 text-center text-white text-sm sm:text-base font-normal goldman leading-tight tracking-wide">
 
-                Go To App <ArrowRight />
-              </div>
-            </Button>
+                  Go to app <ArrowRight />
+                </div>
+              </Button>
+            </Link>
           </div>
         </div>
       </div>
@@ -141,16 +140,16 @@ const HomePage: NextPage = () => {
             />
           </div>
           <Link href="/app">
-          <div className="flex flex-col items-center gap-2">
-        
-            <h2 className={`text-center text-white text-xl sm:text-2xl font-normal ${gold.className} leading-tight tracking-wide`}>
-              DeFAI Cartel
-            </h2>
-          
-            <p className={`text-[#d1ea48] text-lg sm:text-xl font-normal ${gold.className}`}>
-              $CARTEL
-            </p>
-          </div>
+            <div className="flex flex-col items-center gap-2">
+
+              <h2 className={`text-center text-white text-xl sm:text-2xl font-normal ${gold.className} leading-tight tracking-wide`}>
+                DeFAI Cartel
+              </h2>
+
+              <p className={`text-[#d1ea48] text-lg sm:text-xl font-normal ${gold.className}`}>
+                $CARTEL
+              </p>
+            </div>
           </Link>
 
           {/*

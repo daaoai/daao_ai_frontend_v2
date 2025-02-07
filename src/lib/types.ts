@@ -56,3 +56,11 @@ interface leaderboardData {
 type dashboardData = {
   address: string,
 }
+
+type Asset = {
+  token: string
+  tokenIcon: string
+  balance: number
+  price: number
+  totalValue: number
+}
