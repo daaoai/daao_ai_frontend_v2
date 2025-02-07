@@ -8,7 +8,7 @@ import { Button } from '@/components/ui/button';
 import { FundSection } from '@/components/dashboard/fundsection';
 import { CURRENT_DAO_IMAGE, FUND_CARD_PLACEHOLDER_IMAGE } from '@/lib/links';
 // import { FUND_CARD_PLACEHOLDER_IMAGE } from '@/lib/links';
-import { inter, workSans } from '@/lib/fonts';
+import { inter,workSans } from '@/lib/fonts';
 import { useAccount } from "wagmi";
 import { useRouter } from 'next/navigation';
 import { useToast } from '@/hooks/use-toast';

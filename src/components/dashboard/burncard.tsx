@@ -14,7 +14,7 @@ import { workSans } from "@/lib/fonts"
 
 
 const wagmiDaoContract = {
-  address: "0x0e0cfb2B5d4564B5bf8458782033090ef730a8cB",
+  address: "0xEc7b0FD288E87eBC1C301E360092c645567e79B9",
   abi: contractABI
 
 } as const;
@@ -24,7 +24,7 @@ export default function BurnCard(props: UpcomingFundDetailsProps) {
   const { toast } = useToast();
   const {isConnected} = useAccount();
   const { fetchedData, refreshData, updateTotalContributed } = useFundContext();
-  const [amount, setAmount] = useState<number>(0);
+  const [amount, setAmount] = useState<number>();
   const [balance, setBalance] = useState("");
   const [goalReached, setGoalReached] = useState(false);
   const [tier, setTier] = useState("");
@@ -32,15 +32,19 @@ export default function BurnCard(props: UpcomingFundDetailsProps) {
   const [isWhitelisted, setisWhitelisted] = useState(false);
   const [maxLimit, setMaxLimit] = useState(0);
   const [fundraisingFinalized, setFundraisingFinalized] = useState(false);
+  const [leftoutAmount, setLeftoutAmount] = useState(0);
+  const [maxAmount , setMaxAmount] = useState(0);
 
   useEffect(() => {
     if (fetchedData) {
-      if (balance === "" || tier === "" || isWhitelisted === false || maxLimit === 0) {
+      if (balance === "" || tier === "" || isWhitelisted === false || maxLimit === 0 || leftoutAmount === 0) {
         setBalance(fetchedData.balance);
         setTier(fetchedData.userTierLabel);
         setisWhitelisted(fetchedData.isWhitelisted);
         setMaxLimit(fetchedData.maxLimit);
+        setLeftoutAmount(fetchedData.maxLimit - fetchedData.contributedAmountYet);
       }
+      console.log("goalReached is ", fetchedData.goalReached);
       if (fetchedData.goalReached) {
         setGoalReached(true);
       };
@@ -63,7 +67,7 @@ export default function BurnCard(props: UpcomingFundDetailsProps) {
 
   const checkFinalisedFundraising = async () => {
     await refetch();
-    if (fundraisingFinalized) {
+    if (fetchedData?.finalisedFundraising) {
       window.location.href = "/app/dashboard/1";
     } else {
       toast({
@@ -78,6 +82,15 @@ export default function BurnCard(props: UpcomingFundDetailsProps) {
     const value = e.target.value ? parseFloat(e.target.value) : 0;
     setAmount(value);
   };
+  const handleMaxAmount = () => {
+    if(balance === "" || leftoutAmount === 0) return;
+    if(Number(balance) > leftoutAmount){
+    setAmount(leftoutAmount);
+    }
+    else if(Number(balance) < leftoutAmount){
+      setAmount(Number(balance));
+    }
+  }
 
   const handleContributefunction = async () => {
     try {
@@ -129,9 +142,23 @@ export default function BurnCard(props: UpcomingFundDetailsProps) {
         return;
       }
 
+      if(tx===5){
+       setBalance((prev) => (Number(prev) - Number(amount)).toFixed(3));
+      setLeftoutAmount((prev) => Number((Number(prev) - Number(amount)).toFixed(3)));
+      }
+
       if (tx === 1) {
         toast({
           title: "Error contributing to fund",
+          variant: "destructive",
+          className: `${workSans.className}`
+        });
+        setIsContributing(false);
+        return;
+      }
+      if (tx === 4) {
+        toast({
+          title: "Amount exceeds tier limit",
           variant: "destructive",
           className: `${workSans.className}`
         });
@@ -145,18 +172,18 @@ export default function BurnCard(props: UpcomingFundDetailsProps) {
         className: `${workSans.className} bg-[#2ca585]`
       });
       await refreshData();
-      setBalance((prev) => (Number(prev) - Number(amount)).toFixed(3));
       updateTotalContributed(amount);
       setAmount(0);
     } catch (error) {
       console.error("Error contributing to fund:", error);
       setIsContributing(false);
     }
+   
   }
 
   return (
     <Card className="text-left w-full max-w-3xl bg-[#0d0d0d] border-[#383838] text-white font-['Work Sans']">
-      {props.fundingProgress < 100 && !goalReached ? (
+      {!goalReached ? (
         <>
           <CardHeader className="space-y-9">
             <div className="flex items-center gap-3">
@@ -172,16 +199,18 @@ export default function BurnCard(props: UpcomingFundDetailsProps) {
                   value={amount}
                   onChange={handleInputChange}
                 />
-                <span className="text-[#e4e6e7] text-sm sm:text-base font-medium">MAX</span>
+                <button className="text-[#e4e6e7] text-sm sm:text-base font-medium" onClick={handleMaxAmount}>MAX</button>
               </div>
               <div className="space-y-3">
                 <p className="text-base sm:text-lg font-medium">Balance: <span className="font-semibold">{Number(balance).toFixed(3)}</span></p>
                 <p className="text-base sm:text-lg font-medium">Tier: <span className="font-semibold">{tier}</span></p>
+                <p className="text-base sm:text-lg font-medium">Limit Left: <span className="font-semibold">{leftoutAmount} MODE</span></p>
+
                 <Button
                   variant="outline"
                   className="w-full h-12 bg-white text-black text-lg sm:text-xl font-semibold hover:bg-white/80 hover:text-black/90"
                   onClick={handleContributefunction}
-                  disabled={isContributing || amount <= 0}
+                  disabled={isContributing}
                 >
                   {isContributing ? "Contributing..." : "Contribute"}
                 </Button>

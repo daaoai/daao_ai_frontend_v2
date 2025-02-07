@@ -7,9 +7,11 @@ import { ethers } from 'ethers';
 import daoABI from "../../DaoABI.json"
 import { handleCopy, shortenAddress } from '@/lib/utils';
 import { getContractData } from "../../getterFunctions"
+import { useFundContext } from "./FundContext";
 
 
 const FundDetails: React.FC<FundDetailsProps> = (props) => {
+  const {daoBalance} = useFundContext();
   const [marketCap, setMarketCap] = useState<number | null>(null);
   const [daoTokenAddress, setDaoTokenAddress] = useState('');
   const [price, setPrice] = useState<number | null>(null);
@@ -27,28 +29,30 @@ const FundDetails: React.FC<FundDetailsProps> = (props) => {
     }
     fetchContractData()
   }, [])
+  
 
-  useEffect(() => {
-    const fetchDaoBalance = async () => {
-      if (!daoTokenAddress) return
-      if (typeof window === 'undefined' || !(window as any).ethereum) return
+  // useEffect(() => {
+  //   const fetchDaoBalance = async () => {
+  //     if (!daoTokenAddress) return
+  //     if (typeof window === 'undefined' || !(window as any).ethereum) return
 
-      try {
-        await (window as any).ethereum.request({ method: 'eth_requestAccounts' })
-        const provider = new ethers.providers.Web3Provider((window as any).ethereum)
-        const signer = provider.getSigner()
-        const userAddress = await signer.getAddress()
+  //     try {
+  //       await (window as any).ethereum.request({ method: 'eth_requestAccounts' })
+  //       const provider = new ethers.providers.Web3Provider((window as any).ethereum)
+  //       const signer = provider.getSigner()
+  //       const userAddress = await signer.getAddress()
 
-        const daoContract = new ethers.Contract(daoTokenAddress, daoABI, provider)
-        const balanceBN = await daoContract.balanceOf(userAddress)
-        const balanceFormatted = ethers.utils.formatUnits(balanceBN, 18)
-        setDaoHoldings(balanceFormatted)
-      } catch (error) {
-        console.error('Error fetching DAO balance:', error)
-      }
-    }
-    fetchDaoBalance()
-  }, [daoTokenAddress])
+  //       const daoContract = new ethers.Contract(daoTokenAddress, daoABI, provider)
+  //       const balanceBN = await daoContract.balanceOf(userAddress)
+  //       const balanceFormatted = ethers.utils.formatUnits(balanceBN, 18)
+  //       console.log("Balance is pikcachuuuuuu ", daoBalance)
+  //       setDaoHoldings(daoBalance)
+  //     } catch (error) {
+  //       console.error('Error fetching DAO balance:', error)
+  //     }
+  //   }
+  //   fetchDaoBalance()
+  // }, [daoTokenAddress])
 
   useEffect(() => {
     const fetchMarketData = async () => {
@@ -62,11 +66,12 @@ const FundDetails: React.FC<FundDetailsProps> = (props) => {
           url,
         )
         const data = await response.json()
-        console.log("Data is ", data)
+        console.log("Data from api is  is ", data)
 
         if (data && Array.isArray(data) && data[0]) {
-          setMarketCap(data[0].marketCap)
           setPrice(data[0].priceUsd)
+          const marketCap = (Number(data[0].priceUsd)*10**9).toFixed(0)
+          setMarketCap(Number(marketCap))
         } else {
           console.warn('Market data not in expected format.')
         }
@@ -76,6 +81,7 @@ const FundDetails: React.FC<FundDetailsProps> = (props) => {
     }
     fetchMarketData()
   }, [daoTokenAddress])
+
   return (
     <>
       <Card className="bg-[#0d0d0d] text-white sm:p-2 max-w-xl lg:max-w-2xl mx-auto w-full">
@@ -94,11 +100,7 @@ const FundDetails: React.FC<FundDetailsProps> = (props) => {
           </CardTitle>
         </CardHeader>
         <CardContent className="space-y-4 sm:space-y-6">
-          <Card className="bg-[#1b1c1d] border-[#27292a] p-3 sm:p-4">
-            <CardDescription className={`text-left text-white text-sm sm:text-base md:text-lg font-normal ${workSans.className}`}>
-              {props.description}
-            </CardDescription>
-          </Card>
+        
 
           <div className="text-left flex flex-row gap-4 sm:gap-6">
             <div className="grid grid-rows-[80%_20%] gap-2 sm:gap-4 w-full">
@@ -109,7 +111,7 @@ const FundDetails: React.FC<FundDetailsProps> = (props) => {
                 </CardContent>
               </Card>
               <div className="h-min flex justify-center items-center gap-2 text-[#498ff8] text-sm sm:text-base md:text-xl">
-                <span>{shortenAddress(props.modeAddress)}</span>
+                <span>{shortenAddress(daoTokenAddress)}</span>
                 <Copy className="w-4 h-4 sm:w-5 sm:h-5 hover:cursor-pointer" onClick={() => handleCopy(props.modeAddress)} />
               </div>
             </div>
@@ -118,11 +120,11 @@ const FundDetails: React.FC<FundDetailsProps> = (props) => {
               <CardContent className="space-y-2 sm:space-y-4 px-2 sm:px-3">
                 <div>
                   <p className="text-[#aeb3b6] text-sm sm:text-base md:text-lg lg:text-xl">Your Holdings</p>
-                  <p className="text-lg sm:text-2xl md:text-3xl lg:text-4xl font-semibold">{Number(daoHoldings).toFixed(3)} {props.shortname} <span className="text-sm sm:text-lg md:text-xl lg:text-2xl"></span></p>
+                  <p className="text-lg sm:text-2xl md:text-3xl lg:text-4xl font-semibold">{Number(daoBalance).toFixed(3)} {props.shortname} <span className="text-sm sm:text-lg md:text-xl lg:text-2xl"></span></p>
                 </div>
                 <div>
                   <p className="text-[#aeb3b6] text-sm sm:text-base md:text-lg lg:text-xl">Your Market Value</p>
-                  <p className="text-lg sm:text-2xl md:text-3xl lg:text-4xl font-semibold">${(Number(daoHoldings) * Number(price)).toFixed(2)}</p>
+                  <p className="text-lg sm:text-2xl md:text-3xl lg:text-4xl font-semibold">${(Number(daoBalance) * Number(price)).toFixed(2)}</p>
                 </div>
               </CardContent>
             </Card>

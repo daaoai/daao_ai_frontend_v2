@@ -18,15 +18,19 @@ const Upcoming: React.FC = () => {
 
 
   useEffect(() => {
-    if(!isConnected) return;
+    if(!isConnected || !fetchedData) return;
     console.log("Connected");
     const fundraisingGoal = fetchedData?.fundraisingGoal;
     const totalRaised = fetchedData?.totalRaised;
+    console.log("fetched data from this hhhhhhhhhhh is ", fetchedData);
+    console.log("totalRaised before this hhhh is ", totalRaised);
     setTotalRaised(Number(totalRaised));
+    console.log("totalRaised is hhhhhhhhhhhhhhhhhh ", totalRaised);
     setFundraisingPercent(
       ((Number(totalRaised)) / Number(fundraisingGoal)) * 100
     );
-  }, [isConnected,totalContributed]);
+    console.log("fundraisingPercent is hhhhhhhhhhhh ", fundraisingPercent);
+  }, [isConnected,totalContributed,fetchedData]);
 
 
   const props: UpcomingFundDetailsProps = {
@@ -43,8 +47,8 @@ const Upcoming: React.FC = () => {
 
       $CARTEL raise will have two tiers:
 
-      - 12,000 $MODE
-      - 8,000 $MODE
+      - GOLD Tier Limit: 12,000 $MODE
+      - SILVER Tier Limit: 8,000 $MODE
     `,
     fundingProgress: parseInt(fundraisingPercent.toFixed(2)),
     logo: CURRENT_DAO_IMAGE,

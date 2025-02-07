@@ -7,7 +7,7 @@ import contractABI from "../../abi.json";
 import { ethers } from 'ethers';
 
 const MODE_TOKEN_ADDRESS = "0xDfc7C877a950e49D2610114102175A06C2e3167a";
-const DAO_CONTRACT_ADDRESS = "0x29F07AA75328194C274223F11cffAa329fD1c319";
+const DAO_CONTRACT_ADDRESS = "0xEc7b0FD288E87eBC1C301E360092c645567e79B9";
 
 
 const wagmiModeContract = {
@@ -27,9 +27,10 @@ export const useFetchBalance = (accountAddress: `0x${string}` | undefined) => {
     const [data, setData] = useState({
         balance: "0",
         tierNumber: 0,
+
         isWhitelisted: false,
         maxLimit: 0,
-        veloFactory: "",
+        contributedAmountYet: 0,
         daoToken: "",
         goalReached: false,
         finalisedFundraising: false,
@@ -90,11 +91,11 @@ export const useFetchBalance = (accountAddress: `0x${string}` | undefined) => {
                 functionName: "daoToken",
                 args: [],
             },
-            // Fetch VELODROME Factory Address
+            //Contributions
             {
                 ...wagmiDaoContract,
-                functionName: "VELODROME_FACTORY",
-                args: [],
+                functionName: "contributions",
+                args: accountAddress ? [accountAddress] : [],
             },
         ],
     });
@@ -127,22 +128,25 @@ export const useFetchBalance = (accountAddress: `0x${string}` | undefined) => {
             const goalReached = contractData[4]?.result as boolean;
             const finalisedFundraising = contractData[5]?.result as boolean;
             const end = contractData[6]?.result as bigint;
+            const endDate = new Date(Number(end) * 1000);
             const daoToken = contractData[7]?.result as string;
-            const veloFactory = contractData[8]?.result as string;
+            const contributedAmountYet = Number(contractData[8]?.result )/10**18;
 
             const modeBalance = balanceRaw ? ethers.utils.formatUnits(balanceRaw, 18) : "0";
 
             const isWhitelisted = whitelistInfoData ? whitelistInfoData[0] : false;
             const tierNumber = whitelistInfoData ? Number(whitelistInfoData[1]) : 0;
+         
 
 
             const userTierLabel = TIER_LABELS[tierNumber] || "None";
             setData((prev) => ({
                 ...prev,
+                
                 balance: modeBalance,
                 tierNumber,
                 isWhitelisted,
-                veloFactory,
+                contributedAmountYet,
                 daoToken,
                 goalReached,
                 finalisedFundraising,
