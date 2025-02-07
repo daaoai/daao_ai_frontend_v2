@@ -101,14 +101,14 @@ export const handleContribute = async (amount: string) => {
     console.log("Estimating gas for contribution...");
     console.log("Contribution amount:", weiAmount);
     let gasEstimate;
-try {
-  gasEstimate = await daosContract.methods.contribute(parseInt(weiAmount)).estimateGas({
-    from: contributor,
-  });
-} catch (error) {
-  console.error("Gas estimation failed:", error);
-  return error;
-}
+    try {
+      gasEstimate = await daosContract.methods.contribute(parseInt(weiAmount)).estimateGas({
+        from: contributor,
+      });
+    } catch (error) {
+      console.error("Gas estimation failed:", error);
+      return 1;
+    }
     console.log("Estimated Gas:", gasEstimate);
 
     console.log("Sending transaction...");
@@ -139,11 +139,11 @@ try {
     }
     console.log("Transaction Receipt:", receipt);
     console.log("Contribution successful!");
-    
+
     return receipt;
   } catch (error: any) {
     console.error("Error during contribution:", error);
-    console.log("error is ",error)
+    console.log("error is ", error)
     return error;
   }
 };
