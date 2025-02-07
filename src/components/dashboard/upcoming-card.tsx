@@ -9,7 +9,7 @@ import { TelegramIcon, XIcon } from "@/assets/icons/social"
 import { useState, useEffect } from "react"
 import { getContractData } from "../../getterFunctions";
 import { useAccount, useReadContracts } from 'wagmi'
-import {useFetchBalance} from "./fetchBalance"
+import { useFetchBalance } from "./fetchBalance"
 import { set } from "date-fns"
 import { useFundContext } from "./FundContext";
 
@@ -17,9 +17,9 @@ export default function UpcomingFunds(props: UpcomingFundDetailsProps) {
   const [endFTime, setEndFTime] = useState<number>(Date.now());
   const [fundrasingGoal, setFundraisingGoal] = useState<number>(0);
   const account = useAccount();
-  const { fetchedData } = useFundContext(); 
+  const { fetchedData } = useFundContext();
 
-  const accountAddress = account.address as `0x${string}` ;
+  const accountAddress = account.address as `0x${string}`;
   const getTimeRemaining = (endTime: number) => {
     console.log("endTime is ", endTime)
     const now = Date.now();
@@ -36,14 +36,17 @@ export default function UpcomingFunds(props: UpcomingFundDetailsProps) {
 
     return `${days} days, ${hours} hours, ${minutes} minutes`;
   };
-  
+
   useEffect(() => {
-    if (fetchedData) {
+    if (fetchedData && fetchedData.endDate && fetchedData.fundraisingGoal) {
       setEndFTime(Number(fetchedData.endDate));
       setFundraisingGoal(Number(fetchedData.fundraisingGoal));
+      console.log("fundrasisngGoal uyyyyyyyyyyyyyyyyy", fetchedData.fundraisingGoal)
     }
   }, [fetchedData]);
- 
+
+  
+
 
 
   return (
@@ -103,8 +106,8 @@ export default function UpcomingFunds(props: UpcomingFundDetailsProps) {
         ) : (
           <div className="space-y-2 sm:space-y-3">
             <div className="flex justify-between items-center text-sm sm:text-base lg:text-lg">
-              <span>Funding Progress ({(fundrasingGoal/10**18).toFixed(0)} Mode)</span>
-              <span>{props.fundingProgress}%</span>
+              <span>Funding Progress ({(fundrasingGoal / 10 ** 18).toFixed(0)} Mode)</span>
+              <span>{ props.fundingProgress}%</span>
             </div>
             <Progress value={props.fundingProgress >= 0 ? props.fundingProgress : 0} className="h-4 sm:h-5 [&>div]:bg-[#409cff] bg-[#2b4977]" />
           </div>

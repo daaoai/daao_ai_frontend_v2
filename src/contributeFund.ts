@@ -8,7 +8,7 @@ import { object } from "zod";
 
 
 const contractABI = abi;
-const contractAddress = "0x29F07AA75328194C274223F11cffAa329fD1c319";
+const contractAddress = "0x42eD8781f42b91e0250b5159C072D4Cc9d2c116E";
 const tokenAddress = "0xDfc7C877a950e49D2610114102175A06C2e3167a";
 
 let web3: Web3 | null = null;
@@ -40,19 +40,27 @@ export const handleContribute = async (amount: string) => {
     const daosContract = new web3.eth.Contract(contractABI as any, contractAddress);
     console.log("Contract object created:", daosContract);
 
+    const contributedAmountYetRaw = await daosContract.methods.contributions(contributor).call();
+    const contributedAmountYet = Number(contributedAmountYetRaw) / 10 ** 18;
+    
     const userTiers = await daosContract.methods.getWhitelistInfo(contributor).call();
 
     if (!userTiers || typeof userTiers !== "object" || !("tier" in userTiers)) {
       console.log("Error: Invalid userTiers response", userTiers);
-      return 0; 
+      return 0;
     }
 
     const tierNumber = Number(userTiers.tier);
 
     const tierLimit = await daosContract.methods.tierLimits(Number(tierNumber)).call();
-    const maxLimit = Number(tierLimit)/10**18;
+    const maxLimit = Number(tierLimit) / 10 ** 18;
+    if(Number(amount)+contributedAmountYet > maxLimit){
+      console.log("Amount exceeds tier limit")
+      return 4;
+    }
 
-    if(Number(amount) > maxLimit){
+
+    if (Number(amount) > maxLimit) {
       console.log("Amount exceeds tier limit")
       return 0;
     }
@@ -69,11 +77,16 @@ export const handleContribute = async (amount: string) => {
       console.log("Insufficient allowance. Approving required tokens...");
       const requiredApproval = (Number(weiAmount) - currentAllowance).toString();
 
+      const gasEstimate = await tokenContract.methods.approve(contractAddress, requiredApproval).estimateGas({
+        from: contributor,
+      });
       const approveTx = {
         from: contributor,
         to: tokenAddress,
         data: tokenContract.methods.approve(contractAddress, requiredApproval).encodeABI(),
-        gas: "60000",
+        gas: String(gasEstimate),
+        gasPrice: '800000',
+
       };
 
       const approveTxHash = await window.ethereum.request({
@@ -94,10 +107,17 @@ export const handleContribute = async (amount: string) => {
     } else {
       console.log("Approval already sufficient, skipping...");
     }
-
-    const gasEstimate = await daosContract.methods.contribute(parseInt(weiAmount)).estimateGas({
-      from: contributor,
-    });
+    console.log("Estimating gas for contribution...");
+    console.log("Contribution amount:", weiAmount);
+    let gasEstimate;
+    try {
+      gasEstimate = await daosContract.methods.contribute(parseInt(weiAmount)).estimateGas({
+        from: contributor,
+      });
+    } catch (error) {
+      console.error("Gas estimation failed:", error);
+      return 1;
+    }
     console.log("Estimated Gas:", gasEstimate);
 
     console.log("Sending transaction...");
@@ -128,9 +148,11 @@ export const handleContribute = async (amount: string) => {
     }
     console.log("Transaction Receipt:", receipt);
     console.log("Contribution successful!");
-    return receipt;
+
+    return 5;
   } catch (error: any) {
     console.error("Error during contribution:", error);
-    throw error;
+    console.log("error is ", error)
+    return error;
   }
 };

@@ -9,7 +9,7 @@ export const AppNavbar: React.FC = () => {
   // const [search, setSearch] = useState("")
 
   return (
-    <div className={`gap-6 sm:gap-12 fixed z-50 flex w-full justify-between items-center border-b border-[#212121] p-2 bg-black px-4 sm:px-8 md:px-24 lg:px-48 md:py-4`}>
+    <div className={`gap-6 sm:gap-12 fixed z-50 flex w-full justify-between items-center border-b border-[#212121] p-4 bg-black px-4 sm:px-8 md:py-4`}>
       <div className="block">
         <Link href="/" className="flex items-center justify-start">
           <Logo
@@ -47,12 +47,12 @@ export const AppNavbar: React.FC = () => {
         >
           Dashboard
         </Link>*/}
-        <Link
+        {/*<Link
           href="/app/farm"
           className="text-white sm:text-base md:text-lg lg:text-xl font-medium leading-9"
         >
           Farms
-        </Link>
+        </Link>*/}
       </div>
 
 

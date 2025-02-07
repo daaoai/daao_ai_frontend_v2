@@ -1,13 +1,13 @@
 
 import { useEffect, useState } from 'react';
 import modeABI from "../../modeABI.json";
-import { useToast } from '@/hooks/use-toast';
+// import { useToast } from '@/hooks/use-toast';
 import { useAccount, useReadContracts } from 'wagmi'
 import contractABI from "../../abi.json";
 import { ethers } from 'ethers';
 
 const MODE_TOKEN_ADDRESS = "0xDfc7C877a950e49D2610114102175A06C2e3167a";
-const DAO_CONTRACT_ADDRESS = "0x29F07AA75328194C274223F11cffAa329fD1c319";
+const DAO_CONTRACT_ADDRESS = "0x42eD8781f42b91e0250b5159C072D4Cc9d2c116E";
 
 
 const wagmiModeContract = {
@@ -27,9 +27,10 @@ export const useFetchBalance = (accountAddress: `0x${string}` | undefined) => {
     const [data, setData] = useState({
         balance: "0",
         tierNumber: 0,
+
         isWhitelisted: false,
         maxLimit: 0,
-        veloFactory: "",
+        contributedAmountYet: 0,
         daoToken: "",
         goalReached: false,
         finalisedFundraising: false,
@@ -40,7 +41,7 @@ export const useFetchBalance = (accountAddress: `0x${string}` | undefined) => {
     });
 
 
-    const { data: contractData, error,refetch } = useReadContracts({
+    const { data: contractData, error, refetch } = useReadContracts({
         contracts: [
             // Fetch balance
             {
@@ -90,16 +91,16 @@ export const useFetchBalance = (accountAddress: `0x${string}` | undefined) => {
                 functionName: "daoToken",
                 args: [],
             },
-            // Fetch VELODROME Factory Address
+            //Contributions
             {
                 ...wagmiDaoContract,
-                functionName: "VELODROME_FACTORY",
-                args: [],
+                functionName: "contributions",
+                args: accountAddress ? [accountAddress] : [],
             },
         ],
     });
     console.log("data is", data)
-    const { data: tierLimitData, refetch:refetchTierLimit } = useReadContracts({
+    const { data: tierLimitData, refetch: refetchTierLimit } = useReadContracts({
         contracts: [
             {
                 ...wagmiDaoContract,
@@ -109,7 +110,7 @@ export const useFetchBalance = (accountAddress: `0x${string}` | undefined) => {
         ],
     });
 
-    
+
     useEffect(() => {
         if (error) {
             console.error("Error fetching contract data:", error);
@@ -127,26 +128,29 @@ export const useFetchBalance = (accountAddress: `0x${string}` | undefined) => {
             const goalReached = contractData[4]?.result as boolean;
             const finalisedFundraising = contractData[5]?.result as boolean;
             const end = contractData[6]?.result as bigint;
+            const endDate = new Date(Number(end) * 1000);
             const daoToken = contractData[7]?.result as string;
-            const veloFactory = contractData[8]?.result as string;
+            const contributedAmountYet = Number(contractData[8]?.result )/10**18;
 
             const modeBalance = balanceRaw ? ethers.utils.formatUnits(balanceRaw, 18) : "0";
 
             const isWhitelisted = whitelistInfoData ? whitelistInfoData[0] : false;
             const tierNumber = whitelistInfoData ? Number(whitelistInfoData[1]) : 0;
-     
+         
+
 
             const userTierLabel = TIER_LABELS[tierNumber] || "None";
-            setData((prev)=>({
+            setData((prev) => ({
                 ...prev,
+                
                 balance: modeBalance,
                 tierNumber,
                 isWhitelisted,
-                veloFactory,
+                contributedAmountYet,
                 daoToken,
                 goalReached,
                 finalisedFundraising,
-                endDate: (Number(end)*1000).toString(),
+                endDate: (Number(end) * 1000).toString(),
                 fundraisingGoal,
                 totalRaised,
                 userTierLabel,
@@ -157,7 +161,7 @@ export const useFetchBalance = (accountAddress: `0x${string}` | undefined) => {
                 setData((prev) => ({ ...prev, maxLimit }));
             }
         }
-    }, [contractData,tierLimitData, error]);
+    }, [contractData, tierLimitData, error]);
 
     const refreshData = async () => {
         console.log("🔄 Refetching contract data...");
@@ -165,6 +169,6 @@ export const useFetchBalance = (accountAddress: `0x${string}` | undefined) => {
         await refetchTierLimit();
     };
 
-    
+
     return { data, refreshData };
 };

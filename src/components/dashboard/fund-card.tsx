@@ -3,12 +3,12 @@ import React from "react";
 const FundCard: React.FC<FundCardProps> = (props) => {
   const statusStyles = {
     live: "bg-[#f3aeae] text-[#af0505]",
-    pending: "bg-[#ebb6ff] text-[#6e0892]",
+    funding: "bg-[#ebb6ff] text-[#6e0892]",
     soon: "bg-[#e4e4e4] text-[#5f5e60]",   // Red background, white text
   };
 
   return (
-    <div className="w-full max-w-xs pb-6 bg-[#1a1a1a] flex-col justify-start items-start gap-6 inline-flex">
+    <div className="h-full w-full max-w-xs pb-6 bg-[#1a1a1a] flex-col justify-start items-start gap-6 inline-flex">
       <div className="bg-white justify-center items-center inline-flex overflow-hidden w-full">
         <img className="w-full h-auto object-cover" src={props.imgSrc} alt={props.title} />
       </div>
