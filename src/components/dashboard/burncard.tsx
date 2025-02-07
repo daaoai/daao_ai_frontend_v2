@@ -23,7 +23,7 @@ const wagmiDaoContract = {
 export default function BurnCard(props: UpcomingFundDetailsProps) {
   const { toast } = useToast();
   const { fetchedData, refreshData, updateTotalContributed } = useFundContext();
-  const [amount, setAmount] = useState(0);
+  const [amount, setAmount] = useState<number | undefined>();
   const [balance, setBalance] = useState("");
   const [goalReached, setGoalReached] = useState(false);
   const [tier, setTier] = useState("");
