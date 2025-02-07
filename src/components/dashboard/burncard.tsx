@@ -131,8 +131,8 @@ export default function BurnCard(props: UpcomingFundDetailsProps) {
         <>
           <CardHeader className="space-y-9">
             <div className="flex items-center gap-3">
-              <span className="text-[#409cff] text-2xl sm:text-3xl font-semibold">$MODE</span>
-              <h2 className="text-2xl sm:text-3xl font-semibold">Contribute</h2>
+              <span className="text-[#409cff] text-2xl sm:text-3xl font-semibold">Whitelist</span>
+              <h2 className="text-2xl sm:text-3xl font-semibold">Allocation</h2>
             </div>
             <div className="space-y-6">
               <div className="flex justify-between items-center p-4 bg-black rounded border border-[#383838]">
