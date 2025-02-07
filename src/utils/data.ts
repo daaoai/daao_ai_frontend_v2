@@ -1,4 +1,4 @@
-export const ModeAddresses = [
+const tempAddresses = [
   "0x6F5961A01a4E6c5C2f77399E3758b124219d7A78",
   "0x5A9e792143bf2708b4765C144451dCa54f559a19",
   "0x144fC87fF9101CD09fAb6Efc8aA5F3bF63ad6c0F",
@@ -143,3 +143,5 @@ export const ModeAddresses = [
   "0x80F0AAAF849D822526E80518B7D6FAC570638e49",
   "0x20151c34d01d6785493f3416b3f82812a3dbb46f",
 ]
+
+export const ModeAddresses = tempAddresses.map((add) => add.toLowerCase())

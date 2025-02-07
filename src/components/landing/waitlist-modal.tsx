@@ -26,6 +26,7 @@ const CheckWaitlistModal: React.FC<CheckWhitelistModalProps> = ({ isOpen, setIsO
 
   const handleCheckwhitelist = async (e: React.FormEvent) => {
     e.preventDefault()
+    setModeAddress(modeAddress.toLowerCase());
     if (!modeAddress.trim()) {
       setStatusMsg("Please enter your Mode address")
       return
