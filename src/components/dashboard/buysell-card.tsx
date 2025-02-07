@@ -51,13 +51,13 @@ const Buysell = () => {
   const [daoTokenAddress, setDaoTokenAddress] = useState("");
   const [poolAddress, setPoolAddress] = useState("");
   const [fetcher, setFetcher] = useState(false)
-  const { daoBalance,setDaoBalance } = useFundContext();
+  const { daoBalance, setDaoBalance } = useFundContext();
 
 
   const accountAddress = account.address as `0x${string}`;
   const { data: fetchedData, refreshData } = useFetchBalance(accountAddress);
 
-  const { data: daoReadData,refetch } = useReadContracts({
+  const { data: daoReadData, refetch } = useReadContracts({
     contracts: daoTokenAddress ? [
       {
         address: daoTokenAddress as `0x${string}`,
@@ -71,12 +71,12 @@ const Buysell = () => {
 
   useEffect(() => {
     console.log("daoToken is", fetchedData?.daoToken)
-    if(!fetchedData) return;
+    if (!fetchedData) return;
     if (!daoTokenAddress) {
       setDaoTokenAddress(fetchedData?.daoToken)
     }
     setModeBalance(fetchedData.balance)
-  }, [fetchedData,daoTokenAddress,activeTab]);
+  }, [fetchedData, daoTokenAddress, activeTab]);
 
 
   useEffect(() => {
@@ -85,7 +85,7 @@ const Buysell = () => {
       const formatted = ethers.utils.formatUnits(rawBal, 18);
       setDaoBalance(formatted);
     }
-  }, [daoReadData, setDaoBalance,activeTab]);
+  }, [daoReadData, setDaoBalance, activeTab]);
 
 
   useEffect(() => {
@@ -196,8 +196,8 @@ const Buysell = () => {
   async function simulateSwap(newFromValue: string) {
     if (!window.ethereum || !poolAddress || !currentSqrtPrice) return
     try {
-      if(activeTab === "buy"){
-        if(Number(modeBalance)<Number(newFromValue)){
+      if (activeTab === "buy") {
+        if (Number(modeBalance) < Number(newFromValue)) {
           toast({
             title: "Insufficient balance",
             variant: "destructive",
@@ -207,8 +207,8 @@ const Buysell = () => {
           return
         }
       }
-      if(activeTab === "sell"){
-        if(Number(daoBalance)<Number(newFromValue)){
+      if (activeTab === "sell") {
+        if (Number(daoBalance) < Number(newFromValue)) {
           toast({
             title: "Insufficient balance",
             variant: "destructive",
