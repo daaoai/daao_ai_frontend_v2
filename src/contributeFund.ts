@@ -44,15 +44,15 @@ export const handleContribute = async (amount: string) => {
 
     if (!userTiers || typeof userTiers !== "object" || !("tier" in userTiers)) {
       console.log("Error: Invalid userTiers response", userTiers);
-      return 0; 
+      return 0;
     }
 
     const tierNumber = Number(userTiers.tier);
 
     const tierLimit = await daosContract.methods.tierLimits(Number(tierNumber)).call();
-    const maxLimit = Number(tierLimit)/10**18;
+    const maxLimit = Number(tierLimit) / 10 ** 18;
 
-    if(Number(amount) > maxLimit){
+    if (Number(amount) > maxLimit) {
       console.log("Amount exceeds tier limit")
       return 0;
     }
@@ -68,12 +68,16 @@ export const handleContribute = async (amount: string) => {
     if (currentAllowance < Number(weiAmount)) {
       console.log("Insufficient allowance. Approving required tokens...");
       const requiredApproval = (Number(weiAmount) - currentAllowance).toString();
-
+      const gasEstimate = await tokenContract.methods.approve(contractAddress, requiredApproval).estimateGas({
+        from: contributor,
+      });
       const approveTx = {
         from: contributor,
         to: tokenAddress,
         data: tokenContract.methods.approve(contractAddress, requiredApproval).encodeABI(),
-        gas: "60000",
+        gas: String(gasEstimate),
+        gasPrice: '800000',
+
       };
 
       const approveTxHash = await window.ethereum.request({
@@ -94,10 +98,17 @@ export const handleContribute = async (amount: string) => {
     } else {
       console.log("Approval already sufficient, skipping...");
     }
-
-    const gasEstimate = await daosContract.methods.contribute(parseInt(weiAmount)).estimateGas({
-      from: contributor,
-    });
+    console.log("Estimating gas for contribution...");
+    console.log("Contribution amount:", weiAmount);
+    let gasEstimate;
+try {
+  gasEstimate = await daosContract.methods.contribute(parseInt(weiAmount)).estimateGas({
+    from: contributor,
+  });
+} catch (error) {
+  console.error("Gas estimation failed:", error);
+  return error;
+}
     console.log("Estimated Gas:", gasEstimate);
 
     console.log("Sending transaction...");
@@ -128,9 +139,11 @@ export const handleContribute = async (amount: string) => {
     }
     console.log("Transaction Receipt:", receipt);
     console.log("Contribution successful!");
+    
     return receipt;
   } catch (error: any) {
     console.error("Error during contribution:", error);
-    throw error;
+    console.log("error is ",error)
+    return error;
   }
 };

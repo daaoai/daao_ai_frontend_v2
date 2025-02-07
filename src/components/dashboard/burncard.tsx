@@ -94,9 +94,18 @@ export default function BurnCard(props: UpcomingFundDetailsProps) {
       setIsContributing(true);
      
       const tx = await handleContribute(amount.toString());
+
       if (tx===0){
         toast({
           title: "Amount exceeds tier limit",
+        });
+        setIsContributing(false);
+        return;
+      }
+      console.log("tx is ", tx);
+     if (tx?.data?.code===3){
+        toast({
+          title: "Transaction failed",
         });
         setIsContributing(false);
         return;
@@ -109,6 +118,7 @@ export default function BurnCard(props: UpcomingFundDetailsProps) {
       await refreshData();
       setBalance((prev) => (Number(prev) - Number(amount)).toFixed(3));
       updateTotalContributed(amount);
+      setAmount(0);
     } catch (error) {
       console.error("Error contributing to fund:", error);
       setIsContributing(false);
