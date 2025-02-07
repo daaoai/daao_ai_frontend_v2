@@ -8,7 +8,7 @@ const FundCard: React.FC<FundCardProps> = (props) => {
   };
 
   return (
-    <div className="w-full max-w-xs pb-6 bg-[#1a1a1a] flex-col justify-start items-start gap-6 inline-flex">
+    <div className="h-full w-full max-w-xs pb-6 bg-[#1a1a1a] flex-col justify-start items-start gap-6 inline-flex">
       <div className="bg-white justify-center items-center inline-flex overflow-hidden w-full">
         <img className="w-full h-auto object-cover" src={props.imgSrc} alt={props.title} />
       </div>
