@@ -7,8 +7,9 @@ import { useEffect, useState } from "react"
 import { useToast } from '@/hooks/use-toast';
 import { useAccount, useReadContracts } from 'wagmi'
 import contractABI from "../../abi.json";
-import {useFetchBalance} from "./fetchBalance"
+// import { useFetchBalance } from "./fetchBalance"
 import { useFundContext } from "./FundContext";
+import { workSans } from "@/lib/fonts"
 
 
 
@@ -22,9 +23,9 @@ const wagmiDaoContract = {
 export default function BurnCard(props: UpcomingFundDetailsProps) {
   const { toast } = useToast();
   const { fetchedData, refreshData, updateTotalContributed } = useFundContext();
-  const [amount, setAmount] = useState(0);
+  const [amount, setAmount] = useState<number | undefined>();
   const [balance, setBalance] = useState("");
-  const [goalReached,setGoalReached] = useState(false);
+  const [goalReached, setGoalReached] = useState(false);
   const [tier, setTier] = useState("");
   const [isContributing, setIsContributing] = useState(false);
   const [isWhitelisted, setisWhitelisted] = useState(false);
@@ -33,20 +34,20 @@ export default function BurnCard(props: UpcomingFundDetailsProps) {
 
   useEffect(() => {
     if (fetchedData) {
-      if(balance === "" || tier === "" || isWhitelisted === false || maxLimit === 0){
-      setBalance(fetchedData.balance);
-      setTier(fetchedData.userTierLabel);
-      setisWhitelisted(fetchedData.isWhitelisted);
-      setMaxLimit(fetchedData.maxLimit);
+      if (balance === "" || tier === "" || isWhitelisted === false || maxLimit === 0) {
+        setBalance(fetchedData.balance);
+        setTier(fetchedData.userTierLabel);
+        setisWhitelisted(fetchedData.isWhitelisted);
+        setMaxLimit(fetchedData.maxLimit);
       }
-      if(fetchedData.goalReached){
+      if (fetchedData.goalReached) {
         setGoalReached(true);
       };
       console.log("Balance is ", balance);
     }
   }, [fetchedData]);
 
-  const {data, error,refetch} = useReadContracts({
+  const { data, error, refetch } = useReadContracts({
     contracts: [
       {
         ...wagmiDaoContract,
@@ -60,12 +61,14 @@ export default function BurnCard(props: UpcomingFundDetailsProps) {
   }
 
   const checkFinalisedFundraising = async () => {
-    await refetch(); 
+    await refetch();
     if (fundraisingFinalized) {
       window.location.href = "/app/dashboard/1";
     } else {
       toast({
         title: "Fundraising is not finalised yet",
+        variant: "destructive",
+        className: `${workSans.className}`
       });
     }
   };
@@ -78,42 +81,40 @@ export default function BurnCard(props: UpcomingFundDetailsProps) {
 
   const handleContributefunction = async () => {
     try {
-      if(amount > Number(balance)){
+      if (amount > Number(balance)) {
         toast({
           title: "You do not have enough balance to contribute this amount",
+          variant: "destructive",
+          className: `${workSans.className}`
         })
-        
+
         return;
       }
-      if(!isWhitelisted){
+      if (!isWhitelisted) {
         toast({
           title: "You are not whitelisted to contribute to this fund",
+          variant: "destructive",
+          className: `${workSans.className}`
         })
         return;
       }
       setIsContributing(true);
-     
-      const tx = await handleContribute(amount.toString());
 
-      if (tx===0){
+      const tx = await handleContribute(amount.toString());
+      if (tx === 0) {
         toast({
           title: "Amount exceeds tier limit",
+          variant: "destructive",
+          className: `${workSans.className}`
         });
         setIsContributing(false);
         return;
       }
-      console.log("tx is ", tx);
-     if (tx?.data?.code===3){
-        toast({
-          title: "Transaction failed",
-        });
-        setIsContributing(false);
-        return;
-      }
-    
+
       setIsContributing(false);
       toast({
         title: "Successfully contributed to the fund",
+        className: `${workSans.className} bg-[#2ca585]`
       });
       await refreshData();
       setBalance((prev) => (Number(prev) - Number(amount)).toFixed(3));
@@ -127,12 +128,12 @@ export default function BurnCard(props: UpcomingFundDetailsProps) {
 
   return (
     <Card className="text-left w-full max-w-3xl bg-[#0d0d0d] border-[#383838] text-white font-['Work Sans']">
-      {props.fundingProgress < 100 && !goalReached? (
+      {props.fundingProgress < 100 && !goalReached ? (
         <>
           <CardHeader className="space-y-9">
             <div className="flex items-center gap-3">
-              <span className="text-[#409cff] text-2xl sm:text-3xl font-semibold">$MODE</span>
-              <h2 className="text-2xl sm:text-3xl font-semibold">Contribute</h2>
+              <span className="text-[#409cff] text-2xl sm:text-3xl font-semibold">Whitelist</span>
+              <h2 className="text-2xl sm:text-3xl font-semibold">Allocation</h2>
             </div>
             <div className="space-y-6">
               <div className="flex justify-between items-center p-4 bg-black rounded border border-[#383838]">
@@ -164,27 +165,27 @@ export default function BurnCard(props: UpcomingFundDetailsProps) {
       ) : (
         <>
           <div className="space-y-10">
-          <h3 className="text-[#409cff] text-2xl sm:text-2xl font-semibold mt-7 mx-4 my-6">
-            Goal Has Been Reached 
+            <h3 className="text-[#409cff] text-2xl sm:text-2xl font-semibold mt-7 mx-4 my-6">
+              Goal Has Been Reached
 
-          </h3>
-        
-         
+            </h3>
+
+
             <Button
-            
+
               className="bg-[#409cff] text-white text-lg sm:text-xl font-semibold hover:bg-[#307bcc] w-100 mx-8"
               onClick={checkFinalisedFundraising}
             >
 
               Go to Token Dashboard
             </Button>
-         
+
           </div>
-          </>
+        </>
       )}
       <CardContent className="space-y-8 mt-8">
         <div className="space-y-4">
-      
+
           <h3 className="text-[#409cff] text-xl sm:text-2xl font-semibold">
             About Token
           </h3>

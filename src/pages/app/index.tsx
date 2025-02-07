@@ -102,8 +102,8 @@ const AppHome: React.FC = () => {
 
           {/* Upcoming funds */}
           <FundSection
-            title="Upcoming Funds"
-            subtitle="Hedgefunds launching soon"
+            title="Upcoming DAOs"
+            subtitle="Launching soon"
             funds={UPCOMING_FUNDS}
             linkPrefix="upcoming"
             onFundClick={(fundId) => onFundClick(fundId, 'upcoming')}
