@@ -57,16 +57,6 @@ const AppHome: React.FC = () => {
   return (
     <PageLayout title="App" description="main-app" app={true}>
       <div className="relative min-h-screen w-screen overflow-hidden">
-        {/* Watermark */}
-        <div className="scale-150 sm:scale-100 mr-[-20%] sm:mr-[-30%] mt-[80%] sm:mt-[-20%] absolute top-0 right-0 w-full h-full pointer-events-none z-0">
-          <Image
-            src="/assets/star-1-with-purple-star.svg"
-            alt="Watermark"
-            layout="fill"
-            objectPosition="right top"
-            className="object-contain"
-          />
-        </div>
 
         <div className={`${workSans.className} relative flex flex-col justify-center items-center w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 md:py-16 space-y-12 md:space-y-24`}>
           {/* Hero section */}
