@@ -5,19 +5,29 @@ import { workSans } from '@/lib/fonts';
 import React, { useState, useEffect } from 'react';
 // import { ethers } from 'ethers';
 // import daoABI from "../../DaoABI.json"
-import { handleCopy, shortenAddress } from '@/lib/utils';
+import { commaSeparator, handleCopy, shortenAddress } from '@/lib/utils';
 import { getContractData } from "../../getterFunctions"
 import { useFundContext } from "./FundContext";
 
 
 
 const FundDetails: React.FC<FundDetailsProps> = (props) => {
+  interface TokenChangeState {
+    percent: number;
+    token: number;
+  }
+
   const { daoBalance } = useFundContext();
   const [marketCap, setMarketCap] = useState<number | null>(null);
   const [daoTokenAddress, setDaoTokenAddress] = useState('');
   const [price, setPrice] = useState<number | null>(null);
   const [daoHoldings, setDaoHoldings] = useState('0');
   const { priceUsd, setPriceUsd } = useFundContext();
+  const [tokenChange, setTokenChange] = useState<TokenChangeState>({
+    percent: 0,
+    token: 0
+  });
+
   useEffect(() => {
     const fetchContractData = async () => {
       try {
@@ -56,7 +66,12 @@ const FundDetails: React.FC<FundDetailsProps> = (props) => {
   //   fetchDaoBalance()
   // }, [daoTokenAddress])
 
+  const calculateTokenChange = (marketCap: number, percentageChange: number): number => {
+    return (marketCap * percentageChange) / 100;
+  };
+
   useEffect(() => {
+
     const fetchMarketData = async () => {
       if (!daoTokenAddress) return
       console.log("daoTokenAddress is ", daoTokenAddress)
@@ -73,8 +88,15 @@ const FundDetails: React.FC<FundDetailsProps> = (props) => {
         if (data && Array.isArray(data) && data[0]) {
           setPrice(data[0].priceUsd)
           setPriceUsd(data[0].priceUsd)
-          const marketCap = (Number(data[0].priceUsd) * 10 ** 9).toFixed(0)
-          setMarketCap(Number(marketCap))
+          // const marketCap = (Number(data[0].priceUsd) * 10 ** 9).toFixed(0)
+          const marketCap = (Number(data[0].marketCap)).toFixed(0)
+          setMarketCap(Number(marketCap));
+          const percentageChange = (Number(data?.[0]?.priceChange?.h24))
+          const tokenChangeValue = calculateTokenChange(Number(marketCap), percentageChange);
+          setTokenChange({
+            percent: percentageChange,
+            token: tokenChangeValue
+          });
         } else {
           console.warn('Market data not in expected format.')
         }
@@ -83,10 +105,10 @@ const FundDetails: React.FC<FundDetailsProps> = (props) => {
       }
     }
     fetchMarketData()
-  }, [daoTokenAddress,setPriceUsd])
+  }, [daoTokenAddress, setPriceUsd])
 
   return (
-    <Card className="bg-[#0d0d0d] text-white sm:p-2 max-w-xl lg:max-w-2xl w-full">
+    <Card className="bg-[#0d0d0d] text-white sm:p-2  w-full">
       <CardHeader className="flex flex-row items-center gap-4 sm:gap-6 pb-4 sm:pb-6">
         <div className="w-12 h-12 sm:w-16 sm:h-16 bg-white rounded-full flex-shrink-0 overflow-hidden">
           <Image
@@ -103,26 +125,40 @@ const FundDetails: React.FC<FundDetailsProps> = (props) => {
       </CardHeader>
       <CardContent className="space-y-4 sm:space-y-6">
 
+        <Card className="bg-[#1b1c1d] border-[#27292a] w-full">
+          <CardContent className="pt-6">
+            <p className=" text-sm sm:text-base md:text-lg lg:text-lg text-left">
+              {props?.description}
+            </p>
+          </CardContent>
+        </Card>
+
 
         <div className="text-left flex flex-row gap-4 sm:gap-6">
-          <div className="grid grid-rows-[80%_20%] gap-2 sm:gap-4 w-full">
-            <Card className="bg-[#1b1c1d] border-[#27292a] p-2 sm:p-4 w-full">
-              <CardContent className="space-y-1 sm:space-y-2 px-2 sm:px-3">
+          <div className="grid grid-rows-[80%_20%] gap-2 sm:gap-1 w-full">
+            <Card className="bg-[#1b1c1d] border-[#27292a] p-2 sm:p-4 w-full h-[max-content]">
+              <CardContent className="space-y-1 sm:space-y-2 px-2 sm:px-3 pb-0">
                 <p className="text-[#aeb3b6] text-sm sm:text-base md:text-lg lg:text-xl">Market Cap</p>
-                <p className="text-lg sm:text-2xl md:text-3xl lg:text-4xl font-semibold">${marketCap}</p>
+                <p className="text-lg sm:text-2xl md:text-3xl lg:text-4xl font-semibold">${commaSeparator(marketCap || 0)}</p>
+                <p
+                  className={`text-lg sm:text-lg md:text-xl lg:text-2xl font-semibold ${tokenChange?.percent < 0 ? "text-red-600" : "text-green-600"
+                    }`}
+                >
+                  {`${commaSeparator(Number(tokenChange?.token).toFixed(2))} (${Number(tokenChange?.percent).toFixed(2)}%)`}
+                </p>
               </CardContent>
             </Card>
-            <div className="h-min flex justify-center items-center gap-2 text-[#498ff8] text-sm sm:text-base md:text-xl">
+            <div className="h-min flex justify-center items-center gap-2 text-[#498ff8] text-sm sm:text-base md:text-xl mt-2">
               <span>{shortenAddress(daoTokenAddress)}</span>
               <Copy className="w-4 h-4 sm:w-5 sm:h-5 hover:cursor-pointer" onClick={() => handleCopy(props.modeAddress)} />
             </div>
           </div>
 
           <Card className="bg-[#1b1c1d] border-[#27292a] p-2 sm:p-4 w-full">
-            <CardContent className="space-y-2 sm:space-y-4 px-2 sm:px-3">
+            <CardContent className="space-y-2 sm:space-y-4 px-2 sm:px-3 p-0">
               <div>
                 <p className="text-[#aeb3b6] text-sm sm:text-base md:text-lg lg:text-xl">Your Holdings</p>
-                <p className="text-lg sm:text-2xl md:text-3xl lg:text-4xl font-semibold">{Number(daoBalance).toFixed(3)} {props.shortname} <span className="text-sm sm:text-lg md:text-xl lg:text-2xl"></span></p>
+                <p className="text-lg sm:text-xl md:text-2xl lg:text-3xl font-semibold">{Number(daoBalance).toFixed(2)} {props.shortname} <span className="text-sm sm:text-lg md:text-xl lg:text-2xl"></span></p>
               </div>
               <div>
                 <p className="text-[#aeb3b6] text-sm sm:text-base md:text-lg lg:text-xl">Your Market Value</p>

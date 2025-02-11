@@ -59,7 +59,7 @@ const Orderbook = ({
           value={token}
           mode
         />
-        <InfoRow label="Trading ends" value={tradingEnds} />
+        {/* <InfoRow label="Trading ends" value={tradingEnds} /> */}
         <InfoRow label="Mode raised" value={ethRaised} />
       </CardContent>
     </Card>

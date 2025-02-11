@@ -2,12 +2,15 @@
 @tailwind components;
 @tailwind utilities;
 
+// Css Files 
+
+@import './app/index.scss';
 
 html,
 body {
   padding: 0;
   margin: 0;
-  /* font-family: 'Inter', sans-serif; */
+  // font-family: 'Inter', sans-serif;
 }
 
 a {
