@@ -9,7 +9,7 @@ import {
   // GitHubIcon,
   XIcon,
   TelegramIcon,
-  DexScreener,
+  // DexScreener,
   // DiscordIcon,
 } from "@/assets/icons/social";
 import { FooterData } from "@/components/footer";
