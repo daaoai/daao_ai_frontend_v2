@@ -8,6 +8,7 @@ import React, { useState, useEffect } from 'react';
 import { commaSeparator, handleCopy, shortenAddress } from '@/lib/utils';
 import { getContractData } from "../../getterFunctions"
 import { useFundContext } from "./FundContext";
+import { useAccount } from 'wagmi';
 
 
 
@@ -18,6 +19,7 @@ const FundDetails: React.FC<FundDetailsProps> = (props) => {
   }
 
   const { daoBalance } = useFundContext();
+  const { isConnected } = useAccount();
   const [marketCap, setMarketCap] = useState<number | null>(null);
   const [daoTokenAddress, setDaoTokenAddress] = useState('');
   const [price, setPrice] = useState<number | null>(null);
@@ -40,7 +42,7 @@ const FundDetails: React.FC<FundDetailsProps> = (props) => {
       }
     }
     fetchContractData()
-  }, [])
+  }, [isConnected])
 
 
   // useEffect(() => {
