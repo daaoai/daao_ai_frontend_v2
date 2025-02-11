@@ -80,7 +80,7 @@ const AppHome: React.FC = () => {
                     <div className="description lg:pt-6 pt-2 text-center text-white lg:text-2xl w-5/6 md:text-lg text-sm w-full">
                       Create or join memecoin & AI hedgefunds
                     </div>
-                    <div className="btn_container flex justify-center mt-5">
+                    {/* <div className="btn_container flex justify-center mt-5">
                       <div className="flex flex-col sm:flex-row justify-center items-center gap-4 mt-6 w-min">
                         <Button
                           variant="connect"
@@ -116,7 +116,7 @@ const AppHome: React.FC = () => {
                           </Link>
                         </Button>
                       </div>
-                    </div>
+                    </div> */}
                   </div>
                 </div>
 
@@ -138,7 +138,7 @@ const AppHome: React.FC = () => {
 
             {/* Upcoming funds */}
             <FundSection
-              title="Upcoming DAOs"
+              title="Launched DAOs"
               subtitle="Launching soon"
               funds={UPCOMING_FUNDS}
               linkPrefix="upcoming"
