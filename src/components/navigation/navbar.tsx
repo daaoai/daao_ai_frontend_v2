@@ -76,7 +76,7 @@ export const Navbar: React.FC = () => {
       </div>*/}
 
       {/* The "Join Waiting" button that opens the modal */}
-      <div className="justify-center items-center gap-4 w-min flex">
+      {/* <div className="justify-center items-center gap-4 w-min flex">
         <Button
           variant="connect"
           onClick={() => setIsModalOpen(!isModalOpen)}
@@ -86,7 +86,7 @@ export const Navbar: React.FC = () => {
             Check whitelist
           </div>
         </Button>
-      </div>
+      </div> */}
 
       {/*<div className="block lg:hidden">
         <HeaderSheet />

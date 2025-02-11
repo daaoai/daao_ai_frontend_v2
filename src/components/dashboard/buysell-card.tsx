@@ -455,18 +455,18 @@ const Buysell = () => {
           <Tabs
             value={activeTab}
             onValueChange={(val) => setActiveTab(val as "buy" | "sell")}
-            className="w-auto"
+            className="w-full h-12"
           >
-            <TabsList className="grid grid-cols-2 bg-[#1b1c1d]">
+            <TabsList className="grid grid-cols-2 bg-[#1b1c1d] h-12">
               <TabsTrigger
                 value="buy"
-                className="data-[state=active]:bg-white data-[state=active]:text-black w-20"
+                className="data-[state=active]:bg-white data-[state=active]:text-black data-[state=inactive]:text-white w-full data-[state=active]:h-10 lg:text-xl md:text-lg sm:text-md"
               >
                 Buy
               </TabsTrigger>
               <TabsTrigger
                 value="sell"
-                className="data-[state=active]:bg-white data-[state=active]:text-black w-20"
+                className="data-[state=active]:bg-white data-[state=active]:text-black data-[state=inactive]:text-white w-full data-[state=active]:h-10  lg:text-xl md:text-lg sm:text-md"
               >
                 Sell
               </TabsTrigger>
@@ -512,6 +512,7 @@ const Buysell = () => {
                 style={{
                   minWidth: "140px",  // Set a reasonable minimum width
                   width: `${amountTo.toString().length + 2}ch`, // Dynamically adjust width
+                  height: "3.5rem"
                 }}
               />
             </div>
@@ -559,6 +560,7 @@ const Buysell = () => {
                 style={{
                   minWidth: "140px",  // Set a reasonable minimum width
                   width: `${amountTo.toString().length + 0.2}ch`, // Dynamically adjust width
+                  height: "3.5rem"
                 }}
               />
             </div>
@@ -584,21 +586,22 @@ const Buysell = () => {
           </CardContent>
         </Card>
 
-        <div className="flex justify-between text-sm">
+        {/* <div className="flex justify-between text-sm">
           <div className="text-left space-y-1">
-            {/* <p className="text-[#aeb3b6]">Price Impact</p>
-            <p className="text-[#aeb3b6]">Exchange</p> */}
+            <p className="text-[#aeb3b6] lg:text-lg md:text-md sm:text-sm">Price Impact</p>
+            <p className="text-[#aeb3b6] lg:text-lg md:text-md sm:text-sm">Exchange</p>
           </div>
           <div className="space-y-1 text-right">
-            {/* <p>0.00%</p>
-            <p className="text-2xl">-</p> */}
+            <p className="lg:text-lg md:text-md sm:text-sm">0.00%</p>
+            <p className="lg:text-lg md:text-md sm:text-sm">-</p>
           </div>
-        </div>
+        </div> */}
 
         <Button
           className="w-full bg-white text-black hover:bg-gray-200"
           onClick={handleSwap}
           disabled={isSwapping}
+          style={{ height: "3rem" }}
         >
           {isSwapping ? "Swapping..." : "Swap"}
         </Button>
