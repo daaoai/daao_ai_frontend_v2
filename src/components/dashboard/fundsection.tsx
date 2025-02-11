@@ -47,10 +47,13 @@ export function FundSection({ title, subtitle, funds, linkPrefix = "dashboard", 
                   onClick={(e) => {
                     if (onFundClick) {
                       e.preventDefault(); // Prevent default link behavior
-                      onFundClick(fund.id);
+                      if (fund.status === "trading") {
+                        onFundClick(fund.id);
+                      }
                     }
                   }}
-                  className="w-full h-full"
+                  disabled={fund.status !== "trading"}
+                  className={fund.status === "trading" ? "w-full h-full" : "w-full h-full cursor-not-allowed"}
                 >
                   <FundCard
                     key={fund.id}
