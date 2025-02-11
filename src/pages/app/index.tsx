@@ -17,15 +17,16 @@ import starIcon from '../../../public/assets/hero_star_icon.png';
 
 const getFeaturedFunds = () => {
   return [
+    { id: '154', title: 'DeFAI Cartel', token: 'CARTEL', status: "trading" as "trading", imgSrc: CURRENT_DAO_IMAGE },
     { id: '178', title: 'To Be Announced', token: 'TBA', status: false, imgSrc: FUND_CARD_PLACEHOLDER_IMAGE },
     { id: '212', title: 'Soul Dogs', token: 'FDREMA', status: false, imgSrc: FUND_CARD_PLACEHOLDER_IMAGE },
-    { id: '435', title: 'Soul Dogs', token: 'FDREMA', status: false, imgSrc: FUND_CARD_PLACEHOLDER_IMAGE },
+    // { id: '435', title: 'Soul Dogs', token: 'FDREMA', status: false, imgSrc: FUND_CARD_PLACEHOLDER_IMAGE },
   ];
 }
 
 const getUpcomingFunds = () => {
   return [
-    { id: '154', title: 'DeFAI Cartel', token: 'CARTEL', status: "trading" as "trading", imgSrc: CURRENT_DAO_IMAGE },
+    // { id: '154', title: 'DeFAI Cartel', token: 'CARTEL', status: "trading" as "trading", imgSrc: CURRENT_DAO_IMAGE },
     { id: '277', title: 'To Be Announced', token: 'TBA', status: "soon" as "soon", imgSrc: FUND_CARD_PLACEHOLDER_IMAGE },
     { id: '312', title: 'To Be Announced', token: 'TBA', status: "soon" as "soon", imgSrc: FUND_CARD_PLACEHOLDER_IMAGE },
     { id: '492', title: 'To Be Announced', token: 'TBA', status: "soon" as "soon", imgSrc: FUND_CARD_PLACEHOLDER_IMAGE },
@@ -137,13 +138,13 @@ const AppHome: React.FC = () => {
             />
 
             {/* Upcoming funds */}
-            <FundSection
+            {/* <FundSection
               title="Launched DAOs"
               subtitle="Launching soon"
               funds={UPCOMING_FUNDS}
               linkPrefix="upcoming"
               onFundClick={(fundId) => onFundClick(fundId, 'upcoming')}
-            />
+            /> */}
           </div>
 
         </div>
