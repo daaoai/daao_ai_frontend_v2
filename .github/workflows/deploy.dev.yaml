@@ -45,6 +45,8 @@ jobs:
           script_stop: true
           script: |
             cd "${PROJECT_DIR}/"
+            docker builder prune -a
+            docker image prune -a
             docker compose build
 
   db-migrate:
