@@ -9,6 +9,7 @@ import { commaSeparator, handleCopy, shortenAddress } from '@/lib/utils';
 import { getContractData } from "../../getterFunctions"
 import { useFundContext } from "./FundContext";
 import { useAccount } from 'wagmi';
+import Liquidity from '../Liquidity/liquidity';
 
 
 
@@ -111,20 +112,26 @@ const FundDetails: React.FC<FundDetailsProps> = (props) => {
 
   return (
     <Card className="bg-[#0d0d0d] text-white sm:p-2  w-full">
-      <CardHeader className="flex flex-row items-center gap-4 sm:gap-6 pb-4 sm:pb-6">
-        <div className="w-12 h-12 sm:w-16 sm:h-16 bg-white rounded-full flex-shrink-0 overflow-hidden">
-          <Image
-            className="w-full h-full object-cover border border-[#27292a]"
-            src={props.icon}
-            width={70}
-            height={70}
-            alt={`${props.longname} icon`}
-          />
+      <CardHeader className="flex flex-row items-center justify-between gap-4 sm:gap-6 pb-4 sm:pb-6">
+        <div className="flex items-center gap-4 sm:gap-6">
+          <div className="w-12 h-12 sm:w-16 sm:h-16 bg-white rounded-full flex-shrink-0 overflow-hidden">
+            <Image
+              className="w-full h-full object-cover border border-[#27292a]"
+              src={props.icon}
+              width={70}
+              height={70}
+              alt={`${props.longname} icon`}
+            />
+          </div>
+          <CardTitle className={`text-xl sm:text-2xl md:text-3xl font-semibold ${workSans.className}`}>
+            ${props.shortname} {props.longname}
+          </CardTitle>
         </div>
-        <CardTitle className={`text-xl sm:text-2xl md:text-3xl font-semibold ${workSans.className}`}>
-          ${props.shortname} {props.longname}
-        </CardTitle>
+
+        <Liquidity />
+
       </CardHeader>
+
       <CardContent className="space-y-4 sm:space-y-6">
 
         <Card className="bg-[#1b1c1d] border-[#27292a] w-full">
