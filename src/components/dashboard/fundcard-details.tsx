@@ -153,7 +153,7 @@ const FundDetails: React.FC<FundDetailsProps> = (props) => {
                   className={`text-lg sm:text-lg md:text-xl lg:text-2xl font-semibold ${tokenChange?.percent < 0 ? "text-red-600" : "text-green-600"
                     }`}
                 >
-                  {`${commaSeparator(Number(tokenChange?.token).toFixed(2))} (${Number(tokenChange?.percent).toFixed(2)}%)`}
+                  {`${commaSeparator(Number(tokenChange?.token || 0).toFixed(2))} (${Number(tokenChange?.percent || 0).toFixed(2)}%)`}
                 </p>
               </CardContent>
             </Card>
