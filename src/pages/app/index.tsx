@@ -17,7 +17,7 @@ import starIcon from '../../../public/assets/hero_star_icon.png';
 
 const getFeaturedFunds = () => {
   return [
-    { id: '154', title: 'DeFAI Cartel', token: 'CARTEL', status: "trading" as "trading", imgSrc: CURRENT_DAO_IMAGE },
+    { id: '1', title: 'DeFAI Cartel', token: 'CARTEL', status: "trading" as "trading", imgSrc: CURRENT_DAO_IMAGE },
     { id: '178', title: 'To Be Announced', token: 'TBA', status: false, imgSrc: FUND_CARD_PLACEHOLDER_IMAGE },
     { id: '212', title: 'Soul Dogs', token: 'FDREMA', status: false, imgSrc: FUND_CARD_PLACEHOLDER_IMAGE },
     // { id: '435', title: 'Soul Dogs', token: 'FDREMA', status: false, imgSrc: FUND_CARD_PLACEHOLDER_IMAGE },
