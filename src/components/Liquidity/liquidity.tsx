@@ -12,6 +12,7 @@ import ERC20_ABI from '@/erc20Abi.json'
 import { CURRENT_DAO_IMAGE } from '@/lib/links';
 import { daoAddress, modeTokenAddress, tickSpacing, veloFactoryAddress, nonFungiblePositionManagerAddress } from '@/common/common'
 import VELO_FACTORY_ABI from '@/lib/abis/veloAbi.json'
+import velodromeFactoryABI from "../../veloABI.json"
 
 
 const Liquidity = () => {
@@ -80,39 +81,40 @@ const Liquidity = () => {
         fetchDaoToken();
     }, []);
 
-    // useEffect(() => {
-    //     const fetchPoolAddress = async () => {
-    //         if (!token0Address || !MODE_TOKEN_ADDRESS) return;
+    useEffect(() => {
+        const fetchPoolAddress = async () => {
+            if (!token0Address || !MODE_TOKEN_ADDRESS) return;
 
-    //         const provider = new ethers.providers.Web3Provider(window.ethereum);
-    //         const factoryContract = new ethers.Contract(
-    //             VELO_FACTORY_ADDRESS!,
-    //             VELO_FACTORY_ABI,
-    //             provider
-    //         );
+            const provider = new ethers.providers.Web3Provider(window.ethereum);
+            const factoryContract = new ethers.Contract(
+                VELO_FACTORY_ADDRESS!,
+                VELO_FACTORY_ABI,
+                // velodromeFactoryABI,
+                provider
+            );
 
-    //         const [tokenA, tokenB] = [token0Address, MODE_TOKEN_ADDRESS].sort();
+            const [tokenA, tokenB] = [token0Address, MODE_TOKEN_ADDRESS].sort();
 
-    //         try {
-    //             const pool = await factoryContract.getPool(
-    //                 tokenA,
-    //                 tokenB,
-    //                 TICK_SPACING
-    //             );
+            try {
+                const pool = await factoryContract.getPool(
+                    tokenA,
+                    tokenB,
+                    TICK_SPACING
+                );
 
-    //             if (pool !== ethers.constants.AddressZero) {
-    //                 setPoolAddress(pool);
-    //             } else {
-    //                 console.log('Pool does not exist yet');
-    //                 setPoolAddress('');
-    //             }
-    //         } catch (error) {
-    //             console.error('Error fetching pool:', error);
-    //         }
-    //     };
+                if (pool !== ethers.constants.AddressZero) {
+                    setPoolAddress(pool);
+                } else {
+                    console.log('Pool does not exist yet');
+                    setPoolAddress('');
+                }
+            } catch (error) {
+                console.error('Error fetching pool:', error);
+            }
+        };
 
-    //     fetchPoolAddress();
-    // }, [token0Address, MODE_TOKEN_ADDRESS]);
+        fetchPoolAddress();
+    }, [token0Address, MODE_TOKEN_ADDRESS]);
 
     const handleSwap = () => {
         // Swap tokens and their amounts
@@ -126,7 +128,7 @@ const Liquidity = () => {
     };
 
 
-    // console.log(poolAddress, "poolAddress");
+    console.log(poolAddress, "poolAddress");
 
     return (
         <div>

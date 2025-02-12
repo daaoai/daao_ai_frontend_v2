@@ -390,9 +390,9 @@
                 "type": "address"
             },
             {
-                "internalType": "int24",
+                "internalType": "uint24",
                 "name": "tickSpacing",
-                "type": "int24"
+                "type": "uint24"
             }
         ],
         "name": "getPool",
