@@ -39,6 +39,10 @@ const Liquidity = () => {
     const [token0Address, setToken0Address] = useState('');
     const [token0Decimals, setToken0Decimals] = useState(18);
     const [poolAddress, setPoolAddress] = useState<string>('');
+    const [slippageTolerance, setSlippageTolerance] = useState('1');
+    const [customSlippage, setCustomSlippage] = useState('');
+    const [isSlippageSettingsOpen, setIsSlippageSettingsOpen] = useState(false);
+    const [isPriceRangeOpen, setIsPriceRangeOpen] = useState(false);
 
     const fetchDecimals = async (tokenAddress: string) => {
         const provider = new ethers.providers.Web3Provider(window.ethereum);
@@ -221,45 +225,122 @@ const Liquidity = () => {
 
                                 {/* Price Range Selection */}
                                 <div className="bg-gray-900 p-4 rounded-xl space-y-4">
-                                    <h3 className="text-sm font-medium">Select Price Range</h3>
-                                    <div className="grid grid-cols-3 gap-2">
-                                        {['0.1', '1', '5'].map((range) => (
-                                            <Button
-                                                key={range}
-                                                variant={selectedRange === range ? 'default' : 'outline'}
-                                                className={`text-sm ${selectedRange === range ? 'bg-white text-black hover:bg-gray-100' : 'bg-gray-800 text-gray-300 hover:bg-gray-700'}`}
-                                                onClick={() => {
-                                                    setSelectedRange(range);
-                                                    setCustomRange('');
-                                                }}
-                                            >
-                                                ±{range}%
-                                            </Button>
-                                        ))}
+                                    <div
+                                        className="flex items-center justify-between cursor-pointer"
+                                        onClick={() => setIsPriceRangeOpen(!isPriceRangeOpen)}
+                                    >
+                                        <h3 className="text-sm font-medium">Select Price Range</h3>
+                                        <svg
+                                            className={`w-5 h-5 transition-transform ${isPriceRangeOpen ? 'rotate-180' : ''}`}
+                                            fill="none"
+                                            stroke="currentColor"
+                                            viewBox="0 0 24 24"
+                                        >
+                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                                        </svg>
                                     </div>
-                                    <div className="flex items-center gap-2">
-                                        <Input
-                                            type="number"
-                                            placeholder="Custom"
-                                            className="flex-1 bg-gray-800 border-0 focus-visible:ring-0 [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
-                                            value={customRange}
-                                            onChange={(e) => {
-                                                setCustomRange(e.target.value);
-                                                setSelectedRange('');
-                                            }}
-                                        />
-                                        <span className="text-gray-400 text-sm">%</span>
+
+                                    <div className={`overflow-hidden transition-all duration-300 ${isPriceRangeOpen ? 'max-h-96' : 'max-h-0'}`}>
+                                        <div className="space-y-4 pt-2">
+                                            <div className="grid grid-cols-3 gap-2">
+                                                {['0.1', '1', '5'].map((range) => (
+                                                    <Button
+                                                        key={range}
+                                                        variant={selectedRange === range ? 'default' : 'outline'}
+                                                        className={`text-sm ${selectedRange === range ? 'bg-white text-black hover:bg-gray-100' : 'bg-gray-800 text-gray-300 hover:bg-gray-700'}`}
+                                                        onClick={() => {
+                                                            setSelectedRange(range);
+                                                            setCustomRange('');
+                                                        }}
+                                                    >
+                                                        ±{range}%
+                                                    </Button>
+                                                ))}
+                                            </div>
+                                            <div className="flex items-center gap-2">
+                                                <Input
+                                                    type="number"
+                                                    placeholder="Custom"
+                                                    className="flex-1 bg-gray-800 border-0 focus-visible:ring-0 [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                                                    value={customRange}
+                                                    onChange={(e) => {
+                                                        setCustomRange(e.target.value);
+                                                        setSelectedRange('');
+                                                    }}
+                                                />
+                                                <span className="text-gray-400 text-sm">%</span>
+                                            </div>
+                                            <p className="text-sm text-gray-400">
+                                                {selectedRange ? `Your liquidity will be concentrated between ±${selectedRange}%` :
+                                                    customRange ? `Custom range set to ±${customRange}%` : 'Select a price range'}
+                                            </p>
+                                        </div>
                                     </div>
-                                    <p className="text-sm text-gray-400">
-                                        {selectedRange ? `Your liquidity will be concentrated between ±${selectedRange}%` :
-                                            customRange ? `Custom range set to ±${customRange}%` : 'Select a price range'}
-                                    </p>
+                                </div>
+
+                                {/* Slippage Tolerance */}
+                                <div className="space-y-4">
+                                    {/* Settings Trigger */}
+                                    <div className="flex items-center justify-between cursor-pointer" onClick={() => setIsSlippageSettingsOpen(!isSlippageSettingsOpen)}>
+                                        <span className="text-sm">Slippage Tolerance</span>
+                                        <svg
+                                            className={`w-5 h-5 transition-transform ${isSlippageSettingsOpen ? 'rotate-90' : ''}`}
+                                            fill="none"
+                                            stroke="currentColor"
+                                            viewBox="0 0 24 24"
+                                        >
+                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                                        </svg>
+                                    </div>
+
+                                    {/* Collapsible Content */}
+                                    <div className={`overflow-hidden transition-all duration-300 ${isSlippageSettingsOpen ? 'max-h-40' : 'max-h-0'}`}>
+                                        <div className="bg-gray-900 p-4 rounded-xl space-y-4">
+                                            <div className="grid grid-cols-3 gap-2">
+                                                {['0.1', '0.5', '1'].map((slippage) => (
+                                                    <Button
+                                                        key={slippage}
+                                                        variant={slippageTolerance === slippage ? 'default' : 'outline'}
+                                                        className={`text-sm ${slippageTolerance === slippage ? 'bg-white text-black hover:bg-gray-100' : 'bg-gray-800 text-gray-300 hover:bg-gray-700'}`}
+                                                        onClick={() => {
+                                                            setSlippageTolerance(slippage);
+                                                            setCustomSlippage('');
+                                                        }}
+                                                    >
+                                                        {slippage}%
+                                                    </Button>
+                                                ))}
+                                            </div>
+                                            <div className="flex items-center gap-2">
+                                                <Input
+                                                    type="number"
+                                                    placeholder="Custom"
+                                                    className="flex-1 bg-gray-800 border-0 focus-visible:ring-0 [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                                                    value={customSlippage}
+                                                    onChange={(e) => {
+                                                        setCustomSlippage(e.target.value);
+                                                        setSlippageTolerance('');
+                                                    }}
+                                                />
+                                                <span className="text-gray-400 text-sm">%</span>
+                                            </div>
+                                        </div>
+                                    </div>
                                 </div>
 
                                 {/* Add Liquidity Button */}
                                 <Button
-                                    className="w-full py-6 text-lg bg-white  text-black hover:bg-gray-100 rounded-xl"
-                                    onClick={() => {/* Add liquidity logic here */ }}
+                                    className="w-full py-6 text-lg bg-white text-black hover:bg-gray-100 rounded-xl"
+                                    onClick={async () => {
+                                        const effectiveSlippage = customSlippage || slippageTolerance;
+                                        const slippageBips = Math.floor(Number(effectiveSlippage) * 100);
+
+                                        // Use slippageBips in your transaction parameters
+                                        // Example: 
+                                        // const amountMin = amount.mul(10000 - slippageBips).div(10000);
+                                        // Then pass amountMin to your contract call
+                                    }}
                                 >
                                     Add Liquidity
                                 </Button>
