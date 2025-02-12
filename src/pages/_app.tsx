@@ -1,4 +1,4 @@
-import "../styles/globals.css";
+import "../styles/globals.scss";
 import "@rainbow-me/rainbowkit/styles.css";
 import { AppProps } from "next/app";
 
@@ -44,8 +44,8 @@ function MyApp({ Component, pageProps }: AppProps) {
                 disableTransitionOnChange
               >
                 <Layout font={fontChoice}>
-                <FundProvider>
-                  <Component {...pageProps} />
+                  <FundProvider>
+                    <Component {...pageProps} />
                   </FundProvider>
                 </Layout>
               </ThemeProvider>

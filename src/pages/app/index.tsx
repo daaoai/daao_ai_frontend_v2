@@ -13,19 +13,23 @@ import { useAccount } from "wagmi";
 import { useRouter } from 'next/navigation';
 import { useToast } from '@/hooks/use-toast';
 import { ConnectWalletButton } from '@/components/ui/connect-button';
+import starIcon from '../../../public/assets/hero_star_icon.png';
 
-// const getFeaturedFunds = () => {
-//   return [
-// { id: '1', title: 'To Be Announced', token: 'TBA', status: false, imgSrc: FUND_CARD_PLACEHOLDER_IMAGE },
-//   ];
-// }
+const getFeaturedFunds = () => {
+  return [
+    { id: '154', title: 'DeFAI Cartel', token: 'CARTEL', status: "trading" as "trading", imgSrc: CURRENT_DAO_IMAGE },
+    { id: '178', title: 'To Be Announced', token: 'TBA', status: false, imgSrc: FUND_CARD_PLACEHOLDER_IMAGE },
+    { id: '212', title: 'Soul Dogs', token: 'FDREMA', status: false, imgSrc: FUND_CARD_PLACEHOLDER_IMAGE },
+    // { id: '435', title: 'Soul Dogs', token: 'FDREMA', status: false, imgSrc: FUND_CARD_PLACEHOLDER_IMAGE },
+  ];
+}
 
 const getUpcomingFunds = () => {
   return [
-    { id: '1', title: 'DeFAI Cartel', token: 'CARTEL', status: "funding" as "funding", imgSrc: CURRENT_DAO_IMAGE },
-    { id: '2', title: 'To Be Announced', token: 'TBA', status: "soon" as "soon", imgSrc: FUND_CARD_PLACEHOLDER_IMAGE },
-    { id: '3', title: 'To Be Announced', token: 'TBA', status: "soon" as "soon", imgSrc: FUND_CARD_PLACEHOLDER_IMAGE },
-    { id: '4', title: 'To Be Announced', token: 'TBA', status: "soon" as "soon", imgSrc: FUND_CARD_PLACEHOLDER_IMAGE },
+    // { id: '154', title: 'DeFAI Cartel', token: 'CARTEL', status: "trading" as "trading", imgSrc: CURRENT_DAO_IMAGE },
+    { id: '277', title: 'To Be Announced', token: 'TBA', status: "soon" as "soon", imgSrc: FUND_CARD_PLACEHOLDER_IMAGE },
+    { id: '312', title: 'To Be Announced', token: 'TBA', status: "soon" as "soon", imgSrc: FUND_CARD_PLACEHOLDER_IMAGE },
+    { id: '492', title: 'To Be Announced', token: 'TBA', status: "soon" as "soon", imgSrc: FUND_CARD_PLACEHOLDER_IMAGE },
   ];
 }
 
@@ -34,7 +38,7 @@ const AppHome: React.FC = () => {
   const router = useRouter();
   const { toast } = useToast();
   console.log(isConnected);
-  // const FEATURED_FUNDS = getFeaturedFunds();
+  const FEATURED_FUNDS = getFeaturedFunds();
   const UPCOMING_FUNDS = getUpcomingFunds();
 
   const onFundClick = (fundId: string, type: 'dashboard' | 'upcoming') => {
@@ -57,47 +61,92 @@ const AppHome: React.FC = () => {
   return (
     <PageLayout title="App" description="main-app" app={true}>
       <div className="relative min-h-screen w-screen overflow-hidden">
+        <div className="app_main_container">
 
-        <div className={`${workSans.className} relative flex flex-col justify-center items-center w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 md:py-16 space-y-12 md:space-y-24`}>
-          {/* Hero section */}
-          <section className='flex flex-col justify-center items-center gap-6 md:gap-10 text-center max-w-4xl'>
-            <h1 className={`text-white text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-semibold ${inter.className} leading-tight`}>
-              The Future of DeFAI DAOs
-            </h1>
-            <p className={`text-white text-base sm:text-lg md:text-xl lg:text-2xl font-normal tracking-wide`}>
-              Create your AI fund
-            </p>
-            {/*<div className="flex flex-col sm:flex-row justify-center items-center gap-4 w-full max-w-md">
-              <Link href="/app/dashboard" className="w-full sm:w-auto">
-                <Button className="w-[125px] sm:w-auto bg-white text-black hover:bg-white/90 text-sm sm:text-base font-semibold px-6 py-2 sm:px-8 sm:py-3">
-                  DASHBOARD
-                </Button>
-              </Link>
-              <Link href="/app/leaderboard" className="w-full sm:w-auto">
-                <Button className="w-[125px] sm:w-auto bg-[#28282c] hover:bg-[#28282c]/90 text-white text-sm sm:text-base font-semibold px-6 py-2 sm:px-8 sm:py-3">
-                  LEADERBOARD
-                </Button>
-              </Link>
-            </div>*/}
-          </section>
+          <div className="hero_section_main_container">
+            <div className="hero_section_container">
+              <div className="bg_image_container">
+                <div className="bg_image">
+                  <Image
+                    src={starIcon}
+                    height={30}
+                    width={30}
+                    alt="@startIcon"
+                    className="hero_star_icon"
+                  />
+                  <div className="content_container">
+                    <div className="heading text-center text-white text-3xl md:text-5xl lg:text-5xl font-semibold">
+                      The future of investing in Daaos world
+                    </div>
+                    <div className="description lg:pt-6 pt-2 text-center text-white lg:text-2xl w-5/6 md:text-lg text-sm w-full">
+                      Create or join memecoin & AI hedgefunds
+                    </div>
+                    {/* <div className="btn_container flex justify-center mt-5">
+                      <div className="flex flex-col sm:flex-row justify-center items-center gap-4 mt-6 w-min">
+                        <Button
+                          variant="connect"
+                          className={`w-full py-4 sm:py-6 px-6 sm:px-10 bg-white rounded-md border border-[#bedaff] flex justify-center items-center max-w-xs sm:max-w-none`}
+                          disabled={true}
+                        >
+                          <Link
+                            // href={WHITEPAPER_URL}
+                            href='/app'
+                            target="_blank"
+                            className="w-full"
+                          >
+
+                            <div className={`text-center text-black text-base sm:text-xl  font-sans font-semibold leading-tight tracking-wide`}>
+                              DASHBOARD
+                            </div>
+                          </Link>
+                        </Button>
+                        <Button
+                          variant="connect"
+                          className={`py-4 sm:py-6 px-6 sm:px-10 bg-[#28282C] rounded-md xl border border-[#28282C] flex justify-center items-center max-w-xs sm:max-w-none`}
+                          disabled={true}
+                        >
+                          <Link
+                            href="/leaderboard"
+                            className="w-full"
+                          >
+
+                            <div className="flex justify-center items-center gap-2 text-center  sm:text-xl font-sans font-semibold text-white text-sm   goldman leading-tight tracking-wide">
+
+                              LEADERBOARD
+                            </div>
+                          </Link>
+                        </Button>
+                      </div>
+                    </div> */}
+                  </div>
+                </div>
+
+              </div>
+            </div>
+          </div>
+
+          <div className={`${workSans.className} features_cards_main_container relative flex flex-col justify-center items-center w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 md:py-16 space-y-12 md:space-y-24`}>
 
 
-          {/* Featured funds 
-          <FundSection
-            title="Featured Funds"
-            subtitle="In-demand hedgefunds"
-            funds={FEATURED_FUNDS}
-            onFundClick={(fundId) => onFundClick(fundId, 'dashboard')}
-          />*/}
 
-          {/* Upcoming funds */}
-          <FundSection
-            title="Upcoming DAOs"
-            subtitle="Launching soon"
-            funds={UPCOMING_FUNDS}
-            linkPrefix="upcoming"
-            onFundClick={(fundId) => onFundClick(fundId, 'upcoming')}
-          />
+            {/* Featured funds */}
+            <FundSection
+              title="Featured Funds"
+              subtitle="In-demand hedgefunds"
+              funds={FEATURED_FUNDS}
+              onFundClick={(fundId) => onFundClick(fundId, 'dashboard')}
+            />
+
+            {/* Upcoming funds */}
+            {/* <FundSection
+              title="Launched DAOs"
+              subtitle="Launching soon"
+              funds={UPCOMING_FUNDS}
+              linkPrefix="upcoming"
+              onFundClick={(fundId) => onFundClick(fundId, 'upcoming')}
+            /> */}
+          </div>
+
         </div>
       </div>
     </PageLayout>

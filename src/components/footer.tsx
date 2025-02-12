@@ -96,7 +96,7 @@ export const FooterIconLink: React.FC<FooterData> = ({ href, label, children }) 
       target="_blank"
       rel="noopener noreferrer"
       aria-label={label}
-      className="text-gray-500 hover:text-gray-900 transition"
+      className="text-gray-500 hover:text-gray-900 transition "
     >
       {children}
     </Link>
