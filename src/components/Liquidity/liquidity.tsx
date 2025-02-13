@@ -644,6 +644,37 @@ const Liquidity = () => {
         }
     }, [direction, pricedata])
 
+    // Add this useEffect to recalculate when price range updates
+    useEffect(() => {
+        const recalculateAmounts = async () => {
+            if (!token0Amount || !pricedata || !priceRange) return;
+
+            try {
+                if (direction === 'from') {
+                    const amount = Number(token0Amount) * 10 ** pricedata.token0Decimals;
+                    const calculated = await calculateEstimatedAmount1(
+                        String(amount),
+                        pricedata,
+                        priceRange
+                    );
+                    setToken1Amount(calculated?.amount1 || '');
+                } else {
+                    const amount = Number(token0Amount) * 10 ** pricedata.token1Decimals;
+                    const calculated = await calculateEstimatedAmount0(
+                        String(amount),
+                        pricedata,
+                        priceRange
+                    );
+                    setToken1Amount(calculated?.amount0 || '');
+                }
+            } catch (error) {
+                setToken1Amount('');
+                console.error("Recalculation error:", error);
+            }
+        };
+
+        recalculateAmounts();
+    }, [priceRange]); // Re-run when price range or range percentage changes
 
     // Todo
     // check allowence if user already approved 
@@ -765,7 +796,7 @@ const Liquidity = () => {
                                     <div className={`overflow-hidden transition-all duration-300 ${isPriceRangeOpen ? 'max-h-96' : 'max-h-0'}`}>
                                         <div className="space-y-4 pt-2">
                                             <div className="grid grid-cols-3 gap-2">
-                                                {['25', '50', '100'].map((range) => (
+                                                {['25', '50', '99'].map((range) => (
                                                     <Button
                                                         key={range}
                                                         variant={selectedRange === range ? 'default' : 'outline'}
