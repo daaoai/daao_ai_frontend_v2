@@ -10,9 +10,20 @@ import { ethers } from "ethers";
 import DAO_ABI from '@/lib/abis/daoAbi.json'
 import ERC20_ABI from '@/erc20Abi.json'
 import { CURRENT_DAO_IMAGE } from '@/lib/links';
-import { daoAddress, modeTokenAddress, tickSpacing, veloFactoryAddress, nonFungiblePositionManagerAddress } from '@/common/common'
+import { daoAddress, modeTokenAddress, tickSpacing, veloFactoryAddress, nonFungiblePositionManagerAddress, quoterAddress } from '@/common/common'
 import VELO_FACTORY_ABI from '@/lib/abis/veloAbi.json'
+import POOL_ABI from '@/lib/abis/poolAbi.json'
+import poolAbi from "../../poolABI.json"
 import velodromeFactoryABI from "../../veloABI.json"
+import bn from 'bignumber.js'
+import QUOTER_ABI from '@/lib/abis/quoterAbi.json';
+import { Token } from '@uniswap/sdk-core'
+import { Pool, Position } from '@uniswap/v3-sdk'
+import { Percent } from '@uniswap/sdk-core'
+import { formatUnits } from 'ethers/lib/utils'
+import { parseUnits } from 'ethers/lib/utils'
+
+bn.config({ EXPONENTIAL_AT: 999999, DECIMAL_PLACES: 40 })
 
 
 const Liquidity = () => {
@@ -22,6 +33,7 @@ const Liquidity = () => {
     const DAO_TOKEN_ADDRESS = daoAddress || process.env.NEXT_PUBLIC_DAO_ADDRESS;
     const VELO_FACTORY_ADDRESS = veloFactoryAddress || process.env.NEXT_PUBLIC_VELO_FACTORY_ADDRESS;
     const NON_FUNGIBLE_POSITION_MANAGER_ADDRESS = nonFungiblePositionManagerAddress || process.env.NEXT_PUBLIC_NON_FUNGIBLE_POSITION_MANAGER_ADDRESS;
+    const QUOTER_ADDRESS = quoterAddress || process.env.NEXT_PUBLIC_QUOTER_ADDRESS;
 
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
@@ -29,7 +41,7 @@ const Liquidity = () => {
     const [token1Amount, setToken1Amount] = useState('');
     const [token0, setToken0] = useState('CARTEL');
     const [token1, setToken1] = useState('MODE');
-    const [selectedRange, setSelectedRange] = useState('1');
+    const [selectedRange, setSelectedRange] = useState('3');
     const [customRange, setCustomRange] = useState('');
     const [daoToken, setDaoToken] = useState<{
         address: string;
@@ -43,6 +55,10 @@ const Liquidity = () => {
     const [customSlippage, setCustomSlippage] = useState('');
     const [isSlippageSettingsOpen, setIsSlippageSettingsOpen] = useState(false);
     const [isPriceRangeOpen, setIsPriceRangeOpen] = useState(false);
+
+    const [sqrtPriceX96, setSqrtPriceX96] = useState<ethers.BigNumber | null>(null)
+
+    const [activeInput, setActiveInput] = useState<'token0' | 'token1'>('token0');
 
     const fetchDecimals = async (tokenAddress: string) => {
         const provider = new ethers.providers.Web3Provider(window.ethereum);
@@ -70,6 +86,142 @@ const Liquidity = () => {
 
         return { address, symbol, name };
     };
+
+
+    // Getting Quote 
+
+    // Function to get pool info including sqrtPriceX96
+    const fetchPoolInfo = async () => {
+        if (!poolAddress) return
+
+        const provider = new ethers.providers.Web3Provider(window.ethereum)
+        const poolContract = new ethers.Contract(poolAddress, POOL_ABI, provider)
+
+        try {
+            const slot0 = await poolContract.slot0();
+            console.log(slot0, "slot0");
+            setSqrtPriceX96(slot0.sqrtPriceX96)
+        } catch (error) {
+            console.error('Error fetching pool info:', error)
+        }
+    }
+
+    // Modify calculateAmounts to handle single-direction calculation
+    const calculateAmounts = async (
+        amount0: string,
+        amount1: string,
+        tickLower: number,
+        tickUpper: number
+    ) => {
+        if (!poolAddress || !sqrtPriceX96) return { amount0: '0', amount1: '0' };
+
+        const provider = new ethers.providers.Web3Provider(window.ethereum);
+        const poolContract = new ethers.Contract(poolAddress, POOL_ABI, provider);
+
+        const pool = new Pool(
+            new Token(
+                1,
+                token0Address || '',  // Fallback to empty string
+                token0Decimals,
+                token0,
+                daoToken?.name || token0  // Fallback to token symbol if name is undefined
+            ),
+            new Token(
+                1,
+                MODE_TOKEN_ADDRESS || '',  // Fallback to empty string
+                18,
+                token1,
+                'MODE'
+            ),
+            100,
+            sqrtPriceX96.toString(),
+            1,
+            (await poolContract.slot0()).tick
+        );
+
+        let position: Position;
+        if (activeInput === 'token0' && amount0) {
+            position = Position.fromAmount0({
+                pool,
+                tickLower,
+                tickUpper,
+                amount0: parseUnits(amount0, token0Decimals).toString(),
+                useFullPrecision: true
+            });
+        } else {
+            position = Position.fromAmount1({
+                pool,
+                tickLower,
+                tickUpper,
+                amount1: parseUnits(amount1, 18).toString(),
+            });
+        }
+
+        const slippage = new Percent(slippageTolerance, 10_000);
+        const { amount0: min0, amount1: min1 } = position.mintAmountsWithSlippage(slippage);
+
+        return {
+            amount0: formatUnits(min0.toString(), token0Decimals),
+            amount1: formatUnits(min1.toString(), 18)
+        };
+    };
+    // Update token0 input handler
+    const handleToken0Change = async (value: string) => {
+        setToken0Amount(value);
+        setActiveInput('token0');
+        if (value && poolAddress && sqrtPriceX96) {
+            const calculated = await calculateAmounts(value, '', tickLow, tickHigh);
+            setToken1Amount(calculated.amount1);
+        }
+    };
+
+    // Update token1 input handler
+    const handleToken1Change = async (value: string) => {
+        setToken1Amount(value);
+        setActiveInput('token1');
+        if (value && poolAddress && sqrtPriceX96) {
+            const calculated = await calculateAmounts('', value, tickLow, tickHigh);
+            setToken0Amount(calculated.amount0);
+        }
+    };
+
+    // Add tick calculation function
+    const calculateTickRange = (sqrtPriceX96: ethers.BigNumber, rangePercentage: number) => {
+        if (!sqrtPriceX96) return { tickLow: -887272, tickHigh: 887272 }
+
+        const Q96 = new bn(2).pow(96)
+        const sqrtPrice = new bn(sqrtPriceX96.toString())
+        const price = sqrtPrice.pow(2).div(Q96.pow(2)).times(10 ** (18 - token0Decimals))
+
+        const tickLow = Math.log(price.times(1 - rangePercentage / 100).toNumber()) / Math.log(1.0001)
+        const tickHigh = Math.log(price.times(1 + rangePercentage / 100).toNumber()) / Math.log(1.0001)
+
+        return {
+            tickLow: Math.floor(tickLow / TICK_SPACING) * TICK_SPACING,
+            tickHigh: Math.ceil(tickHigh / TICK_SPACING) * TICK_SPACING
+        }
+    }
+
+    // Usage in handlers:
+    const { tickLow, tickHigh } = sqrtPriceX96
+        ? calculateTickRange(sqrtPriceX96, Number(selectedRange || customRange))
+        : { tickLow: -887272, tickHigh: 887272 }
+
+
+
+    useEffect(() => {
+        if (poolAddress) {
+            fetchPoolInfo();
+        }
+    }, [poolAddress])
+
+
+
+
+
+    // getting quote end 
+
+
 
     useEffect(() => {
         const fetchDaoToken = async () => {
@@ -132,8 +284,6 @@ const Liquidity = () => {
     };
 
 
-    console.log(poolAddress, "poolAddress");
-
     return (
         <div>
             <div className="liquidity_main-container">
@@ -175,7 +325,11 @@ const Liquidity = () => {
                                                 placeholder="0.0"
                                                 className="text-right text-2xl bg-transparent border-0 focus-visible:ring-0 [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
                                                 value={token0Amount}
-                                                onChange={(e) => setToken0Amount(e.target.value)}
+                                                // onChange={handleToken0AmountChange}
+                                                onChange={(e) => handleToken0Change(e.target.value)}
+                                                min="0"
+                                                step="any"
+                                                inputMode="decimal"
                                             />
                                         </div>
                                     </div>
@@ -209,7 +363,8 @@ const Liquidity = () => {
                                                 placeholder="0.0"
                                                 className="text-right text-2xl bg-transparent border-0 focus-visible:ring-0 [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
                                                 value={token1Amount}
-                                                onChange={(e) => setToken1Amount(e.target.value)}
+                                                // onChange={(e) => setToken1Amount(e.target.value)}
+                                                onChange={(e) => handleToken1Change(e.target.value)}
                                             />
                                         </div>
                                     </div>
@@ -243,7 +398,7 @@ const Liquidity = () => {
                                     <div className={`overflow-hidden transition-all duration-300 ${isPriceRangeOpen ? 'max-h-96' : 'max-h-0'}`}>
                                         <div className="space-y-4 pt-2">
                                             <div className="grid grid-cols-3 gap-2">
-                                                {['0.1', '1', '5'].map((range) => (
+                                                {['0.1', '3', '5'].map((range) => (
                                                     <Button
                                                         key={range}
                                                         variant={selectedRange === range ? 'default' : 'outline'}
