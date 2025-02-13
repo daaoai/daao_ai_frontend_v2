@@ -156,6 +156,7 @@ const Liquidity = () => {
             let currentPrice = 0;
 
             if (baseToken && quoteToken) {
+                currentPrice = Number(tickToPrice(baseToken, quoteToken, Number(tick)).toSignificant(6))
                 const sqrtRatioX96 = JSBI.BigInt(sqrtPriceX96);
                 currentPrice = Number(
                     new Price(
@@ -297,6 +298,7 @@ const Liquidity = () => {
         let calculatedAmount = await calculateEstimatedAmount1(String(amount), pricedata, priceRange)
         setToken1Amount(calculatedAmount?.amount1);
     }
+
     const handleToken1AmountChange = async (e: any) => {
         setToken0Amount(e);
         let amount = e * 10 ** pricedata?.token0Decimals;
