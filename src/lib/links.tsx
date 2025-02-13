@@ -9,7 +9,7 @@ import {
   // GitHubIcon,
   XIcon,
   TelegramIcon,
-  // DexScreener,
+  DexScreener,
   // DiscordIcon,
 } from "@/assets/icons/social";
 import { FooterData } from "@/components/footer";
@@ -57,9 +57,9 @@ export const DefaiCartelLinks: FooterData[] = [
     href: "https://x.com/DeFAICartel",
     children: <XIcon />,
   },
-  // {
-  //   label: "DexScreener",
-  //   href: "https://x.com/DeFAICartel",
-  //   children: <DexScreener />,
-  // },
+  {
+    label: "DexScreener",
+    href: "https://dexscreener.com/mode/0xf70e76cc5a39aad1953bef3d1647c8b36f3f6324",
+    children: <DexScreener />,
+  },
 ]
