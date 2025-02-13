@@ -31,7 +31,7 @@ const Dashboard: React.FC = () => {
     icon: CURRENT_DAO_IMAGE, // Placeholder image URL
     shortname: "CARTEL",
     longname: "",
-    description: "Alchemist Accelerate is a DAO dedicated to driving innovation at the intersection of AI and Web3. We invest in transformative projects, create educational resources in multiple languages, and provide mentorship and connections to empower a global community. Our mission is to break barriers, foster innovation, and build a sustainable, decentralized future.",
+    description: "DeFAI Venture DAO is a DeFAI Investment DAO dedicated to advancing the DeFAI movement by strategically investing in AI Agents and AI-focused DAOs on Mode. As a collective force in decentralized AI finance, $CARTEL empowers the AI-driven movement on Mode, fostering the growth of autonomous, AI-powered ecosystems.",
     holdings: 0,
     modeAddress: "0x5edbe707191Ae3A5bd5FEa5EDa0586f7488bD961",
   };
