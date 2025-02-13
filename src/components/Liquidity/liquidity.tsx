@@ -53,7 +53,7 @@ const Liquidity = () => {
     const [token1Amount, setToken1Amount] = useState('');
     const [token0, setToken0] = useState('CARTEL');
     const [token1, setToken1] = useState('MODE');
-    const [selectedRange, setSelectedRange] = useState('3');
+    const [selectedRange, setSelectedRange] = useState('25');
     const [customRange, setCustomRange] = useState('');
     const [daoToken, setDaoToken] = useState<{
         address: string;
@@ -71,7 +71,12 @@ const Liquidity = () => {
     const [pricedata, setPricedata] = useState<any>(null)
     const [currentTokenSwapAmount, setCurrentTokenSwapAmount] = useState<any>(0)
     const [direction, setDirection] = useState("from")
-    const [priceRange, setPriceRange] = useState<any>(null)
+    const [priceRange, setPriceRange] = useState<{
+        lowerTick: number;
+        upperTick: number;
+        lowerPrice: number;
+        upperPrice: number;
+    } | null>(null)
 
     const [error, setError] = useState<string | null>(null);
     const [approvalStatus, setApprovalStatus] = useState<string | null>(null);
@@ -227,10 +232,11 @@ const Liquidity = () => {
 
 
     const calculateEstimatedAmount0 = async (givenAmount1: any, currentPriceData: any, priceRangeData: any) => {
-        // console.log(givenAmount1, "givenAmount1");
-        // console.log(currentPriceData, "currentPriceData");
-        // console.log(priceRangeData, "priceRangeData");
-        // Rename provider to avoid conflict
+        // Add validation at start of function
+        if (!priceRangeData?.lowerTick || !priceRangeData?.upperTick) {
+            throw new Error("Invalid price range data");
+        }
+
         const jsonProvider = new ethers.providers.JsonRpcProvider(
             RPC_URL,
             {
@@ -239,7 +245,6 @@ const Liquidity = () => {
             }
         );
 
-        // Use jsonProvider instead of provider
         const quoterContractInstance = new ethers.Contract(
             QUOTER_ADDRESS as string,
             QUOTER_ABI,
@@ -252,8 +257,8 @@ const Liquidity = () => {
             givenAmount1,
             poolAddress,
             sqrtPriceX96,
-            priceRangeData.lowerTick,
-            priceRangeData.upperTick
+            priceRangeData.lowerTick,  // Now safe to access
+            priceRangeData.upperTick   // Now safe to access
         );
 
         amount0 = ethers.utils.formatUnits(amount0.toString(), token0Decimals);
@@ -285,8 +290,8 @@ const Liquidity = () => {
             givenAmount0,
             poolAddress,
             sqrtPriceX96,
-            priceRangeData.lowerTick,
-            priceRangeData.upperTick
+            priceRangeData?.lowerTick,
+            priceRangeData?.upperTick
         )).toString()
 
         amount1 = ethers.utils.formatUnits(amount1, token1Decimals)
@@ -297,18 +302,31 @@ const Liquidity = () => {
 
 
     const handleToken0AmountChange = async (e: any) => {
-        setToken0Amount(e);
-        let amount = e * 10 ** pricedata?.token0Decimals;
-        let priceRange = await calculatePriceRangeInTick(Number(selectedRange) / 100, pricedata)
+        try {
+            setToken0Amount(e);
+            if (!e || !pricedata) return;
 
-        let calculatedAmount = await calculateEstimatedAmount1(String(amount), pricedata, priceRange)
-        setToken1Amount(calculatedAmount?.amount1);
+            const amount = e * 10 ** pricedata.token0Decimals;
+            const priceRange = await calculatePriceRangeInTick(Number(selectedRange) / 100, pricedata);
+
+            if (!priceRange?.lowerTick || !priceRange?.upperTick) {
+                throw new Error("Invalid price range calculation");
+            }
+
+            setPriceRange(priceRange);
+            const calculatedAmount = await calculateEstimatedAmount1(String(amount), pricedata, priceRange);
+            setToken1Amount(calculatedAmount?.amount1 || '');
+        } catch (error) {
+            setToken1Amount('');
+            setError("Invalid price range - try a smaller range percentage");
+        }
     }
 
     const handleToken1AmountChange = async (e: any) => {
         setToken0Amount(e);
         let amount = e * 10 ** pricedata?.token0Decimals;
-        let priceRange = await calculatePriceRangeInTick(Number(selectedRange) / 100, pricedata)
+        let priceRange = await calculatePriceRangeInTick(Number(selectedRange) / 100, pricedata);
+        setPriceRange(priceRange ?? null);
 
         let calculatedAmount = await calculateEstimatedAmount0(String(amount), pricedata, priceRange)
         setToken1Amount(calculatedAmount?.amount0);
@@ -351,9 +369,15 @@ const Liquidity = () => {
             // let percentageDifference = 0.1 // 10%
             let percentageDifference = 0.3 // 30%
             // let priceRange = await calculatePriceRangeInTick(percentageDifference, priceData)
-            let priceRange = await calculatePriceRangeInTick(Number(selectedRange) / 100, priceData)
-            console.log("Price Range:", priceRange)
-            // setPriceRange(priceRange)
+            let priceRange = await calculatePriceRangeInTick(Number(selectedRange) / 100, priceData);
+
+            // Add null check before using priceRange
+            if (!priceRange?.lowerTick || !priceRange?.upperTick) {
+                console.error("Invalid price range calculation");
+                return;
+            }
+
+            setPriceRange(priceRange);
 
             // token1= mode
             // token0=cartel
@@ -385,138 +409,6 @@ const Liquidity = () => {
     // *getting quote end 
 
     // *Add Liquidity Start
-
-    // const handleAddLiquidity = async () => {
-    //     try {
-    //         const provider = new ethers.providers.Web3Provider(window.ethereum);
-    //         const signer = provider.getSigner();
-    //         const recipient = await signer.getAddress();
-
-    //         // Convert amounts to Wei with proper decimals
-    //         const amount0Desired = ethers.utils.parseUnits(token0Amount, pricedata.token0Decimals);
-    //         const amount1Desired = ethers.utils.parseUnits(token1Amount, pricedata.token1Decimals);
-
-    //         // Add token approvals
-    //         const token0Contract = new ethers.Contract(
-    //             pricedata.token0,
-    //             ERC20_ABI,
-    //             signer
-    //         );
-    //         const token1Contract = new ethers.Contract(
-    //             pricedata.token1,
-    //             ERC20_ABI,
-    //             signer
-    //         );
-
-    //         // Approve token0
-    //         const approve0Tx = await token0Contract.approve(
-    //             NON_FUNGIBLE_POSITION_MANAGER_ADDRESS,
-    //             amount0Desired.toString()
-    //         );
-    //         await approve0Tx.wait();
-
-    //         // Approve token1
-    //         const approve1Tx = await token1Contract.approve(
-    //             NON_FUNGIBLE_POSITION_MANAGER_ADDRESS,
-    //             amount1Desired.toString()
-    //         );
-    //         await approve1Tx.wait();
-
-    //         // Get current block timestamp and add 20 minutes for deadline
-    //         const deadline = Math.floor(Date.now() / 1000) + 1200;
-
-    //         // Calculate minimum amounts with slippage tolerance
-    //         const effectiveSlippage = customSlippage || slippageTolerance;
-    //         const amount0Min = amount0Desired.mul(10000 - Number(effectiveSlippage) * 100).div(10000);
-    //         const amount1Min = amount1Desired.mul(10000 - Number(effectiveSlippage) * 100).div(10000);
-
-    //         // Get price range data
-    //         const priceRangeData = await calculatePriceRangeInTick(Number(selectedRange) / 100, pricedata);
-
-    //         if (!priceRangeData?.lowerTick || !priceRangeData?.upperTick) {
-    //             throw new Error("Price range data not loaded");
-    //         }
-
-    //         // Validate pool existence first
-    //         if (!poolAddress) {
-    //             throw new Error("Pool does not exist for this token pair");
-    //         }
-
-    //         // Verify token approvals
-    //         const allowance0 = await token0Contract.allowance(recipient, NON_FUNGIBLE_POSITION_MANAGER_ADDRESS);
-    //         const allowance1 = await token1Contract.allowance(recipient, NON_FUNGIBLE_POSITION_MANAGER_ADDRESS);
-
-    //         if (allowance0.lt(amount0Desired)) {
-    //             throw new Error("Insufficient token0 allowance");
-    //         }
-
-    //         if (allowance1.lt(amount1Desired)) {
-    //             throw new Error("Insufficient token1 allowance");
-    //         }
-
-    //         // Convert ticks to proper spacing
-    //         const lowerTick = nearestUsableTick(priceRangeData.lowerTick, TICK_SPACING);
-    //         const upperTick = nearestUsableTick(priceRangeData.upperTick, TICK_SPACING);
-
-    //         if (lowerTick >= upperTick) {
-    //             throw new Error(`Invalid tick range: ${lowerTick} must be less than ${upperTick}`);
-    //         }
-
-    //         // Convert amounts using SDK's Price and TickMath
-    //         const position = new Position({
-    //             pool: new Pool(
-    //                 new Token(MODE_NETWORK_CHAIN_ID, pricedata.token0, pricedata.token0Decimals),
-    //                 new Token(MODE_NETWORK_CHAIN_ID, pricedata.token1, pricedata.token1Decimals),
-    //                 TICK_SPACING,
-    //                 pricedata.sqrtPriceX96,
-    //                 0, // liquidity
-    //                 pricedata.tick
-    //             ),
-    //             tickLower: lowerTick,
-    //             tickUpper: upperTick,
-    //             liquidity: 100 // Minimum liquidity to calculate amounts
-    //         });
-
-    //         const params = {
-    //             token0: pricedata.token0,
-    //             token1: pricedata.token1,
-    //             tickLower: lowerTick.toString(),
-    //             tickUpper: upperTick.toString(),
-    //             amount0Desired: amount0Min.toString(),
-    //             amount1Desired: amount1Min.toString(),
-    //             amount0Min: position.amount0.quotient.toString(),
-    //             amount1Min: position.amount1.quotient.toString(),
-    //             recipient: await signer.getAddress(),
-    //             deadline: Math.floor(Date.now() / 1000) + 1200,
-    //             sqrtPriceX96: pricedata.sqrtPriceX96.toString()
-    //         };
-
-    //         console.log("Params:", params)
-
-    //         // Validate all parameters
-    //         const isValid = Object.values(params).every(v =>
-    //             v !== undefined && v !== null && v !== 'NaN' && v !== 'undefined'
-    //         );
-
-    //         if (!isValid) {
-    //             throw new Error("Invalid transaction parameters");
-    //         }
-
-    //         // Execute transaction
-    //         const positionManager = new Contract(
-    //             NON_FUNGIBLE_POSITION_MANAGER_ADDRESS as string,
-    //             nonFungiblePositionManagerABI,
-    //             signer
-    //         );
-
-    //         const tx = await positionManager.mint(params);
-    //         await tx.wait();
-
-    //     } catch (error) {
-    //         console.error("Add liquidity failed:", error);
-    //         throw error;
-    //     }
-    // }
 
     const handleAddLiquidity = async () => {
         try {
@@ -653,156 +545,6 @@ const Liquidity = () => {
             setIsLoading(false);
         }
     }
-
-
-    // const handleAddLiquidity = async () => {
-    //     try {
-    //         const provider = new ethers.providers.Web3Provider(window.ethereum);
-    //         const signer = provider.getSigner();
-    //         const recipient = await signer.getAddress();
-
-    //         // Validate pool data
-    //         if (!pricedata || !pricedata.token0 || !pricedata.token1 || !poolAddress) {
-    //             throw new Error("Invalid pool data");
-    //         }
-
-    //         // Token contracts
-    //         const token0Contract = new ethers.Contract(pricedata.token0, ERC20_ABI, signer);
-    //         const token1Contract = new ethers.Contract(pricedata.token1, ERC20_ABI, signer);
-
-    //         // Convert input amounts to BigNumber
-    //         const amount0Desired = ethers.utils.parseUnits(token0Amount, pricedata.token0Decimals);
-    //         const amount1Desired = ethers.utils.parseUnits(token1Amount, pricedata.token1Decimals);
-
-    //         // Approve tokens
-    //         const approve0Tx = await token0Contract.approve(
-    //             NON_FUNGIBLE_POSITION_MANAGER_ADDRESS,
-    //             amount0Desired
-    //         );
-    //         await approve0Tx.wait();
-
-    //         const approve1Tx = await token1Contract.approve(
-    //             NON_FUNGIBLE_POSITION_MANAGER_ADDRESS,
-    //             amount1Desired
-    //         );
-    //         await approve1Tx.wait();
-
-    //         // Calculate deadline as BigNumber
-    //         const deadline = ethers.BigNumber.from(Math.floor(Date.now() / 1000) + 1200);
-
-    //         // Calculate tick range
-    //         const priceRangeData = await calculatePriceRangeInTick(
-    //             Number(selectedRange) / 100,
-    //             pricedata
-    //         );
-
-    //         if (!priceRangeData?.lowerTick || !priceRangeData?.upperTick) {
-    //             throw new Error("Failed to fetch tick range");
-    //         }
-
-    //         const lowerTick = nearestUsableTick(
-    //             Math.floor(Number(priceRangeData.lowerTick)),
-    //             TICK_SPACING
-    //         );
-    //         const upperTick = nearestUsableTick(
-    //             Math.floor(Number(priceRangeData.upperTick)),
-    //             TICK_SPACING
-    //         );
-
-    //         if (lowerTick >= upperTick) {
-    //             throw new Error(`Invalid tick range: ${lowerTick} must be less than ${upperTick}`);
-    //         }
-
-    //         // Initialize Pool with explicit BigNumber conversion
-    //         const pool = new Pool(
-    //             new Token(MODE_NETWORK_CHAIN_ID, pricedata.token0, pricedata.token0Decimals),
-    //             new Token(MODE_NETWORK_CHAIN_ID, pricedata.token1, pricedata.token1Decimals),
-    //             TICK_SPACING,
-    //             pricedata.sqrtPriceX96.toString(),
-    //             0,
-    //             pricedata.tick
-    //         );
-
-    //         // Create Position with explicit liquidity value
-    //         const position = new Position({
-    //             pool,
-    //             tickLower: lowerTick,
-    //             tickUpper: upperTick,
-    //             liquidity: ethers.BigNumber.from("100")
-    //         });
-
-    //         // Ensure position amounts exist
-    //         if (!position.amount0 || !position.amount1) {
-    //             throw new Error("Position calculation failed: amounts undefined");
-    //         }
-
-    //         // Convert minimum amounts to BigNumber with safe minimum values
-    //         const amount0Min = ethers.BigNumber.from(position.amount0.quotient.toString());
-    //         const amount1Min = ethers.BigNumber.from(position.amount1.quotient.toString());
-
-    //         // Prepare mint parameters with explicit BigNumber conversions
-    //         const mintParams = {
-    //             token0: pricedata.token0,
-    //             token1: pricedata.token1,
-    //             fee: ethers.BigNumber.from(TICK_SPACING),
-    //             tickLower: ethers.BigNumber.from(lowerTick),
-    //             tickUpper: ethers.BigNumber.from(upperTick),
-    //             amount0Desired: amount0Desired,
-    //             amount1Desired: amount1Desired,
-    //             amount0Min: amount0Min,
-    //             amount1Min: amount1Min,
-    //             recipient,
-    //             deadline
-    //         };
-
-    //         // Validate all parameters are properly converted
-    //         Object.entries(mintParams).forEach(([key, value]) => {
-    //             if (value === undefined || value === null) {
-    //                 throw new Error(`Invalid parameter: ${key} is ${value}`);
-    //             }
-    //         });
-
-    //         console.log("Minting Parameters:", {
-    //             ...mintParams,
-    //             amount0Desired: mintParams.amount0Desired.toString(),
-    //             amount1Desired: mintParams.amount1Desired.toString(),
-    //             amount0Min: mintParams.amount0Min.toString(),
-    //             amount1Min: mintParams.amount1Min.toString(),
-    //             fee: mintParams.fee.toString(),
-    //             tickLower: mintParams.tickLower.toString(),
-    //             tickUpper: mintParams.tickUpper.toString(),
-    //             deadline: mintParams.deadline.toString()
-    //         });
-
-    //         // Create Position Manager contract
-    //         const positionManager = new ethers.Contract(
-    //             NON_FUNGIBLE_POSITION_MANAGER_ADDRESS,
-    //             nonFungiblePositionManagerABI,
-    //             signer
-    //         );
-
-    //         // Execute mint transaction
-    //         const tx = await positionManager.mint(mintParams);
-    //         const receipt = await tx.wait();
-
-    //         console.log("Liquidity added successfully!", receipt);
-    //         return receipt;
-
-    //     } catch (error) {
-    //         console.error("Failed to add liquidity:", error);
-    //         if (error.message.includes("BigNumber")) {
-    //             console.error("BigNumber conversion failed. Please check parameter types.");
-    //             throw new Error("Invalid number format: Please check your input values");
-    //         }
-    //         throw error;
-    //     }
-    // };
-
-
-
-    //* Add Liquidity End 
-
-
 
     useEffect(() => {
         const fetchDaoToken = async () => {
@@ -1054,6 +796,11 @@ const Liquidity = () => {
                                                 {selectedRange ? `Your liquidity will be concentrated between ±${selectedRange}%` :
                                                     customRange ? `Custom range set to ±${customRange}%` : 'Select a price range'}
                                             </p>
+                                            {priceRange && (
+                                                <p className="text-sm text-gray-400 mt-2">
+                                                    Price range: {priceRange.lowerPrice.toFixed(6)} to {priceRange.upperPrice.toFixed(6)} {token1} per {token0}
+                                                </p>
+                                            )}
                                         </div>
                                     </div>
                                 </div>
@@ -1113,7 +860,15 @@ const Liquidity = () => {
                                 <Button
                                     className="w-full py-6 text-lg bg-white text-black hover:bg-gray-100 rounded-xl"
                                     onClick={handleAddLiquidity}
-                                    disabled={isLoading || !!approvalStatus}
+                                    disabled={
+                                        isLoading ||
+                                        !!approvalStatus ||
+                                        !token0Amount ||
+                                        !token1Amount ||
+                                        parseFloat(token0Amount) <= 0 ||
+                                        parseFloat(token1Amount) <= 0 ||
+                                        !priceRange
+                                    }
                                 >
                                     {approvalStatus || (isLoading ? "Processing..." : "Add Liquidity")}
                                 </Button>
