@@ -73,6 +73,9 @@ const Liquidity = () => {
     const [direction, setDirection] = useState("from")
     const [priceRange, setPriceRange] = useState<any>(null)
 
+    const [error, setError] = useState<string | null>(null);
+    const [approvalStatus, setApprovalStatus] = useState<string | null>(null);
+
     const fetchDecimals = async (tokenAddress: string) => {
         const provider = new ethers.providers.Web3Provider(window.ethereum);
         const tokenContract = new ethers.Contract(
@@ -517,15 +520,14 @@ const Liquidity = () => {
 
     const handleAddLiquidity = async () => {
         try {
+            setIsLoading(true);  // Start loading
             const provider = new ethers.providers.Web3Provider(window.ethereum);
             const signer = provider.getSigner();
             const recipient = await signer.getAddress();
 
-
             // Convert amounts to Wei with proper decimals
             const amount0Desired = ethers.utils.parseUnits(token0Amount, pricedata.token0Decimals);
             const amount1Desired = ethers.utils.parseUnits(token1Amount, pricedata.token1Decimals);
-
 
             // Add token approvals
             const token0Contract = new ethers.Contract(
@@ -539,61 +541,62 @@ const Liquidity = () => {
                 signer
             );
 
+            // Check existing allowances
+            const currentAllowance0 = await token0Contract.allowance(recipient, NON_FUNGIBLE_POSITION_MANAGER_ADDRESS);
+            const currentAllowance1 = await token1Contract.allowance(recipient, NON_FUNGIBLE_POSITION_MANAGER_ADDRESS);
 
-            // Approve token0
-            const approve0Tx = await token0Contract.approve(
-                NON_FUNGIBLE_POSITION_MANAGER_ADDRESS,
-                amount0Desired.toString()
-            );
-            await approve0Tx.wait();
+            // Approve token0 only if needed
+            if (currentAllowance0.lt(amount0Desired)) {
+                setApprovalStatus(`Approving ${token0}...`);
+                const approve0Tx = await token0Contract.approve(
+                    NON_FUNGIBLE_POSITION_MANAGER_ADDRESS,
+                    amount0Desired.toString()
+                );
+                await approve0Tx.wait();
+                setApprovalStatus(null);
+            }
 
-
-            // Approve token1
-            const approve1Tx = await token1Contract.approve(
-                NON_FUNGIBLE_POSITION_MANAGER_ADDRESS,
-                amount1Desired.toString()
-            );
-            await approve1Tx.wait();
-
+            // Approve token1 only if needed
+            if (currentAllowance1.lt(amount1Desired)) {
+                setApprovalStatus(`Approving ${token1}...`);
+                const approve1Tx = await token1Contract.approve(
+                    NON_FUNGIBLE_POSITION_MANAGER_ADDRESS,
+                    amount1Desired.toString()
+                );
+                await approve1Tx.wait();
+                setApprovalStatus(null);
+            }
 
             // Get current block timestamp and add 20 minutes for deadline
             const deadline = Math.floor(Date.now() / 1000) + 1200;
-
 
             // Calculate minimum amounts with slippage tolerance
             const effectiveSlippage = customSlippage || slippageTolerance;
             const amount0Min = amount0Desired.mul(10000 - Number(effectiveSlippage) * 100).div(10000);
             const amount1Min = amount1Desired.mul(10000 - Number(effectiveSlippage) * 100).div(10000);
 
-
             // Get price range data
             const priceRangeData = await calculatePriceRangeInTick(Number(selectedRange) / 100, pricedata);
-
 
             if (!priceRangeData?.lowerTick || !priceRangeData?.upperTick) {
                 throw new Error("Price range data not loaded");
             }
 
-
             if (!poolAddress) {
                 throw new Error("Pool does not exist for this token pair");
             }
-
 
             // Verify token approvals
             const allowance0 = await token0Contract.allowance(recipient, NON_FUNGIBLE_POSITION_MANAGER_ADDRESS);
             const allowance1 = await token1Contract.allowance(recipient, NON_FUNGIBLE_POSITION_MANAGER_ADDRESS);
 
-
             if (allowance0.lt(amount0Desired)) {
                 throw new Error("Insufficient token0 allowance");
             }
 
-
             if (allowance1.lt(amount1Desired)) {
                 throw new Error("Insufficient token1 allowance");
             }
-
 
             const params = {
                 token0: pricedata.token0,
@@ -610,20 +613,16 @@ const Liquidity = () => {
                 sqrtPriceX96: "0"
             };
 
-
             console.log("Params:", params)
-
 
             // Add validation for all parameters
             const isValid = Object.values(params).every(
                 v => v !== undefined && v !== null && v !== 'NaN' && v !== 'undefined'
             );
 
-
             if (!isValid) {
                 throw new Error("Invalid transaction parameters - check input values");
             }
-
 
             const positionManagerContract = new ethers.Contract(
                 NON_FUNGIBLE_POSITION_MANAGER_ADDRESS as string,
@@ -631,15 +630,27 @@ const Liquidity = () => {
                 signer
             );
 
-
             const tx = await positionManagerContract.mint(params);
-            await tx.wait();
-            console.log("Liquidity added successfully:", tx);
+            const receipt = await tx.wait();
+            console.log("Liquidity added successfully:", receipt);
 
-
-        } catch (error) {
-            console.error("Error adding liquidity:", error);
-            throw error;
+            // Reset state on success
+            setToken0Amount('');
+            setToken1Amount('');
+            setIsModalOpen(false);
+            setIsLoading(false);
+        } catch (error: any) {
+            if (error.code === 4001) {
+                console.log("Transaction rejected by user");
+                setApprovalStatus(null);
+                // setIsLoading(false);
+            } else {
+                console.error("Error adding liquidity:", error);
+                setApprovalStatus(null);
+                // setIsLoading(false);
+            }
+        } finally {
+            setIsLoading(false);
         }
     }
 
@@ -1102,8 +1113,9 @@ const Liquidity = () => {
                                 <Button
                                     className="w-full py-6 text-lg bg-white text-black hover:bg-gray-100 rounded-xl"
                                     onClick={handleAddLiquidity}
+                                    disabled={isLoading || !!approvalStatus}
                                 >
-                                    Add Liquidity
+                                    {approvalStatus || (isLoading ? "Processing..." : "Add Liquidity")}
                                 </Button>
                             </div>
                         </DialogContent>
