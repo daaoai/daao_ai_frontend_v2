@@ -10,10 +10,14 @@ import { getContractData } from "../../getterFunctions"
 import { useFundContext } from "./FundContext";
 import { useAccount } from 'wagmi';
 import Liquidity from '../Liquidity/liquidity';
+import { ethers } from 'ethers';
+import contractABI from "../../abi.json";
+
 
 
 
 const FundDetails: React.FC<FundDetailsProps> = (props) => {
+
   interface TokenChangeState {
     percent: number;
     token: number;
@@ -31,19 +35,19 @@ const FundDetails: React.FC<FundDetailsProps> = (props) => {
     token: 0
   });
 
-  useEffect(() => {
-    const fetchContractData = async () => {
-      try {
-        const data = await getContractData()
-        if (data?.daoToken) {
-          setDaoTokenAddress(data.daoToken)
-        }
-      } catch (error) {
-        console.error('Error fetching contract data:', error)
-      }
-    }
-    fetchContractData()
-  }, [isConnected])
+  // useEffect(() => {
+  //   const fetchContractData = async () => {
+  //     try {
+  //       const data = await getContractData()
+  //       if (data?.daoToken) {
+  //         setDaoTokenAddress(data.daoToken)
+  //       }
+  //     } catch (error) {
+  //       console.error('Error fetching contract data:', error)
+  //     }
+  //   }
+  //   fetchContractData()
+  // }, [isConnected])
 
 
   // useEffect(() => {
@@ -74,11 +78,23 @@ const FundDetails: React.FC<FundDetailsProps> = (props) => {
   };
 
   useEffect(() => {
+    const modeRpc = "https://mainnet.mode.network/";
+    const daoAddress = process.env.NEXT_PUBLIC_DAO_ADDRESS
 
     const fetchMarketData = async () => {
-      if (!daoTokenAddress) return
-      console.log("daoTokenAddress is ", daoTokenAddress)
-      const url = `https://api.dexscreener.com/token-pairs/v1/mode/${daoTokenAddress}`
+
+      const provider = new ethers.providers.JsonRpcProvider(modeRpc);
+
+      const signer = provider.getSigner();
+
+      const contract = new ethers.Contract(daoAddress as string, contractABI, provider);
+      const daoToken = (await contract.daoToken());
+      setDaoTokenAddress(daoToken)
+      // if (!daoTokenAddress) return
+
+
+      // const url = `https://api.dexscreener.com/token-pairs/v1/mode/${daoTokenAddress}`
+      const url = `https://api.dexscreener.com/token-pairs/v1/mode/${daoToken}`
       console.log("url is ", url)
       try {
         // Replace with your actual endpoint or logic
@@ -91,6 +107,7 @@ const FundDetails: React.FC<FundDetailsProps> = (props) => {
         if (data && Array.isArray(data) && data[0]) {
           setPrice(data[0].priceUsd)
           setPriceUsd(data[0].priceUsd)
+          // setPriceUsd(23)
           // const marketCap = (Number(data[0].priceUsd) * 10 ** 9).toFixed(0)
           const marketCap = (Number(data[0].marketCap)).toFixed(0)
           setMarketCap(Number(marketCap));
@@ -108,7 +125,8 @@ const FundDetails: React.FC<FundDetailsProps> = (props) => {
       }
     }
     fetchMarketData()
-  }, [daoTokenAddress, setPriceUsd])
+    // }, [daoTokenAddress, setPriceUsd])
+  }, [setPriceUsd])
 
   return (
     <Card className="bg-[#0d0d0d] text-white sm:p-2  w-full">
