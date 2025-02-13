@@ -78,8 +78,7 @@ const FundDetails: React.FC<FundDetailsProps> = (props) => {
 
   useEffect(() => {
     const modeRpc = "https://mainnet.mode.network/";
-    const daoAddress = process.env.NEXT_PUBLIC_DAO_ADDRESS
-
+    const daoAddress = "0xEc7b0FD288E87eBC1C301E360092c645567e79B9"
     const fetchMarketData = async () => {
 
       const provider = new ethers.providers.JsonRpcProvider(modeRpc);
