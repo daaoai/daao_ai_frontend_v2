@@ -892,6 +892,11 @@ const Liquidity = () => {
     }, [direction, pricedata])
 
 
+    // Todo
+    // check allowence if user already approved 
+    // show lower and upper price range from price range data 
+    // add validation 
+
     return (
         <div>
             <div className="liquidity_main-container">
