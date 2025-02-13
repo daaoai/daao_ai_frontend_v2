@@ -80,6 +80,7 @@ const Liquidity = () => {
 
     const [error, setError] = useState<string | null>(null);
     const [approvalStatus, setApprovalStatus] = useState<string | null>(null);
+    const [initalRendering, setInitalRendering] = useState(true);
 
     const fetchDecimals = async (tokenAddress: string) => {
         const provider = new ethers.providers.Web3Provider(window.ethereum);
@@ -365,6 +366,9 @@ const Liquidity = () => {
             setCurrentTokenSwapAmount(priceData?.currentPrice)
             console.log("================================")
             setPricedata(priceData);
+            if (priceData) {
+                setInitalRendering(false);
+            }
 
             // let percentageDifference = 0.1 // 10%
             let percentageDifference = 0.3 // 30%
@@ -757,7 +761,7 @@ const Liquidity = () => {
                                             </div>
                                             <Input
                                                 type="number"
-                                                placeholder="0.0"
+                                                placeholder={initalRendering && token0Amount ? "Calculating..." : "0.0"}
                                                 disabled={true}
                                                 className="text-right text-2xl bg-transparent border-0 focus-visible:ring-0 [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
                                                 value={token1Amount}
