@@ -28,7 +28,7 @@ export const assetColumns: ColumnDef<Asset>[] = [
   {
     accessorKey: "price",
     header: "Price",
-    cell: ({ row }) => <span>$&nbsp;{row.original.price.toFixed(2)}</span>,
+    cell: ({ row }) => <span>$&nbsp;{row.original.price}</span>,
   },
   {
     accessorKey: "totalValue",

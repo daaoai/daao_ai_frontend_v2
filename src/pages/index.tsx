@@ -146,9 +146,59 @@ const HomePage: NextPage = () => {
                 DeFAI Cartel
               </h2>
 
-              <p className={`text-[#d1ea48] text-lg sm:text-xl font-normal ${gold.className}`}>
+              {/* <p className={`text-[#d1ea48] text-lg sm:text-xl font-normal ${gold.className}`}>
                 $CARTEL
-              </p>
+              </p> */}
+              {/* 
+              <div className="flex items-center gap-2">
+                <p className={`text-[#d1ea48] text-lg sm:text-xl font-normal ${gold.className}`}>
+                  $CARTEL
+                </p>
+                <div className="flex items-center gap-1">
+                  <span className="relative flex h-2 w-2">
+                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
+                    <span className="relative inline-flex rounded-full h-2 w-2 bg-green-500"></span>
+                  </span>
+                  <span className="text-xs font-medium text-green-500 animate-pulse">
+                    LIVE
+                  </span>
+                </div>
+              </div> */}
+
+              {/* 
+              <div className="flex items-center gap-2">
+                <p className={`text-[#d1ea48] text-lg sm:text-xl font-normal ${gold.className}`}>
+                  $CARTEL
+                </p>
+                <div className="flex items-center gap-2 bg-green-500/10 px-2 py-0.5 rounded-full">
+                  <span className="relative flex h-3 w-3">
+                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
+                    <span className="relative inline-flex rounded-full h-3 w-3 bg-green-500 shadow-[0_0_8px_rgba(34,197,94,0.6)]"></span>
+                  </span>
+                  <span className="text-xs font-bold text-green-500 animate-pulse tracking-wider">
+                    LIVE
+                  </span>
+                </div>
+              </div> */}
+
+              <div className="flex items-center gap-2">
+                <p className={`text-[#d1ea48] text-lg sm:text-xl font-normal ${gold.className}`}>
+                  $CARTEL
+                </p>
+                <div className="flex items-center gap-2 bg-gradient-to-r from-green-500 to-emerald-400 animate-gradient-x px-3 py-1 rounded-full">
+                  <span className="relative flex h-2 w-2">
+                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-white opacity-75"></span>
+                    <span className="relative inline-flex rounded-full h-2 w-2 bg-white"></span>
+                  </span>
+                  <span className="text-xs font-bold text-white tracking-wider">
+                    LIVE
+                  </span>
+                </div>
+              </div>
+
+
+
+
             </div>
           </Link>
 

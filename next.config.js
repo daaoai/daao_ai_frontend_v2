@@ -6,6 +6,13 @@ const nextConfig = {
   images: {
     unoptimized: true,
   },
+  sassOptions: {
+    additionalData: `$var: red;`,
+  },
+  webpack: (config) => {
+    config.resolve.fallback = { fs: false, net: false, tls: false };
+    return config;
+  },
 };
 
 module.exports = nextConfig;

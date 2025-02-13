@@ -1,12 +1,15 @@
 export const WHITEPAPER_URL = "https://docsend.com/view/z9eqsrurcmdky2dn"
+
 export const FUND_CARD_PLACEHOLDER_IMAGE: string = "/images/new-upcoming-img.jpeg"
-export const CURRENT_DAO_LINK = "https://app.deform.cc/form/58ec6db5-98e0-45a1-b9f4-de018af4a6fa"
+export const CURRENT_DAO_LINK = "https://www.defaicartel.xyz/"
 export const CURRENT_DAO_IMAGE = "/images/new-defai-cartel.jpeg"
+
 
 import {
   // GitHubIcon,
   XIcon,
   TelegramIcon,
+  // DexScreener,
   // DiscordIcon,
 } from "@/assets/icons/social";
 import { FooterData } from "@/components/footer";
@@ -54,4 +57,9 @@ export const DefaiCartelLinks: FooterData[] = [
     href: "https://x.com/DeFAICartel",
     children: <XIcon />,
   },
+  // {
+  //   label: "DexScreener",
+  //   href: "https://x.com/DeFAICartel",
+  //   children: <DexScreener />,
+  // },
 ]

@@ -12,6 +12,7 @@ import {
 import Logo from "../logo-component";
 import { socialLinks } from "@/lib/links";
 import CheckWaitlistModal from "../landing/waitlist-modal";
+import { useRouter } from "next/router";
 
 interface NavLink {
   label: string;
@@ -51,6 +52,7 @@ export const MobileNavLinks: React.FC = () => (
 
 export const Navbar: React.FC = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const router = useRouter();
 
   return (
     <div className={`fixed z-50 flex w-full justify-between items-center border-b border-[#212121] p-4 bg-[#010d1f] md:px-16 md:py-4`}>
@@ -76,7 +78,7 @@ export const Navbar: React.FC = () => {
       </div>*/}
 
       {/* The "Join Waiting" button that opens the modal */}
-      <div className="justify-center items-center gap-4 w-min flex">
+      {/* <div className="justify-center items-center gap-4 w-min flex">
         <Button
           variant="connect"
           onClick={() => setIsModalOpen(!isModalOpen)}
@@ -84,6 +86,17 @@ export const Navbar: React.FC = () => {
         >
           <div className="text-center text-black text-xs sm:text-base font-normal goldman leading-tight tracking-wide">
             Check whitelist
+          </div>
+        </Button>
+      </div> */}
+      <div className="justify-center items-center gap-4 w-min flex">
+        <Button
+          variant="connect"
+          onClick={() => router.push('/app/dashboard/1')}
+          className={`w-full py-4 md:py-2 md:px-6 px-4 bg-white rounded-lg sm:rounded-xl border border-[#bedaff] flex justify-center items-center max-w-xs sm:max-w-none`}
+        >
+          <div className="text-center text-black text-xs sm:text-base font-normal goldman leading-tight tracking-wide">
+            Trade $CARTEL
           </div>
         </Button>
       </div>

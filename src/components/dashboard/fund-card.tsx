@@ -4,6 +4,7 @@ const FundCard: React.FC<FundCardProps> = (props) => {
   const statusStyles = {
     live: "bg-[#f3aeae] text-[#af0505]",
     funding: "bg-[#ebb6ff] text-[#6e0892]",
+    trading: "bg-green-300 text-[#000]",
     soon: "bg-[#e4e4e4] text-[#5f5e60]",   // Red background, white text
   };
 
@@ -15,6 +16,7 @@ const FundCard: React.FC<FundCardProps> = (props) => {
       <div className="self-stretch h-auto px-4 flex-col justify-start items-start gap-4 flex">
         <div className="self-stretch justify-between items-center inline-flex">
           <div className="text-white text-lg md:text-xl font-semibold">{props.title}</div>
+          {/* <div className="text-gray-300 text-md md:text-lg font-normal">#{props.uId} </div> */}
         </div>
         <div className="self-stretch justify-between items-center inline-flex">
           <div className="text-center text-white text-lg md:text-xl font-bold">${props.token}</div>
