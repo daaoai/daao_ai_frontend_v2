@@ -8,20 +8,22 @@ import { FlipHorizontalIcon } from 'lucide-react'
 import Image from 'next/image'
 import { ethers } from "ethers";
 import DAO_ABI from '@/lib/abis/daoAbi.json'
-import ERC20_ABI from '@/erc20Abi.json'
 import { CURRENT_DAO_IMAGE } from '@/lib/links';
-import { daoAddress, modeTokenAddress, tickSpacing, veloFactoryAddress, nonFungiblePositionManagerAddress, quoterAddress } from '@/common/common'
+import { daoAddress, modeTokenAddress, tickSpacing, veloFactoryAddress, nonFungiblePositionManagerAddress, quoterAddress, modeChainId } from '@/common/common'
 import VELO_FACTORY_ABI from '@/lib/abis/veloAbi.json'
 import POOL_ABI from '@/lib/abis/poolAbi.json'
-import poolAbi from "../../poolABI.json"
+import ERC20_ABI from '@/erc20Abi.json'
+// import poolAbi from "../../poolABI.json"
 import velodromeFactoryABI from "../../veloABI.json"
 import bn from 'bignumber.js'
 import QUOTER_ABI from '@/lib/abis/quoterAbi.json';
-import { Token } from '@uniswap/sdk-core'
+import { Token, Price } from '@uniswap/sdk-core'
+import { tickToPrice, nearestUsableTick, priceToClosestTick } from '@uniswap/v3-sdk'
 import { Pool, Position } from '@uniswap/v3-sdk'
 import { Percent } from '@uniswap/sdk-core'
 import { formatUnits } from 'ethers/lib/utils'
 import { parseUnits } from 'ethers/lib/utils'
+import JSBI from 'jsbi'
 
 bn.config({ EXPONENTIAL_AT: 999999, DECIMAL_PLACES: 40 })
 
@@ -34,6 +36,13 @@ const Liquidity = () => {
     const VELO_FACTORY_ADDRESS = veloFactoryAddress || process.env.NEXT_PUBLIC_VELO_FACTORY_ADDRESS;
     const NON_FUNGIBLE_POSITION_MANAGER_ADDRESS = nonFungiblePositionManagerAddress || process.env.NEXT_PUBLIC_NON_FUNGIBLE_POSITION_MANAGER_ADDRESS;
     const QUOTER_ADDRESS = quoterAddress || process.env.NEXT_PUBLIC_QUOTER_ADDRESS;
+
+    const Q96 = JSBI.exponentiate(JSBI.BigInt(2), JSBI.BigInt(96))
+    const Q192 = JSBI.exponentiate(Q96, JSBI.BigInt(2))
+    const RPC_URL = "https://mainnet.mode.network/";
+    const MODE_NETWORK_CHAIN_ID = Number(modeChainId);
+
+
 
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
@@ -56,9 +65,10 @@ const Liquidity = () => {
     const [isSlippageSettingsOpen, setIsSlippageSettingsOpen] = useState(false);
     const [isPriceRangeOpen, setIsPriceRangeOpen] = useState(false);
 
-    const [sqrtPriceX96, setSqrtPriceX96] = useState<ethers.BigNumber | null>(null)
-
-    const [activeInput, setActiveInput] = useState<'token0' | 'token1'>('token0');
+    const [pricedata, setPricedata] = useState<any>(null)
+    const [currentTokenSwapAmount, setCurrentTokenSwapAmount] = useState<any>(0)
+    const [direction, setDirection] = useState("from")
+    const [priceRange, setPriceRange] = useState<any>(null)
 
     const fetchDecimals = async (tokenAddress: string) => {
         const provider = new ethers.providers.Web3Provider(window.ethereum);
@@ -90,131 +100,279 @@ const Liquidity = () => {
 
     // Getting Quote 
 
-    // Function to get pool info including sqrtPriceX96
-    const fetchPoolInfo = async () => {
-        if (!poolAddress) return
 
-        const provider = new ethers.providers.Web3Provider(window.ethereum)
-        const poolContract = new ethers.Contract(poolAddress, POOL_ABI, provider)
-
+    const fetchCurrentPrice = async () => {
         try {
-            const slot0 = await poolContract.slot0();
-            console.log(slot0, "slot0");
-            setSqrtPriceX96(slot0.sqrtPriceX96)
+            // Add validation for pool address
+            if (!poolAddress || !ethers.utils.isAddress(poolAddress)) {
+                throw new Error("Invalid pool address");
+            }
+
+            // Specify chainId in provider config
+            const provider = new ethers.providers.JsonRpcProvider(
+                RPC_URL,
+                {
+                    chainId: MODE_NETWORK_CHAIN_ID,
+                    name: 'Mode Network'
+                }
+            );
+
+            const poolContractInstance = new ethers.Contract(
+                poolAddress,
+                POOL_ABI,
+                provider
+            );
+
+            const { tick, sqrtPriceX96 } = await poolContractInstance.slot0();
+            const tickSpacing = await poolContractInstance.tickSpacing();
+
+            let token0 = await poolContractInstance.token0();
+            let token1 = await poolContractInstance.token1();
+
+            const token0Instance = new ethers.Contract(token0, ERC20_ABI, provider);
+            const token1Instance = new ethers.Contract(token1, ERC20_ABI, provider);
+
+            const token0Decimals = await token0Instance.decimals();
+            const token1Decimals = await token1Instance.decimals();
+
+            const token0Symbol = await token0Instance.symbol();
+            const token1Symbol = await token1Instance.symbol();
+
+            const baseToken = new Token(
+                MODE_NETWORK_CHAIN_ID as number,
+                token0,
+                token0Decimals,
+                token0Symbol,
+                "token0Name"
+            );
+            const quoteToken = new Token(
+                MODE_NETWORK_CHAIN_ID as number,
+                token1,
+                token1Decimals,
+                token1Symbol,
+                "token1Name"
+            );
+
+            let currentPrice = 0;
+
+            if (baseToken && quoteToken) {
+                const sqrtRatioX96 = JSBI.BigInt(sqrtPriceX96);
+                currentPrice = Number(
+                    new Price(
+                        quoteToken,
+                        baseToken,
+                        Q192,
+                        JSBI.multiply(sqrtRatioX96, sqrtRatioX96)
+                    ).toSignificant(6)
+                );
+            }
+
+            return ({
+                token0,
+                token1,
+                token0Symbol,
+                token1Symbol,
+                currentPrice,
+                tick,
+                tickSpacing,
+                sqrtPriceX96,
+                token0Decimals,
+                token1Decimals,
+            });
         } catch (error) {
-            console.error('Error fetching pool info:', error)
+            console.error("Error fetching price:", error);
+            throw error; // Re-throw to handle in calling code
+        }
+    };
+
+
+    const calculatePriceRangeInTick = async (percentageDifference: any, currentPriceData: any) => {
+        try {
+            const provider = new ethers.providers.JsonRpcProvider(RPC_URL);
+
+            const { token0, token1, token0Decimals, token1Decimals, token0Symbol, token1Symbol, currentPrice, tickSpacing } = currentPriceData
+            const lowerPrice = new bn(currentPrice).multipliedBy(1 - percentageDifference).toNumber()
+            const upperPrice = new bn(currentPrice).multipliedBy(1 + percentageDifference).toNumber()
+
+            const baseToken = new Token(MODE_NETWORK_CHAIN_ID, token0, token0Decimals, token0Symbol, "token0Name")
+            const quoteToken = new Token(MODE_NETWORK_CHAIN_ID, token1, token1Decimals, token1Symbol, "token1Name")
+
+            // Convert prices to JSBI values
+            const lowerPriceJSBI = JSBI.BigInt(Math.floor(lowerPrice * (10 ** 18)))
+            const upperPriceJSBI = JSBI.BigInt(Math.floor(upperPrice * (10 ** 18)))
+            const denominator = JSBI.BigInt(10 ** 18)
+
+
+            let lowerTick = priceToClosestTick(new Price(baseToken, quoteToken, denominator, lowerPriceJSBI))
+            let upperTick = priceToClosestTick(new Price(baseToken, quoteToken, denominator, upperPriceJSBI))
+
+
+            lowerTick = nearestUsableTick(lowerTick, tickSpacing)
+            upperTick = nearestUsableTick(upperTick, tickSpacing)
+
+
+            return { lowerTick, upperTick, lowerPrice, upperPrice }
+
+        } catch (error) {
+            console.log(error, "calculatePriceRangeInTick")
         }
     }
 
-    // Modify calculateAmounts to handle single-direction calculation
-    const calculateAmounts = async (
-        amount0: string,
-        amount1: string,
-        tickLower: number,
-        tickUpper: number
-    ) => {
-        if (!poolAddress || !sqrtPriceX96) return { amount0: '0', amount1: '0' };
 
-        const provider = new ethers.providers.Web3Provider(window.ethereum);
-        const poolContract = new ethers.Contract(poolAddress, POOL_ABI, provider);
-
-        const pool = new Pool(
-            new Token(
-                1,
-                token0Address || '',  // Fallback to empty string
-                token0Decimals,
-                token0,
-                daoToken?.name || token0  // Fallback to token symbol if name is undefined
-            ),
-            new Token(
-                1,
-                MODE_TOKEN_ADDRESS || '',  // Fallback to empty string
-                18,
-                token1,
-                'MODE'
-            ),
-            100,
-            sqrtPriceX96.toString(),
-            1,
-            (await poolContract.slot0()).tick
+    const calculateEstimatedAmount0 = async (givenAmount1: any, currentPriceData: any, priceRangeData: any) => {
+        // console.log(givenAmount1, "givenAmount1");
+        // console.log(currentPriceData, "currentPriceData");
+        // console.log(priceRangeData, "priceRangeData");
+        // Rename provider to avoid conflict
+        const jsonProvider = new ethers.providers.JsonRpcProvider(
+            RPC_URL,
+            {
+                chainId: MODE_NETWORK_CHAIN_ID,
+                name: 'Mode Network'
+            }
         );
 
-        let position: Position;
-        if (activeInput === 'token0' && amount0) {
-            position = Position.fromAmount0({
-                pool,
-                tickLower,
-                tickUpper,
-                amount0: parseUnits(amount0, token0Decimals).toString(),
-                useFullPrecision: true
-            });
+        // Use jsonProvider instead of provider
+        const quoterContractInstance = new ethers.Contract(
+            QUOTER_ADDRESS as string,
+            QUOTER_ABI,
+            jsonProvider
+        );
+
+        const { token0Decimals, token1Decimals, sqrtPriceX96 } = currentPriceData;
+
+        let amount0 = await quoterContractInstance.estimateAmount0(
+            givenAmount1,
+            poolAddress,
+            sqrtPriceX96,
+            priceRangeData.lowerTick,
+            priceRangeData.upperTick
+        );
+
+        amount0 = ethers.utils.formatUnits(amount0.toString(), token0Decimals);
+        let amount1 = ethers.utils.formatUnits(givenAmount1, token1Decimals);
+
+        return { amount0, amount1 };
+    }
+
+    const calculateEstimatedAmount1 = async (
+        givenAmount0: any,
+        currentPriceData: any,
+        priceRangeData: any,
+        // provider: ethers.providers.Provider
+    ) => {
+        const jsonProvider = new ethers.providers.JsonRpcProvider(RPC_URL, {
+            chainId: MODE_NETWORK_CHAIN_ID,
+            name: 'Mode Network'
+        });
+
+        // Use jsonProvider instead of provider
+        const quoterContractInstance = new ethers.Contract(
+            QUOTER_ADDRESS as string,
+            QUOTER_ABI,
+            jsonProvider
+        );
+        const { token0Decimals, token1Decimals, token0Symbol, token1Symbol, currentPrice, tickSpacing, sqrtPriceX96 } = currentPriceData
+
+        let amount1 = (await quoterContractInstance.estimateAmount1(
+            givenAmount0,
+            poolAddress,
+            sqrtPriceX96,
+            priceRangeData.lowerTick,
+            priceRangeData.upperTick
+        )).toString()
+
+        amount1 = ethers.utils.formatUnits(amount1, token1Decimals)
+        let amount0 = ethers.utils.formatUnits(givenAmount0, token0Decimals)
+
+        return { amount0, amount1 }
+    }
+
+
+    const handleToken0AmountChange = async (e: any) => {
+        setToken0Amount(e);
+        let amount = e * 10 ** pricedata?.token0Decimals;
+        let priceRange = await calculatePriceRangeInTick(Number(selectedRange) / 100, pricedata)
+
+        let calculatedAmount = await calculateEstimatedAmount1(String(amount), pricedata, priceRange)
+        setToken1Amount(calculatedAmount?.amount1);
+    }
+    const handleToken1AmountChange = async (e: any) => {
+        setToken0Amount(e);
+        let amount = e * 10 ** pricedata?.token0Decimals;
+        let priceRange = await calculatePriceRangeInTick(Number(selectedRange) / 100, pricedata)
+
+        let calculatedAmount = await calculateEstimatedAmount0(String(amount), pricedata, priceRange)
+        setToken1Amount(calculatedAmount?.amount0);
+    }
+
+    const handleInputChange = async (e: any) => {
+        if (direction === 'from') {
+            handleToken0AmountChange(e);
         } else {
-            position = Position.fromAmount1({
-                pool,
-                tickLower,
-                tickUpper,
-                amount1: parseUnits(amount1, 18).toString(),
-            });
-        }
-
-        const slippage = new Percent(slippageTolerance, 10_000);
-        const { amount0: min0, amount1: min1 } = position.mintAmountsWithSlippage(slippage);
-
-        return {
-            amount0: formatUnits(min0.toString(), token0Decimals),
-            amount1: formatUnits(min1.toString(), 18)
-        };
-    };
-    // Update token0 input handler
-    const handleToken0Change = async (value: string) => {
-        setToken0Amount(value);
-        setActiveInput('token0');
-        if (value && poolAddress && sqrtPriceX96) {
-            const calculated = await calculateAmounts(value, '', tickLow, tickHigh);
-            setToken1Amount(calculated.amount1);
-        }
-    };
-
-    // Update token1 input handler
-    const handleToken1Change = async (value: string) => {
-        setToken1Amount(value);
-        setActiveInput('token1');
-        if (value && poolAddress && sqrtPriceX96) {
-            const calculated = await calculateAmounts('', value, tickLow, tickHigh);
-            setToken0Amount(calculated.amount0);
-        }
-    };
-
-    // Add tick calculation function
-    const calculateTickRange = (sqrtPriceX96: ethers.BigNumber, rangePercentage: number) => {
-        if (!sqrtPriceX96) return { tickLow: -887272, tickHigh: 887272 }
-
-        const Q96 = new bn(2).pow(96)
-        const sqrtPrice = new bn(sqrtPriceX96.toString())
-        const price = sqrtPrice.pow(2).div(Q96.pow(2)).times(10 ** (18 - token0Decimals))
-
-        const tickLow = Math.log(price.times(1 - rangePercentage / 100).toNumber()) / Math.log(1.0001)
-        const tickHigh = Math.log(price.times(1 + rangePercentage / 100).toNumber()) / Math.log(1.0001)
-
-        return {
-            tickLow: Math.floor(tickLow / TICK_SPACING) * TICK_SPACING,
-            tickHigh: Math.ceil(tickHigh / TICK_SPACING) * TICK_SPACING
+            handleToken1AmountChange(e);
         }
     }
 
-    // Usage in handlers:
-    const { tickLow, tickHigh } = sqrtPriceX96
-        ? calculateTickRange(sqrtPriceX96, Number(selectedRange || customRange))
-        : { tickLow: -887272, tickHigh: 887272 }
+    useEffect(() => {
+        if (direction === "from") {
+            if (token0Amount) {
+                handleToken0AmountChange(token0Amount);
+            }
+        } else {
+            if (token0Amount) {
+                handleToken1AmountChange(token0Amount);
+            }
+        }
+
+    }, [selectedRange])
 
 
 
     useEffect(() => {
-        if (poolAddress) {
-            fetchPoolInfo();
-        }
-    }, [poolAddress])
 
+        const getPriceData = async () => {
+            const priceData = await fetchCurrentPrice()
+            console.log("================================")
+            console.log("Price Data:", priceData)
+            console.log(`1 ${priceData?.token0Symbol} = ${priceData?.currentPrice} ${priceData?.token1Symbol}`)
+            setCurrentTokenSwapAmount(priceData?.currentPrice)
+            console.log("================================")
+            setPricedata(priceData);
+
+            // let percentageDifference = 0.1 // 10%
+            let percentageDifference = 0.3 // 30%
+            // let priceRange = await calculatePriceRangeInTick(percentageDifference, priceData)
+            let priceRange = await calculatePriceRangeInTick(Number(selectedRange) / 100, priceData)
+            console.log("Price Range:", priceRange)
+            // setPriceRange(priceRange)
+
+            // token1= mode
+            // token0=cartel
+
+            const amount1In = "1000000000000000000" // 1 * 10**token1Decimals
+
+            let amounts = await calculateEstimatedAmount0(amount1In, priceData, priceRange)
+            console.log("Amount1Given, amounts:", amounts)
+
+            const amount0In = "1000000000000000000";
+            // const jsonProvider = new ethers.providers.JsonRpcProvider(RPC_URL, {
+            //     chainId: MODE_NETWORK_CHAIN_ID,
+            //     name: 'Mode Network'
+            // });
+            let amounts1 = await calculateEstimatedAmount1(
+                amount0In,
+                priceData,
+                priceRange,
+                // jsonProvider
+            );
+            console.log("Amount0 Given, amounts:", amounts1)
+        }
+        if (poolAddress) {
+            getPriceData()
+        }
+
+    }, [poolAddress])
 
 
 
@@ -274,14 +432,52 @@ const Liquidity = () => {
 
     const handleSwap = () => {
         // Swap tokens and their amounts
-        const tempToken = token0;
-        const tempAmount = token0Amount;
+        //     const tempToken = token0;
+        //     const tempAmount = token0Amount;
 
-        setToken0(token1);
-        setToken1(tempToken);
-        setToken0Amount(token1Amount);
-        setToken1Amount(tempAmount);
-    };
+        //     setToken0(token1);
+        //     setToken1(tempToken);
+        //     setToken0Amount(token1Amount);
+        //     setToken1Amount(tempAmount);
+
+
+        if (direction === "from") {
+
+            setToken0(token1);
+            setToken1(token0);
+            // setToken0Amount(token1Amount);
+            // setToken1Amount(token0Amount);
+            setToken0Amount("");
+            setToken1Amount("");
+            setDirection("to");
+
+        } else {
+            let currentConversion = 1 / (pricedata && pricedata?.currentPrice);
+
+            setToken1(token0);
+            setToken0(token1);
+            // setToken1Amount(token0Amount);
+            // setToken0Amount(token1Amount);
+            setToken0Amount("");
+            setToken1Amount("");
+            setDirection("from");
+            setCurrentTokenSwapAmount(currentConversion)
+        }
+
+    }
+
+    useEffect(() => {
+        if (pricedata) {
+            if (direction === "from") {
+                let currentConversion = pricedata && pricedata?.currentPrice;
+                setCurrentTokenSwapAmount(currentConversion)
+            } else {
+                let currentConversion = 1 / (pricedata && pricedata?.currentPrice);
+                setCurrentTokenSwapAmount(currentConversion)
+            }
+
+        }
+    }, [direction, pricedata])
 
 
     return (
@@ -325,8 +521,8 @@ const Liquidity = () => {
                                                 placeholder="0.0"
                                                 className="text-right text-2xl bg-transparent border-0 focus-visible:ring-0 [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
                                                 value={token0Amount}
-                                                // onChange={handleToken0AmountChange}
-                                                onChange={(e) => handleToken0Change(e.target.value)}
+                                                onChange={(e) => handleInputChange(e.target.value)}
+                                                // onChange={(e) => handleToken0Change(e.target.value)}
                                                 min="0"
                                                 step="any"
                                                 inputMode="decimal"
@@ -361,10 +557,11 @@ const Liquidity = () => {
                                             <Input
                                                 type="number"
                                                 placeholder="0.0"
+                                                disabled={true}
                                                 className="text-right text-2xl bg-transparent border-0 focus-visible:ring-0 [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
                                                 value={token1Amount}
-                                                // onChange={(e) => setToken1Amount(e.target.value)}
-                                                onChange={(e) => handleToken1Change(e.target.value)}
+                                            // onChange={(e) => setToken1Amount(e.target.value)}
+                                            // onChange={(e) => handleToken1Change(e.target.value)}
                                             />
                                         </div>
                                     </div>
@@ -374,7 +571,7 @@ const Liquidity = () => {
                                 <div className="bg-gray-900 p-4 rounded-xl space-y-2">
                                     <div className="flex justify-between text-sm">
                                         <span>Exchange Rate</span>
-                                        <span>1 {token0} = 3200 {token1}</span>
+                                        <span>1 {token0} = {Number(currentTokenSwapAmount).toFixed(6) || 0} {token1}</span>
                                     </div>
                                 </div>
 
@@ -398,7 +595,7 @@ const Liquidity = () => {
                                     <div className={`overflow-hidden transition-all duration-300 ${isPriceRangeOpen ? 'max-h-96' : 'max-h-0'}`}>
                                         <div className="space-y-4 pt-2">
                                             <div className="grid grid-cols-3 gap-2">
-                                                {['0.1', '3', '5'].map((range) => (
+                                                {['1', '3', '5'].map((range) => (
                                                     <Button
                                                         key={range}
                                                         variant={selectedRange === range ? 'default' : 'outline'}
@@ -420,7 +617,7 @@ const Liquidity = () => {
                                                     value={customRange}
                                                     onChange={(e) => {
                                                         setCustomRange(e.target.value);
-                                                        setSelectedRange('');
+                                                        setSelectedRange(e.target.value);
                                                     }}
                                                 />
                                                 <span className="text-gray-400 text-sm">%</span>
