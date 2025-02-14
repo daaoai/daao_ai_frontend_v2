@@ -27,6 +27,8 @@ import { Contract } from 'ethers'
 
 // import { NonfungiblePositionManager } from "@uniswap/v3-periphery";
 import { Percent } from "@uniswap/sdk-core";
+import { workSans } from '@/lib/fonts'
+import { toast } from '@/hooks/use-toast'
 
 bn.config({ EXPONENTIAL_AT: 999999, DECIMAL_PLACES: 40 })
 
@@ -365,6 +367,12 @@ const Liquidity = () => {
 
     useEffect(() => {
 
+        // toast({
+        //     title: "Insufficient balance",
+        //     // variant: "destructive",
+        //     className: `${workSans.className} bg-[#2ca585]`
+        // })
+
         const getPriceData = async () => {
             const priceData = await fetchCurrentPrice()
             console.log("================================")
@@ -536,6 +544,11 @@ const Liquidity = () => {
             const tx = await positionManagerContract.mint(params);
             const receipt = await tx.wait();
             console.log("Liquidity added successfully:", receipt);
+            toast({
+                title: "Liquidity added successfully",
+                // variant: "destructive",
+                className: `${workSans.className} bg-[#2ca585]`
+            })
 
             // Reset state on success
             setToken0Amount('');
@@ -543,14 +556,23 @@ const Liquidity = () => {
             setIsModalOpen(false);
             setIsLoading(false);
         } catch (error: any) {
-            if (error.code === 4001) {
+            console.error("Error adding liquidity:", error);
+            if (error.code === 'ACTION_REJECTED' || error.code === '4001') {
                 console.log("Transaction rejected by user");
+                toast({
+                    title: "Transaction Rejected",
+                    variant: "destructive",
+                    className: `${workSans.className}`
+                })
                 setApprovalStatus(null);
-                // setIsLoading(false);
             } else {
-                console.error("Error adding liquidity:", error);
+
                 setApprovalStatus(null);
-                // setIsLoading(false);
+                toast({
+                    title: "Transaction Failed",
+                    variant: "destructive",
+                    className: `${workSans.className}`
+                })
             }
         } finally {
             setIsLoading(false);
@@ -685,7 +707,7 @@ const Liquidity = () => {
         };
 
         recalculateAmounts();
-    }, [priceRange]); // Re-run when price range or range percentage changes
+    }, [priceRange]);
 
     // Todo
     // check allowence if user already approved 
