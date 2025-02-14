@@ -564,7 +564,7 @@ const Liquidity = () => {
             // Reset state on success
             setToken0Amount('');
             setToken1Amount('');
-            setIsModalOpen(false);
+            // setIsModalOpen(false);
             setIsLoading(false);
         } catch (error: any) {
             console.error("Error adding liquidity:", error);
@@ -720,10 +720,7 @@ const Liquidity = () => {
         recalculateAmounts();
     }, [priceRange]);
 
-    // Todo
-    // check allowence if user already approved 
-    // show lower and upper price range from price range data 
-    // add validation 
+
 
     return (
         <div>
