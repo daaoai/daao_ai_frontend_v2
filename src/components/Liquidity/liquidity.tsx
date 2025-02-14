@@ -210,19 +210,26 @@ const Liquidity = () => {
             const baseToken = new Token(MODE_NETWORK_CHAIN_ID, token0, token0Decimals, token0Symbol, "token0Name")
             const quoteToken = new Token(MODE_NETWORK_CHAIN_ID, token1, token1Decimals, token1Symbol, "token1Name")
 
-            // Convert prices to JSBI values
-            const lowerPriceJSBI = JSBI.BigInt(Math.floor(lowerPrice * (10 ** 18)))
-            const upperPriceJSBI = JSBI.BigInt(Math.floor(upperPrice * (10 ** 18)))
-            const denominator = JSBI.BigInt(10 ** 18)
+            // Convert prices using proper fraction handling
+            const lowerPriceFraction = new Price(
+                baseToken,
+                quoteToken,
+                JSBI.BigInt(10 ** 18), // denominator
+                JSBI.BigInt(Math.floor(lowerPrice * (10 ** 18))) // numerator
+            );
 
+            const upperPriceFraction = new Price(
+                baseToken,
+                quoteToken,
+                JSBI.BigInt(10 ** 18), // denominator
+                JSBI.BigInt(Math.floor(upperPrice * (10 ** 18))) // numerator
+            );
 
-            let lowerTick = priceToClosestTick(new Price(baseToken, quoteToken, denominator, lowerPriceJSBI))
-            let upperTick = priceToClosestTick(new Price(baseToken, quoteToken, denominator, upperPriceJSBI))
-
+            let lowerTick = priceToClosestTick(lowerPriceFraction as any);
+            let upperTick = priceToClosestTick(upperPriceFraction as any);
 
             lowerTick = nearestUsableTick(lowerTick, tickSpacing)
             upperTick = nearestUsableTick(upperTick, tickSpacing)
-
 
             return { lowerTick, upperTick, lowerPrice, upperPrice }
 
