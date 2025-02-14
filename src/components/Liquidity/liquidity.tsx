@@ -29,6 +29,8 @@ import { Contract } from 'ethers'
 import { Percent } from "@uniswap/sdk-core";
 import { workSans } from '@/lib/fonts'
 import { toast } from '@/hooks/use-toast'
+import { useAccount } from 'wagmi'
+
 
 bn.config({ EXPONENTIAL_AT: 999999, DECIMAL_PLACES: 40 })
 
@@ -47,7 +49,7 @@ const Liquidity = () => {
     const RPC_URL = "https://mainnet.mode.network/";
     const MODE_NETWORK_CHAIN_ID = Number(modeChainId);
 
-
+    const { isConnected, address } = useAccount();
 
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
@@ -431,6 +433,15 @@ const Liquidity = () => {
 
     const handleAddLiquidity = async () => {
         try {
+            if (!isConnected || !address) {
+                toast({
+                    title: "Please connect your wallet first",
+                    description: "It looks like your wallet isn't connected",
+                    variant: "destructive",
+                    className: `${workSans.className}`
+                })
+                return;
+            }
             setIsLoading(true);  // Start loading
             const provider = new ethers.providers.Web3Provider(window.ethereum);
             const signer = provider.getSigner();
