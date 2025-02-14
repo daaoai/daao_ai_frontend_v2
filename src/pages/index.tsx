@@ -1,7 +1,7 @@
 import { PageLayout } from "@/components/page-layout";
 import { Button } from "@/components/ui/button";
 import { NextPage } from "next/types";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Typography } from "@/components/ui/typography";
 import Link from "next/link";
 import Image from "next/image";
@@ -12,6 +12,9 @@ import { gold, syne } from "@/lib/fonts";
 // import { Input } from "@/components/ui/input";
 import { Card, CardContent } from "@/components/ui/card";
 import CheckWaitlistModal from "@/components/landing/waitlist-modal";
+import { ethers } from "ethers";
+import contractABI from "../abi.json";
+import { commaSeparator, formatNumber } from "@/lib/utils";
 
 
 const HomePage: NextPage = () => {
@@ -19,7 +22,8 @@ const HomePage: NextPage = () => {
   // const [statusMsg, setStatusMsg] = useState("");
 
   const [isOpen, setIsOpen] = useState(false);
-
+  const [price, setPrice] = useState<number | null>(0);
+  const [marketCap, setMarketCap] = useState<number | null>(0);
   // const isValidEmail = (value: string) => {
   //   // Check if the address starts with '0x' and is 42 characters long
   //   if (value.length !== 42 || !value.startsWith('0x')) {
@@ -69,6 +73,56 @@ const HomePage: NextPage = () => {
   //     setStatusMsg("Something went wrong, please try again later");
   //   }
   // };
+
+
+  const calculateTokenChange = (marketCap: number, percentageChange: number): number => {
+    return (marketCap * percentageChange) / 100;
+  };
+
+  useEffect(() => {
+    const modeRpc = "https://mainnet.mode.network/";
+    const daoAddress = "0xEc7b0FD288E87eBC1C301E360092c645567e79B9"
+    const fetchMarketData = async () => {
+
+      const provider = new ethers.providers.JsonRpcProvider(modeRpc);
+
+      const signer = provider.getSigner();
+
+      const contract = new ethers.Contract(daoAddress as string, contractABI, provider);
+      const daoToken = (await contract.daoToken());
+      // setDaoTokenAddress(daoToken)
+      // if (!daoTokenAddress) return
+
+
+      // const url = `https://api.dexscreener.com/token-pairs/v1/mode/${daoTokenAddress}`
+      const url = `https://api.dexscreener.com/token-pairs/v1/mode/${daoToken}`
+      console.log("url is ", url)
+      try {
+        // Replace with your actual endpoint or logic
+        const response = await fetch(
+          url,
+        )
+        const data = await response.json()
+        console.log("Data from api is  is ", data)
+
+        if (data && Array.isArray(data) && data[0]) {
+          setPrice(data[0].priceUsd)
+          // setPriceUsd(data[0].priceUsd)
+          // setPriceUsd(23)
+          // const marketCap = (Number(data[0].priceUsd) * 10 ** 9).toFixed(0)
+          const marketCap = (Number(data[0].marketCap)).toFixed(0)
+          setMarketCap(Number(marketCap));
+
+        } else {
+          console.warn('Market data not in expected format.')
+        }
+      } catch (error) {
+        console.error('Error fetching market data:', error)
+      }
+    }
+    fetchMarketData()
+    // }, [daoTokenAddress, setPriceUsd])
+  }, [])
 
   return (
     <PageLayout title="Homepage" description="Welcome to a Network of Decentralized Autonomous Agentic Organizations">
@@ -195,10 +249,30 @@ const HomePage: NextPage = () => {
                   </span>
                 </div>
               </div>
+              {/* Add price and market cap display */}
+              <div className="flex flex-col gap-4 mt-2">
+                <div className="flex gap-4">
+                  <p className={`text-white text-sm sm:text-base ${gold.className}`}>
+                    Price: <span className="text-[#d1ea48]">$ {Number(price).toFixed(6)}</span>
+                  </p>
+                  <p className={`text-white text-sm sm:text-base ${gold.className}`}>
+                    MCAP: <span className="text-[#d1ea48]">{formatNumber(Number(marketCap || 0))}</span>
+                  </p>
+                </div>
+              </div>
 
 
 
 
+            </div>
+          </Link>
+
+          <Link href="https://velodrome.finance/swap?from=0xdfc7c877a950e49d2610114102175a06c2e3167a&to=0x98e0ad23382184338ddcec0e13685358ef845f30&chain0=34443&chain1=34443" target="_blank">
+            <div className="flex items-center gap-1.5 justify-center">
+              <span className={`text-[#d1ea48] text-sm ${syne.className}`}>
+                Trade On Velodrome
+              </span>
+              <ArrowRight className="w-4 h-4 text-[#d1ea48]" />
             </div>
           </Link>
 
