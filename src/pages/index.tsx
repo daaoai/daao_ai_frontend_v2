@@ -309,6 +309,7 @@ const HomePage: NextPage = () => {
           </div>
         </CardContent>
       </Card>
+
     </PageLayout>
   );
 };

@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react"
+import { useState, useEffect, useCallback } from "react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs"
@@ -25,6 +25,8 @@ import { useFetchBalance } from "./fetchBalance"
 import { set } from "date-fns"
 // import { fetchData } from "next-auth/client/_utils"
 import { useFundContext } from "./FundContext";
+import TicketPurchase from "../ticket"
+import { ModalWrapper } from "../modalWrapper"
 
 
 
@@ -446,6 +448,11 @@ const Buysell = () => {
   const fromLabel = activeTab === "buy" ? "MODE" : "CARTEL"
   const toLabel = activeTab === "buy" ? "CARTEL" : "MODE"
 
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
+  const openModal = useCallback(() => setIsModalOpen(true), []);
+  const closeModal = useCallback(() => setIsModalOpen(false), []);
+
 
 
   return (
@@ -605,6 +612,18 @@ const Buysell = () => {
         >
           {isSwapping ? "Swapping..." : "Swap"}
         </Button>
+        <Button
+          className="w-full bg-white text-black hover:bg-gray-200 active:scale-95 transition-transform ease-in-out duration-150"
+          onClick={openModal}
+         disabled={isSwapping}
+          style={{ height: "3rem" }}
+        >
+         Burn Tokens and get tickets.
+        </Button>
+
+        <ModalWrapper isOpen={isModalOpen} onClose={closeModal}>
+          <TicketPurchase onClose={closeModal} />
+        </ModalWrapper>
       </CardContent>
     </Card>
   )
