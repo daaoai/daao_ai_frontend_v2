@@ -12,6 +12,7 @@ import { gold, syne } from "@/lib/fonts";
 // import { Input } from "@/components/ui/input";
 import { Card, CardContent } from "@/components/ui/card";
 import CheckWaitlistModal from "@/components/landing/waitlist-modal";
+import TicketPurchase from "@/components/ticket";
 
 
 const HomePage: NextPage = () => {
@@ -235,6 +236,8 @@ const HomePage: NextPage = () => {
           </div>
         </CardContent>
       </Card>
+
+      <TicketPurchase/>
     </PageLayout>
   );
 };
