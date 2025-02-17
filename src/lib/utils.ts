@@ -35,3 +35,21 @@ export const commaSeparator = (value: number | string): string => {
 
   return array[1] ? `${stringWithComma}.${array[1]}` : stringWithComma;
 };
+
+export const formatNumber = (num: number, decimals = 1) => {
+  if (typeof num !== "number" || isNaN(num)) return "0";
+
+  const absNum = Math.abs(num);
+  if (absNum === 0) return "0";
+
+  const suffixes = ["", "K", "M", "B", "T", "P", "E"];
+  const tier = Math.floor(Math.log10(absNum) / 3);
+
+  // Handle numbers smaller than 1000
+  if (tier < 0) return num.toFixed(decimals);
+
+  const suffix = suffixes[tier] || "";
+  const scaled = num / Math.pow(10, tier * 3);
+
+  return scaled.toFixed(decimals).replace(/\.0+$/, "") + suffix;
+}

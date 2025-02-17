@@ -1,4 +1,5 @@
-import { useState, useEffect } from "react"
+
+import { useState, useEffect, useCallback } from "react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs"
@@ -25,6 +26,10 @@ import { useFetchBalance } from "./fetchBalance"
 import { set } from "date-fns"
 // import { fetchData } from "next-auth/client/_utils"
 import { useFundContext } from "./FundContext";
+import TicketPurchase from "../ticket"
+import { ModalWrapper } from "../modalWrapper"
+import CollectedTickets from "../collectedTickets"
+import useGetUserTickets from "@/hooks/useGetUserTickets"
 
 
 
@@ -36,7 +41,6 @@ const MODE_TOKEN_ADDRESS = "0xDfc7C877a950e49D2610114102175A06C2e3167a";
 
 
 const Buysell = () => {
-
   const { toast } = useToast();
   const account = useAccount();
   const [activeTab, setActiveTab] = useState<"buy" | "sell">("buy");
@@ -50,10 +54,8 @@ const Buysell = () => {
   const [modeBalance, setModeBalance] = useState("0");
   const [daoTokenAddress, setDaoTokenAddress] = useState("");
   const [poolAddress, setPoolAddress] = useState("");
-  const [fetcher, setFetcher] = useState(false)
   const { daoBalance, setDaoBalance } = useFundContext();
-
-
+  const { ticketIds, refetch: refetchTickets } = useGetUserTickets();
   const accountAddress = account.address as `0x${string}`;
   const { data: fetchedData, refreshData } = useFetchBalance(accountAddress);
 
@@ -445,8 +447,27 @@ const Buysell = () => {
   }
   const fromLabel = activeTab === "buy" ? "MODE" : "CARTEL"
   const toLabel = activeTab === "buy" ? "CARTEL" : "MODE"
+  const [isBurnTicketModalOpen, setIsBurnTicketModalOpen] = useState(false);
+   const [isCollectedTicketModalOpen, setIsCollectedTicketModalOpen] = useState(false);
+   const openBurnTicketModal = useCallback(() => setIsBurnTicketModalOpen(true), []);
+   const closeBurnTicketModal = useCallback(() => setIsBurnTicketModalOpen(false), []);
+   const openCollectedTicketModal = useCallback(() => setIsCollectedTicketModalOpen(true), []);
+   const closeCollectedTicketModal = useCallback(() => setIsCollectedTicketModalOpen(false), []);
+ 
 
 
+   const handleBurnTicketModal = ()=>{
+    if(account.address){
+      openBurnTicketModal()
+    }
+    else{
+    toast({
+      title: "Wallet Not Connected",
+      variant: "destructive",
+      className: `${workSans.className}`
+    })
+  }
+   }
 
   return (
     <Card className="h-full w-full max-w-xl bg-[#0e0e0e] text-white">
@@ -508,10 +529,10 @@ const Buysell = () => {
                 placeholder="0"
                 value={amountFrom}
                 onChange={handleFromChange}
-                className={`appearance-none bg-transparent border-0 p-0 text-3xl w-100 f${workSans.className} focus-visible:ring-0 [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none border-0 outline-none`}
+                className={`appearance-none bg-transparent border-0 p-0 text-3xl w-100 f${workSans.className} focus-visible:ring-0 [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none `}
                 style={{
-                  minWidth: "140px",  // Set a reasonable minimum width
-                  width: `${amountTo.toString().length + 2}ch`, // Dynamically adjust width
+                  minWidth: "140px",  
+                  width: `${amountTo.toString().length + 2}ch`,
                   height: "3.5rem"
                 }}
               />
@@ -605,6 +626,30 @@ const Buysell = () => {
         >
           {isSwapping ? "Swapping..." : "Swap"}
         </Button>
+        <Button
+          className="w-full bg-white text-black hover:bg-gray-200 active:scale-95 transition-transform ease-in-out duration-150"
+          onClick={handleBurnTicketModal}
+          style={{ height: "3rem" }}
+        >
+         Burn Tokens and get tickets.
+        </Button>
+
+        {
+          ticketIds &&  <Button
+          className="w-full bg-white text-black hover:bg-gray-200 active:scale-95 transition-transform ease-in-out duration-150"
+          onClick={openCollectedTicketModal}
+         disabled={isSwapping}
+          style={{ height: "3rem" }}
+        >
+         Collected Tickets.
+        </Button>
+        }
+        <ModalWrapper isOpen={isBurnTicketModalOpen} onClose={closeBurnTicketModal}>
+        <TicketPurchase onClose={closeBurnTicketModal} onTicketsUpdated={refetchTickets} />
+        </ModalWrapper>
+        <ModalWrapper isOpen={isCollectedTicketModalOpen} onClose={closeCollectedTicketModal}>
+      <CollectedTickets onClose={closeCollectedTicketModal} tickets={ticketIds} />
+    </ModalWrapper>
       </CardContent>
     </Card>
   )
