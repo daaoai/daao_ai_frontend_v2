@@ -1,10 +1,13 @@
 import { useState } from "react";
-import { Hex, parseUnits, zeroAddress } from "viem";
+import { Abi, Hex, parseUnits, zeroAddress } from "viem";
 import { useAccount, usePublicClient, useWriteContract } from "wagmi";
 import { TICKETS } from "@/abi/tickets";
 import { CARTEL } from "@/abi/cartel";
 import { CARTEL_TOKEN_ADDRESS, TICKETS_CONTRACT_ADDRESS } from "@/constants/ticket";
 import { decodeEventLog } from "viem";
+import { workSans } from "@/lib/fonts"
+import { useToast } from "./use-toast";
+import { handleViemTransactionError } from "@/utils/approval";
 
 export interface MintedData {
   from: Hex;
@@ -34,7 +37,6 @@ const parseMintedEvent = (log: { data: string; topics: string[] }): MintedData |
       };
 
       if (from === zeroAddress) {
-        // console.log("Minted tokenId:", tokenId.toString());
         return { from: from as Hex, to: to as Hex, tokenId };
       }
     }
@@ -51,7 +53,7 @@ const useBuyTickets = () => {
   const [isSuccess, setIsSuccess] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
   const [mintedData, setMintedData] = useState<MintedData | null>(null);
-
+  const { toast } = useToast();
   const { address } = useAccount();
   const publicClient = usePublicClient();
   const { writeContractAsync } = useWriteContract();
@@ -84,7 +86,6 @@ const useBuyTickets = () => {
       });
       if (!tx) throw new Error("Approval transaction failed to send");
       setApprovalTxHash(tx);
-
       const receipt = await publicClient?.waitForTransactionReceipt({
         hash: tx,
         confirmations: 1,
@@ -95,7 +96,13 @@ const useBuyTickets = () => {
       return tx;
     } catch (err: any) {
       console.error("Approval error:", err);
-      setError(err.message || "Approval error occurred");
+      const { errorMsg} = handleViemTransactionError({ abi: CARTEL as Abi,  error: err })
+      toast({
+        title: errorMsg,
+        variant: "destructive",
+        className: `${workSans.className}`
+      })
+      setError(errorMsg || "Approval error occurred");
       return undefined;
     }
   };
@@ -153,6 +160,7 @@ const useBuyTickets = () => {
 
       if (minted) {
         setMintedData(minted);
+        
       } else {
         console.warn("No mint event found in the logs");
       }
