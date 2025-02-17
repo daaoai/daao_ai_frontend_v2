@@ -626,13 +626,14 @@ const Buysell = () => {
         >
           {isSwapping ? "Swapping..." : "Swap"}
         </Button>
-        <Button
+        {/* @devs please don't remove this comented code */}
+        {/* <Button
           className="w-full bg-white text-black hover:bg-gray-200 active:scale-95 transition-transform ease-in-out duration-150"
           onClick={handleBurnTicketModal}
           style={{ height: "3rem" }}
         >
          Burn Tokens and get tickets.
-        </Button>
+        </Button> */}
 
         {
           ticketIds &&  <Button
