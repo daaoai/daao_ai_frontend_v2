@@ -72,7 +72,7 @@ const TicketPurchase: React.FC<TicketPurchaseProps> = ({ onClose,onTicketsUpdate
   };
 
   const isButtonDisabled = tickets < 1 || tickets > MAX_TICKETS || isLoading;
-  const pricePerTicket = formatUnits((ticketPrice ?? 0) as bigint, decimals!);
+  const pricePerTicket = formatUnits((ticketPrice ?? 0) as bigint, decimals ?? 18);
   const totalTicketAmount = tickets * Number(pricePerTicket);
 
   const handleBuyTickets = async () => {

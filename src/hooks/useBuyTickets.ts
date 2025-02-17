@@ -8,6 +8,7 @@ import { decodeEventLog } from "viem";
 import { workSans } from "@/lib/fonts"
 import { useToast } from "./use-toast";
 import { handleViemTransactionError } from "@/utils/approval";
+import bn from "bignumber.js";
 
 export interface MintedData {
   from: Hex;
@@ -124,9 +125,10 @@ const useBuyTickets = () => {
       setMintedData(null);
       setIsLoading(true);
       
+      let totalCost = new bn(ticketCount).multipliedBy(ticketPrice).toFixed();
       const requiredApprovalAmount = parseUnits(
-        (ticketCount * ticketPrice).toString(),
-        decimals
+        totalCost,
+        1
       );
 
       const allowanceSufficient = await checkAllowance(requiredApprovalAmount);
