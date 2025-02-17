@@ -72,7 +72,7 @@ const TicketPurchase: React.FC<TicketPurchaseProps> = ({ onClose,onTicketsUpdate
   };
 
   const isButtonDisabled = tickets < 1 || tickets > MAX_TICKETS || isLoading;
-  const pricePerTicket = formatUnits((ticketPrice ?? 0) as bigint, decimals ?? 18);
+  const pricePerTicket = formatUnits((ticketPrice ?? 0) as bigint, decimals!);
   const totalTicketAmount = tickets * Number(pricePerTicket);
 
   const handleBuyTickets = async () => {
@@ -156,13 +156,6 @@ const TicketPurchase: React.FC<TicketPurchaseProps> = ({ onClose,onTicketsUpdate
                   <AlertDescription>{localError}</AlertDescription>
                 </Alert>
               )}
-
-              {error && (
-                <Alert variant="destructive" className="bg-red-700 text-white text-sm px-4 py-2 rounded-lg">
-                  <AlertDescription>{error}</AlertDescription>
-                </Alert>
-              )}
-
               <p className="text-gray-300">
                 Price per Ticket:{" "}
                 <span className="font-semibold text-white">

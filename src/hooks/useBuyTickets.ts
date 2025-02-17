@@ -168,6 +168,11 @@ const useBuyTickets = () => {
       setIsSuccess(true);
     } catch (err: any) {
       console.error("buyTickets error:", err);
+      toast({
+        title: "Txn Failed",
+        variant: "destructive",
+        className: `${workSans.className}`
+      })
       setError(err.message || "An error occurred");
     } finally {
       setIsLoading(false);
