@@ -60,7 +60,7 @@ type dashboardData = {
 
 type Asset = {
   token: string
-  tokenIcon: string
+  // tokenIcon?: string
   balance: number
   price: number
   totalValue: number

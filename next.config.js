@@ -1,3 +1,4 @@
+
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   reactStrictMode: true,
@@ -10,9 +11,28 @@ const nextConfig = {
     additionalData: `$var: red;`,
   },
   webpack: (config) => {
-    config.resolve.fallback = { fs: false, net: false, tls: false };
+    config.resolve.fallback = {
+      fs: false,
+      net: false,
+      tls: false
+    };
     return config;
   },
+    // @devs please don't remove this commented code
+
+  // Adding the rewrites for the Conduit API
+  // async rewrites() {
+  //   return [
+  //     {
+  //       source: '/api/conduit/:path*',
+  //       destination: 'https://explorer-mode-mainnet-0.t.conduit.xyz/api/:path*'
+  //     },
+  //     {
+  //       source: '/api/dexscreener/:path*',
+  //       destination: 'https://api.dexscreener.com/:path*'
+  //   }
+  //   ];
+  // }
 };
 
 module.exports = nextConfig;
