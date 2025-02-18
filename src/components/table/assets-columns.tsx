@@ -9,13 +9,13 @@ export const assetColumns: ColumnDef<Asset>[] = [
     header: "Token",
     cell: ({ row }) => (
       <div className="flex items-center space-x-2">
-        <Image
+        {/* <Image
           src={row.original.tokenIcon || "/placeholder.svg"}
           alt=""
           width={24}
           height={24}
           className="rounded-full"
-        />
+        /> */}
         <span>{row.original.token}</span>
       </div>
     ),

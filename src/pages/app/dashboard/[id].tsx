@@ -12,12 +12,117 @@ import { CURRENT_DAO_IMAGE, FUND_CARD_PLACEHOLDER_IMAGE } from '@/lib/links';
 import { AssetTable } from '@/components/table/assets-table';
 import { assetColumns } from '@/components/table/assets-columns';
 import { useFundContext } from "../../../components/dashboard/FundContext";
+import useTokenPrice from '@/hooks/useTokenPrice';
+import axios from 'axios';
+import { Hex } from 'viem';
+
+
+
+
+export interface Token {
+  address: string;
+  circulating_market_cap: number | null;
+  decimals: string;
+  exchange_rate: number | null;
+  holders: string;
+  icon_url: string | null;
+  name: string;
+  symbol: string;
+  total_supply: string;
+  type: string;
+  volume_24h: number | null;
+}
+export interface TokenBalance {
+  token: Token;
+  token_id: string | null;
+  token_instance: string | null;
+  value: string;
+}
+export type ApiResponse = TokenBalance[];
+
+
+
+
+export interface Token {
+  address: string;
+  circulating_market_cap: number | null;
+  decimals: string;
+  exchange_rate: number | null;
+  holders: string;
+  icon_url: string | null;
+  name: string;
+  symbol: string;
+  total_supply: string;
+  type: string;
+  volume_24h: number | null;
+}
+
+export interface TokenBalance {
+  token: Token;
+  token_id: string | null;
+  token_instance: string | null;
+  value: string;
+}
+
+// DEXScreener API types
+export interface DexScreenerPair {
+  chainId: string;
+  dexId: string;
+  url: string;
+  pairAddress: string;
+  baseToken: {
+      address: string;
+      name: string;
+      symbol: string;
+  };
+  priceUsd: string;
+  priceNative: string;
+  txns: {
+      h24: {
+          buys: number;
+          sells: number;
+      };
+  };
+}
+
+export interface DexScreenerResponse {
+  pairs: DexScreenerPair[];
+}
+
+// Combined token data with price
+export interface TokenWithPrice extends TokenBalance {
+  priceUsd?: string;
+}
+
+export type EnhancedApiResponse = TokenWithPrice[];
+
+
+
+
+const formatDaoHoldingTokens = (daoTokens: EnhancedApiResponse): Asset[] => {
+  return daoTokens
+    .filter(item => item.token.symbol !== 'CARTELTEST')
+    .map(item => {
+      const decimals = Number(item.token.decimals);
+      const balance = Number(item.value) / Math.pow(10, decimals);
+      const price = item.priceUsd ? Number(item.priceUsd) : 0;
+      return {
+        token: item.token.symbol,
+        // tokenIcon: item.token.icon_url ?? "",
+        balance: balance,
+        price: price,
+        totalValue: price * balance,
+      };
+    });
+};
+
 
 const Dashboard: React.FC = () => {
   const account = useAccount();
   const accountAddress = account.address as `0x${string}`;
   const { data: fetchedData, refreshData } = useFetchBalance(accountAddress);
   const [daoTokenAddress, setDaoTokenAddress] = useState('');
+  const [daaoHoldingTokens,setDaoHoldingTokens] = useState<ApiResponse | null>(null)
   const { daoBalance, priceUsd } = useFundContext();
   useEffect(() => {
     console.log("daoToken is", fetchedData?.daoToken)
@@ -27,6 +132,9 @@ const Dashboard: React.FC = () => {
     }
   }, [fetchedData]);
 
+
+
+  ///
   const props: FundDetailsProps = {
     icon: CURRENT_DAO_IMAGE, // Placeholder image URL
     shortname: "CARTEL",
@@ -36,10 +144,83 @@ const Dashboard: React.FC = () => {
     modeAddress: "0x5edbe707191Ae3A5bd5FEa5EDa0586f7488bD961",
   };
 
+
+
+
+
+  
+
+
+
+
+
+
+  useEffect(() => {
+    const fetchTokensWithPrices = async () => {
+        try {
+            // Fetch token balances
+            const response = await axios.get<ApiResponse>(
+                "/api/conduit/v2/addresses/0xb51eC6F7D3E0D0FEae495eFe1f0751dE66b6be95/token-balances"
+            );
+            
+            // Fetch prices in parallel
+            const pricePromises = response.data.map(async (tokenBalance) => {
+                try {
+                    const dexResponse = await axios.get<DexScreenerResponse>(
+                        `/api/dexscreener/token-pairs/v1/mode/${tokenBalance.token.address}`
+                    );
+                    console.log({pk:dexResponse.data})
+                  // const dexResponse= await fetchTokenPrice(tokenBalance.token.address as Hex)
+                    return {
+                        address: tokenBalance.token.address,
+                        priceUsd: (dexResponse.data as unknown as any[])[0]?.priceUsd
+                      };
+                } catch (error) {
+                    console.log(`Failed to fetch price for ${tokenBalance.token.address}`);
+                    return {
+                        address: tokenBalance.token.address,
+                        priceUsd: undefined
+                    };
+                }
+            });
+
+            const prices = await Promise.all(pricePromises);
+            console.log({prices})
+            // Combine token data with prices
+            const tokensWithPrices: EnhancedApiResponse = response.data.map(tokenBalance => {
+                const priceData = prices.find(p => p.address === tokenBalance.token.address);
+                return {
+                    ...tokenBalance,
+                    priceUsd: priceData?.priceUsd
+                };
+            });
+
+            // Sort tokens by value * price (market value)
+            const sortedTokens = tokensWithPrices.sort((a, b) => {
+                const aValue = a.priceUsd ? 
+                    Number(a.value) * Number(a.priceUsd) : 
+                    Number(a.value);
+                const bValue = b.priceUsd ? 
+                    Number(b.value) * Number(b.priceUsd) : 
+                    Number(b.value);
+                return bValue - aValue;
+            });
+
+            setDaoHoldingTokens(sortedTokens);
+
+            console.log({sortedTokens},"jhgbjkjhb")
+        } catch (error) { 
+            console.error("Error fetching token data:", error);
+        }
+    };
+
+    fetchTokensWithPrices();
+}, []);
+
   const assetsData: Asset[] = [
     {
       token: "CARTEL",
-      tokenIcon: CURRENT_DAO_IMAGE,
+      // tokenIcon: CURRENT_DAO_IMAGE,
       balance: Number(daoBalance),
       price: priceUsd,
       totalValue: priceUsd * Number(daoBalance),
@@ -156,7 +337,16 @@ const Dashboard: React.FC = () => {
                 <div className="w-full flex justify-between items-center py-4">
                   <span className='font-bold text-xl'>Token Balances</span>
                 </div>
-                <AssetTable columns={assetColumns} data={assetsData} />
+                {/* <AssetTable columns={assetColumns} data={assetsData} /> */}
+                {
+                  daaoHoldingTokens ? (
+                    <AssetTable columns={assetColumns} data={formatDaoHoldingTokens(daaoHoldingTokens)}  />
+                  ) : (
+                    <div className="flex items-center justify-center h-[400px] sm:h-[600px]">
+                      <p className="text-white text-lg">No token balances available.</p>
+                    </div>
+                  )  
+                }
               </div>
             </TabsContent>
           </Tabs>

@@ -31,6 +31,7 @@
     "@types/bignumber.js": "^5.0.4",
     "@uniswap/sdk-core": "3.0.2",
     "@uniswap/v3-sdk": "3.9.0",
+    "axios": "^1.7.9",
     "bignumber.js": "^9.0.0",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
