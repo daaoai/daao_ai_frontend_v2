@@ -157,7 +157,7 @@ const Dashboard: React.FC = () => {
         try {
             // Fetch token balances
             const response = await axios.get<ApiResponse>(
-              "https://explorer-mode-mainnet-0.t.conduit.xyz/api/v2/addresses/0xb51eC6F7D3E0D0FEae495eFe1f0751dE66b6be95/token-balances"
+                "/api/conduit/v2/addresses/0xb51eC6F7D3E0D0FEae495eFe1f0751dE66b6be95/token-balances"
             );
             
             // Fetch prices in parallel
