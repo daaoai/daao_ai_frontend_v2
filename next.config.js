@@ -21,18 +21,18 @@ const nextConfig = {
     // @devs please don't remove this commented code
 
   // Adding the rewrites for the Conduit API
-  // async rewrites() {
-  //   return [
-  //     {
-  //       source: '/api/conduit/:path*',
-  //       destination: 'https://explorer-mode-mainnet-0.t.conduit.xyz/api/:path*'
-  //     },
-  //     {
-  //       source: '/api/dexscreener/:path*',
-  //       destination: 'https://api.dexscreener.com/:path*'
-  //   }
-  //   ];
-  // }
+  async rewrites() {
+    return [
+      {
+        source: '/api/conduit/:path*',
+        destination: 'https://explorer-mode-mainnet-0.t.conduit.xyz/api/:path*'
+      },
+      {
+        source: '/api/dexscreener/:path*',
+        destination: 'https://api.dexscreener.com/:path*'
+    }
+    ];
+  }
 };
 
 module.exports = nextConfig;
