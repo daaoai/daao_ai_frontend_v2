@@ -5,16 +5,13 @@ import FundDetails from '@/components/dashboard/fundcard-details';
 import Buysell from '@/components/dashboard/buysell-card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@radix-ui/react-tabs';
 import Orderbook from '@/components/dashboard/orderbook';
-import { getContractData } from "../../../getterFunctions"
 import { useFetchBalance } from "../../../components/dashboard/fetchBalance"
 import { useAccount } from "wagmi";
-import { CURRENT_DAO_IMAGE, FUND_CARD_PLACEHOLDER_IMAGE } from '@/lib/links';
+import { CURRENT_DAO_IMAGE } from '@/lib/links';
 import { AssetTable } from '@/components/table/assets-table';
 import { assetColumns } from '@/components/table/assets-columns';
 import { useFundContext } from "../../../components/dashboard/FundContext";
-import useTokenPrice from '@/hooks/useTokenPrice';
 import axios from 'axios';
-import { Hex } from 'viem';
 
 
 
