@@ -1,4 +1,6 @@
-export const CARTEL = [
+import { Abi } from "viem";
+
+export const CARTEL: Abi = [
   {
     inputs: [
       { internalType: "string", name: "_name", type: "string" },
