@@ -7,15 +7,10 @@ import usePoolList from "@/hooks/farm/usePoolList";
 import { useParams, useRouter } from "next/navigation";
 import { FarmPool } from "@/types/farm";
 import useHarvest from "@/hooks/farm/useHarvest";
-import { Hex } from "viem";
+import { formatUnits, Hex } from "viem";
 import useGetBalance from "@/hooks/useGetBalance";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from "@/components/ui/tooltip";
 import { abbreviateNumber } from "@/utils/numbers";
+import { useAccount } from "wagmi";
 
 const FarmStake = () => {
   const params = useParams();
@@ -27,9 +22,6 @@ const FarmStake = () => {
   }
 
   const { harvest } = useHarvest();
-  const { decimals, balance } = useGetBalance();
-
-  console.log(address, "address");
 
   const { getPoolDetails } = usePoolList();
   const [poolData, setPoolData] = useState<FarmPool>();
@@ -54,8 +46,10 @@ const FarmStake = () => {
 
   console.log(poolData, "poolDATA");
 
-  const handleHarvest = () => {
-    harvest({ poolAddress: address as Hex });
+  const handleHarvest = async () => {
+    if (poolData?.unclaimedReward && poolData.unclaimedReward > BigInt(0)) {
+      harvest({ poolAddress: address as Hex });
+    }
   };
 
   const [isDepositModalOpen, setIsDepositModalOpen] = useState(false);
@@ -85,14 +79,11 @@ const FarmStake = () => {
     })
     .replace(" ", "/")}`;
 
-  const now = Date.now();
-  const startTime = poolData ? Number(poolData.startTime) * 1000 : 0;
-  const endTime = poolData ? Number(poolData.endTime) * 1000 : 0;
-  const withdrawDisabled = now >= startTime && now <= endTime;
-
   const isHarvestDisabled =
     !poolData?.userInfo.rewardDebt ||
     BigInt(0) == poolData?.userInfo.rewardDebt;
+
+  console.log(poolData, "pooldata");
 
   return (
     <div className="min-h-screen bg-black text-white">
@@ -134,28 +125,27 @@ const FarmStake = () => {
             <div>
               <p className="text-gray-400">TVL</p>
               <p className="text-lg font-semibold text-white">
-                {Number(abbreviateNumber(poolData?.totalStackedUSD!))}
+                $ 125
+                {/* {Number(abbreviateNumber(poolData?.totalStackedUSD!))}$ */}
               </p>
             </div>
 
             <div>
-              <p className="text-gray-400">Your Stake</p>
-              <p className="text-lg font-semibold text-white">0 YT</p>
-            </div>
-            <div>
-              <p className="text-gray-400">Your Reward Balance</p>
-              <p className="text-lg font-semibold text-white">0.0000000 DWL</p>
-            </div>
-            <div>
               <p className="text-gray-400">Rewards Remaining</p>
               <p className="text-lg font-semibold text-white">
-                {poolData?.rewards?.remainingRewards}
+                {poolData?.rewards?.remainingRewards
+                  ? Number(
+                      formatUnits(poolData?.rewards?.remainingRewards, 18)
+                    ).toFixed(2)
+                  : "0"}
               </p>
             </div>
             <div>
               <p className="text-gray-400">Rewards Balance</p>
               <p className="text-lg font-semibold text-white">
-                {poolData?.rewards?.rewards}
+                {poolData?.rewards?.remainingRewards
+                  ? formatUnits(poolData?.rewards?.rewards, 18)
+                  : "0"}
               </p>
             </div>
             <div className="col-span-2">
@@ -165,31 +155,18 @@ const FarmStake = () => {
           </div>
           <div className="mt-4 flex space-x-2">
             <button
-              className="flex-1 bg-[#27292a] hover:bg-[#323435] transition text-white py-2 rounded-md font-semibold"
+              className="flex-1 bg-[#27292a] hover:bg-[#8dccec] transition text-white py-2 rounded-md font-semibold"
               onClick={openDepositModal}
             >
               Deposit
             </button>
-            <TooltipProvider delayDuration={100}>
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <button
-                    disabled={withdrawDisabled}
-                    className={`flex-1 bg-[#27292a] hover:bg-[#323435] transition text-white py-2 rounded-md font-semibold ${
-                      withdrawDisabled ? "opacity-50 cursor-not-allowed" : ""
-                    }`}
-                    onClick={withdrawDisabled ? undefined : openWithdrawModal}
-                  >
-                    Withdraw
-                  </button>
-                </TooltipTrigger>
-                <TooltipContent className="text-white bg-gray-800 p-2">
-                  <div className="whitespace-pre-wrap leading-relaxed">
-                    {"Currently Not Active"}
-                  </div>
-                </TooltipContent>
-              </Tooltip>
-            </TooltipProvider>
+
+            <button
+              className="flex-1 bg-[#27292a] hover:bg-[#323435] transition text-white py-2 rounded-md font-semibold"
+              onClick={openWithdrawModal}
+            >
+              Withdraw
+            </button>
 
             <button
               disabled={isHarvestDisabled}
