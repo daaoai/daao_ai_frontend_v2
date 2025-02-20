@@ -6,20 +6,21 @@ import { ArrowRight, DollarSign, Wallet } from "lucide-react";
 import Link from "next/link";
 import { FarmPool } from "@/types/farm";
 import { abbreviateNumber } from "@/utils/numbers";
+import { formatUnits } from "viem";
+import Image from "next/image";
+import { CURRENT_DAO_IMAGE, GAMBLE_IMAGE } from "@/lib/links";
 
 interface FarmCardProps {
   farm: FarmPool;
 }
 
 const FarmCard = ({ farm }: FarmCardProps) => {
-  // Calculate start and end times in milliseconds
   const startTimeMs = Number(farm.startTime.toString()) * 1000;
   const endTimeMs = Number(farm.endTime.toString()) * 1000;
   const now = Date.now();
   const isActive = now >= startTimeMs && now <= endTimeMs;
 
   const name = `Farm Pool (${farm.depositToken.slice(0, 6)}...)`;
-  // const description = `Active from ${new Date(startTimeMs).toLocaleDateString()} until ${new Date(endTimeMs).toLocaleDateString()}`;
   const description = `Active from ${new Date(startTimeMs)
     .toLocaleDateString("en-US", {
       month: "short",
@@ -34,19 +35,34 @@ const FarmCard = ({ farm }: FarmCardProps) => {
     })
     .replace(" ", "/")}`;
   const apr = `${farm.apr.toFixed(2)}%`;
-  const tvl = farm.totalStackedUSD;
-  const stakeInfo = `${farm.userInfo.stackedAmount.toString()} tokens staked`;
-  const earnInfo = `${farm.unclaimedReward.toString()} pending rewards`;
+  const tvl = 1239812380981230981238793284980123; // farm.totalStackedUSD
+  const stakeInfo = `${formatUnits(
+    farm.userInfo.stackedAmount,
+    18
+  )} tokens staked`;
+  const earnInfo = `${formatUnits(farm.unclaimedReward, 18)} pending rewards`;
   const address = farm.poolAddress;
 
   return (
-    <Card className="box-border w-full max-w-[420px] bg-[#0d0d0d] border-[#383838] text-white flex flex-col">
+    <Card className="box-border w-full max-w-[420x] bg-[#0d0d0d] border-[#383838] text-white flex flex-col">
       <CardContent className="p-6 flex flex-col gap-6 flex-grow">
         <div className="flex flex-col gap-4 sm:flex-row sm:justify-between sm:items-center">
           <div className="flex items-center gap-3">
             <div className="relative w-20 h-[50px] flex-shrink-0">
-              <div className="absolute left-0 top-0 w-[50px] h-[50px] bg-white rounded-full border border-black" />
-              <div className="absolute left-[30px] top-0 w-[50px] h-[50px] bg-white rounded-full border border-black" />
+              <Image
+                src={GAMBLE_IMAGE}
+                alt={"DAO Token"}
+                width={16}
+                height={16}
+                className="absolute left-0 top-0 w-[50px] h-[50px] rounded-full"
+              />
+              <Image
+                src={CURRENT_DAO_IMAGE}
+                alt={"DAO Token"}
+                width={16}
+                height={16}
+                className="absolute left-[30px] top-0 w-[50px] h-[50px] rounded-full"
+              />
             </div>
             <div className="flex flex-col gap-1">
               <h2 className="text-xl font-bold">{name}</h2>
@@ -70,8 +86,7 @@ const FarmCard = ({ farm }: FarmCardProps) => {
             <div className="flex flex-col gap-1">
               <p className="text-lg font-medium">TVL</p>
               <p className="text-2xl sm:text-3xl font-semibold">
-                {" "}
-                {Number(abbreviateNumber(tvl))}
+                {/* {Number(abbreviateNumber(tvl))}$ */}$ 125
               </p>
             </div>
           </div>
@@ -85,7 +100,9 @@ const FarmCard = ({ farm }: FarmCardProps) => {
             </div>
             <div className="flex items-center gap-4">
               <DollarSign />
-              <p className="text-base sm:text-lg">{earnInfo}</p>
+              <p className="text-base sm:text-lg">
+                {parseFloat(earnInfo).toFixed(2)}
+              </p>
             </div>
           </div>
         </div>

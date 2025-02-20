@@ -1,9 +1,10 @@
-export const WHITEPAPER_URL = "https://docsend.com/view/z9eqsrurcmdky2dn"
+export const WHITEPAPER_URL = "https://docsend.com/view/z9eqsrurcmdky2dn";
 
-export const FUND_CARD_PLACEHOLDER_IMAGE: string = "/images/new-upcoming-img.jpeg"
-export const CURRENT_DAO_LINK = "https://www.defaicartel.xyz/"
-export const CURRENT_DAO_IMAGE = "/images/new-defai-cartel.jpeg"
-
+export const FUND_CARD_PLACEHOLDER_IMAGE: string =
+  "/images/new-upcoming-img.jpeg";
+export const CURRENT_DAO_LINK = "https://www.defaicartel.xyz/";
+export const CURRENT_DAO_IMAGE = "/images/new-defai-cartel.jpeg";
+export const GAMBLE_IMAGE = "/images/gamble.jpeg";
 
 import {
   // GitHubIcon,
@@ -39,7 +40,7 @@ export const RNDLinks: FooterData[] = [
     href: "https://x.com/RNDdaoai",
     children: <XIcon />,
   },
-]
+];
 
 export const DefaiCartelLinks: FooterData[] = [
   {
@@ -62,4 +63,4 @@ export const DefaiCartelLinks: FooterData[] = [
     href: "https://dexscreener.com/mode/0xf70e76cc5a39aad1953bef3d1647c8b36f3f6324",
     children: <DexScreener />,
   },
-]
+];

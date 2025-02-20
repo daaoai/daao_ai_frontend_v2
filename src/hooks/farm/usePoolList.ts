@@ -93,7 +93,7 @@ const usePoolList = () => {
       ];
 
       if (results) {
-        const rewardTokenPrice = await fetchTokenPrice(results[2][0]);
+        const rewardTokenPrice = 0.00011; // await fetchTokenPrice(results[2][0]);
         const depositTokenPrice = await fetchTokenPrice(results[4]);
         const cartelTokenPrice = await fetchTokenPrice(CARTEL_TOKEN_ADDRESS);
         const decimals = await publicClient?.multicall({
@@ -120,7 +120,7 @@ const usePoolList = () => {
                 Number(((rewardEmmisionUsd * 365) / totalStackedUSD) * 100) || 0
               )
             : 0;
-
+        console.log(apr);
         return {
           startTime: results[0][0] || BigInt(0),
           endTime: results[0][1] || BigInt(0),
