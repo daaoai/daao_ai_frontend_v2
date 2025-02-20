@@ -69,14 +69,30 @@ const FarmStake = () => {
   );
   const date = `Active from ${new Date(
     Number(poolData?.startTime.toString()) * 1000
-  ).toLocaleDateString('en-US', { month: 'short', day: '2-digit', year: 'numeric' }).replace(' ', '/')} until ${new Date(
+  )
+    .toLocaleDateString("en-US", {
+      month: "short",
+      day: "2-digit",
+      year: "numeric",
+    })
+    .replace(" ", "/")} until ${new Date(
     Number(poolData?.endTime.toString()) * 1000
-  ).toLocaleDateString('en-US', { month: 'short', day: '2-digit', year: 'numeric' }).replace(' ', '/')}`;
-  
+  )
+    .toLocaleDateString("en-US", {
+      month: "short",
+      day: "2-digit",
+      year: "numeric",
+    })
+    .replace(" ", "/")}`;
+
   const now = Date.now();
   const startTime = poolData ? Number(poolData.startTime) * 1000 : 0;
   const endTime = poolData ? Number(poolData.endTime) * 1000 : 0;
   const withdrawDisabled = now >= startTime && now <= endTime;
+
+  const isHarvestDisabled =
+    !poolData?.userInfo.rewardDebt ||
+    BigInt(0) == poolData?.userInfo.rewardDebt;
 
   return (
     <div className="min-h-screen bg-black text-white">
@@ -118,7 +134,7 @@ const FarmStake = () => {
             <div>
               <p className="text-gray-400">TVL</p>
               <p className="text-lg font-semibold text-white">
-              {Number(abbreviateNumber(poolData?.totalStackedUSD!))}
+                {Number(abbreviateNumber(poolData?.totalStackedUSD!))}
               </p>
             </div>
 
@@ -176,8 +192,11 @@ const FarmStake = () => {
             </TooltipProvider>
 
             <button
-              className="flex-1 bg-[#27292a] hover:bg-[#323435] transition text-white py-2 rounded-md font-semibold"
-              onClick={handleHarvest}
+              disabled={isHarvestDisabled}
+              className={`flex-1 bg-[#27292a] hover:bg-[#323435] transition text-white py-2 rounded-md font-semibold ${
+                isHarvestDisabled ? "opacity-50 cursor-not-allowed" : ""
+              }`}
+              onClick={isHarvestDisabled ? undefined : handleHarvest}
             >
               Harvest
             </button>

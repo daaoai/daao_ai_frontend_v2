@@ -1,11 +1,11 @@
-import { Card, CardContent, CardFooter } from "@/components/ui/card"
-import { Badge } from "@/components/ui/badge"
-import { Separator } from "@/components/ui/separator"
-import { Button } from "@/components/ui/button"
-import { ArrowRight, DollarSign, Wallet } from "lucide-react"
-import Link from "next/link"
-import { FarmPool } from "@/types/farm"
-import { abbreviateNumber } from "@/utils/numbers"
+import { Card, CardContent, CardFooter } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Separator } from "@/components/ui/separator";
+import { Button } from "@/components/ui/button";
+import { ArrowRight, DollarSign, Wallet } from "lucide-react";
+import Link from "next/link";
+import { FarmPool } from "@/types/farm";
+import { abbreviateNumber } from "@/utils/numbers";
 
 interface FarmCardProps {
   farm: FarmPool;
@@ -20,7 +20,19 @@ const FarmCard = ({ farm }: FarmCardProps) => {
 
   const name = `Farm Pool (${farm.depositToken.slice(0, 6)}...)`;
   // const description = `Active from ${new Date(startTimeMs).toLocaleDateString()} until ${new Date(endTimeMs).toLocaleDateString()}`;
-  const description = `Active from ${new Date(startTimeMs).toLocaleDateString('en-US', { month: 'short', day: '2-digit', year: 'numeric' }).replace(' ', '/')} until ${new Date(endTimeMs).toLocaleDateString('en-US', { month: 'short', day: '2-digit', year: 'numeric' }).replace(' ', '/')}`;
+  const description = `Active from ${new Date(startTimeMs)
+    .toLocaleDateString("en-US", {
+      month: "short",
+      day: "2-digit",
+      year: "numeric",
+    })
+    .replace(" ", "/")} until ${new Date(endTimeMs)
+    .toLocaleDateString("en-US", {
+      month: "short",
+      day: "2-digit",
+      year: "numeric",
+    })
+    .replace(" ", "/")}`;
   const apr = `${farm.apr.toFixed(2)}%`;
   const tvl = farm.totalStackedUSD;
   const stakeInfo = `${farm.userInfo.stackedAmount.toString()} tokens staked`;
@@ -53,12 +65,13 @@ const FarmCard = ({ farm }: FarmCardProps) => {
           <div className="flex justify-between items-center">
             <div className="flex flex-col gap-1">
               <p className="text-lg font-medium">APR</p>
-              <p className="text-2xl sm:text-3xl font-semibold">
-  {Number(apr).toFixed(6)}
-</p>            </div>
+              <p className="text-2xl sm:text-3xl font-semibold">{apr}</p>{" "}
+            </div>
             <div className="flex flex-col gap-1">
               <p className="text-lg font-medium">TVL</p>
-              <p className="text-2xl sm:text-3xl font-semibold">  {Number(abbreviateNumber(tvl))}
+              <p className="text-2xl sm:text-3xl font-semibold">
+                {" "}
+                {Number(abbreviateNumber(tvl))}
               </p>
             </div>
           </div>
@@ -85,14 +98,17 @@ const FarmCard = ({ farm }: FarmCardProps) => {
           // Optionally disable the button if not active
           disabled={!isActive}
         >
-          <Link href={`/app/farm/mode/${address}`} className="text-lg sm:text-xl font-semibold mr-2">
+          <Link
+            href={`/app/farm/mode/${address}`}
+            className="text-lg sm:text-xl font-semibold mr-2"
+          >
             View Farm
           </Link>
           <ArrowRight className="w-5 h-5 sm:w-6 sm:h-6" />
         </Button>
       </CardFooter>
     </Card>
-  )
-}
+  );
+};
 
 export default FarmCard;
