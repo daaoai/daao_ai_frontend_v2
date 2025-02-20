@@ -47,12 +47,12 @@ export const AppNavbar: React.FC = () => {
         >
           Dashboard
         </Link>*/}
-        {/*<Link
+        <Link
           href="/app/farm"
           className="text-white sm:text-base md:text-lg lg:text-xl font-medium leading-9"
         >
           Farms
-        </Link>*/}
+        </Link>
       </div>
 
 
