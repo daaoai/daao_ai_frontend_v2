@@ -1,4 +1,3 @@
-import { FARM_ABI } from "@/abi/farm";
 import { POOL_ABI } from "@/abi/pool";
 import { FARM_FACTORY_CONTRACT_ADDRESS } from "@/constants/farm";
 import { useAccount, usePublicClient } from "wagmi";
@@ -7,6 +6,7 @@ import { CARTEL } from "@/abi/cartel";
 import { formatUnits } from "viem";
 import { FarmPool } from "@/types/farm";
 import { CARTEL_TOKEN_ADDRESS } from "@/constants/ticket";
+import { FARM_FACTORY_ABI } from "@/abi/farmFactory";
 
 const usePoolList = () => {
   const { address } = useAccount();
@@ -16,7 +16,7 @@ const usePoolList = () => {
     try {
       const response = await publicClient?.readContract({
         address: FARM_FACTORY_CONTRACT_ADDRESS,
-        abi: FARM_ABI,
+        abi: FARM_FACTORY_ABI,
         functionName: "nitroPoolsLength",
       });
       return response;
@@ -32,7 +32,7 @@ const usePoolList = () => {
 
     const response = await publicClient?.multicall({
       contracts: array.map((_, index) => ({
-        abi: FARM_ABI,
+        abi: FARM_FACTORY_ABI,
         address: FARM_FACTORY_CONTRACT_ADDRESS,
         functionName: "getNitroPool",
         args: [index],
