@@ -133,7 +133,7 @@ const FundDetails: React.FC<FundDetailsProps> = (props) => {
         <div className="flex items-center gap-4 sm:gap-6">
           <div className="w-12 h-12 sm:w-16 sm:h-16 bg-white rounded-full flex-shrink-0 overflow-hidden">
             <Image
-              className="w-full h-full object-cover border border-[#27292a]"
+              className="w-full h-full object-cover"
               src={props.icon}
               width={70}
               height={70}

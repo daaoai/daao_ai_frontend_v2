@@ -267,14 +267,20 @@ const HomePage: NextPage = () => {
             </div>
           </Link>
 
-          <Link href="https://velodrome.finance/swap?from=0xdfc7c877a950e49d2610114102175a06c2e3167a&to=0x98e0ad23382184338ddcec0e13685358ef845f30&chain0=34443&chain1=34443" target="_blank">
-            <div className="flex items-center gap-1.5 justify-center">
-              <span className={`text-[#d1ea48] text-sm ${syne.className}`}>
-                Trade On Velodrome
-              </span>
-              <ArrowRight className="w-4 h-4 text-[#d1ea48]" />
-            </div>
-          </Link>
+          <Link
+  href="https://velodrome.finance/swap?from=0xdfc7c877a950e49d2610114102175a06c2e3167a&to=0x98e0ad23382184338ddcec0e13685358ef845f30&chain0=34443&chain1=34443"
+  target="_blank"
+>
+  <div
+    className="flex items-center gap-1.5 justify-center bg-blue-950 p-2 rounded-md border-2 border-[#d1ea48] animate-pulse transition-all duration-2000 hover:scale-105"
+  >
+    <span className={`text-[#d1ea48] text-sm ${syne.className}`}>
+      Trade On Velodrome
+    </span>
+    <ArrowRight className="w-4 h-4 text-[#d1ea48]" />
+  </div>
+</Link>
+
 
           {/*
           {statusMsg && (
