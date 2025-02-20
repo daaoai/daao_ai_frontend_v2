@@ -333,7 +333,9 @@ const FarmStake = () => {
               {isPoolDetailsLoading ? (
                 <Skeleton className="w-20 h-6" />
               ) : (
-                <p className="text-lg font-semibold text-white">$13.2M</p>
+                <p className="text-lg font-semibold text-white">
+                  $ {Number(abbreviateNumber(poolData?.totalStackedUSD!))}
+                </p>
               )}
             </div>
 

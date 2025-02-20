@@ -35,7 +35,7 @@ const FarmCard = ({ farm }: FarmCardProps) => {
     })
     .replace(" ", "/")}`;
   const apr = `${farm.apr.toFixed(2)}%`;
-  const tvl = 1239812380981230981238793284980123; // farm.totalStackedUSD
+  const tvl = farm.totalStackedUSD;
   const stakeInfo = `${formatUnits(
     farm.userInfo.stackedAmount,
     18
@@ -81,12 +81,12 @@ const FarmCard = ({ farm }: FarmCardProps) => {
           <div className="flex justify-between items-center">
             <div className="flex flex-col gap-1">
               <p className="text-lg font-medium">APR</p>
-              <p className="text-2xl sm:text-3xl font-semibold">{apr}</p>{" "}
+              <p className="text-2xl sm:text-3xl font-semibold">{apr}</p>
             </div>
             <div className="flex flex-col gap-1">
               <p className="text-lg font-medium">TVL</p>
               <p className="text-2xl sm:text-3xl font-semibold">
-                {/* {Number(abbreviateNumber(tvl))}$ */}$13.2M
+                $ {Number(abbreviateNumber(tvl))}
               </p>
             </div>
           </div>
