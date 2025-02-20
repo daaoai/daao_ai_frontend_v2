@@ -51,7 +51,7 @@ const FarmCard = ({ farm }: FarmCardProps) => {
             <div className="relative w-20 h-[50px] flex-shrink-0">
               <Image
                 src={GAMBLE_IMAGE}
-                alt={"DAO Token"}
+                alt={"Gambl Token"}
                 width={16}
                 height={16}
                 className="absolute left-0 top-0 w-[50px] h-[50px] rounded-full"
@@ -86,7 +86,7 @@ const FarmCard = ({ farm }: FarmCardProps) => {
             <div className="flex flex-col gap-1">
               <p className="text-lg font-medium">TVL</p>
               <p className="text-2xl sm:text-3xl font-semibold">
-                {/* {Number(abbreviateNumber(tvl))}$ */}$ 125
+                {/* {Number(abbreviateNumber(tvl))}$ */}$13.2M
               </p>
             </div>
           </div>
