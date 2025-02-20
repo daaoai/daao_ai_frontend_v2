@@ -6,10 +6,11 @@ import useTokenPrice from "../useTokenPrice";
 import { CARTEL } from "@/abi/cartel";
 import { formatUnits } from "viem";
 import { FarmPool } from "@/types/farm";
+import { CARTEL_TOKEN_ADDRESS } from "@/constants/ticket";
 
 const usePoolList = () => {
   const { address } = useAccount();
-  const publicClient = usePublicClient();
+  const publicClient = usePublicClient()
   const {fetchTokenPrice} = useTokenPrice()
   const getTotalPoolLength = async () => {
     try {
@@ -86,8 +87,9 @@ const usePoolList = () => {
       const results = response?.map(res => res.result || null) as [[bigint, bigint], bigint, [`0x${string}`, bigint, bigint, bigint], bigint, `0x${string}`]
 
       if (results) {
-        const rewardTokenPrice = await fetchTokenPrice(results[2][0])
+        const rewardTokenPrice = await fetchTokenPrice(results[2][0]);
         const depositTokenPrice = await fetchTokenPrice(results[4]);
+        const cartelTokenPrice = await fetchTokenPrice(CARTEL_TOKEN_ADDRESS);
         const decimals = await publicClient?.multicall({
           contracts: [results[2][0], results[4]].map((address, index) => ({
             abi: CARTEL,
@@ -96,13 +98,14 @@ const usePoolList = () => {
           })),
         });
         const decimalResults = decimals?.map(res => res.result || null) as [number, number];
-        const rewardEmmisionUsd = Number(formatUnits(results[3] || BigInt(0), decimalResults[0])) * Number(rewardTokenPrice)
-        const totalStackedUSD = Number(formatUnits(results[1] || BigInt(0), decimalResults[1])) * Number(depositTokenPrice)
+        const rewardEmmisionUsd = Number(formatUnits(results[3] || BigInt(0), decimalResults[0])) * Number(rewardTokenPrice);
+        const totalStackedUSD = Number(formatUnits(results[1] || BigInt(0), decimalResults[1])) * Number(depositTokenPrice);
         
         return {
           startTime: results[0][0],
           endTime: results[0][1],
           totalStackedAmount: results[1] || BigInt(0),
+          totalStackedUSD,
           rewards: {
             tokenAddress: results[2][0],
             rewards: results[2][1],

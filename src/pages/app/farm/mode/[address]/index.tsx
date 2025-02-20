@@ -15,6 +15,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import { abbreviateNumber } from "@/utils/numbers";
 
 const FarmStake = () => {
   const params = useParams();
@@ -68,9 +69,10 @@ const FarmStake = () => {
   );
   const date = `Active from ${new Date(
     Number(poolData?.startTime.toString()) * 1000
-  ).toLocaleDateString()} until ${new Date(
+  ).toLocaleDateString('en-US', { month: 'short', day: '2-digit', year: 'numeric' }).replace(' ', '/')} until ${new Date(
     Number(poolData?.endTime.toString()) * 1000
-  ).toLocaleDateString()}`;
+  ).toLocaleDateString('en-US', { month: 'short', day: '2-digit', year: 'numeric' }).replace(' ', '/')}`;
+  
   const now = Date.now();
   const startTime = poolData ? Number(poolData.startTime) * 1000 : 0;
   const endTime = poolData ? Number(poolData.endTime) * 1000 : 0;
@@ -116,7 +118,7 @@ const FarmStake = () => {
             <div>
               <p className="text-gray-400">TVL</p>
               <p className="text-lg font-semibold text-white">
-                {Number(poolData?.totalStackedAmount).toFixed(4)}
+              {Number(abbreviateNumber(poolData?.totalStackedUSD!))}
               </p>
             </div>
 

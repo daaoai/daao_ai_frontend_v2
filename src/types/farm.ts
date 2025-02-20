@@ -16,6 +16,7 @@ export interface PoolRewards {
     startTime: bigint;
     endTime: bigint;
     totalStackedAmount: bigint;
+    totalStackedUSD: number;
     rewards: PoolRewards;
     rewardTokenPerSec: bigint;
     depositToken: Hex;

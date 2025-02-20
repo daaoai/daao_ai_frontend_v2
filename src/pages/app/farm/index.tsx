@@ -21,7 +21,6 @@ const Farms: React.FC = () => {
         console.error("Error fetching pool addresses:", error);
       }
     };
-
     fetchPoolAddresses();
   }, []);
   return (
@@ -48,9 +47,8 @@ const Farms: React.FC = () => {
           </div>
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 justify-items-center">
           {farmPools.map((farm, index) => (
-  <FarmCard key={index} farm={farm} />
-))}
-
+          <FarmCard key={`${farm.poolAddress}-${index}`} farm={farm} />
+          ))}
           </div>
         </div>
       </div>

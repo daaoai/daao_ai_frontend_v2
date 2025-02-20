@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button"
 import { ArrowRight, DollarSign, Wallet } from "lucide-react"
 import Link from "next/link"
 import { FarmPool } from "@/types/farm"
+import { abbreviateNumber } from "@/utils/numbers"
 
 interface FarmCardProps {
   farm: FarmPool;
@@ -18,9 +19,10 @@ const FarmCard = ({ farm }: FarmCardProps) => {
   const isActive = now >= startTimeMs && now <= endTimeMs;
 
   const name = `Farm Pool (${farm.depositToken.slice(0, 6)}...)`;
-  const description = `Active from ${new Date(startTimeMs).toLocaleDateString()} until ${new Date(endTimeMs).toLocaleDateString()}`;
+  // const description = `Active from ${new Date(startTimeMs).toLocaleDateString()} until ${new Date(endTimeMs).toLocaleDateString()}`;
+  const description = `Active from ${new Date(startTimeMs).toLocaleDateString('en-US', { month: 'short', day: '2-digit', year: 'numeric' }).replace(' ', '/')} until ${new Date(endTimeMs).toLocaleDateString('en-US', { month: 'short', day: '2-digit', year: 'numeric' }).replace(' ', '/')}`;
   const apr = `${farm.apr.toFixed(2)}%`;
-  const tvl = farm.totalStackedAmount.toString();
+  const tvl = farm.totalStackedUSD;
   const stakeInfo = `${farm.userInfo.stackedAmount.toString()} tokens staked`;
   const earnInfo = `${farm.unclaimedReward.toString()} pending rewards`;
   const address = farm.poolAddress;
@@ -56,7 +58,7 @@ const FarmCard = ({ farm }: FarmCardProps) => {
 </p>            </div>
             <div className="flex flex-col gap-1">
               <p className="text-lg font-medium">TVL</p>
-              <p className="text-2xl sm:text-3xl font-semibold">  {Number(tvl).toFixed(6)}
+              <p className="text-2xl sm:text-3xl font-semibold">  {Number(abbreviateNumber(tvl))}
               </p>
             </div>
           </div>
