@@ -36,11 +36,8 @@ const FarmCard = ({ farm }: FarmCardProps) => {
     .replace(" ", "/")}`;
   const apr = `${farm.apr.toFixed(2)}%`;
   const tvl = farm.totalStackedUSD;
-  const stakeInfo = `${formatUnits(
-    farm.userInfo.stackedAmount,
-    18
-  )} tokens staked`;
-  const earnInfo = `${formatUnits(farm.unclaimedReward, 18)} pending rewards`;
+  const stakeInfo = `${formatUnits(farm.userInfo.stackedAmount, 18)}`;
+  const earnInfo = `${formatUnits(farm.unclaimedReward, 18)}`;
   const address = farm.poolAddress;
 
   return (
@@ -71,8 +68,15 @@ const FarmCard = ({ farm }: FarmCardProps) => {
           </div>
           <Badge
             variant="secondary"
-            className="bg-[#1b1c1d] text-white border-[#383838] self-start sm:self-center"
+            className={`flex items-center gap-2 px-3 py-1 rounded-md 
+    ${isActive ? "bg-green-400 text-white" : "bg-red-400 text-white"}
+  `}
           >
+            <span
+              className={`w-2.5 h-2.5 rounded-full 
+      ${isActive ? "bg-green-600" : "bg-red-600"}
+    `}
+            />
             {isActive ? "Active" : "Inactive"}
           </Badge>
         </div>
@@ -96,12 +100,11 @@ const FarmCard = ({ farm }: FarmCardProps) => {
           <div className="text-left flex flex-col gap-3">
             <div className="flex items-center gap-4">
               <Wallet />
-              <p className="text-base sm:text-lg">{stakeInfo}</p>
+              <p className="text-base sm:text-lg">You Staked : {stakeInfo} $</p>
             </div>
             <div className="flex items-center gap-4">
-              <DollarSign />
               <p className="text-base sm:text-lg">
-                {parseFloat(earnInfo).toFixed(2)}
+                Farming Rewards : {parseFloat(earnInfo).toFixed(2)}$
               </p>
             </div>
           </div>
