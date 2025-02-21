@@ -94,17 +94,17 @@ const FarmCard = ({ farm }: FarmCardProps) => {
               </p>
             </div>
           </div>
-
           <Separator className="bg-[#383838]" />
-
           <div className="text-left flex flex-col gap-3">
             <div className="flex items-center gap-4">
               <Wallet />
-              <p className="text-base sm:text-lg">You Staked : {stakeInfo} $</p>
+              <p className="text-base sm:text-lg">
+                User Staked Amount : {stakeInfo} CARTEL
+              </p>
             </div>
             <div className="flex items-center gap-4">
               <p className="text-base sm:text-lg">
-                Farming Rewards : {parseFloat(earnInfo).toFixed(2)}$
+                Remaining Rewards : {parseFloat(earnInfo).toFixed(2)} GAMBL
               </p>
             </div>
           </div>

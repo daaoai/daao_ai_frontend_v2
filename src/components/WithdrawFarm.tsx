@@ -1,11 +1,12 @@
 "use client";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { XCircle } from "lucide-react";
+import { XCircle, Loader } from "lucide-react";
 import useWithDraw from "@/hooks/farm/useWithdraw";
 import { formatUnits, Hex, parseUnits } from "viem";
 import { useAccount } from "wagmi";
 import { FarmPool } from "@/types/farm";
+import { useToast } from "@/hooks/use-toast";
 
 interface WithdrawProps {
   onClose: () => void;
@@ -19,32 +20,147 @@ const WithdrawFarms: React.FC<WithdrawProps> = ({
   poolData,
 }) => {
   const { withdraw, startWithdraw, getWithdrawalTime } = useWithDraw();
-  const [withDrawEnable, setWithdrawEnable] = useState(false);
   const { address } = useAccount();
+  const { toast } = useToast();
 
+  const [withDrawEnable, setWithdrawEnable] = useState(false);
   const [withdrawAmount, setWithdrawAmount] = useState<number | "">("");
   const [error, setError] = useState<string | null>(null);
+  const [withdrawTimeLeft, setWithdrawTimeLeft] = useState<string | null>(null);
+  const [loading, setLoading] = useState(false);
+  const [withdrawTxnMessage, setWithdrawTxnMessage] = useState<{
+    status: "success" | "error" | null;
+    msg: string | null;
+  }>({
+    status: null,
+    msg: null,
+  });
+
+  useEffect(() => {
+    const fetchWithdrawalTime = async () => {
+      if (address) {
+        const timeLeft = await getWithdrawalTime({ address });
+        if (timeLeft === "Available Now") {
+          setWithdrawEnable(true);
+        } else if (timeLeft === "Not Initiated") {
+          setWithdrawEnable(false);
+        } else {
+          setWithdrawTimeLeft(timeLeft);
+          setWithdrawEnable(false);
+        }
+      }
+    };
+
+    fetchWithdrawalTime();
+  }, [address]);
 
   const handleWithdraw = async () => {
-    withdraw({
-      poolAddress,
-      amount: parseUnits(withdrawAmount.toString(), 18),
+    setLoading(true);
+    setWithdrawTxnMessage({
+      status: null,
+      msg: null,
     });
+
+    toast({
+      title: "Processing Withdrawal...",
+      description: `Withdrawing ${withdrawAmount} tokens.`,
+      variant: "default",
+    });
+
+    try {
+      const receipt = await withdraw({
+        poolAddress,
+        amount: parseUnits(withdrawAmount.toString(), 18),
+      });
+
+      if (receipt?.status === "success") {
+        setWithdrawTxnMessage({
+          status: "success",
+          msg: "Withdrawal Successful",
+        });
+        toast({
+          title: "Withdrawal Successful ✅",
+          description: `Your withdrawal of ${withdrawAmount} tokens is confirmed.`,
+          variant: "default",
+        });
+
+        setTimeout(
+          () =>
+            setWithdrawTxnMessage({
+              status: null,
+              msg: null,
+            }),
+          5000
+        );
+      }
+    } catch (error) {
+      setWithdrawTxnMessage({
+        status: "error",
+        msg: "Withdrawal Failed",
+      });
+      toast({
+        title: "Withdrawal Failed ❌",
+        description: "An error occurred during withdrawal.",
+        variant: "destructive",
+      });
+    } finally {
+      setLoading(false);
+    }
   };
 
   const handleWithdrawFlow = async () => {
     if (address) {
-      const withdrawTime = await getWithdrawalTime({ address });
-      if (BigInt(withdrawTime) > BigInt(0)) {
-        withdraw({
-          poolAddress,
-          amount: parseUnits(withdrawAmount.toString(), 18),
+      if (withdrawTimeLeft && withdrawTimeLeft !== "Available Now") {
+        toast({
+          title: "Withdrawal Pending",
+          description: `You can withdraw in ${withdrawTimeLeft}.`,
+          variant: "default",
         });
-      } else {
+        return;
+      }
+
+      setLoading(true);
+      setWithdrawTxnMessage({
+        status: null,
+        msg: null,
+      });
+
+      try {
         const txn = await startWithdraw();
         if (txn?.status === "success") {
           setWithdrawEnable(true);
+          setWithdrawTxnMessage({
+            status: "success",
+            msg: "Withdrawal Initiated Successfully",
+          });
+          toast({
+            title: "Withdrawal Initiated ✅",
+            description: "You can withdraw once the cooldown period is over.",
+            variant: "default",
+          });
+
+          // Reset success message after 5 seconds
+          setTimeout(
+            () =>
+              setWithdrawTxnMessage({
+                status: null,
+                msg: null,
+              }),
+            5000
+          );
         }
+      } catch (error) {
+        setWithdrawTxnMessage({
+          status: "error",
+          msg: "Withdrawal Initiated Failed",
+        });
+        toast({
+          title: "Withdrawal Failed ❌",
+          description: "An error occurred while starting withdrawal.",
+          variant: "destructive",
+        });
+      } finally {
+        setLoading(false);
       }
     }
   };
@@ -63,6 +179,8 @@ const WithdrawFarms: React.FC<WithdrawProps> = ({
     }
     setWithdrawAmount(numericValue);
   };
+
+  console.log(formatUnits(poolData.userInfo.stackedAmount, 18), "fghgvbhj");
 
   return (
     <Card className="w-full max-w-lg bg-[#0D0D0D] border border-[#1E1E1E] rounded-xl shadow-lg text-white">
@@ -85,8 +203,16 @@ const WithdrawFarms: React.FC<WithdrawProps> = ({
       <CardContent className="p-6">
         <div className="flex flex-col gap-4">
           <p className="text-white">
-            Tokens Staked : {formatUnits(poolData.userInfo.stackedAmount, 18)}
+            Tokens Staked: {formatUnits(poolData.userInfo.stackedAmount, 18)}
+            CARTL
           </p>
+
+          {withdrawTimeLeft && (
+            <p className="text-yellow-400">
+              Withdrawal available in: {withdrawTimeLeft}
+            </p>
+          )}
+
           <input
             type="text"
             placeholder="Enter amount"
@@ -95,15 +221,38 @@ const WithdrawFarms: React.FC<WithdrawProps> = ({
             className="w-full px-3 py-2 bg-[#1E1E1E] text-white rounded-md border border-[#2D2D2D] focus:outline-none"
           />
           {error && <p className="text-red-500 text-sm mt-1">{error}</p>}
+
           <button
-            className="w-full px-3 py-2 text-white rounded-md bg-[#27292a] hover:bg-[#323435] transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+            className="w-full flex items-center justify-center gap-2 px-3 py-2 text-white rounded-md bg-[#27292a] hover:bg-[#323435] transition-all disabled:opacity-50 disabled:cursor-not-allowed"
             onClick={withDrawEnable ? handleWithdraw : handleWithdrawFlow}
             disabled={
-              withdrawAmount === "" || withdrawAmount === 0 || error !== null
+              withdrawAmount === "" ||
+              withdrawAmount === 0 ||
+              error !== null ||
+              loading
             }
           >
-            Withdraw
+            {loading ? (
+              <>
+                <Loader className="animate-spin" size={18} />
+                Processing...
+              </>
+            ) : (
+              "Withdraw"
+            )}
           </button>
+
+          {/* Success/Failure Messages */}
+          {withdrawTxnMessage.status === "success" && (
+            <p className="text-green-500 text-center mt-2">
+              {withdrawTxnMessage.msg} ✅
+            </p>
+          )}
+          {withdrawTxnMessage.status === "error" && (
+            <p className="text-red-500 text-center mt-2">
+              {withdrawTxnMessage.msg} ❌
+            </p>
+          )}
         </div>
       </CardContent>
     </Card>
