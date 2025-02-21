@@ -26,26 +26,25 @@ const FarmStake = () => {
 
   useEffect(() => {
     if (!address) return;
-
-    const fetchPoolAddresses = async () => {
-      try {
-        setIsPoolDetailsLoading(true);
-        const response = await getPoolDetails({
-          poolAddress: address as `0x${string}`,
-        });
-
-        if (response) {
-          setPoolData(response);
-        }
-      } catch (error) {
-        console.error("Error fetching pool addresses:", error);
-      } finally {
-        setIsPoolDetailsLoading(false);
-      }
-    };
-
     fetchPoolAddresses();
   }, [address]);
+
+  const fetchPoolAddresses = async () => {
+    try {
+      setIsPoolDetailsLoading(true);
+      const response = await getPoolDetails({
+        poolAddress: address as `0x${string}`,
+      });
+
+      if (response) {
+        setPoolData(response);
+      }
+    } catch (error) {
+      console.error("Error fetching pool addresses:", error);
+    } finally {
+      setIsPoolDetailsLoading(false);
+    }
+  };
 
   const handleHarvest = async () => {
     if (poolData?.unclaimedReward && poolData.unclaimedReward > BigInt(0)) {
@@ -99,10 +98,12 @@ const FarmStake = () => {
       <div className="max-w-xl mx-auto py-10 px-4">
         <div className="bg-[#0d0d0d] border-[#383838] border-2 rounded-lg shadow-md p-6">
           {/* Pool Address - Shows Loading if Undefined */}
-          <div className="text-gray-400 mb-6">
-            Pool Address:{" "}
+          <div className="text-gray-400 mb-6 flex items-center">
+            Pool Address:
             {address ? (
-              <span className="text-white">{address}</span>
+              <span className="text-white truncate w-80 inline-block overflow-hidden whitespace-nowrap">
+                {address}
+              </span>
             ) : (
               <Skeleton className="w-40 h-5 inline-block" />
             )}
@@ -133,7 +134,7 @@ const FarmStake = () => {
             </div>
 
             <div>
-              <p className="text-gray-400">Rewards Remaining</p>
+              <p className="text-gray-400">Pending Rewards</p>
               {isPoolDetailsLoading ? (
                 <Skeleton className="w-20 h-6" />
               ) : (
@@ -224,6 +225,7 @@ const FarmStake = () => {
             <DepositFarms
               onClose={closeDepositModal}
               poolAddress={address as Hex}
+              fetchPoolAddresses={fetchPoolAddresses}
             />
           </ModalWrapper>
         </div>
