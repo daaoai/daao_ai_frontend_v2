@@ -125,7 +125,7 @@ const FarmStake = () => {
                 <Skeleton className="w-20 h-6" />
               ) : (
                 <p className="text-lg font-semibold text-white">
-                  $ {Number(abbreviateNumber(poolData?.totalStackedUSD!))}
+                  $ {abbreviateNumber(poolData?.totalStackedUSD!)}
                 </p>
               )}
             </div>
@@ -156,7 +156,11 @@ const FarmStake = () => {
               ) : (
                 <p className="text-lg font-semibold text-white">
                   {poolData?.userInfo?.stackedAmount
-                    ? formatUnits(poolData?.userInfo?.stackedAmount, 18)
+                    ? abbreviateNumber(
+                        Number(
+                          formatUnits(poolData?.userInfo?.stackedAmount, 18)
+                        )
+                      )
                     : "0"}
                 </p>
               )}

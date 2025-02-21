@@ -40,6 +40,8 @@ const FarmCard = ({ farm }: FarmCardProps) => {
   const earnInfo = `${formatUnits(farm.rewards.remainingRewards, 18)}`;
   const address = farm.poolAddress;
 
+  console.log(tvl, "tvltesting");
+
   return (
     <Card className="box-border w-full max-w-[420x] bg-[#0d0d0d] border-[#383838] text-white flex flex-col">
       <CardContent className="p-6 flex flex-col gap-6 flex-grow">
@@ -90,7 +92,7 @@ const FarmCard = ({ farm }: FarmCardProps) => {
             <div className="flex flex-col gap-1">
               <p className="text-lg font-medium">TVL</p>
               <p className="text-2xl sm:text-3xl font-semibold">
-                $ {Number(abbreviateNumber(tvl))}
+                $ {abbreviateNumber(tvl)}
               </p>
             </div>
           </div>
@@ -99,12 +101,13 @@ const FarmCard = ({ farm }: FarmCardProps) => {
             <div className="flex items-center gap-4">
               <Wallet />
               <p className="text-base sm:text-lg">
-                Total Staked CARTEL : {stakeInfo} CARTEL
+                Total Staked CARTEL : {abbreviateNumber(Number(stakeInfo))}{" "}
+                CARTEL
               </p>
             </div>
             <div className="flex items-center gap-4">
               <p className="text-base sm:text-lg">
-                Total Remaining Rewards : {parseFloat(earnInfo).toFixed(2)}{" "}
+                Total Remaining Rewards : {abbreviateNumber(Number(earnInfo))}{" "}
                 GAMBL
               </p>
             </div>
