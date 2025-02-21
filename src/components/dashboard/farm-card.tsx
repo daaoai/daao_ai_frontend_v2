@@ -36,8 +36,8 @@ const FarmCard = ({ farm }: FarmCardProps) => {
     .replace(" ", "/")}`;
   const apr = `${farm.apr.toFixed(2)}%`;
   const tvl = farm.totalStackedUSD;
-  const stakeInfo = `${formatUnits(farm.userInfo.stackedAmount, 18)}`;
-  const earnInfo = `${formatUnits(farm.unclaimedReward, 18)}`;
+  const stakeInfo = `${formatUnits(farm.totalStackedAmount, 18)}`;
+  const earnInfo = `${formatUnits(farm.rewards.remainingRewards, 18)}`;
   const address = farm.poolAddress;
 
   return (
@@ -99,12 +99,13 @@ const FarmCard = ({ farm }: FarmCardProps) => {
             <div className="flex items-center gap-4">
               <Wallet />
               <p className="text-base sm:text-lg">
-                User Staked Amount : {stakeInfo} CARTEL
+                Total Staked CARTEL : {stakeInfo} CARTEL
               </p>
             </div>
             <div className="flex items-center gap-4">
               <p className="text-base sm:text-lg">
-                Remaining Rewards : {parseFloat(earnInfo).toFixed(2)} GAMBL
+                Total Remaining Rewards : {parseFloat(earnInfo).toFixed(2)}{" "}
+                GAMBL
               </p>
             </div>
           </div>
