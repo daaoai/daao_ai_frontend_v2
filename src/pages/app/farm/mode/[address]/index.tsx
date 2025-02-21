@@ -139,10 +139,14 @@ const FarmStake = () => {
                 <Skeleton className="w-20 h-6" />
               ) : (
                 <p className="text-lg font-semibold text-white">
-                  {poolData?.userInfo?.rewardDebt
-                    ? Number(
-                        formatUnits(poolData?.userInfo?.rewardDebt, 18)
-                      ).toFixed(2)
+                  {poolData?.unclaimedReward
+                    ? abbreviateNumber(
+                        Number(
+                          Number(
+                            formatUnits(poolData?.unclaimedReward, 18)
+                          ).toFixed(2)
+                        )
+                      )
                     : "0"}
                 </p>
               )}
