@@ -24,8 +24,9 @@ const WithdrawFarms: React.FC<WithdrawProps> = ({
   const { toast } = useToast();
 
   const [withDrawEnable, setWithdrawEnable] = useState(false);
-  const [withdrawAmount, setWithdrawAmount] = useState<number | "">("");
-  const [error, setError] = useState<string | null>(null);
+  const [withdrawAmount, setWithdrawAmount] = useState<number>(
+    parseFloat(formatUnits(poolData.userInfo.stackedAmount, 18))
+  );
   const [withdrawTimeLeft, setWithdrawTimeLeft] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [withdrawTxnMessage, setWithdrawTxnMessage] = useState<{
@@ -165,21 +166,6 @@ const WithdrawFarms: React.FC<WithdrawProps> = ({
     }
   };
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.value;
-    if (!/^\d*\.?\d*$/.test(value)) return;
-    const numericValue = value === "" ? "" : parseFloat(value);
-    const stakedAmount = parseFloat(
-      formatUnits(poolData.userInfo.stackedAmount, 18)
-    );
-    if (numericValue !== "" && numericValue > stakedAmount) {
-      setError(`Amount exceeds your staked tokens (${stakedAmount})`);
-    } else {
-      setError(null);
-    }
-    setWithdrawAmount(numericValue);
-  };
-
   console.log(formatUnits(poolData.userInfo.stackedAmount, 18), "fghgvbhj");
 
   return (
@@ -213,24 +199,10 @@ const WithdrawFarms: React.FC<WithdrawProps> = ({
             </p>
           )}
 
-          <input
-            type="text"
-            placeholder="Enter amount"
-            value={withdrawAmount}
-            onChange={handleInputChange}
-            className="w-full px-3 py-2 bg-[#1E1E1E] text-white rounded-md border border-[#2D2D2D] focus:outline-none"
-          />
-          {error && <p className="text-red-500 text-sm mt-1">{error}</p>}
-
           <button
             className="w-full flex items-center justify-center gap-2 px-3 py-2 text-white rounded-md bg-[#27292a] hover:bg-[#323435] transition-all disabled:opacity-50 disabled:cursor-not-allowed"
             onClick={withDrawEnable ? handleWithdraw : handleWithdrawFlow}
-            disabled={
-              withdrawAmount === "" ||
-              withdrawAmount === 0 ||
-              error !== null ||
-              loading
-            }
+            disabled={withdrawAmount === 0 || loading}
           >
             {loading ? (
               <>

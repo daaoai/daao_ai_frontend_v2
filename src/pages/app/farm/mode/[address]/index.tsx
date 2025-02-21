@@ -139,9 +139,9 @@ const FarmStake = () => {
                 <Skeleton className="w-20 h-6" />
               ) : (
                 <p className="text-lg font-semibold text-white">
-                  {poolData?.rewards?.remainingRewards
+                  {poolData?.userInfo?.rewardDebt
                     ? Number(
-                        formatUnits(poolData?.rewards?.remainingRewards, 18)
+                        formatUnits(poolData?.userInfo?.rewardDebt, 18)
                       ).toFixed(2)
                     : "0"}
                 </p>
@@ -149,13 +149,13 @@ const FarmStake = () => {
             </div>
 
             <div>
-              <p className="text-gray-400">Rewards Balance</p>
+              <p className="text-gray-400">Stacked CARTEL</p>
               {isPoolDetailsLoading ? (
                 <Skeleton className="w-20 h-6" />
               ) : (
                 <p className="text-lg font-semibold text-white">
-                  {poolData?.rewards?.remainingRewards
-                    ? formatUnits(poolData?.rewards?.rewards, 18)
+                  {poolData?.userInfo?.stackedAmount
+                    ? formatUnits(poolData?.userInfo?.stackedAmount, 18)
                     : "0"}
                 </p>
               )}

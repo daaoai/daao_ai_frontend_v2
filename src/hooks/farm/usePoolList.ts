@@ -117,7 +117,10 @@ const usePoolList = () => {
         const apr =
           totalStackedUSD && rewardEmmisionUsd
             ? Math.abs(
-                Number(((rewardEmmisionUsd * 365) / totalStackedUSD) * 100) || 0
+                Number(
+                  ((rewardEmmisionUsd * 365 * 24 * 3600) / totalStackedUSD) *
+                    100
+                ) || 0
               )
             : 0;
         console.log(apr);
