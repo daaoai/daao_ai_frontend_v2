@@ -78,10 +78,7 @@ const FarmStake = () => {
         .replace(" ", "/")}`
     : "";
 
-  const isHarvestDisabled =
-    !poolData?.userInfo.rewardDebt ||
-    BigInt(0) === poolData?.userInfo.rewardDebt;
-
+  const isHarvestDisabled = poolData?.unclaimedReward == BigInt(0);
   return (
     <div className="min-h-screen bg-black text-white">
       {/* Top Bar */}
@@ -200,7 +197,7 @@ const FarmStake = () => {
             </button>
 
             <button
-              disabled={isHarvestDisabled || isPoolDetailsLoading}
+              disabled={isHarvestDisabled}
               className={`flex-1 bg-[#27292a] transition text-white py-2 rounded-md font-semibold ${
                 isHarvestDisabled || isPoolDetailsLoading
                   ? "opacity-50 cursor-not-allowed"
