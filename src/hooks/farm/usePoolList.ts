@@ -93,9 +93,9 @@ const usePoolList = () => {
       ];
 
       if (results) {
-        const rewardTokenPrice = 0.00011; // await fetchTokenPrice(results[2][0]);
+        const rewardTokenPrice = 0.00011; // await fetchTokenPrice(results[2][0]); // GAMBL TOKEN
         const depositTokenPrice = await fetchTokenPrice(results[4]);
-        const cartelTokenPrice = await fetchTokenPrice(CARTEL_TOKEN_ADDRESS);
+        // const cartelTokenPrice = await fetchTokenPrice(CARTEL_TOKEN_ADDRESS);
         const decimals = await publicClient?.multicall({
           contracts: [results[2][0], results[4]].map((address, index) => ({
             abi: CARTEL,
