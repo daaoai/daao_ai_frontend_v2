@@ -11,7 +11,7 @@ import { FARM_FACTORY_ABI } from "@/abi/farmFactory";
 const usePoolList = () => {
   const { address } = useAccount();
   const publicClient = usePublicClient();
-  const { fetchTokenPrice } = useTokenPrice();
+  const { fetchTokenPrice, fetchTokenPriceGeko } = useTokenPrice();
   const getTotalPoolLength = async () => {
     try {
       const response = await publicClient?.readContract({
@@ -93,9 +93,8 @@ const usePoolList = () => {
       ];
 
       if (results) {
-        const rewardTokenPrice = 0.00011; // await fetchTokenPrice(results[2][0]); // GAMBL TOKEN
+        const rewardTokenPrice = await fetchTokenPriceGeko(results[2][0]); // GAMBL TOKEN
         const depositTokenPrice = await fetchTokenPrice(results[4]);
-        // const cartelTokenPrice = await fetchTokenPrice(CARTEL_TOKEN_ADDRESS);
         const decimals = await publicClient?.multicall({
           contracts: [results[2][0], results[4]].map((address, index) => ({
             abi: CARTEL,
@@ -109,10 +108,10 @@ const usePoolList = () => {
         ];
         const rewardEmmisionUsd =
           Number(formatUnits(results[3] || BigInt(0), decimalResults[0])) *
-          Number(rewardTokenPrice);
+          Number(rewardTokenPrice || 0);
         const totalStackedUSD =
           Number(formatUnits(results[1] || BigInt(0), decimalResults[1])) *
-          Number(depositTokenPrice);
+          Number(depositTokenPrice || 0);
 
         const apr =
           totalStackedUSD && rewardEmmisionUsd
