@@ -27,7 +27,7 @@ const getFeaturedFunds = () => {
       imgSrc: FUND_CARD_PLACEHOLDER_IMAGE,
     },
     {
-      id: '178',
+      id: '179',
       title: 'To Be Announced',
       token: 'TBA',
       status: false,

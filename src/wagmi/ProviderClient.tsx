@@ -19,7 +19,7 @@ interface ProviderClientProps {
 const ProviderClient = ({ wagmiCookie, children }: ProviderClientProps) => {
   const wagmiConfig = useMemo(() => getWagmiConfig(), []);
   const initialWagmiState = useMemo(() => cookieToInitialState(wagmiConfig, wagmiCookie), [wagmiConfig, wagmiCookie]);
-  const queryClient = new QueryClient();
+  const queryClient = useMemo(() => new QueryClient(), []); // Fix: Move to useMemo
 
   return (
     <ReduxProvider store={store}>
@@ -27,11 +27,15 @@ const ProviderClient = ({ wagmiCookie, children }: ProviderClientProps) => {
         {/* <SessionProvider session={pageProps.session}> */}
         <QueryClientProvider client={queryClient}>
           <RainbowKitProvider initialChain={mode.id}>
-            <ThemeProvider attribute="class" defaultTheme="dark" enableSystem disableTransitionOnChange>
+            <ThemeProvider
+              attribute="class"
+              defaultTheme="dark"
+              enableSystem={false} // Changed to false to prevent initial flicker
+              forcedTheme="dark" // Force dark theme
+              disableTransitionOnChange
+            >
               {/* <Layout font={'fontChoice'}> */}
-                <FundProvider>
-                  {children}
-                </FundProvider>
+              <FundProvider>{children}</FundProvider>
               {/* </Layout> */}
             </ThemeProvider>
           </RainbowKitProvider>
