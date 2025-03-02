@@ -126,8 +126,8 @@ const Liquidity = () => {
       const { tick, sqrtPriceX96 } = await poolContractInstance.slot0();
       const tickSpacing = await poolContractInstance.tickSpacing();
 
-      let token0 = await poolContractInstance.token0();
-      let token1 = await poolContractInstance.token1();
+      const token0 = await poolContractInstance.token0();
+      const token1 = await poolContractInstance.token1();
 
       const token0Instance = new ethers.Contract(token0, ERC_20_ABI, provider);
       const token1Instance = new ethers.Contract(token1, ERC_20_ABI, provider);
@@ -147,7 +147,7 @@ const Liquidity = () => {
         currentPrice = Number(tickToPrice(baseToken, quoteToken, Number(tick)).toSignificant(6));
         const sqrtRatioX96 = JSBI.BigInt(sqrtPriceX96);
         currentPrice = Number(
-          new Price(quoteToken, baseToken, Q192, JSBI.multiply(sqrtRatioX96, sqrtRatioX96)).toSignificant(6)
+          new Price(quoteToken, baseToken, Q192, JSBI.multiply(sqrtRatioX96, sqrtRatioX96)).toSignificant(6),
         );
       }
 
@@ -186,14 +186,14 @@ const Liquidity = () => {
         baseToken,
         quoteToken,
         JSBI.BigInt(10 ** 18), // denominator
-        JSBI.BigInt(Math.floor(lowerPrice * 10 ** 18)) // numerator
+        JSBI.BigInt(Math.floor(lowerPrice * 10 ** 18)), // numerator
       );
 
       const upperPriceFraction = new Price(
         baseToken,
         quoteToken,
         JSBI.BigInt(10 ** 18), // denominator
-        JSBI.BigInt(Math.floor(upperPrice * 10 ** 18)) // numerator
+        JSBI.BigInt(Math.floor(upperPrice * 10 ** 18)), // numerator
       );
 
       let lowerTick = priceToClosestTick(lowerPriceFraction as any);
@@ -228,11 +228,11 @@ const Liquidity = () => {
       poolAddress,
       sqrtPriceX96,
       priceRangeData.lowerTick, // Now safe to access
-      priceRangeData.upperTick // Now safe to access
+      priceRangeData.upperTick, // Now safe to access
     );
 
     amount0 = ethers.utils.formatUnits(amount0.toString(), token0Decimals);
-    let amount1 = ethers.utils.formatUnits(givenAmount1, token1Decimals);
+    const amount1 = ethers.utils.formatUnits(givenAmount1, token1Decimals);
 
     return { amount0, amount1 };
   };
@@ -240,7 +240,7 @@ const Liquidity = () => {
   const calculateEstimatedAmount1 = async (
     givenAmount0: any,
     currentPriceData: any,
-    priceRangeData: any
+    priceRangeData: any,
     // provider: ethers.providers.Provider
   ) => {
     const jsonProvider = new ethers.providers.JsonRpcProvider(RPC_URL, {
@@ -258,12 +258,12 @@ const Liquidity = () => {
         poolAddress,
         sqrtPriceX96,
         priceRangeData?.lowerTick,
-        priceRangeData?.upperTick
+        priceRangeData?.upperTick,
       )
     ).toString();
 
     amount1 = ethers.utils.formatUnits(amount1, token1Decimals);
-    let amount0 = ethers.utils.formatUnits(givenAmount0, token0Decimals);
+    const amount0 = ethers.utils.formatUnits(givenAmount0, token0Decimals);
 
     return { amount0, amount1 };
   };
@@ -292,11 +292,11 @@ const Liquidity = () => {
 
   const handleToken1AmountChange = async (e: any) => {
     setToken0Amount(e);
-    let amount = e * 10 ** pricedata?.token0Decimals;
-    let priceRange = await calculatePriceRangeInTick(Number(selectedRange) / 100, pricedata);
+    const amount = e * 10 ** pricedata?.token0Decimals;
+    const priceRange = await calculatePriceRangeInTick(Number(selectedRange) / 100, pricedata);
     setPriceRange(priceRange ?? null);
 
-    let calculatedAmount = await calculateEstimatedAmount0(String(amount), pricedata, priceRange);
+    const calculatedAmount = await calculateEstimatedAmount0(String(amount), pricedata, priceRange);
     setToken1Amount(calculatedAmount?.amount0);
   };
 
@@ -336,7 +336,7 @@ const Liquidity = () => {
       // let percentageDifference = 0.1 // 10%
       // let percentageDifference = 0.3; // 30%
       // let priceRange = await calculatePriceRangeInTick(percentageDifference, priceData)
-      let priceRange = await calculatePriceRangeInTick(Number(selectedRange) / 100, priceData);
+      const priceRange = await calculatePriceRangeInTick(Number(selectedRange) / 100, priceData);
 
       // Add null check before using priceRange
       if (!priceRange?.lowerTick || !priceRange?.upperTick) {
@@ -351,7 +351,7 @@ const Liquidity = () => {
 
       const amount1In = '1000000000000000000'; // 1 * 10**token1Decimals
 
-      let amounts = await calculateEstimatedAmount0(amount1In, priceData, priceRange);
+      const amounts = await calculateEstimatedAmount0(amount1In, priceData, priceRange);
       console.log('Amount1Given, amounts:', amounts);
 
       const amount0In = '1000000000000000000';
@@ -359,10 +359,10 @@ const Liquidity = () => {
       //     chainId: MODE_NETWORK_CHAIN_ID,
       //     name: 'Mode Network'
       // });
-      let amounts1 = await calculateEstimatedAmount1(
+      const amounts1 = await calculateEstimatedAmount1(
         amount0In,
         priceData,
-        priceRange
+        priceRange,
         // jsonProvider
       );
       console.log('Amount0 Given, amounts:', amounts1);
@@ -408,7 +408,7 @@ const Liquidity = () => {
         setApprovalStatus(`Approving ${token0}...`);
         const approve0Tx = await token0Contract.approve(
           NON_FUNGIBLE_POSITION_MANAGER_ADDRESS,
-          amount0Desired.toString()
+          amount0Desired.toString(),
         );
         await approve0Tx.wait();
         setApprovalStatus(null);
@@ -419,7 +419,7 @@ const Liquidity = () => {
         setApprovalStatus(`Approving ${token1}...`);
         const approve1Tx = await token1Contract.approve(
           NON_FUNGIBLE_POSITION_MANAGER_ADDRESS,
-          amount1Desired.toString()
+          amount1Desired.toString(),
         );
         await approve1Tx.wait();
         setApprovalStatus(null);
@@ -475,7 +475,7 @@ const Liquidity = () => {
 
       // Add validation for all parameters
       const isValid = Object.values(params).every(
-        (v) => v !== undefined && v !== null && v !== 'NaN' && v !== 'undefined'
+        (v) => v !== undefined && v !== null && v !== 'NaN' && v !== 'undefined',
       );
 
       if (!isValid) {
@@ -485,7 +485,7 @@ const Liquidity = () => {
       const positionManagerContract = new ethers.Contract(
         NON_FUNGIBLE_POSITION_MANAGER_ADDRESS as string,
         NON_FUNGIBLE_POSITION_MANAGER_ABI,
-        signer
+        signer,
       );
 
       const tx = await positionManagerContract.mint(params);
@@ -546,7 +546,7 @@ const Liquidity = () => {
         VELO_FACTORY_ADDRESS!,
         VELO_FACTORY_ABI,
         // velodromeFactoryABI,
-        provider
+        provider,
       );
 
       const [tokenA, tokenB] = [token0Address, MODE_TOKEN_ADDRESS].sort();
@@ -587,7 +587,7 @@ const Liquidity = () => {
       setToken1Amount('');
       setDirection('to');
     } else {
-      let currentConversion = 1 / (pricedata && pricedata?.currentPrice);
+      const currentConversion = 1 / (pricedata && pricedata?.currentPrice);
 
       setToken1(token0);
       setToken0(token1);
@@ -603,10 +603,10 @@ const Liquidity = () => {
   useEffect(() => {
     if (pricedata) {
       if (direction === 'from') {
-        let currentConversion = pricedata && pricedata?.currentPrice;
+        const currentConversion = pricedata && pricedata?.currentPrice;
         setCurrentTokenSwapAmount(currentConversion);
       } else {
-        let currentConversion = 1 / (pricedata && pricedata?.currentPrice);
+        const currentConversion = 1 / (pricedata && pricedata?.currentPrice);
         setCurrentTokenSwapAmount(currentConversion);
       }
     }

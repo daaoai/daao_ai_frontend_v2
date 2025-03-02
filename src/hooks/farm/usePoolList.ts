@@ -48,7 +48,7 @@ const usePoolList = () => {
         contracts: funcNames.map((functionName) => ({
           abi: POOL_ABI,
           address: poolAddress,
-          functionName: functionName,
+          functionName,
         })),
       });
 
@@ -60,7 +60,7 @@ const usePoolList = () => {
           contracts: usrInfoFunc.map((functionName) => ({
             abi: POOL_ABI,
             address: poolAddress,
-            functionName: functionName,
+            functionName,
             args: [address],
           })),
         });
@@ -85,7 +85,7 @@ const usePoolList = () => {
         const decimals = await publicClient?.multicall({
           contracts: [results[2][0], results[4]].map((address) => ({
             abi: CARTEL,
-            address: address,
+            address,
             functionName: 'decimals',
           })),
         });
@@ -135,7 +135,7 @@ const usePoolList = () => {
     const poolListData = await Promise.allSettled(poolDetaisPromise);
     const poolList: FarmPool[] = (
       poolListData.filter(
-        (poolDetailsRes) => poolDetailsRes.status === 'fulfilled' && poolDetailsRes.value
+        (poolDetailsRes) => poolDetailsRes.status === 'fulfilled' && poolDetailsRes.value,
       ) as PromiseFulfilledResult<FarmPool>[]
     ).map((res) => res.value);
     return poolList;

@@ -9,28 +9,29 @@ import { useRouter } from 'next/navigation';
 import { useToast } from '@/hooks/use-toast';
 import { ConnectWalletButton } from '@/components/connect-button';
 import starIcon from '/public/assets/hero_star_icon.png';
+import { Fund } from '@/types/fund';
 
-const getFeaturedFunds = () => {
+const getFeaturedFunds = (): Fund[] => {
   return [
     {
       id: '1',
       title: 'DeFAI Cartel',
       token: 'CARTEL',
-      status: 'trading' as 'trading',
+      status: 'trading',
       imgSrc: CURRENT_DAO_IMAGE,
     },
     {
       id: '178',
       title: 'To Be Announced',
       token: 'TBA',
-      status: false,
+      status: 'soon',
       imgSrc: FUND_CARD_PLACEHOLDER_IMAGE,
     },
     {
       id: '179',
       title: 'To Be Announced',
       token: 'TBA',
-      status: false,
+      status: 'live',
       imgSrc: FUND_CARD_PLACEHOLDER_IMAGE,
     },
     // { id: '435', title: 'Soul Dogs', token: 'FDREMA', status: false, imgSrc: FUND_CARD_PLACEHOLDER_IMAGE },
@@ -42,7 +43,7 @@ const AppHome: React.FC = () => {
   const router = useRouter();
   const { toast } = useToast();
   console.log(isConnected);
-  const FEATURED_FUNDS = getFeaturedFunds();
+  const FEATURED_FUNDS: Fund[] = getFeaturedFunds();
   // const UPCOMING_FUNDS = getUpcomingFunds();
 
   const onFundClick = (fundId: string, type: 'dashboard' | 'upcoming') => {

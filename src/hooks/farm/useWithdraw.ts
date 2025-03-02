@@ -41,7 +41,7 @@ const useWithDraw = () => {
       console.log({ error });
       const { errorMsg } = handleViemTransactionError({
         abi: POOL_ABI as Abi,
-        error: error,
+        error,
       });
 
       toast({
@@ -87,7 +87,7 @@ const useWithDraw = () => {
       console.log({ error });
       const { errorMsg } = handleViemTransactionError({
         abi: POOL_ABI as Abi,
-        error: error,
+        error,
       });
       toast({
         title: 'Start Withdrawal Failed',
@@ -124,7 +124,7 @@ const useWithDraw = () => {
       console.log({ error });
       const { errorMsg } = handleViemTransactionError({
         abi: POOL_ABI as Abi,
-        error: error,
+        error,
       });
 
       toast({

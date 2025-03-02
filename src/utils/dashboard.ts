@@ -10,8 +10,8 @@ export const formatDaoHoldingTokens = (daoTokens: EnhancedApiResponse): Asset[] 
       return {
         token: item.token.symbol,
         // tokenIcon: item.token.icon_url ?? "",
-        balance: balance,
-        price: price,
+        balance,
+        price,
         totalValue: price * balance,
       };
     });

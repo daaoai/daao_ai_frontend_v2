@@ -11,17 +11,12 @@ import {
   CarouselNext,
   CarouselPrevious,
 } from '@/shadcn/components/ui/carousel';
+import { Fund } from '@/types/fund';
 
 interface FundSectionProps {
   title: string;
   subtitle: string;
-  funds: Array<{
-    id: string;
-    title: string;
-    token: string;
-    status: 'live' | 'funding' | 'trading' | 'soon' | boolean;
-    imgSrc: string;
-  }>;
+  funds: Fund[];
   onFundClick: (fundId: string) => void;
 }
 
@@ -54,14 +49,7 @@ export function FundSection({ title, subtitle, funds, onFundClick }: FundSection
                     title={fund.title}
                     token={fund.token}
                     uId={fund.id}
-                    // status={fund.status}
-                    status={
-                      typeof fund.status === 'boolean'
-                        ? fund.status
-                          ? 'live' // Map `true` to "live"
-                          : 'soon' // Map `false` to "soon"
-                        : fund.status
-                    }
+                    status={fund.status}
                     imgSrc={fund.imgSrc}
                   />
                 </button>

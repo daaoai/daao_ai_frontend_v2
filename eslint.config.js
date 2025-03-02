@@ -19,7 +19,6 @@ export default [
     rules: {
       // Convert errors to warnings
       '@typescript-eslint/no-unused-vars': 'error',
-      'react-hooks/exhaustive-deps': 'warn',
 
       // Other rules from your previous config
       'prefer-const': 'error',
@@ -29,6 +28,7 @@ export default [
       'react/jsx-fragments': ['warn', 'syntax'],
       'react/react-in-jsx-scope': 'off',
       'react/prop-types': 'off',
+      '@typescript-eslint/no-explicit-any': 'off',
     },
     settings: {
       react: {

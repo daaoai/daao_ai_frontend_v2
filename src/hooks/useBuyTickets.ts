@@ -118,7 +118,7 @@ const useBuyTickets = () => {
       setMintedData(null);
       setIsLoading(true);
 
-      let totalCost = new bn(ticketCount).multipliedBy(ticketPrice).toFixed();
+      const totalCost = new bn(ticketCount).multipliedBy(ticketPrice).toFixed();
       const requiredApprovalAmount = parseUnits(totalCost, 1);
 
       const allowanceSufficient = await checkAllowance(requiredApprovalAmount);

@@ -43,7 +43,7 @@ const useDeposit = () => {
       console.log({ error });
       const { errorMsg } = handleViemTransactionError({
         abi: POOL_ABI as Abi,
-        error: error,
+        error,
       });
       toast({
         title: errorMsg,

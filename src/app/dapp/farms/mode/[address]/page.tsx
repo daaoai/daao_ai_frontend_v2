@@ -112,7 +112,11 @@ const FarmStake = () => {
               {isPoolDetailsLoading ? (
                 <Skeleton className="w-20 h-6" />
               ) : (
-                <p className="text-lg font-semibold text-white">$ {abbreviateNumber(poolData?.totalStackedUSD!)}</p>
+                <>
+                  {poolData && (
+                    <p className="text-lg font-semibold text-white">$ {abbreviateNumber(poolData.totalStackedUSD)}</p>
+                  )}
+                </>
               )}
             </div>
 
