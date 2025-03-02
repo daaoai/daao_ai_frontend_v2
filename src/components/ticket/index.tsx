@@ -1,32 +1,19 @@
-"use client";
-import React, { useState, useEffect } from "react";
-import {
-  Card,
-  CardContent,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
-import { Label } from "@/components/ui/label";
-import { Alert, AlertDescription } from "@/components/ui/alert";
-import useGetTicketPrice from "@/hooks/useTicket";
-import useGetBalance from "@/hooks/useGetBalance";
-import { formatUnits } from "viem";
-import useBuyTickets from "@/hooks/useBuyTickets";
-import { Wallet, XCircle, Info } from "lucide-react";
-import { workSans } from "@/lib/fonts"
+'use client';
+import React, { useState, useEffect } from 'react';
+import useGetTicketPrice from '@/hooks/useTicket';
+import useGetBalance from '@/hooks/useGetBalance';
+import { formatUnits } from 'viem';
+import useBuyTickets from '@/hooks/useBuyTickets';
+import { Wallet, XCircle, Info } from 'lucide-react';
 
-import {
-  Tooltip,
-  TooltipProvider,
-  TooltipTrigger,
-  TooltipContent,
-} from "@/components/ui/tooltip";
-import { useToast } from "@/hooks/use-toast";
-import { TICKET_DESCRIPTION } from "@/content/ticketDescription";
-
+import { useToast } from '@/hooks/use-toast';
+import { TICKET_DESCRIPTION } from '@/content/ticketDescription';
+import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/shadcn/components/ui/card';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/shadcn/components/ui/tooltip';
+import { Button } from '@/shadcn/components/ui/button';
+import { Label } from '@/shadcn/components/ui/label';
+import { Input } from '@/shadcn/components/ui/input';
+import { Alert, AlertDescription } from '@/shadcn/components/ui/alert';
 
 const MAX_TICKETS = 25;
 
@@ -35,11 +22,10 @@ interface TicketPurchaseProps {
   onTicketsUpdated: () => void;
 }
 
-
-const TicketPurchase: React.FC<TicketPurchaseProps> = ({ onClose,onTicketsUpdated }) => {
+const TicketPurchase: React.FC<TicketPurchaseProps> = ({ onClose, onTicketsUpdated }) => {
   const [tickets, setTickets] = useState(0);
-  const [nftId, setNftId] = useState("");
-  const [localError, setLocalError] = useState("");
+  const [nftId, setNftId] = useState('');
+  const [localError, setLocalError] = useState('');
 
   const { ticketPrice } = useGetTicketPrice();
   const { symbol, decimals, balance } = useGetBalance();
@@ -49,11 +35,11 @@ const TicketPurchase: React.FC<TicketPurchaseProps> = ({ onClose,onTicketsUpdate
   // Validate ticket count
   useEffect(() => {
     if (tickets < 1) {
-      setLocalError("Please select at least 1 ticket");
+      setLocalError('Please select at least 1 ticket');
     } else if (tickets > MAX_TICKETS) {
       setLocalError(`You can select a maximum of ${MAX_TICKETS} tickets`);
     } else {
-      setLocalError("");
+      setLocalError('');
     }
   }, [tickets]);
 
@@ -62,12 +48,11 @@ const TicketPurchase: React.FC<TicketPurchaseProps> = ({ onClose,onTicketsUpdate
     if (mintedData) {
       setNftId(mintedData.tokenId.toString());
       onTicketsUpdated(); // Call the parent's refetch function
-
     }
   }, [mintedData]);
 
   const handleTicketChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = Number.parseInt(e.target.value) || 0;  
+    const value = Number.parseInt(e.target.value) || 0;
     setTickets(value);
   };
 
@@ -76,14 +61,12 @@ const TicketPurchase: React.FC<TicketPurchaseProps> = ({ onClose,onTicketsUpdate
   const totalTicketAmount = tickets * Number(pricePerTicket);
 
   const handleBuyTickets = async () => {
-
-    if(Number(formatUnits((balance ?? 0) as bigint, decimals ?? 18)) < totalTicketAmount){
+    if (Number(formatUnits((balance ?? 0) as bigint, decimals ?? 18)) < totalTicketAmount) {
       toast({
-        title: "Insufficient Balance",
-        variant: "destructive",
-        className: `${workSans.className}`
-      })
-      return
+        title: 'Insufficient Balance',
+        variant: 'destructive',
+      });
+      return;
     }
     await buyTickets({
       ticketCount: tickets,
@@ -98,9 +81,7 @@ const TicketPurchase: React.FC<TicketPurchaseProps> = ({ onClose,onTicketsUpdate
         <>
           <CardHeader className="flex flex-row justify-between items-center px-6 py-4">
             <div className="flex items-center gap-2">
-              <CardTitle className="text-lg font-semibold text-white">
-                Whitelist Lottery Tickets
-              </CardTitle>
+              <CardTitle className="text-lg font-semibold text-white">Whitelist Lottery Tickets</CardTitle>
               <TooltipProvider delayDuration={100}>
                 <Tooltip>
                   <TooltipTrigger asChild>
@@ -109,9 +90,7 @@ const TicketPurchase: React.FC<TicketPurchaseProps> = ({ onClose,onTicketsUpdate
                     </Button>
                   </TooltipTrigger>
                   <TooltipContent className="text-white bg-gray-800 p-2">
-                    <div className="whitespace-pre-wrap leading-relaxed">
-                      {TICKET_DESCRIPTION}
-                    </div>
+                    <div className="whitespace-pre-wrap leading-relaxed">{TICKET_DESCRIPTION}</div>
                   </TooltipContent>
                 </Tooltip>
               </TooltipProvider>
@@ -135,7 +114,7 @@ const TicketPurchase: React.FC<TicketPurchaseProps> = ({ onClose,onTicketsUpdate
                   </Label>
                   <div className="flex gap-2 items-center text-gray-400">
                     <p className="text-xs font-semibold">
-                    Balance {Number(formatUnits((balance ?? 0) as bigint, decimals ?? 18)).toFixed(2)} CARTEL
+                      Balance {Number(formatUnits((balance ?? 0) as bigint, decimals ?? 18)).toFixed(2)} CARTEL
                     </p>
                     <Wallet size={14} />
                   </div>
@@ -157,7 +136,7 @@ const TicketPurchase: React.FC<TicketPurchaseProps> = ({ onClose,onTicketsUpdate
                 </Alert>
               )}
               <p className="text-gray-300">
-                Price per Ticket:{" "}
+                Price per Ticket:{' '}
                 <span className="font-semibold text-white">
                   {pricePerTicket} {symbol}
                 </span>
@@ -174,21 +153,15 @@ const TicketPurchase: React.FC<TicketPurchaseProps> = ({ onClose,onTicketsUpdate
               onClick={handleBuyTickets}
               disabled={isButtonDisabled}
             >
-              {isLoading ? "Processing..." : "Burn & Buy Tickets"}
+              {isLoading ? 'Processing...' : 'Burn & Buy Tickets'}
             </Button>
           </CardFooter>
         </>
       ) : (
         <>
           <CardHeader className="flex flex-row justify-between items-center px-6 py-4">
-            <CardTitle className="text-lg font-semibold text-white">
-               Purchase Successful!
-            </CardTitle>
-            <Button
-              variant="ghost"
-              className="text-gray-400 hover:text-white transition-all"
-              onClick={onClose}
-            >
+            <CardTitle className="text-lg font-semibold text-white">Purchase Successful!</CardTitle>
+            <Button variant="ghost" className="text-gray-400 hover:text-white transition-all" onClick={onClose}>
               <XCircle size={22} />
             </Button>
           </CardHeader>

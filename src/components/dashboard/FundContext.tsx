@@ -1,6 +1,7 @@
-import { createContext, useContext, useState, ReactNode } from "react";
-import { useFetchBalance } from "./fetchBalance";
-import { useAccount } from "wagmi";
+'use client';
+import { createContext, useContext, useState, ReactNode } from 'react';
+import { useFetchBalance } from '../../hooks/useFetchBalance';
+import { useAccount } from 'wagmi';
 
 interface FundContextType {
   fetchedData: any;
@@ -21,17 +22,27 @@ export const FundProvider = ({ children }: { children: ReactNode }) => {
   const { data: fetchedData, refreshData } = useFetchBalance(accountAddress);
 
   const totalraised = fetchedData.totalRaised;
- 
 
   const [priceUsd, setPriceUsd] = useState(0);
   const [totalContributed, setTotalContributed] = useState(Number(totalraised));
   const updateTotalContributed = (amount: number) => {
     setTotalContributed((prev) => prev + amount);
-    refreshData(); 
+    refreshData();
   };
-  const [daoBalance, setDaoBalance] = useState("0");
+  const [daoBalance, setDaoBalance] = useState('0');
   return (
-    <FundContext.Provider value={{ fetchedData, refreshData,totalContributed, updateTotalContributed,  daoBalance , setDaoBalance, priceUsd,setPriceUsd}}>
+    <FundContext.Provider
+      value={{
+        fetchedData,
+        refreshData,
+        totalContributed,
+        updateTotalContributed,
+        daoBalance,
+        setDaoBalance,
+        priceUsd,
+        setPriceUsd,
+      }}
+    >
       {children}
     </FundContext.Provider>
   );
@@ -40,7 +51,7 @@ export const FundProvider = ({ children }: { children: ReactNode }) => {
 export const useFundContext = () => {
   const context = useContext(FundContext);
   if (!context) {
-    throw new Error("useFundContext must be used within a FundProvider");
+    throw new Error('useFundContext must be used within a FundProvider');
   }
   return context;
 };

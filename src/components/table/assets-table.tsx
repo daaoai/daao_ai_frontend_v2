@@ -1,22 +1,15 @@
-"use client";
+'use client';
 
-import {
-  ColumnDef,
-  flexRender,
-  getCoreRowModel,
-  useReactTable,
-  getPaginationRowModel,
-} from "@tanstack/react-table";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "../ui/table";
-import { workSans } from "@/lib/fonts";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/shadcn/components/ui/table';
+import { ColumnDef, flexRender, getCoreRowModel, useReactTable, getPaginationRowModel } from '@tanstack/react-table';
 
+type Asset = {
+  token: string;
+  // tokenIcon?: string
+  balance: number;
+  price: number;
+  totalValue: number;
+};
 
 interface AssetTableProps {
   columns: ColumnDef<Asset>[];
@@ -33,31 +26,16 @@ export function AssetTable({ columns, data }: AssetTableProps) {
     getPaginationRowModel: getPaginationRowModel(),
   });
 
-
-
-
-
   return (
     <div className="space-y-4 text-center rounded-md border bg-[#191919] w-full">
       {/* Table */}
       <Table>
         <TableHeader>
           {table.getHeaderGroups().map((headerGroup) => (
-            <TableRow
-              key={headerGroup.id}
-              className={`border-b border-black mb-2 text-[#e4e6e7] text-bold ${workSans.className}`}
-            >
+            <TableRow key={headerGroup.id} className={`border-b border-black mb-2 text-[#e4e6e7] text-bold `}>
               {headerGroup.headers.map((header) => (
-                <TableHead
-                  key={header.id}
-                  className={`mb-2 text-[#e4e6e7] text-bold ${workSans.className} p-4 text-center text-xl`}
-                >
-                  {header.isPlaceholder
-                    ? null
-                    : flexRender(
-                        header.column.columnDef.header,
-                        header.getContext()
-                      )}
+                <TableHead key={header.id} className={`mb-2 text-[#e4e6e7] text-bold p-4 text-center text-xl`}>
+                  {header.isPlaceholder ? null : flexRender(header.column.columnDef.header, header.getContext())}
                 </TableHead>
               ))}
             </TableRow>
@@ -68,10 +46,7 @@ export function AssetTable({ columns, data }: AssetTableProps) {
             table.getRowModel().rows.map((row) => (
               <TableRow key={row.id}>
                 {row.getVisibleCells().map((cell) => (
-                  <TableCell
-                    key={cell.id}
-                    className="text-center text-base md:text-lg w-min"
-                  >
+                  <TableCell key={cell.id} className="text-center text-base md:text-lg w-min">
                     {flexRender(cell.column.columnDef.cell, cell.getContext())}
                   </TableCell>
                 ))}

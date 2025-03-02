@@ -1,38 +1,30 @@
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import Image from 'next/image';
-import { Copy } from 'lucide-react';
-import { workSans } from '@/lib/fonts';
 import React, { useState, useEffect } from 'react';
-// import { ethers } from 'ethers';
-// import daoABI from "../../DaoABI.json"
-import { commaSeparator, handleCopy, shortenAddress } from '@/lib/utils';
-import { getContractData } from "../../getterFunctions"
-import { useFundContext } from "./FundContext";
-import { useAccount } from 'wagmi';
+import { useFundContext } from './FundContext';
 import Liquidity from '../Liquidity/liquidity';
 import { ethers } from 'ethers';
-import contractABI from "../../abi.json";
-
-
-
+import { CONTRACT_ABI } from '@/daao-sdk/abi/abi';
+import { Card, CardContent, CardHeader, CardTitle } from '@/shadcn/components/ui/card';
+import { commaSeparator } from '@/utils/string';
+import { shortenAddress } from '@/utils/address';
+import { handleCopy } from '@/utils/copy';
+import type { FundDetailsProps } from '@/types';
+import { Copy } from 'lucide-react';
 
 const FundDetails: React.FC<FundDetailsProps> = (props) => {
-
   interface TokenChangeState {
     percent: number;
     token: number;
   }
 
   const { daoBalance } = useFundContext();
-  const { isConnected } = useAccount();
   const [marketCap, setMarketCap] = useState<number | null>(null);
   const [daoTokenAddress, setDaoTokenAddress] = useState('');
   const [price, setPrice] = useState<number | null>(null);
-  const [daoHoldings, setDaoHoldings] = useState('0');
   const { priceUsd, setPriceUsd } = useFundContext();
   const [tokenChange, setTokenChange] = useState<TokenChangeState>({
     percent: 0,
-    token: 0
+    token: 0,
   });
 
   // useEffect(() => {
@@ -48,7 +40,6 @@ const FundDetails: React.FC<FundDetailsProps> = (props) => {
   //   }
   //   fetchContractData()
   // }, [isConnected])
-
 
   // useEffect(() => {
   //   const fetchDaoBalance = async () => {
@@ -78,54 +69,50 @@ const FundDetails: React.FC<FundDetailsProps> = (props) => {
   };
 
   useEffect(() => {
-    const modeRpc = "https://mainnet.mode.network/";
-    const daoAddress = "0xEc7b0FD288E87eBC1C301E360092c645567e79B9"
+    const modeRpc = 'https://mainnet.mode.network/';
+    const daoAddress = '0xEc7b0FD288E87eBC1C301E360092c645567e79B9';
     const fetchMarketData = async () => {
-
       const provider = new ethers.providers.JsonRpcProvider(modeRpc);
 
       const signer = provider.getSigner();
 
-      const contract = new ethers.Contract(daoAddress as string, contractABI, provider);
-      const daoToken = (await contract.daoToken());
-      setDaoTokenAddress(daoToken)
+      const contract = new ethers.Contract(daoAddress as string, CONTRACT_ABI, provider);
+      const daoToken = await contract.daoToken();
+      setDaoTokenAddress(daoToken);
       // if (!daoTokenAddress) return
 
-
       // const url = `https://api.dexscreener.com/token-pairs/v1/mode/${daoTokenAddress}`
-      const url = `https://api.dexscreener.com/token-pairs/v1/mode/${daoToken}`
-      console.log("url is ", url)
+      const url = `https://api.dexscreener.com/token-pairs/v1/mode/${daoToken}`;
+      console.log('url is ', url);
       try {
         // Replace with your actual endpoint or logic
-        const response = await fetch(
-          url,
-        )
-        const data = await response.json()
-        console.log("Data from api is  is ", data)
+        const response = await fetch(url);
+        const data = await response.json();
+        console.log('Data from api is  is ', data);
 
         if (data && Array.isArray(data) && data[0]) {
-          setPrice(data[0].priceUsd)
-          setPriceUsd(data[0].priceUsd)
+          setPrice(data[0].priceUsd);
+          setPriceUsd(data[0].priceUsd);
           // setPriceUsd(23)
           // const marketCap = (Number(data[0].priceUsd) * 10 ** 9).toFixed(0)
-          const marketCap = (Number(data[0].marketCap)).toFixed(0)
+          const marketCap = Number(data[0].marketCap).toFixed(0);
           setMarketCap(Number(marketCap));
-          const percentageChange = (Number(data?.[0]?.priceChange?.h24))
+          const percentageChange = Number(data?.[0]?.priceChange?.h24);
           const tokenChangeValue = calculateTokenChange(Number(marketCap), percentageChange);
           setTokenChange({
             percent: percentageChange,
-            token: tokenChangeValue
+            token: tokenChangeValue,
           });
         } else {
-          console.warn('Market data not in expected format.')
+          console.warn('Market data not in expected format.');
         }
       } catch (error) {
-        console.error('Error fetching market data:', error)
+        console.error('Error fetching market data:', error);
       }
-    }
-    fetchMarketData()
+    };
+    fetchMarketData();
     // }, [daoTokenAddress, setPriceUsd])
-  }, [setPriceUsd])
+  }, [setPriceUsd]);
 
   return (
     <Card className="bg-[#0d0d0d] text-white sm:p-2  w-full">
@@ -140,43 +127,46 @@ const FundDetails: React.FC<FundDetailsProps> = (props) => {
               alt={`${props.longname} icon`}
             />
           </div>
-          <CardTitle className={`text-xl sm:text-2xl md:text-3xl font-semibold ${workSans.className}`}>
+          <CardTitle className={`text-xl sm:text-2xl md:text-3xl font-semibold`}>
             ${props.shortname} {props.longname}
           </CardTitle>
         </div>
 
         <Liquidity />
-
       </CardHeader>
 
       <CardContent className="space-y-4 sm:space-y-6">
-
         <Card className="bg-[#1b1c1d] border-[#27292a] w-full">
           <CardContent className="pt-6">
-            <p className=" text-sm sm:text-base md:text-lg lg:text-lg text-left">
-              {props?.description}
-            </p>
+            <p className=" text-sm sm:text-base md:text-lg lg:text-lg text-left">{props?.description}</p>
           </CardContent>
         </Card>
-
 
         <div className="text-left flex flex-row gap-4 sm:gap-6">
           <div className="grid grid-rows-[80%_20%] gap-2 sm:gap-1 w-full">
             <Card className="bg-[#1b1c1d] border-[#27292a] p-2 sm:p-4 w-full h-[max-content]">
               <CardContent className="space-y-1 sm:space-y-2 px-2 sm:px-3 pb-0">
                 <p className="text-[#aeb3b6] text-sm sm:text-base md:text-lg lg:text-xl">Market Cap</p>
-                <p className="text-lg sm:text-2xl md:text-3xl lg:text-4xl font-semibold">${commaSeparator(marketCap || 0)}</p>
+                <p className="text-lg sm:text-2xl md:text-3xl lg:text-4xl font-semibold">
+                  ${commaSeparator(marketCap || 0)}
+                </p>
                 <p
-                  className={`text-lg sm:text-lg md:text-xl lg:text-2xl font-semibold ${tokenChange?.percent < 0 ? "text-red-600" : "text-green-600"
-                    }`}
+                  className={`text-lg sm:text-lg md:text-xl lg:text-2xl font-semibold ${
+                    tokenChange?.percent < 0 ? 'text-red-600' : 'text-green-600'
+                  }`}
                 >
-                  {`${commaSeparator(Number(tokenChange?.token || 0).toFixed(2))} (${Number(tokenChange?.percent || 0).toFixed(2)}%)`}
+                  {`${commaSeparator(Number(tokenChange?.token || 0).toFixed(2))} (${Number(
+                    tokenChange?.percent || 0,
+                  ).toFixed(2)}%)`}
                 </p>
               </CardContent>
             </Card>
             <div className="h-min flex justify-center items-center gap-2 text-[#498ff8] text-sm sm:text-base md:text-xl mt-2">
               <span>{shortenAddress(daoTokenAddress)}</span>
-              <Copy className="w-4 h-4 sm:w-5 sm:h-5 hover:cursor-pointer" onClick={() => handleCopy(props.modeAddress)} />
+              <Copy
+                className="w-4 h-4 sm:w-5 sm:h-5 hover:cursor-pointer"
+                onClick={() => handleCopy(props.modeAddress)}
+              />
             </div>
           </div>
 
@@ -184,11 +174,16 @@ const FundDetails: React.FC<FundDetailsProps> = (props) => {
             <CardContent className="space-y-2 sm:space-y-4 px-2 sm:px-3 p-0">
               <div>
                 <p className="text-[#aeb3b6] text-sm sm:text-base md:text-lg lg:text-xl">Your Holdings</p>
-                <p className="text-lg sm:text-xl md:text-2xl lg:text-3xl font-semibold">{Number(daoBalance).toFixed(2)} {props.shortname} <span className="text-sm sm:text-lg md:text-xl lg:text-2xl"></span></p>
+                <p className="text-lg sm:text-xl md:text-2xl lg:text-3xl font-semibold">
+                  {Number(daoBalance).toFixed(2)} {props.shortname}{' '}
+                  <span className="text-sm sm:text-lg md:text-xl lg:text-2xl"></span>
+                </p>
               </div>
               <div>
                 <p className="text-[#aeb3b6] text-sm sm:text-base md:text-lg lg:text-xl">Your Market Value</p>
-                <p className="text-lg sm:text-2xl md:text-3xl lg:text-4xl font-semibold">${(Number(daoBalance) * Number(price)).toFixed(2)}</p>
+                <p className="text-lg sm:text-2xl md:text-3xl lg:text-4xl font-semibold">
+                  ${(Number(daoBalance) * Number(price)).toFixed(2)}
+                </p>
               </div>
             </CardContent>
           </Card>

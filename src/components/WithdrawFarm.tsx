@@ -1,12 +1,17 @@
 "use client";
 import React, { useEffect, useState } from "react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { XCircle, Loader } from "lucide-react";
 import useWithDraw from "@/hooks/farm/useWithdraw";
 import { formatUnits, Hex, parseUnits } from "viem";
 import { useAccount } from "wagmi";
 import { FarmPool } from "@/types/farm";
 import { useToast } from "@/hooks/use-toast";
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+} from "@/shadcn/components/ui/card";
 
 interface WithdrawProps {
   onClose: () => void;

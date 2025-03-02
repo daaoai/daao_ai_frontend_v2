@@ -1,12 +1,11 @@
-import { POOL_ABI } from "@/abi/pool";
-import { FARM_FACTORY_CONTRACT_ADDRESS } from "@/constants/farm";
-import { useAccount, usePublicClient } from "wagmi";
-import useTokenPrice from "../useTokenPrice";
-import { CARTEL } from "@/abi/cartel";
-import { formatUnits } from "viem";
-import { FarmPool } from "@/types/farm";
-import { CARTEL_TOKEN_ADDRESS } from "@/constants/ticket";
-import { FARM_FACTORY_ABI } from "@/abi/farmFactory";
+import { POOL_ABI } from '@/daao-sdk/abi/pool';
+import { FARM_FACTORY_CONTRACT_ADDRESS } from '@/constants/farm';
+import { useAccount, usePublicClient } from 'wagmi';
+import useTokenPrice from '../useTokenPrice';
+import { CARTEL } from '@/daao-sdk/abi/cartel';
+import { formatUnits } from 'viem';
+import { FarmPool } from '@/types/farm';
+import { FARM_FACTORY_ABI } from '@/daao-sdk/abi/farmFactory';
 
 const usePoolList = () => {
   const { address } = useAccount();
@@ -17,7 +16,7 @@ const usePoolList = () => {
       const response = await publicClient?.readContract({
         address: FARM_FACTORY_CONTRACT_ADDRESS,
         abi: FARM_FACTORY_ABI,
-        functionName: "nitroPoolsLength",
+        functionName: 'nitroPoolsLength',
       });
       return response;
     } catch (err) {
@@ -34,26 +33,16 @@ const usePoolList = () => {
       contracts: array.map((_, index) => ({
         abi: FARM_FACTORY_ABI,
         address: FARM_FACTORY_CONTRACT_ADDRESS,
-        functionName: "getNitroPool",
+        functionName: 'getNitroPool',
         args: [index],
       })),
     });
     return response?.map((res) => res.result as `0x${string}`);
   };
 
-  const getPoolDetails = async ({
-    poolAddress,
-  }: {
-    poolAddress: `0x${string}`;
-  }) => {
+  const getPoolDetails = async ({ poolAddress }: { poolAddress: `0x${string}` }) => {
     try {
-      const funcNames = [
-        "settings",
-        "totalDepositAmount",
-        "rewardsToken1",
-        "rewardsToken1PerSecond",
-        "depositToken",
-      ];
+      const funcNames = ['settings', 'totalDepositAmount', 'rewardsToken1', 'rewardsToken1PerSecond', 'depositToken'];
 
       const response = await publicClient?.multicall({
         contracts: funcNames.map((functionName, index) => ({
@@ -63,7 +52,7 @@ const usePoolList = () => {
         })),
       });
 
-      const usrInfoFunc = ["userInfo", "pendingRewards"];
+      const usrInfoFunc = ['userInfo', 'pendingRewards'];
 
       let userResult: [[bigint, bigint], bigint];
       if (address) {
@@ -76,10 +65,7 @@ const usePoolList = () => {
           })),
         });
 
-        userResult = userInfo?.map((res) => res.result || null) as [
-          [bigint, bigint],
-          bigint
-        ];
+        userResult = userInfo?.map((res) => res.result || null) as [[bigint, bigint], bigint];
       } else {
         userResult = [[BigInt(0), BigInt(0)], BigInt(0)];
       }
@@ -89,7 +75,7 @@ const usePoolList = () => {
         bigint,
         [`0x${string}`, bigint, bigint, bigint],
         bigint,
-        `0x${string}`
+        `0x${string}`,
       ];
 
       if (results) {
@@ -100,28 +86,18 @@ const usePoolList = () => {
           contracts: [results[2][0], results[4]].map((address, index) => ({
             abi: CARTEL,
             address: address,
-            functionName: "decimals",
+            functionName: 'decimals',
           })),
         });
-        const decimalResults = decimals?.map((res) => res.result || null) as [
-          number,
-          number
-        ];
+        const decimalResults = decimals?.map((res) => res.result || null) as [number, number];
         const rewardEmmisionUsd =
-          Number(formatUnits(results[3] || BigInt(0), decimalResults[0])) *
-          Number(rewardTokenPrice);
+          Number(formatUnits(results[3] || BigInt(0), decimalResults[0])) * Number(rewardTokenPrice);
         const totalStackedUSD =
-          Number(formatUnits(results[1] || BigInt(0), decimalResults[1])) *
-          Number(depositTokenPrice);
+          Number(formatUnits(results[1] || BigInt(0), decimalResults[1])) * Number(depositTokenPrice);
 
         const apr =
           totalStackedUSD && rewardEmmisionUsd
-            ? Math.abs(
-                Number(
-                  ((rewardEmmisionUsd * 365 * 24 * 3600) / totalStackedUSD) *
-                    100
-                ) || 0
-              )
+            ? Math.abs(Number(((rewardEmmisionUsd * 365 * 24 * 3600) / totalStackedUSD) * 100) || 0)
             : 0;
         console.log(apr);
         return {
@@ -155,14 +131,11 @@ const usePoolList = () => {
 
   const getPoolList = async () => {
     const poolAddresses = await getPoolAddresses();
-    const poolDetaisPromise =
-      poolAddresses?.map((poolAddress) => getPoolDetails({ poolAddress })) ||
-      [];
+    const poolDetaisPromise = poolAddresses?.map((poolAddress) => getPoolDetails({ poolAddress })) || [];
     const poolListData = await Promise.allSettled(poolDetaisPromise);
     const poolList: FarmPool[] = (
       poolListData.filter(
-        (poolDetailsRes) =>
-          poolDetailsRes.status === "fulfilled" && poolDetailsRes.value
+        (poolDetailsRes) => poolDetailsRes.status === 'fulfilled' && poolDetailsRes.value,
       ) as PromiseFulfilledResult<FarmPool>[]
     ).map((res) => res.value);
     return poolList;

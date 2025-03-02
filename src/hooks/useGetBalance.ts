@@ -1,10 +1,10 @@
-import { CARTEL } from "@/abi/cartel";
+import { CARTEL } from "@/daao-sdk/abi/cartel";
 import { CARTEL_TOKEN_ADDRESS, MODE_CHAIN_ID } from "@/constants/ticket";
 import { Hex } from "viem";
 import { useAccount, useReadContracts } from "wagmi";
 
 const useGetBalance = () => {
-const {address} = useAccount()
+  const { address } = useAccount();
   const { data, isLoading, isError, refetch } = useReadContracts({
     contracts: [
       {

@@ -8,7 +8,7 @@ export function middleware(req: NextRequest) {
   // Check for the subdomain
   if (username === 'app') {
     const path = req.nextUrl.pathname;
-    return NextResponse.redirect(new URL(`/app${path}`, req.url));
+    return NextResponse.redirect(new URL(`/dapp${path}`, req.url));
   }
 
   // Default behavior: continue to the original request

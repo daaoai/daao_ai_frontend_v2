@@ -1,66 +1,87 @@
-/** @type {import('tailwindcss').Config} */
-import tailwindcssAnimate from "tailwindcss-animate";
+import type { Config } from 'tailwindcss';
+
+const lightColors = {
+  black: {
+    100: '#A4A4A4',
+    200: '#666666',
+    300: '#4D4D4D',
+    400: '#2B2B2B',
+    500: '#222222',
+    600: '#1F1F1F',
+    700: '#0F0F0F',
+    800: '#000000',
+  },
+  neon: {
+    100: '#EEFDC5',
+    200: '#DFF998',
+    300: '#CDF462',
+    400: '#C1E950',
+    500: '#B1DD38',
+    600: '#A0CD27',
+    700: '#8EB81B',
+    800: '#7AA013',
+    900: '#67870E',
+  },
+  purple: {
+    100: 'F8F5FF',
+    200: '#D9C6FE',
+    300: '#BB9AFC',
+    400: '#A281E4',
+    500: '#8A55F6',
+    600: '#793DF0',
+    700: '#6C2CEA',
+    800: '#6121E1',
+    900: '#5819D7',
+    1000: '#5214CC',
+  },
+};
+
+const darkColors = {
+  white: {
+    100: '#fcfcfc',
+    200: '#fafafa',
+    300: '#f8f8f8',
+    400: '#f6f6f6',
+    500: '#f4f4f4',
+    600: '#dedede',
+    700: '#dadada',
+    800: '#b8b8b8',
+    900: '#868686',
+  },
+  black: {
+    100: '#fcfcfc',
+    200: '#fafafa',
+    300: '#f8f8f8',
+    400: '#f6f6f6',
+    500: '#f4f4f4',
+    600: '#dedede',
+    700: '#dadada',
+    800: '#b8b8b8',
+    900: '#868686',
+  },
+};
 
 export default {
-  darkMode: ["class"],
-  content: ["./src/**/*.{js,ts,jsx,tsx}"],
+  darkMode: 'class',
+  content: [
+    './src/pages/**/*.{js,ts,jsx,tsx,mdx}',
+    './src/components/**/*.{js,ts,jsx,tsx,mdx}',
+    './src/sections/**/*.{js,ts,jsx,tsx,mdx}',
+    './src/app/**/*.{js,ts,jsx,tsx,mdx}',
+  ],
   theme: {
     extend: {
-      backgroundImage: {
-        'grid-pattern': "linear-gradient(to right, rgba(40, 55, 96, 0.25) 1px, transparent 1px), linear-gradient(to bottom, rgba(40, 55, 96, 0.25) 1px, transparent 1px)",
-        'star-pattern': "url('/star-1-with-ellipse.svg')",
-      },
-      boxShadow: {
-        'custom-button': '-4px -4px 40px 0 rgba(255, 255, 255, 0.28), 4px 4px 20px 0 rgba(255, 255, 255, 0.28)',
-      },
-      borderRadius: {
-        lg: "var(--radius)",
-        md: "calc(var(--radius) - 2px)",
-        sm: "calc(var(--radius) - 4px)",
-      },
       colors: {
-        background: "hsl(var(--background))",
-        foreground: "hsl(var(--foreground))",
-        card: {
-          DEFAULT: "hsl(var(--card))",
-          foreground: "hsl(var(--card-foreground))",
-        },
-        popover: {
-          DEFAULT: "hsl(var(--popover))",
-          foreground: "hsl(var(--popover-foreground))",
-        },
-        primary: {
-          DEFAULT: "hsl(var(--primary))",
-          foreground: "hsl(var(--primary-foreground))",
-        },
-        secondary: {
-          DEFAULT: "hsl(var(--secondary))",
-          foreground: "hsl(var(--secondary-foreground))",
-        },
-        muted: {
-          DEFAULT: "hsl(var(--muted))",
-          foreground: "hsl(var(--muted-foreground))",
-        },
-        accent: {
-          DEFAULT: "hsl(var(--accent))",
-          foreground: "hsl(var(--accent-foreground))",
-        },
-        destructive: {
-          DEFAULT: "hsl(var(--destructive))",
-          foreground: "hsl(var(--destructive-foreground))",
-        },
-        border: "hsl(var(--border))",
-        input: "hsl(var(--input))",
-        ring: "hsl(var(--ring))",
-        chart: {
-          "1": "hsl(var(--chart-1))",
-          "2": "hsl(var(--chart-2))",
-          "3": "hsl(var(--chart-3))",
-          "4": "hsl(var(--chart-4))",
-          "5": "hsl(var(--chart-5))",
-        },
+        light: lightColors,
+        dark: darkColors,
+      },
+      backgroundImage: {
+        dots: 'radial-gradient(rgb(0 0 0 / 6%) 1px, transparent 2px)',
+      },
+      fontFamily: {
+        sans: ['Urbanist', 'sans-serif'],
       },
     },
   },
-  plugins: [tailwindcssAnimate],
-};
+  plugins: [],
+} satisfies Config;

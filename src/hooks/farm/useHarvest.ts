@@ -1,14 +1,12 @@
-import { usePublicClient, useWriteContract } from "wagmi";
-import useAllowance from "../useAllowance";
-import { POOL_ABI } from "@/abi/pool";
-import { useToast } from "../use-toast";
-import { handleViemTransactionError } from "@/utils/approval";
-import { Abi } from "viem";
-import { workSans } from "@/lib/fonts";
+import { usePublicClient, useWriteContract } from 'wagmi';
+import useAllowance from '../useAllowance';
+import { POOL_ABI } from '@/daao-sdk/abi/pool';
+import { useToast } from '../use-toast';
+import { handleViemTransactionError } from '@/utils/approval';
+import { Abi } from 'viem';
 
 const useHarvest = () => {
   const publicClient = usePublicClient();
-  const { checkAllowance, requestAllowance } = useAllowance();
   const { writeContractAsync } = useWriteContract();
   const { toast } = useToast();
 
@@ -17,7 +15,7 @@ const useHarvest = () => {
       const harvestResponse = await writeContractAsync({
         address: poolAddress,
         abi: POOL_ABI,
-        functionName: "harvest",
+        functionName: 'harvest',
       });
       const receipt = await publicClient?.waitForTransactionReceipt({
         hash: harvestResponse,
@@ -32,8 +30,7 @@ const useHarvest = () => {
       });
       toast({
         title: errorMsg,
-        variant: "destructive",
-        className: `${workSans.className}`,
+        variant: 'destructive',
       });
     }
   };

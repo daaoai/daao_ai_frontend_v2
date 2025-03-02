@@ -1,14 +1,13 @@
-import { useState } from "react";
-import { Abi, Hex, parseUnits, zeroAddress } from "viem";
-import { useAccount, usePublicClient, useWriteContract } from "wagmi";
-import { TICKETS } from "@/abi/tickets";
-import { CARTEL } from "@/abi/cartel";
-import { CARTEL_TOKEN_ADDRESS, TICKETS_CONTRACT_ADDRESS } from "@/constants/ticket";
-import { decodeEventLog } from "viem";
-import { workSans } from "@/lib/fonts"
-import { useToast } from "./use-toast";
-import { handleViemTransactionError } from "@/utils/approval";
-import bn from "bignumber.js";
+import { useState } from 'react';
+import { Abi, Hex, parseUnits, zeroAddress } from 'viem';
+import { useAccount, usePublicClient, useWriteContract } from 'wagmi';
+import { TICKETS } from '@/daao-sdk/abi/tickets';
+import { CARTEL } from '@/daao-sdk/abi/cartel';
+import { CARTEL_TOKEN_ADDRESS, TICKETS_CONTRACT_ADDRESS } from '@/constants/ticket';
+import { decodeEventLog } from 'viem';
+import { useToast } from './use-toast';
+import { handleViemTransactionError } from '@/utils/approval';
+import bn from 'bignumber.js';
 
 export interface MintedData {
   from: Hex;
@@ -24,12 +23,12 @@ const parseMintedEvent = (log: { data: string; topics: string[] }): MintedData |
       topics: log.topics as [],
     });
     if (
-      decoded.eventName === "Transfer" &&
+      decoded.eventName === 'Transfer' &&
       decoded.args &&
-      typeof decoded.args === "object" &&
-      "from" in decoded.args &&
-      "to" in decoded.args &&
-      "tokenId" in decoded.args
+      typeof decoded.args === 'object' &&
+      'from' in decoded.args &&
+      'to' in decoded.args &&
+      'tokenId' in decoded.args
     ) {
       const { from, to, tokenId } = decoded.args as {
         from: string;
@@ -42,7 +41,7 @@ const parseMintedEvent = (log: { data: string; topics: string[] }): MintedData |
       }
     }
   } catch (err) {
-    console.error("Error parsing minted event:", err);
+    console.error('Error parsing minted event:', err);
   }
   return null;
 };
@@ -66,12 +65,12 @@ const useBuyTickets = () => {
       const allowance: unknown = await publicClient?.readContract({
         address: CARTEL_TOKEN_ADDRESS,
         abi: CARTEL,
-        functionName: "allowance",
+        functionName: 'allowance',
         args: [address, spender],
       });
       return BigInt(allowance as bigint) >= BigInt(requiredAmount);
     } catch (err) {
-      console.error("checkAllowance error:", err);
+      console.error('checkAllowance error:', err);
       return false;
     }
   };
@@ -82,28 +81,30 @@ const useBuyTickets = () => {
       const tx = await writeContractAsync({
         address: CARTEL_TOKEN_ADDRESS,
         abi: CARTEL,
-        functionName: "approve",
+        functionName: 'approve',
         args: [spender, amountToApprove],
       });
-      if (!tx) throw new Error("Approval transaction failed to send");
+      if (!tx) throw new Error('Approval transaction failed to send');
       setApprovalTxHash(tx);
       const receipt = await publicClient?.waitForTransactionReceipt({
         hash: tx,
         confirmations: 1,
       });
-      if (receipt?.status !== "success") {
-        throw new Error("Approval transaction did not succeed");
+      if (receipt?.status !== 'success') {
+        throw new Error('Approval transaction did not succeed');
       }
       return tx;
     } catch (err: any) {
-      console.error("Approval error:", err);
-      const { errorMsg} = handleViemTransactionError({ abi: CARTEL as Abi,  error: err })
+      console.error('Approval error:', err);
+      const { errorMsg } = handleViemTransactionError({
+        abi: CARTEL as Abi,
+        error: err,
+      });
       toast({
         title: errorMsg,
-        variant: "destructive",
-        className: `${workSans.className}`
-      })
-      setError(errorMsg || "Approval error occurred");
+        variant: 'destructive',
+      });
+      setError(errorMsg || 'Approval error occurred');
       return undefined;
     }
   };
@@ -124,34 +125,31 @@ const useBuyTickets = () => {
       setApprovalTxHash(undefined);
       setMintedData(null);
       setIsLoading(true);
-      
+
       let totalCost = new bn(ticketCount).multipliedBy(ticketPrice).toFixed();
-      const requiredApprovalAmount = parseUnits(
-        totalCost,
-        1
-      );
+      const requiredApprovalAmount = parseUnits(totalCost, 1);
 
       const allowanceSufficient = await checkAllowance(requiredApprovalAmount);
       if (!allowanceSufficient) {
         const approvalTx = await requestAllowance(requiredApprovalAmount);
-        if (!approvalTx) throw new Error("Approval transaction failed");
+        if (!approvalTx) throw new Error('Approval transaction failed');
       }
 
       const tx = await writeContractAsync({
         address: TICKETS_CONTRACT_ADDRESS,
         abi: TICKETS,
-        functionName: "buyTickets",
+        functionName: 'buyTickets',
         args: [ticketCount],
       });
-      if (!tx) throw new Error("Ticket purchase transaction failed to send");
+      if (!tx) throw new Error('Ticket purchase transaction failed to send');
       setTxHash(tx);
 
       const receipt = await publicClient?.waitForTransactionReceipt({
         hash: tx,
         confirmations: 1,
       });
-      if (receipt?.status !== "success") {
-        throw new Error("Ticket purchase transaction did not succeed");
+      if (receipt?.status !== 'success') {
+        throw new Error('Ticket purchase transaction did not succeed');
       }
 
       let minted: MintedData | null = null;
@@ -162,20 +160,18 @@ const useBuyTickets = () => {
 
       if (minted) {
         setMintedData(minted);
-        
       } else {
-        console.warn("No mint event found in the logs");
+        console.warn('No mint event found in the logs');
       }
 
       setIsSuccess(true);
     } catch (err: any) {
-      console.error("buyTickets error:", err);
+      console.error('buyTickets error:', err);
       toast({
-        title: "Txn Failed",
-        variant: "destructive",
-        className: `${workSans.className}`
-      })
-      setError(err.message || "An error occurred");
+        title: 'Txn Failed',
+        variant: 'destructive',
+      });
+      setError(err.message || 'An error occurred');
     } finally {
       setIsLoading(false);
     }
