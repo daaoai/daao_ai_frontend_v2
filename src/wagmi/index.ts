@@ -1,7 +1,7 @@
 'use client';
 import { POLLING_INTERVAL } from '@/constants/wagmi';
 import { cookieStorage, createConfig, createStorage, http } from 'wagmi';
-import { mode } from 'wagmi/chains';
+import { mode, goerli, sepolia } from 'wagmi/chains';
 import { connectorsForWallets } from '@rainbow-me/rainbowkit';
 import {
   frontierWallet,
@@ -28,18 +28,22 @@ const connectors = connectorsForWallets(
       ],
     },
   ],
-  { appName: 'Daao.ai', projectId: '762399822f3c6326e60b27c2c2085d52' || '' },
+  { appName: 'Daao.ai', projectId: process.env.NEXT_PUBLIC_PROJECT_ID || '' },
 );
 
 export const getWagmiConfig = () => {
   return createConfig({
-    chains: [mode],
+    chains: [mode, goerli, sepolia],
     storage: createStorage({
       storage: cookieStorage,
     }),
     pollingInterval: POLLING_INTERVAL.ms1500,
     syncConnectedChain: true,
-    transports: { [mode.id]: http() },
+    transports: {
+      [mode.id]: http(),
+      [goerli.id]: http(),
+      [sepolia.id]: http(),
+    },
     ssr: true,
     connectors,
   });

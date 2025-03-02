@@ -45,7 +45,7 @@ const usePoolList = () => {
       const funcNames = ['settings', 'totalDepositAmount', 'rewardsToken1', 'rewardsToken1PerSecond', 'depositToken'];
 
       const response = await publicClient?.multicall({
-        contracts: funcNames.map((functionName, index) => ({
+        contracts: funcNames.map((functionName) => ({
           abi: POOL_ABI,
           address: poolAddress,
           functionName: functionName,
@@ -83,7 +83,7 @@ const usePoolList = () => {
         const depositTokenPrice = await fetchTokenPrice(results[4]);
         // const cartelTokenPrice = await fetchTokenPrice(CARTEL_TOKEN_ADDRESS);
         const decimals = await publicClient?.multicall({
-          contracts: [results[2][0], results[4]].map((address, index) => ({
+          contracts: [results[2][0], results[4]].map((address) => ({
             abi: CARTEL,
             address: address,
             functionName: 'decimals',
@@ -135,7 +135,7 @@ const usePoolList = () => {
     const poolListData = await Promise.allSettled(poolDetaisPromise);
     const poolList: FarmPool[] = (
       poolListData.filter(
-        (poolDetailsRes) => poolDetailsRes.status === 'fulfilled' && poolDetailsRes.value,
+        (poolDetailsRes) => poolDetailsRes.status === 'fulfilled' && poolDetailsRes.value
       ) as PromiseFulfilledResult<FarmPool>[]
     ).map((res) => res.value);
     return poolList;

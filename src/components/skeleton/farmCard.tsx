@@ -1,6 +1,6 @@
-import { Card, CardContent, CardFooter } from "@/shadcn/components/ui/card";
-import { Skeleton } from "@/shadcn/components/ui/skeleton";
-import { Wallet, DollarSign } from "lucide-react";
+import { Card, CardContent, CardFooter } from '@/shadcn/components/ui/card';
+import { Skeleton } from '@/shadcn/components/ui/skeleton';
+import { Wallet, DollarSign } from 'lucide-react';
 
 const FarmCardSkeleton = () => {
   return (

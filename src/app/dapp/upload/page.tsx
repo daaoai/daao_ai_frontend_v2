@@ -3,7 +3,7 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 import * as z from 'zod';
-
+import React from 'react';
 import { CalendarIcon, Camera, Plus } from 'lucide-react';
 import { format } from 'date-fns';
 import { cn } from '@/utils/upload';
@@ -36,10 +36,8 @@ const formSchema = z.object({
   }),
 });
 
-type OnImageUpload = (file: File) => void;
-
 interface ProfileHeaderProps {
-  onImageUpload: OnImageUpload;
+  onImageUpload: (file: File) => void;
 }
 
 const ProfileHeader: React.FC<ProfileHeaderProps> = ({ onImageUpload }) => {
@@ -57,7 +55,7 @@ const ProfileHeader: React.FC<ProfileHeaderProps> = ({ onImageUpload }) => {
         reader.readAsDataURL(file);
       }
     },
-    [onImageUpload],
+    [onImageUpload]
   );
 
   const { getRootProps, getInputProps } = useDropzone({
@@ -178,7 +176,7 @@ export default function UploadPage() {
                               variant={'outline'}
                               className={cn(
                                 'w-full md:w-[240px] h-12 pl-3 text-left font-normal',
-                                !field.value && 'text-muted-foreground',
+                                !field.value && 'text-muted-foreground'
                               )}
                             >
                               {field.value ? format(field.value, 'PPP') : <span>Select date</span>}

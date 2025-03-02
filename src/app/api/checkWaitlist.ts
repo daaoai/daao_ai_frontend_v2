@@ -1,5 +1,5 @@
-import { NextApiRequest, NextApiResponse } from "next";
-import { ModeAddresses } from "../../utils/data";
+import { NextApiRequest, NextApiResponse } from 'next';
+import { ModeAddresses } from '../../utils/data';
 
 export default function handler(req: NextApiRequest, res: NextApiResponse) {
   if (req.method === 'POST') {

@@ -109,15 +109,7 @@ const useBuyTickets = () => {
     }
   };
 
-  const buyTickets = async ({
-    ticketCount,
-    ticketPrice,
-    decimals,
-  }: {
-    ticketCount: number;
-    ticketPrice: number;
-    decimals: number;
-  }) => {
+  const buyTickets = async ({ ticketCount, ticketPrice }: { ticketCount: number; ticketPrice: number }) => {
     try {
       setError(null);
       setIsSuccess(false);

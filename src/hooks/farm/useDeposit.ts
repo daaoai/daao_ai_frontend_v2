@@ -1,4 +1,3 @@
-import { FARM_ABI } from '@/daao-sdk/abi/farm';
 import { POOL_ABI } from '@/daao-sdk/abi/pool';
 import { usePublicClient, useWriteContract } from 'wagmi';
 import useAllowance from '../useAllowance';

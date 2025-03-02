@@ -10,8 +10,11 @@ import { Button } from '@/shadcn/components/ui/button';
 import { Separator } from '@/shadcn/components/ui/separator';
 import { handleContribute } from '@/utils/contributeFund';
 import { UpcomingFundDetailsProps } from '@/types';
+import React from 'react';
+import { daoAddress } from '@/constants/addresses';
+
 const wagmiDaoContract = {
-  address: '0xEc7b0FD288E87eBC1C301E360092c645567e79B9',
+  address: daoAddress,
   abi: CONTRACT_ABI,
 } as const;
 export default function BurnCard(props: UpcomingFundDetailsProps) {
@@ -27,7 +30,7 @@ export default function BurnCard(props: UpcomingFundDetailsProps) {
   const [maxLimit, setMaxLimit] = useState(0);
   const [fundraisingFinalized, setFundraisingFinalized] = useState(false);
   const [leftoutAmount, setLeftoutAmount] = useState(0);
-  const [maxAmount, setMaxAmount] = useState(0);
+  // const [maxAmount, setMaxAmount] = useState(0);
 
   useEffect(() => {
     if (fetchedData) {
@@ -46,7 +49,7 @@ export default function BurnCard(props: UpcomingFundDetailsProps) {
     }
   }, [fetchedData]);
 
-  const { data, error, refetch } = useReadContracts({
+  const { data, refetch } = useReadContracts({
     contracts: [
       {
         ...wagmiDaoContract,

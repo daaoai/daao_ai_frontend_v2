@@ -37,40 +37,13 @@ const getFeaturedFunds = () => {
   ];
 };
 
-const getUpcomingFunds = () => {
-  return [
-    // { id: '154', title: 'DeFAI Cartel', token: 'CARTEL', status: "trading" as "trading", imgSrc: CURRENT_DAO_IMAGE },
-    {
-      id: '277',
-      title: 'To Be Announced',
-      token: 'TBA',
-      status: 'soon' as 'soon',
-      imgSrc: FUND_CARD_PLACEHOLDER_IMAGE,
-    },
-    {
-      id: '312',
-      title: 'To Be Announced',
-      token: 'TBA',
-      status: 'soon' as 'soon',
-      imgSrc: FUND_CARD_PLACEHOLDER_IMAGE,
-    },
-    {
-      id: '492',
-      title: 'To Be Announced',
-      token: 'TBA',
-      status: 'soon' as 'soon',
-      imgSrc: FUND_CARD_PLACEHOLDER_IMAGE,
-    },
-  ];
-};
-
 const AppHome: React.FC = () => {
   const { isConnected } = useAccount();
   const router = useRouter();
   const { toast } = useToast();
   console.log(isConnected);
   const FEATURED_FUNDS = getFeaturedFunds();
-  const UPCOMING_FUNDS = getUpcomingFunds();
+  // const UPCOMING_FUNDS = getUpcomingFunds();
 
   const onFundClick = (fundId: string, type: 'dashboard' | 'upcoming') => {
     if (!isConnected) {

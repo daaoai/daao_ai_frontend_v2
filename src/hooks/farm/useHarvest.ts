@@ -1,5 +1,4 @@
 import { usePublicClient, useWriteContract } from 'wagmi';
-import useAllowance from '../useAllowance';
 import { POOL_ABI } from '@/daao-sdk/abi/pool';
 import { useToast } from '../use-toast';
 import { handleViemTransactionError } from '@/utils/approval';

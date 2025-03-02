@@ -15,6 +15,7 @@ import { CONTRACT_ABI } from '@/daao-sdk/abi/abi';
 import { Button } from '@/shadcn/components/ui/button';
 import { Card, CardContent } from '@/shadcn/components/ui/card';
 import { formatNumber } from '@/utils/numbers';
+import { daoAddress } from '@/constants/addresses';
 
 const HomePage: NextPage = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -23,11 +24,10 @@ const HomePage: NextPage = () => {
 
   useEffect(() => {
     const modeRpc = 'https://mainnet.mode.network/';
-    const daoAddress = '0xEc7b0FD288E87eBC1C301E360092c645567e79B9';
     const fetchMarketData = async () => {
       const provider = new ethers.providers.JsonRpcProvider(modeRpc);
 
-      const signer = provider.getSigner();
+      // const signer = provider.getSigner();
 
       const contract = new ethers.Contract(daoAddress as string, CONTRACT_ABI, provider);
       const daoToken = await contract.daoToken();
@@ -139,7 +139,7 @@ const HomePage: NextPage = () => {
           <div className="flex flex-wrap justify-center gap-4">
             {DefaiCartelLinks.map((social, index) => (
               <FooterIconLink key={index} href={social.href} label={social.label}>
-                {!Boolean(social.src) ? <UILink /> : <Image src={social.src} alt={social.alt} width={20} height={20} />}
+                {!social.src ? <UILink /> : <Image src={social.src} alt={social.alt} width={20} height={20} />}
               </FooterIconLink>
             ))}
           </div>

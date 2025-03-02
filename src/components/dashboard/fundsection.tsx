@@ -22,11 +22,10 @@ interface FundSectionProps {
     status: 'live' | 'funding' | 'trading' | 'soon' | boolean;
     imgSrc: string;
   }>;
-  linkPrefix?: string;
   onFundClick: (fundId: string) => void;
 }
 
-export function FundSection({ title, subtitle, funds, linkPrefix = 'dashboard', onFundClick }: FundSectionProps) {
+export function FundSection({ title, subtitle, funds, onFundClick }: FundSectionProps) {
   return (
     <section className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-5">
       <div className="mb-8 text-left">

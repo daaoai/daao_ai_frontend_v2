@@ -29,7 +29,7 @@ const TicketPurchase: React.FC<TicketPurchaseProps> = ({ onClose, onTicketsUpdat
 
   const { ticketPrice } = useGetTicketPrice();
   const { symbol, decimals, balance } = useGetBalance();
-  const { buyTickets, mintedData, isLoading, isSuccess, error } = useBuyTickets();
+  const { buyTickets, mintedData, isLoading, isSuccess } = useBuyTickets();
   const { toast } = useToast();
 
   // Validate ticket count
@@ -71,7 +71,6 @@ const TicketPurchase: React.FC<TicketPurchaseProps> = ({ onClose, onTicketsUpdat
     await buyTickets({
       ticketCount: tickets,
       ticketPrice: Number(ticketPrice),
-      decimals: decimals ?? 1,
     });
   };
 

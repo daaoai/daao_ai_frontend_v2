@@ -92,8 +92,8 @@ export const LeaderboardColumns: ColumnDef<leaderboardData>[] = [
       return (
         <div className="flex flex-row justify-start items-center gap-2">
           <Image src="/public/ethereum-icon.svg" alt={'Ethereum icon'} width={20} height={20} />
-          <p className={true ? `text-[#39db83]` : `text-[#d83939]`}>
-            {true ? '+' : '-'}
+          <p className={'text-[#39db83]'}>
+            {'+'}
             {row.getValue('marketCap')}
           </p>
         </div>

@@ -1,5 +1,5 @@
-import Head from "next/head";
-import React from "react";
+import Head from 'next/head';
+import React from 'react';
 
 interface HeadComponentProps {
   title: string;
@@ -8,12 +8,7 @@ interface HeadComponentProps {
   twitterHandle?: string;
 }
 
-export const HeadComponent: React.FC<HeadComponentProps> = ({
-  title,
-  description,
-  image,
-  twitterHandle,
-}) => {
+export const HeadComponent: React.FC<HeadComponentProps> = ({ title, description, image, twitterHandle }) => {
   return (
     <Head>
       <title>{title}</title>
@@ -36,7 +31,7 @@ export const HeadComponent: React.FC<HeadComponentProps> = ({
       <meta property="og:site_name" content="DAAO.AI" />
       {/* Additional tags */}
       <meta name="viewport" content="width=device-width, initial-scale=1" />
-      <meta name="theme-color" content="system" />{" "}
+      <meta name="theme-color" content="system" />{' '}
     </Head>
   );
 };

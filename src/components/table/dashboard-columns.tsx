@@ -20,7 +20,7 @@ export const DashboardColumns: ColumnDef<dashboardData>[] = [
   },
   {
     id: 'actions',
-    cell: ({ row }) => (
+    cell: () => (
       <div className="flex justify-end space-x-2">
         <Button
           variant="outline"
