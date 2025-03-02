@@ -1,7 +1,6 @@
 import Link from 'next/link';
 import { Clock, Globe } from 'lucide-react';
 import { useState, useEffect } from 'react';
-import { useAccount } from 'wagmi';
 import { useFundContext } from './FundContext';
 import Image from 'next/image';
 import { Card, CardContent, CardHeader } from '@/shadcn/components/ui/card';

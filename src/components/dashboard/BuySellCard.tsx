@@ -21,12 +21,9 @@ import { ROUTER_ABI } from '@/daao-sdk/abi/router';
 import { Card, CardContent } from '@/shadcn/components/ui/card';
 import { Tabs, TabsList, TabsTrigger } from '@/shadcn/components/ui/tabs';
 import { Button } from '@/shadcn/components/ui/button';
-
-const TICK_SPACING = 100;
-const VELODROME_FACTORY_ADDRESS = '0x04625B046C69577EfC40e6c0Bb83CDBAfab5a55F';
-const CL_POOL_ROUTER_ADDRESS = '0xC3a15f812901205Fc4406Cd0dC08Fe266bF45a1E';
-const SWAP_ROUTER_ADDRESS = '0xB11f2310D1b3FF589af56b981c17BC57dee1D488';
-const MODE_TOKEN_ADDRESS = '0xDfc7C877a950e49D2610114102175A06C2e3167a';
+import React from 'react';
+import { clPoolRouterAddress, modeTokenAddress, swapRouterAddress, veloFactoryAddress } from '@/constants/addresses';
+import { tickSpacing } from '@/constants/modeChain';
 
 const BuySellCard = () => {
   const { toast } = useToast();
@@ -87,8 +84,8 @@ const BuySellCard = () => {
 
       try {
         const provider = new ethers.providers.Web3Provider(window.ethereum);
-        const factoryContract = new ethers.Contract(VELODROME_FACTORY_ADDRESS, VELO_FACTORY_ABI, provider);
-        const pool = await factoryContract.callStatic.getPool(MODE_TOKEN_ADDRESS, daoTokenAddress, TICK_SPACING);
+        const factoryContract = new ethers.Contract(veloFactoryAddress, VELO_FACTORY_ABI, provider);
+        const pool = await factoryContract.callStatic.getPool(modeTokenAddress, daoTokenAddress, tickSpacing);
         console.log('Pool:', pool);
 
         if (pool && pool !== ethers.constants.AddressZero) {
@@ -118,9 +115,9 @@ const BuySellCard = () => {
     if (!poolAddress) return;
     if (!window.ethereum) return;
     try {
-      const provider = new ethers.providers.Web3Provider(window.ethereum);
-      const poolContract = new ethers.Contract(poolAddress, VELO_POOL_ABI, provider);
-      const [sqrtPriceX96] = await poolContract.slot0();
+      // const provider = new ethers.providers.Web3Provider(window.ethereum);
+      // const poolContract = new ethers.Contract(poolAddress, VELO_POOL_ABI, provider);
+      // const [sqrtPriceX96] = await poolContract.slot0();
       setCurrentSqrtPrice(zeroForOne === true ? '4295128750' : '1461446703485210103287273052203988822378723970300');
     } catch (error) {
       console.error('Error fetching slot0:', error);
@@ -135,9 +132,9 @@ const BuySellCard = () => {
       const poolContract = new ethers.Contract(poolAddress, VELO_POOL_ABI, provider);
       const t0 = await poolContract.token0();
       const t1 = await poolContract.token1();
-      if (t0 === MODE_TOKEN_ADDRESS) {
+      if (t0 === modeTokenAddress) {
         setFirstTokenMode(true);
-      } else if (t1 === MODE_TOKEN_ADDRESS) {
+      } else if (t1 === modeTokenAddress) {
         setFirstTokenMode(false);
       }
     } catch (error) {
@@ -147,8 +144,7 @@ const BuySellCard = () => {
 
   async function fetchBalances() {
     if (!window.ethereum) return;
-    if (activeTab === 'buy') {
-    } else {
+    if (activeTab !== 'buy') {
       setModeBalance('0');
     }
   }
@@ -191,27 +187,27 @@ const BuySellCard = () => {
       }
       const provider = new ethers.providers.Web3Provider(window.ethereum);
       const signer = provider.getSigner();
-      const clPoolRouter = new ethers.Contract(SWAP_ROUTER_ADDRESS, SWAP_ROUTER_SIMULATE, signer);
+      const clPoolRouter = new ethers.Contract(swapRouterAddress, SWAP_ROUTER_SIMULATE, signer);
       const amountSpecified = ethers.utils.parseUnits(newFromValue, 18);
-      const minOutput = 0;
+      // const minOutput = 0;
       if (!currentSqrtPrice) return;
-      const sqrtPriceBN = ethers.BigNumber.from(currentSqrtPrice);
-      let sqrtPriceLimitBN: ethers.BigNumber;
-      const slippageBps = 1;
-      if (zeroForOne) {
-        sqrtPriceLimitBN = sqrtPriceBN.mul(100 - slippageBps).div(100);
-      } else {
-        sqrtPriceLimitBN = sqrtPriceBN.mul(100 + slippageBps).div(100);
-      }
+      // const sqrtPriceBN = ethers.BigNumber.from(currentSqrtPrice);
+      // let sqrtPriceLimitBN: ethers.BigNumber;
+      // const slippageBps = 1;
+      // if (zeroForOne) {
+      //   sqrtPriceLimitBN = sqrtPriceBN.mul(100 - slippageBps).div(100);
+      // } else {
+      //   sqrtPriceLimitBN = sqrtPriceBN.mul(100 + slippageBps).div(100);
+      // }
       console.log('sqrtPriceLimitBN:', currentSqrtPrice);
       console.log('zeroForOne:', zeroForOne);
       const sqrtPriceLimitX96 = currentSqrtPrice;
-      const deadline = Math.floor(Date.now() / 1000) + 5 * 60;
+      // const deadline = Math.floor(Date.now() / 1000) + 5 * 60;
       const amount1 = await clPoolRouter.callStatic.quoteExactInputSingle(
         poolAddress,
         zeroForOne,
         amountSpecified,
-        sqrtPriceLimitX96,
+        sqrtPriceLimitX96
       );
 
       let outBnAbs = amount1;
@@ -245,10 +241,10 @@ const BuySellCard = () => {
 
     const requiredAmountBN = ethers.utils.parseUnits(amountFrom || '0', 18);
 
-    const currentAllowance: ethers.BigNumber = await daoTokenContract.allowance(userAddress, CL_POOL_ROUTER_ADDRESS);
+    const currentAllowance: ethers.BigNumber = await daoTokenContract.allowance(userAddress, clPoolRouterAddress);
     if (currentAllowance.lt(requiredAmountBN)) {
       console.log('Approving DAO tokens...');
-      const approveTx = await daoTokenContract.approve(CL_POOL_ROUTER_ADDRESS, requiredAmountBN);
+      const approveTx = await daoTokenContract.approve(clPoolRouterAddress, requiredAmountBN);
       await approveTx.wait();
       console.log('DAO token approval completed!');
     }
@@ -257,15 +253,15 @@ const BuySellCard = () => {
   async function checkAndApproveMODE(signer: ethers.Signer) {
     if (!daoTokenAddress) return;
     const userAddress = await signer.getAddress();
-    const ModeTokenContract = new ethers.Contract(MODE_TOKEN_ADDRESS, MODE_ABI, signer);
+    const ModeTokenContract = new ethers.Contract(modeTokenAddress, MODE_ABI, signer);
 
     const requiredAmountBN = ethers.utils.parseUnits(amountFrom || '0', 18);
 
-    const currentAllowance: ethers.BigNumber = await ModeTokenContract.allowance(userAddress, CL_POOL_ROUTER_ADDRESS);
+    const currentAllowance: ethers.BigNumber = await ModeTokenContract.allowance(userAddress, clPoolRouterAddress);
     console.log('Current allowance:', currentAllowance.toString());
     if (currentAllowance.lt(requiredAmountBN)) {
       console.log('Approving DAO tokens...');
-      const approveTx = await ModeTokenContract.approve(CL_POOL_ROUTER_ADDRESS, requiredAmountBN);
+      const approveTx = await ModeTokenContract.approve(clPoolRouterAddress, requiredAmountBN);
       await approveTx.wait();
       console.log('DAO token approval completed!');
     }
@@ -312,7 +308,7 @@ const BuySellCard = () => {
       } else if (activeTab === 'buy') {
         await checkAndApproveMODE(signer);
       }
-      const clPoolRouter = new ethers.Contract(CL_POOL_ROUTER_ADDRESS, ROUTER_ABI, signer);
+      const clPoolRouter = new ethers.Contract(clPoolRouterAddress, ROUTER_ABI, signer);
       const amountSpecified = ethers.utils.parseUnits(amountFrom || '0', 'ether');
       console.log('amountSpecified:', amountSpecified.toString());
 
@@ -330,15 +326,15 @@ const BuySellCard = () => {
         throw new Error('No currentSqrtPrice found. Please ensure slot0 is loaded.');
       }
 
-      const sqrtPriceBN = ethers.BigNumber.from(currentSqrtPrice);
-      let sqrtPriceLimitBN: ethers.BigNumber;
-      const slippageBps = 1;
+      // const sqrtPriceBN = ethers.BigNumber.from(currentSqrtPrice);
+      // let sqrtPriceLimitBN: ethers.BigNumber;
+      // const slippageBps = 1;
 
-      if (zeroForOne) {
-        sqrtPriceLimitBN = sqrtPriceBN.mul(100 - slippageBps).div(100);
-      } else {
-        sqrtPriceLimitBN = sqrtPriceBN.mul(100 + slippageBps).div(100);
-      }
+      // if (zeroForOne) {
+      //   sqrtPriceLimitBN = sqrtPriceBN.mul(100 - slippageBps).div(100);
+      // } else {
+      //   sqrtPriceLimitBN = sqrtPriceBN.mul(100 + slippageBps).div(100);
+      // }
       //4295128750
       const sqrtPriceLimitX96 = currentSqrtPrice;
       console.log('zeroforone is', zeroForOne);
@@ -353,7 +349,7 @@ const BuySellCard = () => {
         amountSpecified,
         sqrtPriceLimitX96,
         minOutputBN,
-        deadline,
+        deadline
       );
 
       const receipt = await tx.wait();
@@ -425,7 +421,11 @@ const BuySellCard = () => {
             </TabsList>
           </Tabs>
 
-          <button type="button" onClick={() => setSlippageOpen(!slippageOpen)} className="p-2 hover:bg-[#1b1c1d] rounded-md">
+          <button
+            type="button"
+            onClick={() => setSlippageOpen(!slippageOpen)}
+            className="p-2 hover:bg-[#1b1c1d] rounded-md"
+          >
             <FiSettings size={20} />
           </button>
         </div>

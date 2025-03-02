@@ -1,9 +1,11 @@
+'use client';
+
 import React, { useState } from 'react';
 import Web3 from 'web3';
 import { DAO } from '@/daao-sdk/abi/dao';
 import { DaoBytecode } from '@/daao-sdk/bytecode/daoByteCode';
 
-const DeployDAO: React.FC = (fundraisingGoal, maxWhitelistAmount) => {
+const DeployDAO: React.FC = () => {
   const [daoName, setDaoName] = useState<string>('');
   const [daoSymbol, setDaoSymbol] = useState<string>('');
   const [tokenName, setTokenName] = useState<string>('');

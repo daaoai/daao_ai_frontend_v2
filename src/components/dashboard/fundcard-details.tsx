@@ -10,6 +10,7 @@ import { shortenAddress } from '@/utils/address';
 import { handleCopy } from '@/utils/copy';
 import type { FundDetailsProps } from '@/types';
 import { Copy } from 'lucide-react';
+import { daoAddress } from '@/constants/addresses';
 
 const FundDetails: React.FC<FundDetailsProps> = (props) => {
   interface TokenChangeState {
@@ -21,7 +22,7 @@ const FundDetails: React.FC<FundDetailsProps> = (props) => {
   const [marketCap, setMarketCap] = useState<number | null>(null);
   const [daoTokenAddress, setDaoTokenAddress] = useState('');
   const [price, setPrice] = useState<number | null>(null);
-  const { priceUsd, setPriceUsd } = useFundContext();
+  const { setPriceUsd } = useFundContext();
   const [tokenChange, setTokenChange] = useState<TokenChangeState>({
     percent: 0,
     token: 0,
@@ -70,11 +71,10 @@ const FundDetails: React.FC<FundDetailsProps> = (props) => {
 
   useEffect(() => {
     const modeRpc = 'https://mainnet.mode.network/';
-    const daoAddress = '0xEc7b0FD288E87eBC1C301E360092c645567e79B9';
     const fetchMarketData = async () => {
       const provider = new ethers.providers.JsonRpcProvider(modeRpc);
 
-      const signer = provider.getSigner();
+      // const signer = provider.getSigner();
 
       const contract = new ethers.Contract(daoAddress as string, CONTRACT_ABI, provider);
       const daoToken = await contract.daoToken();
@@ -156,7 +156,7 @@ const FundDetails: React.FC<FundDetailsProps> = (props) => {
                   }`}
                 >
                   {`${commaSeparator(Number(tokenChange?.token || 0).toFixed(2))} (${Number(
-                    tokenChange?.percent || 0,
+                    tokenChange?.percent || 0
                   ).toFixed(2)}%)`}
                 </p>
               </CardContent>

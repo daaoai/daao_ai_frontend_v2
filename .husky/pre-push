@@ -1,3 +1,4 @@
-# #!/bin/sh
-# set -x  # Enable debugging logs
-# pnpm build
+#!/bin/sh
+. "$(dirname -- "$0")/_/husky.sh"
+
+pnpm build

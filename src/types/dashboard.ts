@@ -19,27 +19,6 @@ export interface TokenBalance {
 }
 export type ApiResponse = TokenBalance[];
 
-export interface Token {
-  address: string;
-  circulating_market_cap: number | null;
-  decimals: string;
-  exchange_rate: number | null;
-  holders: string;
-  icon_url: string | null;
-  name: string;
-  symbol: string;
-  total_supply: string;
-  type: string;
-  volume_24h: number | null;
-}
-
-export interface TokenBalance {
-  token: Token;
-  token_id: string | null;
-  token_instance: string | null;
-  value: string;
-}
-
 // DEXScreener API types
 export interface DexScreenerPair {
   chainId: string;

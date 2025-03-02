@@ -7,6 +7,7 @@ export const handleCopy = async (value: string) => {
       className: `bg-[#2ca585]`,
     });
   } catch (error) {
+    console.log('error is ', error);
     toast({
       description: 'Failed to copy',
       className: ``,

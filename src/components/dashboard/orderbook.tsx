@@ -37,11 +37,10 @@ interface OrderbookProps {
   created: string;
   owner: string;
   token: string;
-  tradingEnds: string;
   ethRaised: string;
 }
 
-const Orderbook = ({ name, created, owner, token, tradingEnds, ethRaised }: OrderbookProps) => {
+const Orderbook = ({ name, created, owner, token, ethRaised }: OrderbookProps) => {
   return (
     <Card className="w-full max-w-md bg-[#1b1c1d] text-card-foreground mx-auto">
       <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">

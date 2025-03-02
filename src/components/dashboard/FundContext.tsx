@@ -2,6 +2,7 @@
 import { createContext, useContext, useState, ReactNode } from 'react';
 import { useFetchBalance } from '../../hooks/useFetchBalance';
 import { useAccount } from 'wagmi';
+import React from 'react';
 
 interface FundContextType {
   fetchedData: any;

@@ -1,17 +1,12 @@
-"use client";
-import React, { useEffect, useState } from "react";
-import { XCircle, Loader } from "lucide-react";
-import useWithDraw from "@/hooks/farm/useWithdraw";
-import { formatUnits, Hex, parseUnits } from "viem";
-import { useAccount } from "wagmi";
-import { FarmPool } from "@/types/farm";
-import { useToast } from "@/hooks/use-toast";
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-} from "@/shadcn/components/ui/card";
+'use client';
+import React, { useEffect, useState } from 'react';
+import { XCircle, Loader } from 'lucide-react';
+import useWithDraw from '@/hooks/farm/useWithdraw';
+import { formatUnits, Hex, parseUnits } from 'viem';
+import { useAccount } from 'wagmi';
+import { FarmPool } from '@/types/farm';
+import { useToast } from '@/hooks/use-toast';
+import { Card, CardContent, CardHeader, CardTitle } from '@/shadcn/components/ui/card';
 
 interface WithdrawProps {
   onClose: () => void;
@@ -19,23 +14,17 @@ interface WithdrawProps {
   poolData: FarmPool;
 }
 
-const WithdrawFarms: React.FC<WithdrawProps> = ({
-  onClose,
-  poolAddress,
-  poolData,
-}) => {
+const WithdrawFarms: React.FC<WithdrawProps> = ({ onClose, poolAddress, poolData }) => {
   const { withdraw, startWithdraw, getWithdrawalTime } = useWithDraw();
   const { address } = useAccount();
   const { toast } = useToast();
 
   const [withDrawEnable, setWithdrawEnable] = useState(false);
-  const [withdrawAmount, setWithdrawAmount] = useState<number>(
-    parseFloat(formatUnits(poolData.userInfo.stackedAmount, 18))
-  );
+  const [withdrawAmount] = useState<number>(parseFloat(formatUnits(poolData.userInfo.stackedAmount, 18)));
   const [withdrawTimeLeft, setWithdrawTimeLeft] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [withdrawTxnMessage, setWithdrawTxnMessage] = useState<{
-    status: "success" | "error" | null;
+    status: 'success' | 'error' | null;
     msg: string | null;
   }>({
     status: null,
@@ -46,9 +35,9 @@ const WithdrawFarms: React.FC<WithdrawProps> = ({
     const fetchWithdrawalTime = async () => {
       if (address) {
         const timeLeft = await getWithdrawalTime({ address });
-        if (timeLeft === "Available Now") {
+        if (timeLeft === 'Available Now') {
           setWithdrawEnable(true);
-        } else if (timeLeft === "Not Initiated") {
+        } else if (timeLeft === 'Not Initiated') {
           setWithdrawEnable(false);
         } else {
           setWithdrawTimeLeft(timeLeft);
@@ -68,9 +57,9 @@ const WithdrawFarms: React.FC<WithdrawProps> = ({
     });
 
     toast({
-      title: "Processing Withdrawal...",
+      title: 'Processing Withdrawal...',
       description: `Withdrawing ${withdrawAmount} tokens.`,
-      variant: "default",
+      variant: 'default',
     });
 
     try {
@@ -79,15 +68,15 @@ const WithdrawFarms: React.FC<WithdrawProps> = ({
         amount: parseUnits(withdrawAmount.toString(), 18),
       });
 
-      if (receipt?.status === "success") {
+      if (receipt?.status === 'success') {
         setWithdrawTxnMessage({
-          status: "success",
-          msg: "Withdrawal Successful",
+          status: 'success',
+          msg: 'Withdrawal Successful',
         });
         toast({
-          title: "Withdrawal Successful ✅",
+          title: 'Withdrawal Successful ✅',
           description: `Your withdrawal of ${withdrawAmount} tokens is confirmed.`,
-          variant: "default",
+          variant: 'default',
         });
 
         setTimeout(
@@ -96,18 +85,19 @@ const WithdrawFarms: React.FC<WithdrawProps> = ({
               status: null,
               msg: null,
             }),
-          5000
+          5000,
         );
       }
     } catch (error) {
+      console.log(error, 'error');
       setWithdrawTxnMessage({
-        status: "error",
-        msg: "Withdrawal Failed",
+        status: 'error',
+        msg: 'Withdrawal Failed',
       });
       toast({
-        title: "Withdrawal Failed ❌",
-        description: "An error occurred during withdrawal.",
-        variant: "destructive",
+        title: 'Withdrawal Failed ❌',
+        description: 'An error occurred during withdrawal.',
+        variant: 'destructive',
       });
     } finally {
       setLoading(false);
@@ -116,11 +106,11 @@ const WithdrawFarms: React.FC<WithdrawProps> = ({
 
   const handleWithdrawFlow = async () => {
     if (address) {
-      if (withdrawTimeLeft && withdrawTimeLeft !== "Available Now") {
+      if (withdrawTimeLeft && withdrawTimeLeft !== 'Available Now') {
         toast({
-          title: "Withdrawal Pending",
+          title: 'Withdrawal Pending',
           description: `You can withdraw in ${withdrawTimeLeft}.`,
-          variant: "default",
+          variant: 'default',
         });
         return;
       }
@@ -133,16 +123,16 @@ const WithdrawFarms: React.FC<WithdrawProps> = ({
 
       try {
         const txn = await startWithdraw();
-        if (txn?.status === "success") {
+        if (txn?.status === 'success') {
           setWithdrawEnable(true);
           setWithdrawTxnMessage({
-            status: "success",
-            msg: "Withdrawal Initiated Successfully",
+            status: 'success',
+            msg: 'Withdrawal Initiated Successfully',
           });
           toast({
-            title: "Withdrawal Initiated ✅",
-            description: "You can withdraw once the cooldown period is over.",
-            variant: "default",
+            title: 'Withdrawal Initiated ✅',
+            description: 'You can withdraw once the cooldown period is over.',
+            variant: 'default',
           });
 
           // Reset success message after 5 seconds
@@ -152,18 +142,19 @@ const WithdrawFarms: React.FC<WithdrawProps> = ({
                 status: null,
                 msg: null,
               }),
-            5000
+            5000,
           );
         }
       } catch (error) {
+        console.log(error, 'error');
         setWithdrawTxnMessage({
-          status: "error",
-          msg: "Withdrawal Initiated Failed",
+          status: 'error',
+          msg: 'Withdrawal Initiated Failed',
         });
         toast({
-          title: "Withdrawal Failed ❌",
-          description: "An error occurred while starting withdrawal.",
-          variant: "destructive",
+          title: 'Withdrawal Failed ❌',
+          description: 'An error occurred while starting withdrawal.',
+          variant: 'destructive',
         });
       } finally {
         setLoading(false);
@@ -171,15 +162,13 @@ const WithdrawFarms: React.FC<WithdrawProps> = ({
     }
   };
 
-  console.log(formatUnits(poolData.userInfo.stackedAmount, 18), "fghgvbhj");
+  console.log(formatUnits(poolData.userInfo.stackedAmount, 18), 'fghgvbhj');
 
   return (
     <Card className="w-full max-w-lg bg-[#0D0D0D] border border-[#1E1E1E] rounded-xl shadow-lg text-white">
       <CardHeader className="flex flex-row justify-between items-center px-6 py-4 border-b border-[#1E1E1E]">
         <div className="flex items-center gap-2">
-          <CardTitle className="text-lg font-semibold text-white">
-            Withdraw
-          </CardTitle>
+          <CardTitle className="text-lg font-semibold text-white">Withdraw</CardTitle>
         </div>
         <button
           className="text-gray-400 hover:text-white transition-all"
@@ -198,11 +187,7 @@ const WithdrawFarms: React.FC<WithdrawProps> = ({
             CARTL
           </p>
 
-          {withdrawTimeLeft && (
-            <p className="text-yellow-400">
-              Withdrawal available in: {withdrawTimeLeft}
-            </p>
-          )}
+          {withdrawTimeLeft && <p className="text-yellow-400">Withdrawal available in: {withdrawTimeLeft}</p>}
 
           <button
             className="w-full flex items-center justify-center gap-2 px-3 py-2 text-white rounded-md bg-[#27292a] hover:bg-[#323435] transition-all disabled:opacity-50 disabled:cursor-not-allowed"
@@ -215,20 +200,16 @@ const WithdrawFarms: React.FC<WithdrawProps> = ({
                 Processing...
               </>
             ) : (
-              "Withdraw"
+              'Withdraw'
             )}
           </button>
 
           {/* Success/Failure Messages */}
-          {withdrawTxnMessage.status === "success" && (
-            <p className="text-green-500 text-center mt-2">
-              {withdrawTxnMessage.msg} ✅
-            </p>
+          {withdrawTxnMessage.status === 'success' && (
+            <p className="text-green-500 text-center mt-2">{withdrawTxnMessage.msg} ✅</p>
           )}
-          {withdrawTxnMessage.status === "error" && (
-            <p className="text-red-500 text-center mt-2">
-              {withdrawTxnMessage.msg} ❌
-            </p>
+          {withdrawTxnMessage.status === 'error' && (
+            <p className="text-red-500 text-center mt-2">{withdrawTxnMessage.msg} ❌</p>
           )}
         </div>
       </CardContent>

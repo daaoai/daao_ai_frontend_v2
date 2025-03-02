@@ -1,3 +1,5 @@
+'use client';
+
 import React, { useState, useEffect } from 'react';
 import Web3 from 'web3';
 import { DAO } from '@/daao-sdk/abi/dao';
@@ -85,7 +87,7 @@ const AddToWhitelist: React.FC = () => {
   return (
     <div style={{ maxWidth: '600px', margin: '0 auto', padding: '20px' }}>
       <h2>Add Addresses to Whitelist</h2>
-      <p>Enter the addresses below and click "Add to Whitelist".</p>
+      <p>Enter the addresses below and click &quot;Add to Whitelist&quot;.</p>
 
       {addresses.map((address, index) => (
         <div key={index} style={{ marginBottom: '10px' }}>

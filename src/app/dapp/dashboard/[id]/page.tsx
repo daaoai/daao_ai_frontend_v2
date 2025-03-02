@@ -9,10 +9,9 @@ import { useAccount } from 'wagmi';
 import { AssetTable } from '@/components/table/assets-table';
 import { assetColumns } from '@/components/table/assets-columns';
 import axios from 'axios';
-import type { ApiResponse, Asset, DexScreenerResponse, EnhancedApiResponse } from '@/types/dashboard';
+import type { ApiResponse, DexScreenerResponse, EnhancedApiResponse } from '@/types/dashboard';
 import { formatDaoHoldingTokens } from '@/utils/dashboard';
 import { useFetchBalance } from '@/hooks/useFetchBalance';
-import { useFundContext } from '@/components/dashboard/FundContext';
 
 const Dashboard: React.FC = () => {
   const account = useAccount();
@@ -22,7 +21,7 @@ const Dashboard: React.FC = () => {
   const [daaoHoldingTokens, setDaoHoldingTokens] = useState<ApiResponse | null>(null);
   const [activeTab, setActiveTab] = useState('trades');
 
-  const { daoBalance, priceUsd } = useFundContext();
+  // const { daoBalance, priceUsd } = useFundContext();
   useEffect(() => {
     console.log('daoToken is', fetchedData?.daoToken);
     if (!fetchedData) return;
@@ -64,6 +63,7 @@ const Dashboard: React.FC = () => {
             };
           } catch (error) {
             console.log(`Failed to fetch price for ${tokenBalance.token.address}`);
+            console.error(error);
             return {
               address: tokenBalance.token.address,
               priceUsd: undefined,
@@ -100,15 +100,15 @@ const Dashboard: React.FC = () => {
     fetchTokensWithPrices();
   }, []);
 
-  const assetsData: Asset[] = [
-    {
-      token: 'CARTEL',
-      // tokenIcon: CURRENT_DAO_IMAGE,
-      balance: Number(daoBalance),
-      price: priceUsd,
-      totalValue: priceUsd * Number(daoBalance),
-    },
-  ];
+  // const assetsData: Asset[] = [
+  //   {
+  //     token: 'CARTEL',
+  //     // tokenIcon: CURRENT_DAO_IMAGE,
+  //     balance: Number(daoBalance),
+  //     price: priceUsd,
+  //     totalValue: priceUsd * Number(daoBalance),
+  //   },
+  // ];
 
   return (
     <PageLayout title="App" description="main-app" app={true}>
@@ -195,7 +195,6 @@ const Dashboard: React.FC = () => {
                     created="7/02/2025"
                     owner="0xb51eC6F7D3E0D0FEae495eFe1f0751dE66b6be95"
                     token={daoTokenAddress}
-                    tradingEnds="10/3/2025"
                     ethRaised="1,000,000 MODE"
                   />
                 </div>

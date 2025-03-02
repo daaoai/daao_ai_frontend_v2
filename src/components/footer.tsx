@@ -3,6 +3,7 @@ import Logo from './logo-component';
 import Image from 'next/image';
 
 import { socialLinks } from '@/constants/links';
+import React from 'react';
 
 export interface FooterData {
   label: string;

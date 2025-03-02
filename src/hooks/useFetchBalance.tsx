@@ -4,17 +4,15 @@ import { useReadContracts } from 'wagmi';
 import { ethers } from 'ethers';
 import { CONTRACT_ABI } from '@/daao-sdk/abi/abi';
 import { MODE_ABI } from '@/daao-sdk/abi/mode';
-
-const MODE_TOKEN_ADDRESS = '0xDfc7C877a950e49D2610114102175A06C2e3167a';
-const DAO_CONTRACT_ADDRESS = '0xEc7b0FD288E87eBC1C301E360092c645567e79B9';
+import { daoAddress, modeTokenAddress } from '@/constants/addresses';
 
 const wagmiModeContract = {
-  address: MODE_TOKEN_ADDRESS,
+  address: modeTokenAddress,
   abi: MODE_ABI,
 } as const;
 
 const wagmiDaoContract = {
-  address: DAO_CONTRACT_ADDRESS,
+  address: daoAddress,
   abi: CONTRACT_ABI,
 } as const;
 

@@ -1,5 +1,6 @@
 import '../globals.css';
 import ProviderWrapper from '@/wagmi/ProviderWrapper';
+import React from 'react';
 
 export const metadata = {
   title: 'Daao App',

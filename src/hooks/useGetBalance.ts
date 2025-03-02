@@ -1,7 +1,7 @@
-import { CARTEL } from "@/daao-sdk/abi/cartel";
-import { CARTEL_TOKEN_ADDRESS, MODE_CHAIN_ID } from "@/constants/ticket";
-import { Hex } from "viem";
-import { useAccount, useReadContracts } from "wagmi";
+import { CARTEL } from '@/daao-sdk/abi/cartel';
+import { CARTEL_TOKEN_ADDRESS, MODE_CHAIN_ID } from '@/constants/ticket';
+import { Hex } from 'viem';
+import { useAccount, useReadContracts } from 'wagmi';
 
 const useGetBalance = () => {
   const { address } = useAccount();
@@ -11,26 +11,26 @@ const useGetBalance = () => {
         abi: CARTEL,
         address: CARTEL_TOKEN_ADDRESS as Hex,
         chainId: MODE_CHAIN_ID,
-        functionName: "balanceOf",
+        functionName: 'balanceOf',
         args: address ? [address] : undefined,
       },
       {
         abi: CARTEL,
         address: CARTEL_TOKEN_ADDRESS as Hex,
         chainId: MODE_CHAIN_ID,
-        functionName: "symbol",
+        functionName: 'symbol',
       },
       {
         abi: CARTEL,
         address: CARTEL_TOKEN_ADDRESS as Hex,
         chainId: MODE_CHAIN_ID,
-        functionName: "decimals",
+        functionName: 'decimals',
       },
       {
         abi: CARTEL,
         address: CARTEL_TOKEN_ADDRESS as Hex,
         chainId: MODE_CHAIN_ID,
-        functionName: "name",
+        functionName: 'name',
       },
     ],
   });

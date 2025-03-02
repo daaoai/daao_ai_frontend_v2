@@ -1,2 +1,4 @@
-# #!/usr/bin/env sh
-# pnpm lint || exit 1
+#!/bin/sh
+. "$(dirname -- "$0")/_/husky.sh"
+
+npx lint-staged

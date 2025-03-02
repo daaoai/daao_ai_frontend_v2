@@ -18,14 +18,14 @@ const ModalWrapper: React.FC<ModalProps> = ({ isOpen, onClose, children, classNa
         onClose();
       }
     },
-    [onClose],
+    [onClose]
   );
 
   const handleEscape = useCallback(
     (event: KeyboardEvent) => {
       if (event.key === 'Escape') onClose();
     },
-    [onClose],
+    [onClose]
   );
 
   useEffect(() => {
@@ -46,7 +46,10 @@ const ModalWrapper: React.FC<ModalProps> = ({ isOpen, onClose, children, classNa
 
   return (
     <div className="fixed inset-0 flex items-start justify-center py-4 pt-32 px-6 z-10 bg-opacity-70 backdrop-blur-md">
-      <div ref={modalRef} className={clsx('relative shadow-lg w-full max-w-lg rounded-lg flex justify-center items-center', className)}>
+      <div
+        ref={modalRef}
+        className={clsx('relative shadow-lg w-full max-w-lg rounded-lg flex justify-center items-center', className)}
+      >
         {children}
       </div>
     </div>
@@ -54,5 +57,3 @@ const ModalWrapper: React.FC<ModalProps> = ({ isOpen, onClose, children, classNa
 };
 
 export { ModalWrapper };
-
-

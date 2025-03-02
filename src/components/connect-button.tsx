@@ -6,6 +6,7 @@ import { mode, goerli, sepolia } from 'wagmi/chains'; // Import networks
 import Image from 'next/image'; // Import Image component for displaying chain icons
 import { Button } from '@/shadcn/components/ui/button';
 import { cn } from '@/shadcn/lib/utils';
+import React from 'react';
 
 // Array containing Ethereum chain IDs (mainnet, goerli, sepolia)
 const ethChainIds: number[] = [mode.id, goerli.id, sepolia.id];

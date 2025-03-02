@@ -2,12 +2,12 @@
 // with added process.env.VERCEL_URL detection to support preview deployments
 // and with auth option logic extracted into a 'getAuthOptions' function so it
 // can be used to get the session server-side with 'getServerSession'
-import { IncomingMessage } from "http";
-import { NextApiRequest, NextApiResponse } from "next/types";
-import NextAuth, { NextAuthOptions } from "next-auth";
-import CredentialsProvider from "next-auth/providers/credentials";
-import { getCsrfToken } from "next-auth/react";
-import { SiweMessage } from "siwe";
+import { IncomingMessage } from 'http';
+import { NextApiRequest, NextApiResponse } from 'next/types';
+import NextAuth, { NextAuthOptions } from 'next-auth';
+import CredentialsProvider from 'next-auth/providers/credentials';
+import { getCsrfToken } from 'next-auth/react';
+import { SiweMessage } from 'siwe';
 // https://next-auth.js.org/tutorials/securing-pages-and-api-routes
 
 export function getAuthOptions(req: IncomingMessage): NextAuthOptions {
@@ -15,34 +15,26 @@ export function getAuthOptions(req: IncomingMessage): NextAuthOptions {
     CredentialsProvider({
       async authorize(credentials) {
         try {
-          const siwe = new SiweMessage(
-            JSON.parse(credentials?.message || "{}")
-          );
+          const siwe = new SiweMessage(JSON.parse(credentials?.message || '{}'));
 
           const nextAuthUrl =
-            process.env.NEXTAUTH_URL ||
-            (process.env.VERCEL_URL
-              ? `https://${process.env.VERCEL_URL}`
-              : null);
+            process.env.NEXTAUTH_URL || (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : null);
           if (!nextAuthUrl) {
             return null;
           }
-          console.log("nextAuthUrl", nextAuthUrl);
+          console.log('nextAuthUrl', nextAuthUrl);
 
           const nextAuthHost = new URL(nextAuthUrl).host;
-          console.log("nextAuthHost", nextAuthHost);
+          console.log('nextAuthHost', nextAuthHost);
           if (siwe.domain !== nextAuthHost) {
             return null;
           }
 
-          if (
-            siwe.nonce !==
-            (await getCsrfToken({ req: { headers: req.headers } }))
-          ) {
+          if (siwe.nonce !== (await getCsrfToken({ req: { headers: req.headers } }))) {
             return null;
           }
 
-          await siwe.verify({ signature: credentials?.signature || "" });
+          await siwe.verify({ signature: credentials?.signature || '' });
 
           /**
            * You can add your own logic here to handle user after sign in.
@@ -58,17 +50,17 @@ export function getAuthOptions(req: IncomingMessage): NextAuthOptions {
       },
       credentials: {
         message: {
-          label: "Message",
-          placeholder: "0x0",
-          type: "text",
+          label: 'Message',
+          placeholder: '0x0',
+          type: 'text',
         },
         signature: {
-          label: "Signature",
-          placeholder: "0x0",
-          type: "text",
+          label: 'Signature',
+          placeholder: '0x0',
+          type: 'text',
         },
       },
-      name: "Ethereum",
+      name: 'Ethereum',
     }),
   ];
 
@@ -79,7 +71,7 @@ export function getAuthOptions(req: IncomingMessage): NextAuthOptions {
         session.user = {
           name: token.sub,
         };
-        session.user.image = "https://www.fillmurray.com/128/128";
+        session.user.image = 'https://www.fillmurray.com/128/128';
         return session;
       },
     },
@@ -87,7 +79,7 @@ export function getAuthOptions(req: IncomingMessage): NextAuthOptions {
     providers,
     secret: process.env.NEXTAUTH_SECRET,
     session: {
-      strategy: "jwt",
+      strategy: 'jwt',
     },
   };
 }
@@ -98,13 +90,11 @@ export default async function auth(req: NextApiRequest, res: NextApiResponse) {
   const authOptions = getAuthOptions(req);
 
   if (!Array.isArray(req.query.nextauth)) {
-    res.status(400).send("Bad request");
+    res.status(400).send('Bad request');
     return;
   }
 
-  const isDefaultSigninPage =
-    req.method === "GET" &&
-    req.query.nextauth.find((value: any) => value === "signin");
+  const isDefaultSigninPage = req.method === 'GET' && req.query.nextauth.find((value: any) => value === 'signin');
 
   // Hide Sign-In with Ethereum from default sign page
   if (isDefaultSigninPage) {

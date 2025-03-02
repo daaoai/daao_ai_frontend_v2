@@ -21,7 +21,7 @@ type ToasterToast = ToasterProps & {
   onOpenChange?: (open: boolean) => void; // Added onOpenChange property
 };
 
-const actionTypes = {
+export const actionTypes = {
   ADD_TOAST: 'ADD_TOAST',
   UPDATE_TOAST: 'UPDATE_TOAST',
   DISMISS_TOAST: 'DISMISS_TOAST',
