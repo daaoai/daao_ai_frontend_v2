@@ -118,7 +118,13 @@ const FundDetails: React.FC<FundDetailsProps> = (props) => {
   return (
     <Card className="text-white sm:p-2  w-full border-none">
       <div className="w-full">
-        <Image src="/assets/defaiCartel.svg" alt="defai-cartel" width={600} height={300} style={{ width: '100%' }} />
+        <Image
+          src="/assets/defai-cartel-image.svg"
+          alt="defai-cartel"
+          width={600}
+          height={300}
+          style={{ width: '100%' }}
+        />
       </div>
 
       {/* <div className="flex items-center gap-4 sm:gap-6">
@@ -150,15 +156,56 @@ const FundDetails: React.FC<FundDetailsProps> = (props) => {
           <p>12</p>
         </div>
       </div>
-      <div className="flex justify-between w-full">
-        <div className="w-fit flex gap-x-2">
-          <h5>$CARTEL</h5>
-          <div className="bg-[#053738] p-1 rounded-md flex gap-x-2">
-            <p>{shortenAddress(daoTokenAddress)}</p>
+      <div className="flex justify-between w-full mb-4">
+        <div className="w-fit flex gap-x-2 items-center">
+          <h5 className="text-sm sm:text-base lg:text-lg text-[#D0F0BF]">$CARTEL</h5>
+          <div className="bg-[#053738] p-1 rounded-2xl flex gap-x-2 px-3">
+            <p className="text-sm sm:text-base lg:text-lg">{shortenAddress(daoTokenAddress)}</p>
             <ClickToCopy copyText={daoTokenAddress} className="text-teal-20" />
           </div>
         </div>
-        <div className="w-fit flex"></div>
+        <div className="w-fit flex items-center gap-x-2">
+          <a>
+            <Image
+              src="/assets/link-logo.svg"
+              alt="defai-cartel"
+              className="w-4 h-4 sm:w-5 sm:h-5"
+              width={24}
+              height={24}
+              style={{ width: '100%' }}
+            />
+          </a>
+          <a>
+            <Image
+              src="/assets/telegram-icon.svg"
+              alt="defai-cartel"
+              className="w-4 h-4 sm:w-5 sm:h-5"
+              width={24}
+              height={24}
+              style={{ width: '100%' }}
+            />
+          </a>
+          <a>
+            <Image
+              src="/assets/x.svg"
+              alt="defai-cartel"
+              className="w-4 h-4 sm:w-5 sm:h-5"
+              width={24}
+              height={24}
+              style={{ width: '100%' }}
+            />
+          </a>
+        </div>
+      </div>
+      <div className="flex w-full flex-col items-start gap-y-3">
+        <h2 className="text-sm sm:text-base md:text-lg lg:text-xl font-semibold">Defai Cartel</h2>
+        <p className=" sm:text-xs lg:text-sm text-left text-[#AEB3B6]">
+          lorem ipsum dolor sit amet Lorem ipsum dolor sit amet consectetur adipisicing elit. Libero, ipsam inventore
+          non illum corrupti, quibusdam sequi dolorum corporis ipsum ea porro ad soluta qui recusandae. Voluptatem
+          officia labore recusandae animi inventore alias eum maxime, dolorum illo commodi totam nobis soluta veniam
+          ratione sit nesciunt quae at facilis mollitia ab maiores? Eligendi, omnis nemo? Exercitationem repellat
+          veritatis, rem, dolorem ipsa non, nesciunt in quia quam vel debitis. Cupiditate temporibus deleniti, mollitia
+        </p>
       </div>
 
       <CardContent className="space-y-4 sm:space-y-6">
