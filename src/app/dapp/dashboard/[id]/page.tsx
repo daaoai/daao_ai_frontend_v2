@@ -15,6 +15,7 @@ import type { FundDetailsProps } from '@/types';
 import { useFundContext } from '@/components/dashboard/FundContext';
 import { useFetchBalance } from '@/hooks/useFetchBalance';
 import { CURRENT_DAO_IMAGE } from '@/constants/links';
+import { motion } from 'framer-motion';
 
 export interface Token {
   address: string;
@@ -222,28 +223,40 @@ const Dashboard: React.FC = () => {
         </div>
 
         <div className="w-full flex justify-center lg:justify-start items-center lg:items-start px-8 border-2 border-gray-30 pt-8 rounded-md">
-          <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-            {/* <TabsList className="h-12 bg-[#1b1c1d] justify-start items-center gap-6 inline-flex mb-6"> */}
-            <TabsList className="h-12  justify-start items-center gap-6 mb-6 flex">
-              <TabsTrigger
-                value="trades"
-                className="px-4 py-2 rounded border justify-center items-center gap-2 flex transition-all 
-               data-[state=active]:bg-teal-50  data-[state=inactive]:bg-gray-300 data-[state=inactive]:text-black data-[state=active]:border-black 
-               data-[state=active]:text-black data-[state=active]:text-xl 
-               bg-[#27292a] text-[#aeb3b6] text-lg"
-              >
-                <span className="font-normal text-sm font-rubik tracking-tight">Trades</span>
-              </TabsTrigger>
-              <TabsTrigger
-                value="assets"
-                className="px-4 py-2 rounded justify-center items-center gap-2 flex transition-all 
-                data-[state=active]:bg-teal-50 data-[state=active]:border-black data-[state=inactive]:bg-gray-300 data-[state=inactive]:text-black
-               data-[state=active]:text-black data-[state=active]:text-xl 
-               bg-[#27292a] text-[#aeb3b6] text-lg"
-              >
-                <span className="font-normal text-sm font-rubik tracking-tight">Assets</span>
-              </TabsTrigger>
-            </TabsList>
+          <Tabs value={activeTab} onValueChange={(val) => setActiveTab(val as 'trades' | 'assets')} className="w-full">
+            <div className="relative w-fit">
+              <TabsList className="h-12 flex items-center gap-6 mb-6 bg-[#1b1c1d] p-1 rounded-md relative">
+                {/* Background Animation - Fixing alignment */}
+                <motion.div
+                  layoutId="tabBackground"
+                  className="absolute top-0 bottom-0 left-0 bg-teal-50 rounded-md"
+                  style={{ width: 'calc(100% / 2)' }} // Fix width dynamically
+                  initial={false}
+                  animate={{
+                    x: activeTab === 'trades' ? '0%' : '100%',
+                  }}
+                  transition={{ type: 'tween', duration: 0.3 }}
+                />
+
+                {/* Trades Tab */}
+                <TabsTrigger
+                  value="trades"
+                  className={`relative px-4 py-1 rounded-md text-sm font-rubik tracking-tight transition-all 
+              z-10 ${activeTab === 'trades' ? 'text-black font-semibold' : 'text-gray-400'}`}
+                >
+                  Trades
+                </TabsTrigger>
+
+                {/* Assets Tab */}
+                <TabsTrigger
+                  value="assets"
+                  className={`relative px-4 py-1 rounded-md text-sm font-rubik tracking-tight transition-all 
+              z-10 ${activeTab === 'assets' ? 'text-black font-semibold' : 'text-gray-400'}`}
+                >
+                  Assets
+                </TabsTrigger>
+              </TabsList>
+            </div>
 
             {/* <TabsContent value="trades" className="w-full">
               <div className="grid grid-cols-1 lg:grid-cols-10 gap-6">

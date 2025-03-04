@@ -29,10 +29,15 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { Button } from '@/shadcn/components/ui/button';
 import { Input } from '@/shadcn/components/ui/input';
 import { modeChainId, tickSpacing } from '@/constants/modeChain';
+import Link from 'next/link';
 
 bn.config({ EXPONENTIAL_AT: 999999, DECIMAL_PLACES: 40 });
 
-const Liquidity = () => {
+interface LiquidityProps {
+  onClose: () => void;
+}
+
+const Liquidity: React.FC<LiquidityProps> = ({ onClose }) => {
   const MODE_TOKEN_ADDRESS = modeTokenAddress;
   const TICK_SPACING = tickSpacing;
   const DAO_TOKEN_ADDRESS = daoAddress || process.env.NEXT_PUBLIC_DAO_ADDRESS;
@@ -635,261 +640,259 @@ const Liquidity = () => {
   return (
     <div>
       <div className="liquidity_main-container">
-        <div className="liquidity_container">
-          <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
-            <DialogTrigger asChild>
-              <Button
-                variant="ghost"
-                size="sm"
-                className="bg-teal-50 text-black text-sm rounded-md p-4 hover:bg-teal-60 hover:text-black"
+        <div className="flex gap-6 bg-gray-40 p-8 items-center justify-center rounded-lg">
+          <div className="flex flex-col gap-6 items-start">
+            <Image src="/assets/defaiCartel.svg" alt="defai-cartel" width={400} height={400} />
+            <div className="flex flex-col items-start gap-4">
+              <p className="text-2xl font-sora font-medium text-white">Defai Cartel</p>
+              <Link
+                href="https://velodrome.finance/swap?from=0xdfc7c877a950e49d2610114102175a06c2e3167a&to=0x98e0ad23382184338ddcec0e13685358ef845f30&chain0=34443&chain1=34443"
+                className="text-teal-60 font-normal"
               >
-                Manage
-              </Button>
-            </DialogTrigger>
-
-            <DialogContent className="sm:max-w-[450px] bg-[#0d0d0d] border-[#27292a] text-white top-40">
-              <DialogHeader>
-                <DialogTitle>Add Liquidity</DialogTitle>
-              </DialogHeader>
-              <div className="grid gap-6 py-4">
-                <div className="space-y-4">
-                  {/* Token 0 Input */}
-                  <div className="bg-gray-900 p-4 rounded-xl">
-                    <div className="flex justify-between items-center mb-2">
-                      <div className="flex items-center gap-2 rounded-full px-3 py-1 cursor-pointer">
-                        <Image
-                          src={daoToken?.symbol === token0 ? CURRENT_DAO_IMAGE : ModeTokenLogo}
-                          alt="Token logo"
-                          width={24}
-                          height={24}
-                          className="rounded-full"
-                        />
-                        <span className="font-medium">{token0}</span>
-                      </div>
-                      <Input
-                        type="number"
-                        placeholder="0.0"
-                        className="text-right text-2xl bg-transparent border-0 focus-visible:ring-0 [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
-                        value={token0Amount}
-                        onChange={(e) => handleInputChange(e.target.value)}
-                        // onChange={(e) => handleToken0Change(e.target.value)}
-                        min="0"
-                        step="any"
-                        inputMode="decimal"
+                Trade On Velodrome
+              </Link>
+            </div>
+          </div>
+          <div className="bg-black border-[#27292a] border-2 rounded-md text-white top-40 p-4">
+            <div>
+              <p>Add Liquidity</p>
+            </div>
+            <div className="grid gap-6 py-4">
+              <div className="space-y-4">
+                {/* Token 0 Input */}
+                <div className="bg-gray-40 px-4 py-2 rounded-xl">
+                  <div className="flex justify-between items-center mb-2">
+                    <div className="flex items-center gap-2 rounded-full px-3 py-1 cursor-pointer">
+                      <Image
+                        src={daoToken?.symbol === token0 ? CURRENT_DAO_IMAGE : ModeTokenLogo}
+                        alt="Token logo"
+                        width={24}
+                        height={24}
+                        className="rounded-full"
                       />
+                      <span className="font-medium">{token0}</span>
                     </div>
-                  </div>
-
-                  {/* Swap Icon */}
-                  <div className="flex justify-center -my-4 z-10">
-                    <Button
-                      size="icon"
-                      className="rounded-full bg-gray-800 hover:bg-gray-700 border-4 border-[#0d0d0d]"
-                      onClick={handleSwap}
-                    >
-                      <FlipHorizontalIcon className="h-5 w-5" />
-                    </Button>
-                  </div>
-
-                  {/* Token 1 Input */}
-                  <div className="bg-gray-900 p-4 rounded-xl">
-                    <div className="flex justify-between items-center mb-2">
-                      <div className="flex items-center gap-2 rounded-full px-3 py-1 cursor-pointer">
-                        <Image
-                          src={daoToken?.symbol === token1 ? CURRENT_DAO_IMAGE : ModeTokenLogo}
-                          alt="Token logo"
-                          width={24}
-                          height={24}
-                          className="rounded-full"
-                        />
-                        <span className="font-medium">{token1}</span>
-                      </div>
-                      <Input
-                        type="number"
-                        placeholder={initalRendering && token0Amount ? 'Calculating...' : '0.0'}
-                        disabled={true}
-                        className="text-right text-2xl bg-transparent border-0 focus-visible:ring-0 [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
-                        value={token1Amount}
-                        // onChange={(e) => setToken1Amount(e.target.value)}
-                        // onChange={(e) => handleToken1Change(e.target.value)}
-                      />
-                    </div>
+                    <Input
+                      type="number"
+                      placeholder="0.0"
+                      className="text-right text-2xl bg-transparent border-0 focus-visible:ring-0 [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                      value={token0Amount}
+                      onChange={(e) => handleInputChange(e.target.value)}
+                      // onChange={(e) => handleToken0Change(e.target.value)}
+                      min="0"
+                      step="any"
+                      inputMode="decimal"
+                    />
                   </div>
                 </div>
 
-                {/* Pool Info */}
-                <div className="bg-gray-900 p-4 rounded-xl space-y-2">
-                  <div className="flex justify-between text-sm">
-                    <span>Exchange Rate</span>
-                    <span>
-                      1 {token0} = {Number(currentTokenSwapAmount).toFixed(6) || 0} {token1}
-                    </span>
-                  </div>
+                {/* Swap Icon */}
+                <div className="flex justify-center -my-4 z-10">
+                  <Button
+                    size="icon"
+                    className="rounded-full bg-gray-40 hover:bg-gray-700 border-4 border-[#0d0d0d]"
+                    onClick={handleSwap}
+                  >
+                    <FlipHorizontalIcon className="h-5 w-5" />
+                  </Button>
                 </div>
 
-                {/* Price Range Selection */}
-                <div className="bg-gray-900 p-4 rounded-xl space-y-4">
-                  <div
-                    className="flex items-center justify-between cursor-pointer"
-                    onClick={() => setIsPriceRangeOpen(!isPriceRangeOpen)}
-                  >
-                    <h3 className="text-sm font-medium">Select Price Range</h3>
-                    <svg
-                      className={`w-5 h-5 transition-transform ${isPriceRangeOpen ? 'rotate-180' : ''}`}
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                    >
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                    </svg>
-                  </div>
-
-                  <div
-                    className={`overflow-hidden transition-all duration-300 ${
-                      isPriceRangeOpen ? 'max-h-96' : 'max-h-0'
-                    }`}
-                  >
-                    <div className="space-y-4 pt-2">
-                      <div className="grid grid-cols-3 gap-2">
-                        {['25', '50', '99'].map((range) => (
-                          <Button
-                            key={range}
-                            variant={selectedRange === range ? 'default' : 'outline'}
-                            className={`text-sm ${
-                              selectedRange === range
-                                ? 'bg-white text-black hover:bg-gray-100'
-                                : 'bg-gray-800 text-gray-300 hover:bg-gray-700'
-                            }`}
-                            onClick={() => {
-                              setSelectedRange(range);
-                              setCustomRange('');
-                            }}
-                          >
-                            ±{range}%
-                          </Button>
-                        ))}
-                      </div>
-                      <div className="flex items-center gap-2">
-                        <Input
-                          type="number"
-                          placeholder="Custom"
-                          className="flex-1 bg-gray-800 border-0 focus-visible:ring-0 [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
-                          value={customRange}
-                          onChange={(e) => {
-                            setCustomRange(e.target.value);
-                            setSelectedRange(e.target.value);
-                          }}
-                        />
-                        <span className="text-gray-400 text-sm">%</span>
-                      </div>
-                      <p className="text-sm text-gray-400">
-                        {selectedRange
-                          ? `Your liquidity will be concentrated between ±${selectedRange}%`
-                          : customRange
-                            ? `Custom range set to ±${customRange}%`
-                            : 'Select a price range'}
-                      </p>
-                      {priceRange && (
-                        <p className="text-sm text-gray-400 mt-2">
-                          Price range: {priceRange.lowerPrice.toFixed(6)} to {priceRange.upperPrice.toFixed(6)} {token1}{' '}
-                          per {token0}
-                        </p>
-                      )}
-                    </div>
-                  </div>
-                </div>
-
-                {/* Slippage Tolerance */}
-                <div className="space-y-4">
-                  {/* Settings Trigger */}
-                  <div
-                    className="flex items-center justify-between cursor-pointer"
-                    onClick={() => setIsSlippageSettingsOpen(!isSlippageSettingsOpen)}
-                  >
-                    <span className="text-sm">Slippage Tolerance</span>
-                    <svg
-                      className={`w-5 h-5 transition-transform ${isSlippageSettingsOpen ? 'rotate-90' : ''}`}
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"
+                {/* Token 1 Input */}
+                <div className="bg-gray-40 px-4 py-2 rounded-xl">
+                  <div className="flex justify-between items-center mb-2">
+                    <div className="flex items-center gap-2 rounded-full px-3 py-1 cursor-pointer">
+                      <Image
+                        src={daoToken?.symbol === token1 ? CURRENT_DAO_IMAGE : ModeTokenLogo}
+                        alt="Token logo"
+                        width={24}
+                        height={24}
+                        className="rounded-full"
                       />
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
-                      />
-                    </svg>
-                  </div>
-
-                  {/* Collapsible Content */}
-                  <div
-                    className={`overflow-hidden transition-all duration-300 ${
-                      isSlippageSettingsOpen ? 'max-h-40' : 'max-h-0'
-                    }`}
-                  >
-                    <div className="bg-gray-900 p-4 rounded-xl space-y-4">
-                      <div className="grid grid-cols-3 gap-2">
-                        {['0.1', '0.5', '1'].map((slippage) => (
-                          <Button
-                            key={slippage}
-                            variant={slippageTolerance === slippage ? 'default' : 'outline'}
-                            className={`text-sm ${
-                              slippageTolerance === slippage
-                                ? 'bg-white text-black hover:bg-gray-100'
-                                : 'bg-gray-800 text-gray-300 hover:bg-gray-700'
-                            }`}
-                            onClick={() => {
-                              setSlippageTolerance(slippage);
-                              setCustomSlippage('');
-                            }}
-                          >
-                            {slippage}%
-                          </Button>
-                        ))}
-                      </div>
-                      <div className="flex items-center gap-2">
-                        <Input
-                          type="number"
-                          placeholder="Custom"
-                          className="flex-1 bg-gray-800 border-0 focus-visible:ring-0 [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
-                          value={customSlippage}
-                          onChange={(e) => {
-                            setCustomSlippage(e.target.value);
-                            setSlippageTolerance('');
-                          }}
-                        />
-                        <span className="text-gray-400 text-sm">%</span>
-                      </div>
+                      <span className="font-medium">{token1}</span>
                     </div>
+                    <Input
+                      type="number"
+                      placeholder={initalRendering && token0Amount ? 'Calculating...' : '0.0'}
+                      disabled={true}
+                      className="text-right text-2xl bg-transparent border-0 focus-visible:ring-0 [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                      value={token1Amount}
+                      // onChange={(e) => setToken1Amount(e.target.value)}
+                      // onChange={(e) => handleToken1Change(e.target.value)}
+                    />
                   </div>
                 </div>
-
-                {/* Add Liquidity Button */}
-                <Button
-                  className="w-full py-6 text-lg bg-white text-black hover:bg-gray-100 rounded-xl"
-                  onClick={handleAddLiquidity}
-                  disabled={
-                    isLoading ||
-                    !!approvalStatus ||
-                    !token0Amount ||
-                    !token1Amount ||
-                    parseFloat(token0Amount) <= 0 ||
-                    parseFloat(token1Amount) <= 0 ||
-                    !priceRange
-                  }
-                >
-                  {approvalStatus || (isLoading ? 'Processing...' : 'Add Liquidity')}
-                </Button>
               </div>
-            </DialogContent>
-          </Dialog>
+
+              {/* Pool Info */}
+              <div className="bg-gray-40 px-4 py-2 rounded-xl space-y-2">
+                <div className="flex justify-between text-sm">
+                  <span>Exchange Rate</span>
+                  <span>
+                    1 {token0} = {Number(currentTokenSwapAmount).toFixed(6) || 0} {token1}
+                  </span>
+                </div>
+              </div>
+
+              {/* Price Range Selection */}
+              <div className="bg-gray-40 px-4 py-2 rounded-xl space-y-4">
+                <div
+                  className="flex items-center justify-between cursor-pointer"
+                  onClick={() => setIsPriceRangeOpen(!isPriceRangeOpen)}
+                >
+                  <h3 className="text-sm font-medium">Select Price Range</h3>
+                  <svg
+                    className={`w-5 h-5 transition-transform ${isPriceRangeOpen ? 'rotate-180' : ''}`}
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                  </svg>
+                </div>
+
+                <div
+                  className={`overflow-hidden transition-all duration-300 ${isPriceRangeOpen ? 'max-h-96' : 'max-h-0'}`}
+                >
+                  <div className="space-y-4 pt-2">
+                    <div className="grid grid-cols-3 gap-2">
+                      {['25', '50', '99'].map((range) => (
+                        <Button
+                          key={range}
+                          variant={selectedRange === range ? 'default' : 'outline'}
+                          className={`text-sm ${
+                            selectedRange === range
+                              ? 'bg-white text-black hover:bg-gray-100'
+                              : 'bg-gray-40 text-gray-300 hover:bg-gray-700'
+                          }`}
+                          onClick={() => {
+                            setSelectedRange(range);
+                            setCustomRange('');
+                          }}
+                        >
+                          ±{range}%
+                        </Button>
+                      ))}
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <Input
+                        type="number"
+                        placeholder="Custom"
+                        className="flex-1 bg-gray-40 border-0 focus-visible:ring-0 [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                        value={customRange}
+                        onChange={(e) => {
+                          setCustomRange(e.target.value);
+                          setSelectedRange(e.target.value);
+                        }}
+                      />
+                      <span className="text-gray-400 text-sm">%</span>
+                    </div>
+                    <p className="text-sm text-gray-400">
+                      {selectedRange
+                        ? `Your liquidity will be concentrated between ±${selectedRange}%`
+                        : customRange
+                          ? `Custom range set to ±${customRange}%`
+                          : 'Select a price range'}
+                    </p>
+                    {priceRange && (
+                      <p className="text-sm text-gray-400 mt-2">
+                        Price range: {priceRange.lowerPrice.toFixed(6)} to {priceRange.upperPrice.toFixed(6)} {token1}{' '}
+                        per {token0}
+                      </p>
+                    )}
+                  </div>
+                </div>
+              </div>
+
+              {/* Slippage Tolerance */}
+              <div className="space-y-4">
+                {/* Settings Trigger */}
+                <div
+                  className="flex items-center justify-between cursor-pointer"
+                  onClick={() => setIsSlippageSettingsOpen(!isSlippageSettingsOpen)}
+                >
+                  <span className="text-sm">Slippage Tolerance</span>
+                  <svg
+                    className={`w-5 h-5 transition-transform ${isSlippageSettingsOpen ? 'rotate-90' : ''}`}
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"
+                    />
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
+                    />
+                  </svg>
+                </div>
+
+                {/* Collapsible Content */}
+                <div
+                  className={`overflow-hidden transition-all duration-300 ${
+                    isSlippageSettingsOpen ? 'max-h-40' : 'max-h-0'
+                  }`}
+                >
+                  <div className="bg-gray-40 px-4 py-2 rounded-xl space-y-4">
+                    <div className="grid grid-cols-3 gap-2">
+                      {['0.1', '0.5', '1'].map((slippage) => (
+                        <Button
+                          key={slippage}
+                          variant={slippageTolerance === slippage ? 'default' : 'outline'}
+                          className={`text-sm ${
+                            slippageTolerance === slippage
+                              ? 'bg-white text-black hover:bg-gray-100'
+                              : 'bg-gray-40 text-gray-300 hover:bg-gray-700'
+                          }`}
+                          onClick={() => {
+                            setSlippageTolerance(slippage);
+                            setCustomSlippage('');
+                          }}
+                        >
+                          {slippage}%
+                        </Button>
+                      ))}
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <Input
+                        type="number"
+                        placeholder="Custom"
+                        className="flex-1 bg-gray-40 border-0 focus-visible:ring-0 [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                        value={customSlippage}
+                        onChange={(e) => {
+                          setCustomSlippage(e.target.value);
+                          setSlippageTolerance('');
+                        }}
+                      />
+                      <span className="text-gray-400 text-sm">%</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Add Liquidity Button */}
+              <Button
+                className="w-full py-2 text-lg bg-teal-50 text-black hover:bg-gray-100 rounded-xl"
+                onClick={handleAddLiquidity}
+                disabled={
+                  isLoading ||
+                  !!approvalStatus ||
+                  !token0Amount ||
+                  !token1Amount ||
+                  parseFloat(token0Amount) <= 0 ||
+                  parseFloat(token1Amount) <= 0 ||
+                  !priceRange
+                }
+              >
+                {approvalStatus || (isLoading ? 'Processing...' : 'Add Liquidity')}
+              </Button>
+            </div>
+          </div>
         </div>
       </div>
     </div>

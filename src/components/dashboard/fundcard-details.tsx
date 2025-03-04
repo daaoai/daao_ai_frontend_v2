@@ -1,5 +1,5 @@
 import Image from 'next/image';
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useFundContext } from './FundContext';
 import Liquidity from '../Liquidity/liquidity';
 import { ethers } from 'ethers';
@@ -13,6 +13,8 @@ import { Copy } from 'lucide-react';
 import { daoAddress } from '@/constants/addresses';
 import ClickToCopy from '../copyToClipboard';
 import { telegramLink, twitterLink } from '@/constants/links';
+import PoolDetailCard from '../poolDetailCard';
+import { ModalWrapper } from '../modalWrapper';
 
 const FundDetails: React.FC<FundDetailsProps> = (props) => {
   interface TokenChangeState {
@@ -29,6 +31,9 @@ const FundDetails: React.FC<FundDetailsProps> = (props) => {
     percent: 0,
     token: 0,
   });
+  const [isLiquidityModalOpen, setIsLiquidityModalOpen] = useState(false);
+  const openLiquidityModalOpen = useCallback(() => setIsLiquidityModalOpen(true), []);
+  const closeLiquidityModalOpen = useCallback(() => setIsLiquidityModalOpen(false), []);
 
   // useEffect(() => {
   //   const fetchContractData = async () => {
@@ -143,7 +148,15 @@ const FundDetails: React.FC<FundDetailsProps> = (props) => {
           </CardTitle>
         </div> */}
       <div className="border-2 border-gray-30 rounded-md my-4 p-6 flex items-center justify-between">
-        <Liquidity />
+        <button
+          className="bg-teal-50 text-black text-sm rounded-md p-2 hover:bg-teal-60 active:scale-95 transition-transform ease-in-out duration-150"
+          onClick={openLiquidityModalOpen}
+        >
+          Manage
+        </button>
+        <ModalWrapper isOpen={isLiquidityModalOpen} onClose={closeLiquidityModalOpen} className="max-w-6xl">
+          <Liquidity onClose={closeLiquidityModalOpen} />
+        </ModalWrapper>
         <div className="flex flex-col gap-2">
           <p className="text-gray-70 font-rubik text-sm font-normal">LP VALUE</p>
           <p>12</p>
@@ -208,6 +221,10 @@ const FundDetails: React.FC<FundDetailsProps> = (props) => {
           veritatis, rem, dolorem ipsa non, nesciunt in quia quam vel debitis. Cupiditate temporibus deleniti, mollitia
         </p>
       </div>
+      <div className="w-full">
+        <PoolDetailCard />
+      </div>
+
       {/* 
       <CardContent className="space-y-4 sm:space-y-6">
         <Card className="bg-[#1b1c1d] border-[#27292a] w-full">

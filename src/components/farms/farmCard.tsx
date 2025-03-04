@@ -105,15 +105,13 @@ const FarmCard = ({ farm, isLoading }: FarmCardProps) => {
           </div>
         </div>
       </CardContent>
-      <Button variant="secondary" className="bg-teal-50 text-white h-14 m-6" disabled={!isActive}>
-        <Link
-          href={`/dapp/farms/mode/${poolAddress}`}
-          className="text-lg text-black sm:text-xl font-sora font-semibold mr-2"
-        >
-          View
-        </Link>
-        <ArrowRight className="w-5 h-5 sm:w-6 sm:h-6 text-black" />
-      </Button>
+      <Link
+        href={`/dapp/farms/mode/${poolAddress}`}
+        className="text-lg text-black sm:text-xl py-2 font-sora font-semibold bg-teal-50 mt-2 mx-6 rounded-md active:scale-95 transition-transform ease-in-out duration-150"
+      >
+        View
+      </Link>
+      <ArrowRight className="w-5 h-5 sm:w-6 sm:h-6 text-black rotate-[320deg]" />
     </Card>
   );
 };

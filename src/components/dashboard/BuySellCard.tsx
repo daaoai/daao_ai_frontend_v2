@@ -26,6 +26,7 @@ import { clPoolRouterAddress, modeTokenAddress, swapRouterAddress, veloFactoryAd
 import { tickSpacing } from '@/constants/modeChain';
 import { Settings2 } from 'lucide-react';
 import SlippageModal from '../slippageModal';
+import { motion } from 'framer-motion';
 
 const BuySellCard = () => {
   const { toast } = useToast();
@@ -406,37 +407,71 @@ const BuySellCard = () => {
       <CardContent className="p-6 space-y-6">
         <div className="flex items-center justify-between">
           <Tabs value={activeTab} onValueChange={(val) => setActiveTab(val as 'buy' | 'sell')} className="w-full h-12">
-            <TabsList className="flex gap-4 bg-[#1b1c1d] h-12">
-              <TabsTrigger
-                value="buy"
-                className="data-[state=active]:bg-teal-40 bg-white text-black  w-full data-[state=active]:h-10 lg:text-xl md:text-lg sm:text-md"
-              >
-                Buy
-              </TabsTrigger>
-              <TabsTrigger
-                value="sell"
-                className="data-[state=active]:bg-teal-40 bg-white text-black w-full data-[state=active]:h-10  lg:text-xl md:text-lg sm:text-md"
-              >
-                Sell
-              </TabsTrigger>
-            </TabsList>
+            <div className="relative w-full">
+              <TabsList className="flex gap-4 bg-[#1b1c1d] h-12 relative p-1 rounded-md">
+                <motion.div
+                  layoutId="tabBackground"
+                  className="absolute top-1 left-1 bottom-1 bg-teal-40 rounded-md w-[50%]"
+                  initial={false}
+                  animate={{
+                    x: activeTab === 'buy' ? '0%' : '100%',
+                  }}
+                  transition={{ type: 'tween', duration: 0.3 }}
+                />
+
+                {/* Buy Tab */}
+                <TabsTrigger
+                  value="buy"
+                  className={`relative w-full z-10 lg:text-xl md:text-lg sm:text-md px-4 py-2 transition-all ${
+                    activeTab === 'buy' ? 'text-black' : 'text-white'
+                  }`}
+                >
+                  Buy
+                </TabsTrigger>
+
+                {/* Sell Tab */}
+                <TabsTrigger
+                  value="sell"
+                  className={`relative w-full z-10 lg:text-xl md:text-lg sm:text-md px-4 py-2 transition-all ${
+                    activeTab === 'sell' ? 'text-black' : 'text-white'
+                  }`}
+                >
+                  Sell
+                </TabsTrigger>
+              </TabsList>
+            </div>
           </Tabs>
         </div>
 
         <div className="flex w-full gap-2 items-center justify-between">
-          <button onClick={() => setAmountFrom('0.1')} className="bg-gray-40 rounded-md p-2 text-sm">
+          <button
+            onClick={() => setAmountFrom('0.1')}
+            className="bg-gray-40 rounded-md p-2 text-sm active:scale-95 transition-transform ease-in-out duration-150"
+          >
             0.1 ETH
           </button>
-          <button onClick={() => setAmountFrom('0.25')} className="bg-gray-40 rounded-md p-2 text-sm">
+          <button
+            onClick={() => setAmountFrom('0.25')}
+            className="bg-gray-40 rounded-md p-2 text-sm active:scale-95 transition-transform ease-in-out duration-150"
+          >
             0.25 ETH
           </button>
-          <button onClick={() => setAmountFrom('0.5')} className="bg-gray-40 rounded-md p-2 text-sm">
+          <button
+            onClick={() => setAmountFrom('0.5')}
+            className="bg-gray-40 rounded-md p-2 text-sm active:scale-95 transition-transform ease-in-out duration-150"
+          >
             0.5 ETH
           </button>
-          <button onClick={() => setAmountFrom('1')} className="bg-gray-40 rounded-md p-2 text-sm">
+          <button
+            onClick={() => setAmountFrom('1')}
+            className="bg-gray-40 rounded-md p-2 text-sm active:scale-95 transition-transform ease-in-out duration-150"
+          >
             1 ETH
           </button>
-          <button onClick={() => setAmountFrom('5')} className="bg-gray-40 rounded-md p-2 text-sm">
+          <button
+            onClick={() => setAmountFrom('5')}
+            className="bg-gray-40 rounded-md p-2 text-sm active:scale-95 transition-transform ease-in-out duration-150"
+          >
             5 ETH
           </button>
         </div>
@@ -537,7 +572,7 @@ const BuySellCard = () => {
         </div>
 
         <Button
-          className="w-full bg-teal-50 text-black hover:bg-teal-60"
+          className="w-full bg-teal-50 text-black hover:bg-teal-60 active:scale-95 transition-transform ease-in-out duration-150"
           onClick={handleSwap}
           disabled={isSwapping}
           style={{ height: '3rem' }}
