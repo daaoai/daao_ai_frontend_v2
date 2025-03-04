@@ -1,16 +1,16 @@
-import { POOL_ABI } from '@/daao-sdk/abi/pool';
 import { FARM_FACTORY_CONTRACT_ADDRESS } from '@/constants/farm';
 import { useAccount, usePublicClient } from 'wagmi';
 import useTokenPrice from '../useTokenPrice';
-import { CARTEL } from '@/daao-sdk/abi/cartel';
 import { formatUnits } from 'viem';
 import { FarmPool } from '@/types/farm';
 import { FARM_FACTORY_ABI } from '@/daao-sdk/abi/farmFactory';
+import { POOL_ABI } from '@/daao-sdk/abi/pool';
+import { CARTEL } from '@/daao-sdk/abi/cartel';
 
 const usePoolList = () => {
   const { address } = useAccount();
   const publicClient = usePublicClient();
-  const { fetchTokenPrice } = useTokenPrice();
+  const { fetchTokenPrice, fetchTokenPriceGeko } = useTokenPrice();
   const getTotalPoolLength = async () => {
     try {
       const response = await publicClient?.readContract({
@@ -45,10 +45,10 @@ const usePoolList = () => {
       const funcNames = ['settings', 'totalDepositAmount', 'rewardsToken1', 'rewardsToken1PerSecond', 'depositToken'];
 
       const response = await publicClient?.multicall({
-        contracts: funcNames.map((functionName) => ({
+        contracts: funcNames.map((functionName, index) => ({
           abi: POOL_ABI,
           address: poolAddress,
-          functionName,
+          functionName: functionName,
         })),
       });
 
@@ -60,7 +60,7 @@ const usePoolList = () => {
           contracts: usrInfoFunc.map((functionName) => ({
             abi: POOL_ABI,
             address: poolAddress,
-            functionName,
+            functionName: functionName,
             args: [address],
           })),
         });
@@ -79,21 +79,20 @@ const usePoolList = () => {
       ];
 
       if (results) {
-        const rewardTokenPrice = 0.00011; // await fetchTokenPrice(results[2][0]); // GAMBL TOKEN
+        const rewardTokenPrice = await fetchTokenPriceGeko(results[2][0]); // GAMBL TOKEN
         const depositTokenPrice = await fetchTokenPrice(results[4]);
-        // const cartelTokenPrice = await fetchTokenPrice(CARTEL_TOKEN_ADDRESS);
         const decimals = await publicClient?.multicall({
-          contracts: [results[2][0], results[4]].map((address) => ({
+          contracts: [results[2][0], results[4]].map((address, index) => ({
             abi: CARTEL,
-            address,
+            address: address,
             functionName: 'decimals',
           })),
         });
         const decimalResults = decimals?.map((res) => res.result || null) as [number, number];
         const rewardEmmisionUsd =
-          Number(formatUnits(results[3] || BigInt(0), decimalResults[0])) * Number(rewardTokenPrice);
+          Number(formatUnits(results[3] || BigInt(0), decimalResults[0])) * Number(rewardTokenPrice || 0);
         const totalStackedUSD =
-          Number(formatUnits(results[1] || BigInt(0), decimalResults[1])) * Number(depositTokenPrice);
+          Number(formatUnits(results[1] || BigInt(0), decimalResults[1])) * Number(depositTokenPrice || 0);
 
         const apr =
           totalStackedUSD && rewardEmmisionUsd

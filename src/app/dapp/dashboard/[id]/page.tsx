@@ -1,29 +1,121 @@
-'use client';
 import { PageLayout } from '@/components/page-layout';
 import React, { useState, useEffect } from 'react';
-// import FundDetails from "@/components/dashboard/fundcard-details";
-import BuySellCard from '@/components/dashboard/BuySellCard';
+import FundDetails from '@/components/dashboard/fundcard-details';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@radix-ui/react-tabs';
 import Orderbook from '@/components/dashboard/orderbook';
 import { useAccount } from 'wagmi';
 import { AssetTable } from '@/components/table/assets-table';
 import { assetColumns } from '@/components/table/assets-columns';
 import axios from 'axios';
-import type { ApiResponse, DexScreenerResponse, EnhancedApiResponse } from '@/types/dashboard';
-import { formatDaoHoldingTokens } from '@/utils/dashboard';
+import useTokenPrice from '@/hooks/useTokenPrice';
+import type { Asset } from '@/types/dashboard';
+import BuySellCard from '@/components/dashboard/BuySellCard';
+import type { FundDetailsProps } from '@/types';
+import { useFundContext } from '@/components/dashboard/FundContext';
 import { useFetchBalance } from '@/hooks/useFetchBalance';
+import { CURRENT_DAO_IMAGE } from '@/constants/links';
+
+export interface Token {
+  address: string;
+  circulating_market_cap: number | null;
+  decimals: string;
+  exchange_rate: number | null;
+  holders: string;
+  icon_url: string | null;
+  name: string;
+  symbol: string;
+  total_supply: string;
+  type: string;
+  volume_24h: number | null;
+}
+export interface TokenBalance {
+  token: Token;
+  token_id: string | null;
+  token_instance: string | null;
+  value: string;
+}
+export type ApiResponse = TokenBalance[];
+
+export interface Token {
+  address: string;
+  circulating_market_cap: number | null;
+  decimals: string;
+  exchange_rate: number | null;
+  holders: string;
+  icon_url: string | null;
+  name: string;
+  symbol: string;
+  total_supply: string;
+  type: string;
+  volume_24h: number | null;
+}
+
+export interface TokenBalance {
+  token: Token;
+  token_id: string | null;
+  token_instance: string | null;
+  value: string;
+}
+
+// DEXScreener API types
+export interface DexScreenerPair {
+  chainId: string;
+  dexId: string;
+  url: string;
+  pairAddress: string;
+  baseToken: {
+    address: string;
+    name: string;
+    symbol: string;
+  };
+  priceUsd: string;
+  priceNative: string;
+  txns: {
+    h24: {
+      buys: number;
+      sells: number;
+    };
+  };
+}
+
+export interface DexScreenerResponse {
+  pairs: DexScreenerPair[];
+}
+
+// Combined token data with price
+export interface TokenWithPrice extends TokenBalance {
+  priceUsd?: string;
+}
+
+export type EnhancedApiResponse = TokenWithPrice[];
+
+const formatDaoHoldingTokens = (daoTokens: EnhancedApiResponse): Asset[] => {
+  return daoTokens
+    .filter((item) => item.token.symbol !== 'CARTELTEST')
+    .map((item) => {
+      const decimals = Number(item.token.decimals);
+      const balance = Number(item.value) / Math.pow(10, decimals);
+      const price = item.priceUsd ? Number(item.priceUsd) : 0;
+      return {
+        token: item.token.symbol,
+        // tokenIcon: item.token.icon_url ?? "",
+        balance: balance,
+        price: price,
+        totalValue: price * balance,
+      };
+    });
+};
 
 const Dashboard: React.FC = () => {
   const account = useAccount();
   const accountAddress = account.address as `0x${string}`;
-  const { data: fetchedData } = useFetchBalance(accountAddress);
+  const { data: fetchedData, refreshData } = useFetchBalance(accountAddress);
   const [daoTokenAddress, setDaoTokenAddress] = useState('');
   const [daaoHoldingTokens, setDaoHoldingTokens] = useState<ApiResponse | null>(null);
-  const [activeTab, setActiveTab] = useState('trades');
+  const { fetchTokenPriceGeko } = useTokenPrice();
 
-  // const { daoBalance, priceUsd } = useFundContext();
+  const { daoBalance, priceUsd } = useFundContext();
   useEffect(() => {
-    console.log('daoToken is', fetchedData?.daoToken);
     if (!fetchedData) return;
     if (!daoTokenAddress) {
       setDaoTokenAddress(fetchedData?.daoToken);
@@ -31,15 +123,15 @@ const Dashboard: React.FC = () => {
   }, [fetchedData]);
 
   ///
-  // const props: FundDetailsProps = {
-  //   icon: CURRENT_DAO_IMAGE, // Placeholder image URL
-  //   shortname: "CARTEL",
-  //   longname: "",
-  //   description:
-  //     "DeFAI Venture DAO is a DeFAI Investment DAO dedicated to advancing the DeFAI movement by strategically investing in AI Agents and AI-focused DAOs on Mode. As a collective force in decentralized AI finance, $CARTEL empowers the AI-driven movement on Mode, fostering the growth of autonomous, AI-powered ecosystems.",
-  //   holdings: 0,
-  //   modeAddress: "0x5edbe707191Ae3A5bd5FEa5EDa0586f7488bD961",
-  // };
+  const props: FundDetailsProps = {
+    icon: CURRENT_DAO_IMAGE, // Placeholder image URL
+    shortname: 'CARTEL',
+    longname: '',
+    description:
+      'DeFAI Venture DAO is a DeFAI Investment DAO dedicated to advancing the DeFAI movement by strategically investing in AI Agents and AI-focused DAOs on Mode. As a collective force in decentralized AI finance, $CARTEL empowers the AI-driven movement on Mode, fostering the growth of autonomous, AI-powered ecosystems.',
+    holdings: 0,
+    modeAddress: '0x5edbe707191Ae3A5bd5FEa5EDa0586f7488bD961',
+  };
 
   useEffect(() => {
     const fetchTokensWithPrices = async () => {
@@ -50,20 +142,26 @@ const Dashboard: React.FC = () => {
         );
 
         // Fetch prices in parallel
+
         const pricePromises = response.data.map(async (tokenBalance) => {
           try {
-            const dexResponse = await axios.get<DexScreenerResponse>(
-              `/api/dexscreener/token-pairs/v1/mode/${tokenBalance.token.address}`,
-            );
-            console.log({ pk: dexResponse.data });
-            // const dexResponse= await fetchTokenPrice(tokenBalance.token.address as Hex)
+            let priceUsd = '0';
+            if (tokenBalance.token.address.toLowerCase() === '0x6bb4a37643e7613e812a8d1af5e675cc735ea1e2') {
+              const gambleTokenPrice = await fetchTokenPriceGeko('0x6bb4a37643e7613e812a8d1af5e675cc735ea1e2');
+              priceUsd = Number(gambleTokenPrice).toFixed(6);
+              console.log(priceUsd, 'gambletokenPrice');
+            } else {
+              const dexResponse = await axios.get<DexScreenerResponse>(
+                `/api/dexscreener/token-pairs/v1/mode/${tokenBalance.token.address}`,
+              );
+              priceUsd = Number((dexResponse.data as unknown as any[])[0]?.priceUsd || 0).toFixed(6);
+            }
             return {
               address: tokenBalance.token.address,
-              priceUsd: (dexResponse.data as unknown as any[])[0]?.priceUsd,
+              priceUsd: priceUsd,
             };
           } catch (error) {
             console.log(`Failed to fetch price for ${tokenBalance.token.address}`);
-            console.error(error);
             return {
               address: tokenBalance.token.address,
               priceUsd: undefined,
@@ -72,7 +170,7 @@ const Dashboard: React.FC = () => {
         });
 
         const prices = await Promise.all(pricePromises);
-        console.log({ prices });
+
         // Combine token data with prices
         const tokensWithPrices: EnhancedApiResponse = response.data.map((tokenBalance) => {
           const priceData = prices.find((p) => p.address === tokenBalance.token.address);
@@ -90,8 +188,6 @@ const Dashboard: React.FC = () => {
         });
 
         setDaoHoldingTokens(sortedTokens);
-
-        console.log({ sortedTokens }, 'jhgbjkjhb');
       } catch (error) {
         console.error('Error fetching token data:', error);
       }
@@ -100,23 +196,25 @@ const Dashboard: React.FC = () => {
     fetchTokensWithPrices();
   }, []);
 
-  // const assetsData: Asset[] = [
-  //   {
-  //     token: 'CARTEL',
-  //     // tokenIcon: CURRENT_DAO_IMAGE,
-  //     balance: Number(daoBalance),
-  //     price: priceUsd,
-  //     totalValue: priceUsd * Number(daoBalance),
-  //   },
-  // ];
+  const assetsData: Asset[] = [
+    {
+      token: 'CARTEL',
+      // tokenIcon: CURRENT_DAO_IMAGE,
+      balance: Number(daoBalance),
+      price: priceUsd,
+      totalValue: priceUsd * Number(daoBalance),
+    },
+  ];
+
+  const [activeTab, setActiveTab] = useState('trades');
 
   return (
     <PageLayout title="App" description="main-app" app={true}>
       <div className={`w-screen overflow-hidden gap-20 flex flex-col justify-center items-center py-16 px-2 lg:px-44`}>
         <div className="grid gap-2 md:gap-3 lg:grid-cols-[60%_40%] w-full">
-          {/* <div className="p-2 sm:p-4 flex items-center justify-center">
+          <div className="p-2 sm:p-4 flex items-center justify-center">
             <FundDetails {...props} />
-          </div> */}
+          </div>
           <div className="p-2 sm:p-4 flex items-center justify-center">
             <BuySellCard />
           </div>
@@ -146,6 +244,32 @@ const Dashboard: React.FC = () => {
               </TabsTrigger>
             </TabsList>
 
+            {/* <TabsContent value="trades" className="w-full">
+              <div className="grid grid-cols-1 lg:grid-cols-10 gap-6">
+                <div className="lg:col-span-7">
+                  {!daoTokenAddress ? (
+                    <div className="flex items-center justify-center h-[400px] sm:h-[600px] bg-card rounded-lg">
+                      <p className="text-muted-foreground">Loading chart...</p>
+                    </div>
+                  ) : (
+                    <iframe
+                      className="h-[400px] w-full border-0 sm:h-[600px] rounded-lg"
+                      src={`https://dexscreener.com/mode/${daoTokenAddress}?embed=1&loadChartSettings=0&trades=0&tabs=0&info=0&chartLeftToolbar=0&chartTheme=dark&theme=dark&chartStyle=0&chartType=usd&interval=15`}
+                    ></iframe>
+                  )}
+                </div>
+                <div className="lg:col-span-3">
+                  <Orderbook
+                    name={props.longname}
+                    created="7/02/2025"
+                    owner="0xb51eC6F7D3E0D0FEae495eFe1f0751dE66b6be95"
+                    token={daoTokenAddress}
+                    tradingEnds="10/3/2025"
+                    ethRaised="100 MODE"
+                  />
+                </div>
+              </div>
+            </TabsContent> */}
             <TabsContent value="trades" className="w-full">
               <div className="w-full grid grid-cols-1 md:grid-cols-10 gap-4">
                 {/* Left Section - 70% */}
@@ -165,7 +289,7 @@ const Dashboard: React.FC = () => {
                 {/* Right Section - 30% */}
                 <div className="md:col-span-3">
                   <Orderbook
-                    name={''}
+                    name={props.longname}
                     created="7/02/2025"
                     owner="0xb51eC6F7D3E0D0FEae495eFe1f0751dE66b6be95"
                     token={daoTokenAddress}

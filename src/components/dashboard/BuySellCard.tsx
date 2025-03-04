@@ -1,6 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
 import { ethers } from 'ethers';
-import { FiSettings } from 'react-icons/fi';
 import ModeTokenLogo from '/public/assets/mode.png';
 import Image from 'next/image';
 import { useToast } from '@/hooks/use-toast';
@@ -24,6 +23,7 @@ import { Button } from '@/shadcn/components/ui/button';
 import React from 'react';
 import { clPoolRouterAddress, modeTokenAddress, swapRouterAddress, veloFactoryAddress } from '@/constants/addresses';
 import { tickSpacing } from '@/constants/modeChain';
+import { Settings2 } from 'lucide-react';
 
 const BuySellCard = () => {
   const { toast } = useToast();
@@ -207,7 +207,7 @@ const BuySellCard = () => {
         poolAddress,
         zeroForOne,
         amountSpecified,
-        sqrtPriceLimitX96
+        sqrtPriceLimitX96,
       );
 
       let outBnAbs = amount1;
@@ -337,11 +337,6 @@ const BuySellCard = () => {
       // }
       //4295128750
       const sqrtPriceLimitX96 = currentSqrtPrice;
-      console.log('zeroforone is', zeroForOne);
-      console.log('sqrtPriceLimitX96:', sqrtPriceLimitX96);
-      console.log(amountSpecified);
-      console.log(minOutputBN);
-      console.log(deadline);
 
       const tx = await clPoolRouter.getSwapResult(
         poolAddress,
@@ -349,7 +344,7 @@ const BuySellCard = () => {
         amountSpecified,
         sqrtPriceLimitX96,
         minOutputBN,
-        deadline
+        deadline,
       );
 
       const receipt = await tx.wait();
@@ -420,14 +415,6 @@ const BuySellCard = () => {
               </TabsTrigger>
             </TabsList>
           </Tabs>
-
-          <button
-            type="button"
-            onClick={() => setSlippageOpen(!slippageOpen)}
-            className="p-2 hover:bg-[#1b1c1d] rounded-md"
-          >
-            <FiSettings size={20} />
-          </button>
         </div>
 
         {slippageOpen && (
@@ -436,6 +423,7 @@ const BuySellCard = () => {
             <div className="flex items-center gap-2">
               <input
                 type="number"
+                placeholder="slippage"
                 value={slippageTolerance}
                 onChange={(e) => setSlippageTolerance(e.target.value)}
                 className="p-1 bg-transparent border border-[#242626] rounded text-white w-20"
@@ -545,8 +533,17 @@ const BuySellCard = () => {
         >
           {isSwapping ? 'Swapping...' : 'Swap'}
         </Button>
+        <button
+          type="button"
+          title="settings"
+          onClick={() => setSlippageOpen(!slippageOpen)}
+          className="p-2 hover:bg-[#1b1c1d] rounded-md flex items-center gap-4"
+        >
+          <Settings2 size={20} />
+          Set Slippage
+        </button>
         {/* @devs please don't remove this comented code */}
-        <Button
+        {/* <Button
           className="w-full bg-white text-black hover:bg-gray-200 active:scale-95 transition-transform ease-in-out duration-150"
           onClick={handleBurnTicketModal}
           style={{ height: '3rem' }}
@@ -563,7 +560,7 @@ const BuySellCard = () => {
           >
             Collected Tickets.
           </Button>
-        )}
+        )} */}
         <ModalWrapper isOpen={isBurnTicketModalOpen} onClose={closeBurnTicketModal}>
           <TicketPurchase onClose={closeBurnTicketModal} onTicketsUpdated={refetchTickets} />
         </ModalWrapper>
