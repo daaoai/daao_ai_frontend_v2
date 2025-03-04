@@ -44,14 +44,13 @@ export const ConnectWalletButton: React.FC<ConnectWalletButtonProps> = ({ classN
                       onClick={openConnectModal}
                       type="button"
                       className={cn(
-                        'text-sm p-2 bg-[#27292a] rounded-xl flex items-center gap-2 font-bold leading-normal hover:bg-[#27292a]/50',
+                        'text-sm p-2 bg-[#27292a] rounded-xl flex items-center gap-2 font-bold leading-normal',
                         className,
                       )}
                     >
                       {icons ? <Wallet className="w-3 h-3" /> : <></>}
                       <span className={`test-white font-semibold`}>Connect Wallet</span>
                     </Button>
-                    {/*{icons ? <Text className="w-5 h-5" /> : <></>}*/}
                   </div>
                 );
               }
@@ -62,7 +61,7 @@ export const ConnectWalletButton: React.FC<ConnectWalletButtonProps> = ({ classN
                     onClick={openChainModal}
                     type="button"
                     className={cn(
-                      'text-sm p-2 bg-red-500 text-white rounded-xl flex items-center gap-2 font-bold leading-normal hover:bg-red-600',
+                      'text-sm p-2 bg-red-500 text-white rounded-xl flex items-center gap-2 font-bold leading-normal ',
                       className,
                     )}
                   >
@@ -77,7 +76,7 @@ export const ConnectWalletButton: React.FC<ConnectWalletButtonProps> = ({ classN
                     onClick={openChainModal}
                     type="button"
                     className={cn(
-                      'text-sm p-2 bg-[#27292a] rounded-xl flex items-center gap-2 font-bold leading-normal hover:bg-[#27292a]/50',
+                      'text-sm p-2 bg-dark-white text-dark-black rounded-xl flex items-center gap-2 font-bold leading-normal',
                       className,
                     )}
                   >
@@ -104,7 +103,7 @@ export const ConnectWalletButton: React.FC<ConnectWalletButtonProps> = ({ classN
                     onClick={openAccountModal}
                     type="button"
                     className={cn(
-                      'text-sm p-2 bg-[#27292a] rounded-xl flex items-center gap-2 font-bold leading-normal hover:bg-[#27292a]/50',
+                      'text-sm p-2 bg-[#27292a] rounded-xl flex items-center gap-2 font-bold leading-normal ',
                       className,
                     )}
                   >

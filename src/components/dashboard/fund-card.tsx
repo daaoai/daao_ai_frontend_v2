@@ -25,7 +25,6 @@ const FundCard: React.FC<FundCardProps> = (props) => {
       <div className="self-stretch h-auto px-4 flex-col justify-start items-start gap-4 flex">
         <div className="self-stretch justify-between items-center inline-flex">
           <div className="text-white text-lg md:text-xl font-semibold">{props.title}</div>
-          {/* <div className="text-gray-300 text-md md:text-lg font-normal">#{props.uId} </div> */}
         </div>
         <div className="self-stretch justify-between items-center inline-flex">
           <div className="text-center text-white text-lg md:text-xl font-bold">${props.token}</div>

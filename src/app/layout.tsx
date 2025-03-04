@@ -1,6 +1,7 @@
 import '../globals.css';
 import ProviderWrapper from '@/wagmi/ProviderWrapper';
 import React from 'react';
+import "@rainbow-me/rainbowkit/styles.css";
 
 export const metadata = {
   title: 'Daao App',

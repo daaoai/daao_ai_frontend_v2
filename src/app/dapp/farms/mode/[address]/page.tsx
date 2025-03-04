@@ -10,11 +10,18 @@ import useHarvest from '@/hooks/farm/useHarvest';
 import { formatUnits, Hex } from 'viem';
 import { abbreviateNumber } from '@/utils/numbers';
 import { Skeleton } from '@/shadcn/components/ui/skeleton';
+import { Badge } from '@/shadcn/components/ui/badge';
+import ClickToCopy from '@/components/copyToClipboard';
+import AnimatedSkeleton from '@/components/animatedSkeleton';
+function shortenAddress(addr: string): string {
+  if (!addr) return '';
+  return addr.slice(0, 6) + '...' + addr.slice(-4);
+}
 
 const FarmStake = () => {
   const params = useParams();
+  const address = params?.address as string;
   const router = useRouter();
-  const address = params?.address;
 
   const { harvest } = useHarvest();
   const { getPoolDetails } = usePoolList();
@@ -22,188 +29,197 @@ const FarmStake = () => {
   const [isPoolDetailsLoading, setIsPoolDetailsLoading] = useState(true);
   const [poolData, setPoolData] = useState<FarmPool>();
 
+  const [isDepositModalOpen, setIsDepositModalOpen] = useState(false);
+  const [isWithdrawModalOpen, setIsWithdrawModalOpen] = useState(false);
+
+  const openDepositModal = useCallback(() => setIsDepositModalOpen(true), []);
+  const closeDepositModal = useCallback(() => setIsDepositModalOpen(false), []);
+  const openWithdrawModal = useCallback(() => setIsWithdrawModalOpen(true), []);
+  const closeWithdrawModal = useCallback(() => setIsWithdrawModalOpen(false), []);
   useEffect(() => {
     if (!address) return;
-    fetchPoolAddresses();
+    fetchPoolDetails();
   }, [address]);
 
-  const fetchPoolAddresses = async () => {
+  const fetchPoolDetails = async () => {
     try {
       setIsPoolDetailsLoading(true);
-      const response = await getPoolDetails({
-        poolAddress: address as `0x${string}`,
-      });
-
+      const response = await getPoolDetails({ poolAddress: address as `0x${string}` });
       if (response) {
         setPoolData(response);
       }
     } catch (error) {
-      console.error('Error fetching pool addresses:', error);
+      console.error('Error fetching pool details:', error);
     } finally {
       setIsPoolDetailsLoading(false);
     }
   };
-
   const handleHarvest = async () => {
     if (poolData?.unclaimedReward && poolData.unclaimedReward > BigInt(0)) {
       harvest({ poolAddress: address as Hex });
     }
   };
-
-  const [isDepositModalOpen, setIsDepositModalOpen] = useState(false);
-  const [isWithdrawModalOpen, setIsWithdrawModalOpen] = useState(false);
-  const openDepositModal = useCallback(() => setIsDepositModalOpen(true), []);
-  const closeDepositModal = useCallback(() => setIsDepositModalOpen(false), []);
-  const openWithdrawModal = useCallback(() => setIsWithdrawModalOpen(true), []);
-  const closeWithdrawModal = useCallback(() => setIsWithdrawModalOpen(false), []);
-
-  const date = poolData
-    ? `Active from ${new Date(Number(poolData?.startTime) * 1000)
-        .toLocaleDateString('en-US', {
+  const isHarvestDisabled = !poolData?.unclaimedReward || poolData?.unclaimedReward === BigInt(0);
+  const now = Math.floor(Date.now() / 1000);
+  const isActive = poolData && now >= Number(poolData.startTime || 0) && now <= Number(poolData.endTime || 0);
+  const startDate = poolData?.startTime ? new Date(Number(poolData.startTime) * 1000) : null;
+  const endDate = poolData?.endTime ? new Date(Number(poolData.endTime) * 1000) : null;
+  const duration =
+    startDate && endDate
+      ? `${startDate.toLocaleDateString('en-US', {
           month: 'short',
           day: '2-digit',
           year: 'numeric',
-        })
-        .replace(' ', '/')} until ${new Date(Number(poolData?.endTime) * 1000)
-        .toLocaleDateString('en-US', {
+        })} - ${endDate.toLocaleDateString('en-US', {
           month: 'short',
           day: '2-digit',
           year: 'numeric',
-        })
-        .replace(' ', '/')}`
-    : '';
+        })}`
+      : '';
 
-  const isHarvestDisabled = poolData?.unclaimedReward == BigInt(0);
   return (
-    <div className="min-h-screen bg-black text-white">
-      {/* Top Bar */}
-      <div className="flex items-center justify-between px-6 py-4 border-b border-[#2F2F2F]">
-        <button onClick={() => router.back()} className="text-sm text-gray-400 hover:text-white transition">
+    <div className="bg-black min-h-screen text-white w-full ">
+      <div className="flex items-center justify-between px-6 py-4 border-b border-[#2F2F2F] h-12">
+        <button
+          onClick={() => router.back()}
+          className="text-sm text-gray-400 hover:text-white active:scale-95 transition-transform ease-in-out duration-150"
+        >
           &larr; Back to Farms
         </button>
       </div>
-
-      {/* Main Content */}
-      <div className="max-w-xl mx-auto py-10 px-4">
-        <div className="bg-[#0d0d0d] border-[#383838] border-2 rounded-lg shadow-md p-6">
-          {/* Pool Address - Shows Loading if Undefined */}
-          <div className="text-gray-400 mb-6 flex items-center">
-            Pool Address:
-            {address ? (
-              <span className="text-white truncate w-80 inline-block overflow-hidden whitespace-nowrap">{address}</span>
+      <div className="flex items-center justify-center p-4 mt-8">
+        <div className="w-full max-w-lg bg-gray-50 border border-[#383838] rounded-lg p-5 shadow-md ">
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="text-lg font-semibold">Defai Cartel</h2>
+            {isPoolDetailsLoading ? (
+              <AnimatedSkeleton className="w-10 h-4" />
             ) : (
-              <Skeleton className="w-40 h-5 inline-block" />
+              <Badge
+                variant="secondary"
+                className={`flex items-center gap-2 px-3 py-1 rounded-md font-rubik font-regular ${
+                  isActive ? 'bg-teal-20 text-black' : 'bg-red-400 text-black'
+                }`}
+              >
+                {isActive ? 'Active' : 'Inactive'}
+              </Badge>
             )}
           </div>
-
-          {/* Stats Grid */}
-          <div className="grid grid-cols-2 gap-4 text-sm mb-6">
-            <div>
-              <p className="text-gray-400">APR</p>
+          <div className="flex items-center mb-6 gap-2 bg-darkGreen p-2 rounded-md w-fit">
+            {address ? (
+              <span className="text-teal-20 text-sm">{shortenAddress(address)}</span>
+            ) : (
+              <AnimatedSkeleton className="w-40 h-4" />
+            )}
+            <ClickToCopy copyText={address} className="text-teal-20" />
+          </div>
+          <div className="flex flex-col gap-4 text-sm">
+            <div
+              className="flex justify-between items-center px-4 py-2
+         bg-black border-b border-gray-20
+         rounded-md shadow-md"
+            >
+              <p className="text-teal-70 font-rubik text-lg font-normal">APR</p>
               {isPoolDetailsLoading ? (
-                <Skeleton className="w-20 h-6" />
+                <AnimatedSkeleton className="w-40 h-4" />
               ) : (
-                <p className="text-lg font-semibold text-white">{Number(poolData?.apr).toFixed(4)}</p>
+                <p className="text-white font-rubik text-lg">
+                  {poolData?.apr ? Number(poolData.apr).toFixed(4) : '0.0000'}
+                </p>
               )}
             </div>
-
-            <div>
-              <p className="text-gray-400">TVL</p>
+            <div
+              className="flex justify-between items-center px-4 py-2
+         bg-black border-b border-gray-20
+         rounded-md shadow-md"
+            >
+              <p className="text-teal-70 font-rubik text-lg font-normal">TVL</p>
               {isPoolDetailsLoading ? (
-                <Skeleton className="w-20 h-6" />
+                <AnimatedSkeleton className="w-40 h-4" />
               ) : (
-                <>
-                  {poolData && (
-                    <p className="text-lg font-semibold text-white">$ {abbreviateNumber(poolData.totalStackedUSD)}</p>
-                  )}
-                </>
+                <p className="text-white font-rubik text-lg">
+                  $ {poolData?.totalStackedUSD ? abbreviateNumber(poolData.totalStackedUSD) : '0'}
+                </p>
               )}
             </div>
-
-            <div>
-              <p className="text-gray-400">Pending Rewards</p>
+            <div
+              className="flex justify-between items-center px-4 py-2
+         bg-black border-b border-gray-20
+         rounded-md shadow-md"
+            >
+              <p className="text-teal-70 font-rubik text-lg font-normal">Pending Rewards</p>
               {isPoolDetailsLoading ? (
-                <Skeleton className="w-20 h-6" />
+                <AnimatedSkeleton className="w-40 h-4" />
               ) : (
-                <p className="text-lg font-semibold text-white">
+                <p className="text-white font-rubik text-lg font-normal">
                   {poolData?.unclaimedReward
-                    ? abbreviateNumber(Number(Number(formatUnits(poolData?.unclaimedReward, 18)).toFixed(2)))
+                    ? abbreviateNumber(Number(Number(formatUnits(poolData.unclaimedReward, 18)).toFixed(2)))
                     : '0'}
                 </p>
               )}
             </div>
-
-            <div>
-              <p className="text-gray-400">Stacked CARTEL</p>
+            <div
+              className="flex justify-between items-center px-4 py-2
+         bg-black border-b border-gray-20
+         rounded-md shadow-md"
+            >
+              <p className="text-teal-70 font-rubik text-lg">Stacked CARTEL</p>
               {isPoolDetailsLoading ? (
-                <Skeleton className="w-20 h-6" />
+                <AnimatedSkeleton className="w-40 h-4" />
               ) : (
-                <p className="text-lg font-semibold text-white">
+                <p className="text-white font-rubik text-lg font-normal">
                   {poolData?.userInfo?.stackedAmount
-                    ? abbreviateNumber(Number(formatUnits(poolData?.userInfo?.stackedAmount, 18)))
+                    ? abbreviateNumber(Number(formatUnits(poolData.userInfo.stackedAmount, 18)))
                     : '0'}
                 </p>
               )}
             </div>
-
-            <div className="col-span-2">
-              <p className="text-gray-400">Duration</p>
+            <div
+              className="flex justify-between items-center px-4 py-2
+         bg-black border-b border-gray-20
+         rounded-md shadow-md"
+            >
+              <p className="text-teal-70 font-rubik text-lg font-normal">Duration</p>
               {isPoolDetailsLoading ? (
-                <Skeleton className="w-48 h-6" />
+                <Skeleton className="w-32 h-5" />
               ) : (
-                <p className="text-lg font-semibold text-white">{date}</p>
+                <p className="text-white font-rubik text-lg">{duration || 'N/A'}</p>
               )}
             </div>
           </div>
-
-          {/* Action Buttons */}
-          <div className="mt-4 flex space-x-2">
+          <div className="mt-6 flex flex-col gap-4">
             <button
-              className={`flex-1 bg-[#27292a] transition text-white py-2 rounded-md font-semibold ${
-                isPoolDetailsLoading ? 'opacity-50 cursor-not-allowed' : ''
-              }`}
               onClick={openDepositModal}
               disabled={isPoolDetailsLoading}
+              className={`flex-1 py-2 rounded-md font-semibold bg-white text-black active:scale-95 transition-transform ease-in-out duration-150 
+              ${isPoolDetailsLoading ? 'opacity-50 cursor-not-allowed' : 'hover:bg-gray-10'}`}
             >
               Deposit
             </button>
-
             <button
-              className={`flex-1 bg-[#27292a] transition text-white py-2 rounded-md font-semibold ${
-                isPoolDetailsLoading ? 'opacity-50 cursor-not-allowed' : 'hover:bg-[#323435]'
-              }`}
               onClick={openWithdrawModal}
               disabled={isPoolDetailsLoading}
+              className={`flex-1 py-2 rounded-md font-semibold bg-teal-50 text-black active:scale-95 transition-transform ease-in-out duration-150
+              ${isPoolDetailsLoading ? 'opacity-50 cursor-not-allowed' : 'hover:bg-teal-40'}`}
             >
               Withdraw
             </button>
-
             <button
-              disabled={isHarvestDisabled}
-              className={`flex-1 bg-[#27292a] transition text-white py-2 rounded-md font-semibold ${
-                isHarvestDisabled || isPoolDetailsLoading ? 'opacity-50 cursor-not-allowed' : 'hover:bg-[#323435]'
-              }`}
               onClick={handleHarvest}
+              disabled={isHarvestDisabled || isPoolDetailsLoading}
+              className={`flex-1 py-2 rounded-md font-semibold underline text-teal-50 active:scale-95 transition-transform ease-in-out duration-150
+              ${isHarvestDisabled || isPoolDetailsLoading ? 'opacity-50 cursor-not-allowed' : 'hover:bg-[#323435]'}`}
             >
               Harvest
             </button>
           </div>
-
-          {/* Modals */}
-          <ModalWrapper isOpen={isWithdrawModalOpen} onClose={closeWithdrawModal}>
-            {poolData && (
-              <WithdrawFarms onClose={closeWithdrawModal} poolAddress={address as Hex} poolData={poolData} />
-            )}
-          </ModalWrapper>
-          <ModalWrapper isOpen={isDepositModalOpen} onClose={closeDepositModal}>
-            <DepositFarms
-              onClose={closeDepositModal}
-              poolAddress={address as Hex}
-              fetchPoolAddresses={fetchPoolAddresses}
-            />
-          </ModalWrapper>
         </div>
       </div>
+      <ModalWrapper isOpen={isWithdrawModalOpen} onClose={closeWithdrawModal}>
+        {poolData && <WithdrawFarms onClose={closeWithdrawModal} poolAddress={address as Hex} poolData={poolData} />}
+      </ModalWrapper>
+      <ModalWrapper isOpen={isDepositModalOpen} onClose={closeDepositModal}>
+        <DepositFarms onClose={closeDepositModal} poolAddress={address as Hex} fetchPoolAddresses={fetchPoolDetails} />
+      </ModalWrapper>
     </div>
   );
 };

@@ -11,39 +11,39 @@ import { ConnectWalletButton } from '@/components/connect-button';
 import starIcon from '/public/assets/hero_star_icon.png';
 import { Fund } from '@/types/fund';
 
-const getFeaturedFunds = (): Fund[] => {
-  return [
-    {
-      id: '1',
-      title: 'DeFAI Cartel',
-      token: 'CARTEL',
-      status: 'trading',
-      imgSrc: CURRENT_DAO_IMAGE,
-    },
-    {
-      id: '178',
-      title: 'To Be Announced',
-      token: 'TBA',
-      status: 'soon',
-      imgSrc: FUND_CARD_PLACEHOLDER_IMAGE,
-    },
-    {
-      id: '179',
-      title: 'To Be Announced',
-      token: 'TBA',
-      status: 'live',
-      imgSrc: FUND_CARD_PLACEHOLDER_IMAGE,
-    },
-    // { id: '435', title: 'Soul Dogs', token: 'FDREMA', status: false, imgSrc: FUND_CARD_PLACEHOLDER_IMAGE },
-  ];
-};
+// const getFeaturedFunds = (): Fund[] => {
+//   return [
+//     {
+//       id: '1',
+//       title: 'DeFAI Cartel',
+//       token: 'CARTEL',
+//       status: 'trading',
+//       imgSrc: CURRENT_DAO_IMAGE,
+//     },
+//     {
+//       id: '178',
+//       title: 'To Be Announced',
+//       token: 'TBA',
+//       status: 'soon',
+//       imgSrc: FUND_CARD_PLACEHOLDER_IMAGE,
+//     },
+//     {
+//       id: '179',
+//       title: 'To Be Announced',
+//       token: 'TBA',
+//       status: 'live',
+//       imgSrc: FUND_CARD_PLACEHOLDER_IMAGE,
+//     },
+//     // { id: '435', title: 'Soul Dogs', token: 'FDREMA', status: false, imgSrc: FUND_CARD_PLACEHOLDER_IMAGE },
+//   ];
+// };
 
 const AppHome: React.FC = () => {
   const { isConnected } = useAccount();
   const router = useRouter();
   const { toast } = useToast();
   console.log(isConnected);
-  const FEATURED_FUNDS: Fund[] = getFeaturedFunds();
+  // const FEATURED_FUNDS: Fund[] = getFeaturedFunds();
   // const UPCOMING_FUNDS = getUpcomingFunds();
 
   const onFundClick = (fundId: string, type: 'dashboard' | 'upcoming') => {
@@ -124,12 +124,12 @@ const AppHome: React.FC = () => {
             className={` features_cards_main_container relative flex flex-col justify-center items-center w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 md:py-16 space-y-12 md:space-y-24`}
           >
             {/* Featured funds */}
-            <FundSection
+            {/* <FundSection
               title="Featured Funds"
               subtitle="In-demand hedgefunds"
               funds={FEATURED_FUNDS}
               onFundClick={(fundId) => onFundClick(fundId, 'dashboard')}
-            />
+            /> */}
 
             {/* Upcoming funds */}
             {/* <FundSection

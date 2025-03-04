@@ -135,7 +135,6 @@ const WithdrawFarms: React.FC<WithdrawProps> = ({ onClose, poolAddress, poolData
             variant: 'default',
           });
 
-          // Reset success message after 5 seconds
           setTimeout(
             () =>
               setWithdrawTxnMessage({
@@ -165,7 +164,7 @@ const WithdrawFarms: React.FC<WithdrawProps> = ({ onClose, poolAddress, poolData
   console.log(formatUnits(poolData.userInfo.stackedAmount, 18), 'fghgvbhj');
 
   return (
-    <Card className="w-full max-w-lg bg-[#0D0D0D] border border-[#1E1E1E] rounded-xl shadow-lg text-white">
+    <Card className="w-full max-w-lg bg-gray-40 border border-gray-30 rounded-xl shadow-lg text-white">
       <CardHeader className="flex flex-row justify-between items-center px-6 py-4 border-b border-[#1E1E1E]">
         <div className="flex items-center gap-2">
           <CardTitle className="text-lg font-semibold text-white">Withdraw</CardTitle>
@@ -190,7 +189,7 @@ const WithdrawFarms: React.FC<WithdrawProps> = ({ onClose, poolAddress, poolData
           {withdrawTimeLeft && <p className="text-yellow-400">Withdrawal available in: {withdrawTimeLeft}</p>}
 
           <button
-            className="w-full flex items-center justify-center gap-2 px-3 py-2 text-white rounded-md bg-[#27292a] hover:bg-[#323435] transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+            className="w-full flex items-center justify-center gap-2 px-3 py-2 text-white rounded-md bg-black hover:bg-gray-50 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
             onClick={withDrawEnable ? handleWithdraw : handleWithdrawFlow}
             disabled={withdrawAmount === 0 || loading}
           >
@@ -204,7 +203,6 @@ const WithdrawFarms: React.FC<WithdrawProps> = ({ onClose, poolAddress, poolData
             )}
           </button>
 
-          {/* Success/Failure Messages */}
           {withdrawTxnMessage.status === 'success' && (
             <p className="text-green-500 text-center mt-2">{withdrawTxnMessage.msg} ✅</p>
           )}

@@ -1,66 +1,5 @@
 import type { Config } from 'tailwindcss';
 
-const lightColors = {
-  black: {
-    100: '#A4A4A4',
-    200: '#666666',
-    300: '#4D4D4D',
-    400: '#2B2B2B',
-    500: '#222222',
-    600: '#1F1F1F',
-    700: '#0F0F0F',
-    800: '#000000',
-  },
-  neon: {
-    100: '#EEFDC5',
-    200: '#DFF998',
-    300: '#CDF462',
-    400: '#C1E950',
-    500: '#B1DD38',
-    600: '#A0CD27',
-    700: '#8EB81B',
-    800: '#7AA013',
-    900: '#67870E',
-  },
-  purple: {
-    100: 'F8F5FF',
-    200: '#D9C6FE',
-    300: '#BB9AFC',
-    400: '#A281E4',
-    500: '#8A55F6',
-    600: '#793DF0',
-    700: '#6C2CEA',
-    800: '#6121E1',
-    900: '#5819D7',
-    1000: '#5214CC',
-  },
-};
-
-const darkColors = {
-  white: {
-    100: '#fcfcfc',
-    200: '#fafafa',
-    300: '#f8f8f8',
-    400: '#f6f6f6',
-    500: '#f4f4f4',
-    600: '#dedede',
-    700: '#dadada',
-    800: '#b8b8b8',
-    900: '#868686',
-  },
-  black: {
-    100: '#fcfcfc',
-    200: '#fafafa',
-    300: '#f8f8f8',
-    400: '#f6f6f6',
-    500: '#f4f4f4',
-    600: '#dedede',
-    700: '#dadada',
-    800: '#b8b8b8',
-    900: '#868686',
-  },
-};
-
 export default {
   darkMode: 'class',
   content: [
@@ -72,14 +11,54 @@ export default {
   theme: {
     extend: {
       colors: {
-        light: lightColors,
-        dark: darkColors,
+        gray: {
+          10: '#AEB3B6',
+          20: '#4D4D4D',
+          30: '#302F2F',
+          40: '#222222',
+          50: '#101010',
+          60: '#000000',
+        },
+        teal: {
+          10: '#F2FAEF',
+          20: '#D0F0BF',
+          30: '#CDF462',
+          40: '#C8FF31',
+          50: '#D1FF53',
+          60: '#DFFE01',
+          70: '#E8D077',
+        },
+        purple: {
+          10: '#EDEDFF',
+          20: '#60609D',
+        },
+        mellowYellow: '#FBDE7F',
+        gold: '#FFB801',
+        midGreen: '#A7BDB0',
+        paleGreen: '#9AFC99',
+        darkGreen: '#053738',
+        iconGray: '#C6B8B8',
+        notification: '#C64141',
+        success: '#459A30',
+        error: '#B62F2E',
+        white: '#FFFFFF',
+        black: '#000000',
       },
       backgroundImage: {
         dots: 'radial-gradient(rgb(0 0 0 / 6%) 1px, transparent 2px)',
       },
       fontFamily: {
-        sans: ['Urbanist', 'sans-serif'],
+        sora: ['Sora', 'sans-serif'],
+        rubik: ['Rubik', 'sans-serif'],
+      },
+      keyframes: {
+        shimmer: {
+          '0%': { transform: 'translateX(-100%)' },
+          '100%': { transform: 'translateX(100%)' },
+        },
+      },
+      animation: {
+        shimmer: 'shimmer 2s infinite',
       },
     },
   },

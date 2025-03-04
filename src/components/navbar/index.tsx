@@ -1,26 +1,39 @@
 import Link from 'next/link';
 import React from 'react';
-import Logo from '../logo-component';
 import { ConnectWalletButton } from '../connect-button';
+import Image from 'next/image';
+import { usePathname } from 'next/navigation';
 
-interface NavbarProps {
-  app?: boolean;
-}
+export const Navbar = () => {
+  const pathname = usePathname();
+  const isDapp = pathname.includes('dapp');
+  const navContent = {
+    home: { href: '/', logo: '/assets/daao-logo.svg' },
+    dashboard: { href: '/dapp/dashboard/1', text: 'Dashboard' },
+    farms: { href: '/dapp/farms', text: 'Farms' },
+    launchDao: { href: 'https:t.me/arcanelabs', text: 'Launch DAO' },
+  };
 
-export const Navbar: React.FC<NavbarProps> = ({ app = false }) => {
   return (
-    <div className="gap-6 sm:gap-12 fixed z-50 flex w-full justify-between items-center border-b border-[#212121] p-4 bg-black px-4 sm:px-8 md:py-4">
-      <div className="block">
-        <Link href="/" className="flex items-center justify-start">
-          <Logo width={32} height={32} app={app} />
+    <div className="fixed z-50 flex w-full justify-between items-center px-6 py-4 bg-black">
+      <Link href={navContent.home.href} className="flex items-center justify-start">
+        <Image src={navContent.home.logo} alt="logo" width={150} height={150} />
+      </Link>
+      <div className="flex items-center gap-12">
+        <Link href={navContent.dashboard.href} className="font-medium hidden md:block font-sora text-sm">
+          {navContent.dashboard.text}
         </Link>
-      </div>
-      <div className="hidden sm:flex gap-12 w-full justify-end items-center">
-        <Link href="/dapp/farms" className="text-white sm:text-base md:text-lg lg:text-xl font-medium leading-9">
-          Farms
+        <Link href={navContent.farms.href} className="text-white font-medium hidden md:block font-sora text-sm">
+          {navContent.farms.text}
         </Link>
-      </div>
-      <div className="justify-center items-center gap-4 w-min flex">
+        <Link
+          href={navContent.launchDao.href}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="text-white font-medium text-sm font-sora"
+        >
+          {navContent.launchDao.text}
+        </Link>
         <ConnectWalletButton icons={true} />
       </div>
     </div>

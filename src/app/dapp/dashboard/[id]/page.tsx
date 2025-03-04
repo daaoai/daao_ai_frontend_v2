@@ -146,32 +146,6 @@ const Dashboard: React.FC = () => {
               </TabsTrigger>
             </TabsList>
 
-            {/* <TabsContent value="trades" className="w-full">
-              <div className="grid grid-cols-1 lg:grid-cols-10 gap-6">
-                <div className="lg:col-span-7">
-                  {!daoTokenAddress ? (
-                    <div className="flex items-center justify-center h-[400px] sm:h-[600px] bg-card rounded-lg">
-                      <p className="text-muted-foreground">Loading chart...</p>
-                    </div>
-                  ) : (
-                    <iframe
-                      className="h-[400px] w-full border-0 sm:h-[600px] rounded-lg"
-                      src={`https://dexscreener.com/mode/${daoTokenAddress}?embed=1&loadChartSettings=0&trades=0&tabs=0&info=0&chartLeftToolbar=0&chartTheme=dark&theme=dark&chartStyle=0&chartType=usd&interval=15`}
-                    ></iframe>
-                  )}
-                </div>
-                <div className="lg:col-span-3">
-                  <Orderbook
-                    name={props.longname}
-                    created="7/02/2025"
-                    owner="0xb51eC6F7D3E0D0FEae495eFe1f0751dE66b6be95"
-                    token={daoTokenAddress}
-                    tradingEnds="10/3/2025"
-                    ethRaised="100 MODE"
-                  />
-                </div>
-              </div>
-            </TabsContent> */}
             <TabsContent value="trades" className="w-full">
               <div className="w-full grid grid-cols-1 md:grid-cols-10 gap-4">
                 {/* Left Section - 70% */}

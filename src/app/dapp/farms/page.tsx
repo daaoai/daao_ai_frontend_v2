@@ -3,20 +3,19 @@ import React, { useEffect, useState } from 'react';
 import { PageLayout } from '@/components/page-layout';
 import usePoolList from '@/hooks/farm/usePoolList';
 import { FarmPool } from '@/types/farm';
-import FarmCardSkeleton from '@/components/skeleton/farmCard';
-import FarmCard from '@/components/dashboard/farmCard';
+import FarmTabs from '@/components/farms/farmTabs';
+
 const Farms: React.FC = () => {
   const { getPoolList } = usePoolList();
   const [isPoolListLoading, setIsPoolListLoading] = useState(true);
   const [farmPools, setFarmPools] = useState<FarmPool[]>([]);
+
   useEffect(() => {
-    console.log('running');
     const fetchPoolAddresses = async () => {
       try {
         setIsPoolListLoading(true);
         const responsePoolList = await getPoolList();
         setFarmPools(responsePoolList);
-        console.log('ResponsePoolList:', responsePoolList);
         setIsPoolListLoading(false);
       } catch (error) {
         console.error('Error fetching pool addresses:', error);
@@ -25,19 +24,23 @@ const Farms: React.FC = () => {
     };
     fetchPoolAddresses();
   }, []);
-  return (
-    <PageLayout title="App" description="main-app" app={true}>
-      <div className={`w-screen overflow-hidden gap-20 flex flex-col justify-center items-center py-16 px-2 lg:px-44`}>
-        <div className="container mx-auto px-4 py-8">
-          <h1 className="text-3xl font-bold mb-8 text-left">Farming Pools</h1>
 
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 justify-items-center">
-            {isPoolListLoading ? (
-              <FarmCardSkeleton />
-            ) : (
-              farmPools.map((farm, index) => <FarmCard key={`${farm.poolAddress}-${index}`} farm={farm} />)
-            )}
-          </div>
+  const isFarmActive = (farm: FarmPool) => {
+    const startTimeMs = Number(farm.startTime.toString()) * 1000;
+    const endTimeMs = Number(farm.endTime.toString()) * 1000;
+    const now = Date.now();
+    return now >= startTimeMs && now <= endTimeMs;
+  };
+
+  const activeFarms = farmPools.filter(isFarmActive);
+  const inactiveFarms = farmPools.filter((farm) => !isFarmActive(farm));
+
+  return (
+    <PageLayout title="App" description="main-app">
+      <div className="w-screen overflow-hidden gap-20 flex flex-col justify-center items-center py-16 px-2 lg:px-44">
+        <div className="container mx-auto px-4 py-8">
+          <h1 className="text-5xl font-bold mb-8 text-center font-sora">&lt;&lt;&lt;Farming Pools&gt;&gt;&gt;</h1>
+          <FarmTabs activeFarms={activeFarms} inactiveFarms={inactiveFarms} isLoading={isPoolListLoading} />
         </div>
       </div>
     </PageLayout>

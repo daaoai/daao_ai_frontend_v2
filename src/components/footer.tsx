@@ -1,5 +1,4 @@
 import Link from 'next/link';
-import Logo from './logo-component';
 import Image from 'next/image';
 
 import { socialLinks } from '@/constants/links';
@@ -33,7 +32,8 @@ const FooterTopContent: React.FC<FooterProps> = ({ app }) => {
     <div className="flex flex-col md:flex-row justify-between items-center gap-4 w-full p-4 border-b border-[#212121]">
       {/* logo */}
       <div className="flex flex-col justify-center items-center text-muted-foreground">
-        <Logo width={100} height={100} footer={true} app={app} />
+        <Image src = "/assets/daao-logo.svg" alt = "logo" width = {200} height = {200} />
+
       </div>
 
       {/* Footer Links (Terms, Cookie Policy, etc.) */}

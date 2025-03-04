@@ -6,7 +6,7 @@ import { Typography } from '@/components/typography';
 import Link from 'next/link';
 import Image from 'next/image';
 import { ArrowRight } from 'lucide-react';
-import { CURRENT_DAO_IMAGE, DefaiCartelLinks, WHITEPAPER_URL } from '@/constants/links';
+import { CURRENT_DAO_IMAGE, DefaiCartelLinks, FUND_CARD_PLACEHOLDER_IMAGE, WHITEPAPER_URL } from '@/constants/links';
 import { Link as UILink } from 'lucide-react';
 import { FooterIconLink } from '@/components/footer';
 import CheckWaitlistModal from '@/components/landing/waitlist-modal';
@@ -16,12 +16,21 @@ import { Button } from '@/shadcn/components/ui/button';
 import { Card, CardContent } from '@/shadcn/components/ui/card';
 import { formatNumber } from '@/utils/numbers';
 import { daoAddress } from '@/constants/addresses';
+import { FundSection } from '@/components/dashboard/fundsection';
+import type { Fund } from '@/types/fund';
+import { useAccount } from 'wagmi';
+import { useRouter } from 'next/navigation';
+import { useToast } from '@/hooks/use-toast';
+import { ConnectWalletButton } from '@/components/connect-button';
 
 const HomePage: NextPage = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [price, setPrice] = useState<number | null>(0);
   const [marketCap, setMarketCap] = useState<number | null>(0);
 
+  const { isConnected } = useAccount();
+  const router = useRouter();
+  const { toast } = useToast();
   useEffect(() => {
     const modeRpc = 'https://mainnet.mode.network/';
     const fetchMarketData = async () => {
@@ -57,10 +66,106 @@ const HomePage: NextPage = () => {
     fetchMarketData();
   }, []);
 
+  const getFeaturedFunds = (): Fund[] => {
+    return [
+      {
+        id: '1',
+        title: 'DeFAI Cartel',
+        token: 'CARTEL',
+        status: 'trading',
+        imgSrc: CURRENT_DAO_IMAGE,
+      },
+      {
+        id: '178',
+        title: 'To Be Announced',
+        token: 'TBA',
+        status: 'soon',
+        imgSrc: FUND_CARD_PLACEHOLDER_IMAGE,
+      },
+      {
+        id: '179',
+        title: 'To Be Announced',
+        token: 'TBA',
+        status: 'live',
+        imgSrc: FUND_CARD_PLACEHOLDER_IMAGE,
+      },
+      {
+        id: '180',
+        title: 'To Be Announced',
+        token: 'TBA',
+        status: 'live',
+        imgSrc: FUND_CARD_PLACEHOLDER_IMAGE,
+      },
+      {
+        id: '181',
+        title: 'To Be Announced',
+        token: 'TBA',
+        status: 'live',
+        imgSrc: FUND_CARD_PLACEHOLDER_IMAGE,
+      },
+      {
+        id: '182',
+        title: 'To Be Announced',
+        token: 'TBA',
+        status: 'live',
+        imgSrc: FUND_CARD_PLACEHOLDER_IMAGE,
+      },
+    ];
+  };
+
+  const FEATURED_FUNDS: Fund[] = getFeaturedFunds();
+
+  const onFundClick = (fundId: string, type: 'dashboard' | 'upcoming') => {
+    if (!isConnected) {
+      // alert('Please connect your wallet first.');
+      toast({
+        title: 'Please connect your wallet first',
+        description: "It looks like your wallet isn't connected",
+        variant: 'destructive',
+        action: <ConnectWalletButton icons={false} className="bg-white text-black" />,
+      });
+      return;
+    }
+    // Navigate to the fund page if connected
+    router.push(`/dapp/${type}/${fundId}`);
+  };
+
   return (
-    <PageLayout title="Homepage" description="Welcome to a Network of Decentralized Autonomous Agentic Organizations">
-      <div className="sm:my-[-40px] relative flex justify-center items-center h-max">
-        <Image src="/public/assets/star-1-with-ellipse.svg" alt="Star" width={950} height={950} priority />
+    <PageLayout>
+      <div className="flex justify-between gap-20 w-full pt-24">
+        <Image src="/assets/defaiCartel.svg" alt="defai-cartel" width={400} height={400} />
+        <div className="flex flex-col items-start">
+          <p>Defai Cartel</p>
+          <Link href="https://velodrome.finance/swap?from=0xdfc7c877a950e49d2610114102175a06c2e3167a&to=0x98e0ad23382184338ddcec0e13685358ef845f30&chain0=34443&chain1=34443">
+            Trade On Velodrome
+          </Link>
+          <p>
+            Dorem ipsum dolor sit amet, consectetur adipiscing elit. Nunc vulputate libero et velit interdum, ac aliquet
+            odio mattis. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos.
+            Curabitur tempus urna at turpis condimentum lobortis.
+          </p>
+        </div>
+      </div>
+      <div>
+        <p>&lt;&lt;&lt;Featured Funds&gt;&gt;&gt;</p>
+        <FundSection funds={FEATURED_FUNDS} onFundClick={(fundId) => onFundClick(fundId, 'dashboard')} />
+      </div>
+
+      <div className="flex flex-col pt-16 gap-16 items-center justify-center">
+        <Image src="/assets/circle-image.svg" alt="defai-cartel" width={300} height={400} />
+        <div className="flex flex-col gap-8 items-center">
+          <p className="text-teal-40 font-normal font-sora text-4xl">Available to everyone</p>
+          <p className="text-7xl font-sora font-normal text-white max-w-4xl">Launch your next fund on D.A.A.O</p>
+          {/* <div className='bg-'> */}
+          <button className="text-black w-fit bg-white rounded-full px-4 py-2">Launch A DAO</button>
+          {/* </div> */}
+        </div>
+      </div>
+      <div>
+        <p>Faqs</p>
+      </div>
+
+      {/* <div className="sm:my-[-40px] relative flex justify-center items-center h-max">
         <div className="absolute inset-0 flex flex-col items-center justify-center gap-2">
           <Typography variant="h1" className={`text-center text-white text-3xl md:text-5xl lg:text-6xl`}>
             Decentralized Autonomous
@@ -97,12 +202,12 @@ const HomePage: NextPage = () => {
             </Link>
           </div>
         </div>
-      </div>
+      </div> */}
 
-      <CheckWaitlistModal isOpen={isOpen} setIsOpen={setIsOpen} />
+      {/* <CheckWaitlistModal isOpen={isOpen} setIsOpen={setIsOpen} /> */}
 
       {/*waitlist*/}
-      <Card className="w-[calc(100%-2rem)] max-w-[500px] bg-gradient-to-br from-black via-[#061023] to-[#0e070e] rounded-2xl shadow-[0px_4px_36px_0px_rgba(255,255,255,0.10)] border border-[#212121]">
+      {/* <Card className="w-[calc(100%-2rem)] max-w-[500px] bg-gradient-to-br from-black via-[#061023] to-[#0e070e] rounded-2xl shadow-[0px_4px_36px_0px_rgba(255,255,255,0.10)] border border-[#212121]">
         <CardContent className="flex flex-col items-center justify-center gap-6 p-6 sm:p-8">
           <div className="relative w-full max-w-[250px] aspect-square rounded-xl overflow-hidden">
             <Image src={CURRENT_DAO_IMAGE} alt="DeFAI Cartel" layout="fill" objectFit="cover" />
@@ -144,7 +249,7 @@ const HomePage: NextPage = () => {
             ))}
           </div>
         </CardContent>
-      </Card>
+      </Card> */}
     </PageLayout>
   );
 };
