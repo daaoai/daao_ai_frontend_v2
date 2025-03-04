@@ -45,7 +45,7 @@ export default {
         white: '#FFFFFF',
         black: '#000000',
         yellow: '#FFD801',
-        lightYellow: 'F8DE7F',
+        lightYellow: '#F8DE7F',
       },
       backgroundImage: {
         dots: 'radial-gradient(rgb(0 0 0 / 6%) 1px, transparent 2px)',

@@ -22,6 +22,7 @@ import { useAccount } from 'wagmi';
 import { useRouter } from 'next/navigation';
 import { useToast } from '@/hooks/use-toast';
 import { ConnectWalletButton } from '@/components/connect-button';
+import PoolDetailCard from '@/components/poolDetailCard';
 
 const HomePage: NextPage = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -132,9 +133,9 @@ const HomePage: NextPage = () => {
 
   return (
     <PageLayout>
-      <div className="flex justify-between gap-20 w-full pt-24">
+      <div className="flex justify-between gap-20 w-full pt-24 items-center">
         <Image src="/assets/defaiCartel.svg" alt="defai-cartel" width={400} height={400} />
-        <div className="flex flex-col items-start">
+        <div className="flex flex-col items-start gap-6">
           <p className="text-5xl font-sora font-medium text-white">Defai Cartel</p>
           <Link
             href="https://velodrome.finance/swap?from=0xdfc7c877a950e49d2610114102175a06c2e3167a&to=0x98e0ad23382184338ddcec0e13685358ef845f30&chain0=34443&chain1=34443"
@@ -142,11 +143,12 @@ const HomePage: NextPage = () => {
           >
             Trade On Velodrome
           </Link>
-          <p>
+          <p className="text-gray-10 font-normal font-rubik text-lg text-left">
             Dorem ipsum dolor sit amet, consectetur adipiscing elit. Nunc vulputate libero et velit interdum, ac aliquet
             odio mattis. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos.
             Curabitur tempus urna at turpis condimentum lobortis.
           </p>
+          <PoolDetailCard />
         </div>
       </div>
       <div className="my-24">
@@ -154,7 +156,7 @@ const HomePage: NextPage = () => {
         <FundSection funds={FEATURED_FUNDS} onFundClick={(fundId) => onFundClick(fundId, 'dashboard')} />
       </div>
 
-      <div className="flex flex-col pt-16 gap-16 items-center justify-center">
+      <div className="flex flex-col gap-16 items-center justify-center">
         <Image src="/assets/circle-image.svg" alt="defai-cartel" width={300} height={400} />
         <div className="flex flex-col gap-8 items-center">
           <p className="text-teal-40 font-normal font-sora text-4xl">Available to everyone</p>
