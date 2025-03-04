@@ -207,7 +207,7 @@ const FundDetails: React.FC<FundDetailsProps> = (props) => {
           veritatis, rem, dolorem ipsa non, nesciunt in quia quam vel debitis. Cupiditate temporibus deleniti, mollitia
         </p>
       </div>
-
+      {/* 
       <CardContent className="space-y-4 sm:space-y-6">
         <Card className="bg-[#1b1c1d] border-[#27292a] w-full">
           <CardContent className="pt-6">
@@ -261,7 +261,7 @@ const FundDetails: React.FC<FundDetailsProps> = (props) => {
             </CardContent>
           </Card>
         </div>
-      </CardContent>
+      </CardContent> */}
     </Card>
   );
 };

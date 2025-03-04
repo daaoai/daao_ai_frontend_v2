@@ -15,10 +15,13 @@ interface InfoRowProps {
 const InfoRow = ({ label, value, mode }: InfoRowProps) => {
   return (
     <div className="space-y-1">
-      <div className="text-[#aeb3b6] text-left flex justify-between items-center">
+      <div
+        className="text-[#aeb3b6] w-full text-left flex justify-between items-center bg-black border-b border-gray-20
+         shadow-md pb-2"
+      >
         <span className="text-muted-foreground">{label}</span>
         <div className="flex items-center gap-2">
-          <span className="text-right text-foreground">{mode ? shortenAddress(value) : value}</span>
+          <span className="text-right text-lightYellow text-foreground">{mode ? shortenAddress(value) : value}</span>
           {mode && (
             <Copy
               className="h-4 w-4 text-muted-foreground hover:text-foreground transition-colors"
@@ -42,9 +45,12 @@ interface OrderbookProps {
 
 const Orderbook = ({ name, created, owner, token, ethRaised }: OrderbookProps) => {
   return (
-    <Card className="w-full max-w-md bg-[#1b1c1d] text-card-foreground mx-auto">
+    <Card className="w-full max-w-md mx-auto border-none">
       <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-        <CardTitle className="text-lg font-semibold">{name}</CardTitle>
+        <div className="text-lg text-white font-semibold flex flex-col gap-2 items-start">
+          <p className="text-teal-40 text-lg font-normal">Defai Cartel</p>
+          <p className="text-teal-20 text-sm font-normal">$Cartel</p>
+        </div>
         <div className="relative h-10 w-10 overflow-hidden rounded-full bg-[#f7931a]">
           <Image src={ModeImage} alt="Mode Token" layout="fill" objectFit="cover" />
         </div>

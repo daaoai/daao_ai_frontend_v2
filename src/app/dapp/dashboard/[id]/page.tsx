@@ -303,7 +303,7 @@ const Dashboard: React.FC = () => {
             <TabsContent value="assets" className="w-full">
               <div className="p-2 flex flex-col justify-center items-center">
                 <div className="w-full flex justify-between items-center py-4">
-                  <span className="font-bold text-xl">Token Balances</span>
+                  <span className="font-semibold text-midGreen font-sora text-xl">Token Balances</span>
                 </div>
                 {/* <AssetTable columns={assetColumns} data={assetsData} /> */}
                 {daaoHoldingTokens ? (

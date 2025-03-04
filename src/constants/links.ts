@@ -4,7 +4,7 @@ export const socialLinks: FooterData[] = [
   {
     label: 'Telegram',
     href: 'https://t.me/daaoai',
-    src: '/assets/telegram.svg',
+    src: '/public/assets/telegram.svg',
     alt: 'Telegram Icon',
   },
   {

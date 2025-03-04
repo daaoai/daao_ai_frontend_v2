@@ -27,14 +27,14 @@ export function AssetTable({ columns, data }: AssetTableProps) {
   });
 
   return (
-    <div className="space-y-4 text-center rounded-md border-none bg-[#191919] w-full">
+    <div className="space-y-4 text-center rounded-md border-none w-full">
       {/* Table */}
       <Table>
         <TableHeader>
           {table.getHeaderGroups().map((headerGroup) => (
-            <TableRow key={headerGroup.id} className={`border-none mb-2 text-[#e4e6e7] text-bold `}>
+            <TableRow key={headerGroup.id} className={`border-none mb-2 text-yellow text-semibold`}>
               {headerGroup.headers.map((header) => (
-                <TableHead key={header.id} className={`mb-2 text-[#e4e6e7] text-bold p-4 text-center text-xl`}>
+                <TableHead key={header.id} className={`mb-2 text-yellow text-normal p-4 text-center text-xl`}>
                   {header.isPlaceholder ? null : flexRender(header.column.columnDef.header, header.getContext())}
                 </TableHead>
               ))}

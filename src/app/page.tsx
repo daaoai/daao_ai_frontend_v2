@@ -135,8 +135,11 @@ const HomePage: NextPage = () => {
       <div className="flex justify-between gap-20 w-full pt-24">
         <Image src="/assets/defaiCartel.svg" alt="defai-cartel" width={400} height={400} />
         <div className="flex flex-col items-start">
-          <p>Defai Cartel</p>
-          <Link href="https://velodrome.finance/swap?from=0xdfc7c877a950e49d2610114102175a06c2e3167a&to=0x98e0ad23382184338ddcec0e13685358ef845f30&chain0=34443&chain1=34443">
+          <p className="text-5xl font-sora font-medium text-white">Defai Cartel</p>
+          <Link
+            href="https://velodrome.finance/swap?from=0xdfc7c877a950e49d2610114102175a06c2e3167a&to=0x98e0ad23382184338ddcec0e13685358ef845f30&chain0=34443&chain1=34443"
+            className="text-teal-60 font-normal"
+          >
             Trade On Velodrome
           </Link>
           <p>
@@ -146,8 +149,8 @@ const HomePage: NextPage = () => {
           </p>
         </div>
       </div>
-      <div>
-        <p>&lt;&lt;&lt;Featured Funds&gt;&gt;&gt;</p>
+      <div className="my-24">
+        <p className="text-white font-regular text-5xl">&lt;&lt;&lt;Featured Funds&gt;&gt;&gt;</p>
         <FundSection funds={FEATURED_FUNDS} onFundClick={(fundId) => onFundClick(fundId, 'dashboard')} />
       </div>
 

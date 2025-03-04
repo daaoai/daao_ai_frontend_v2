@@ -443,14 +443,14 @@ const BuySellCard = () => {
 
         <Card className="bg-gray-50 border-2 border-gray-20">
           <CardContent className="p-4 flex justify-between items-center">
-            <div>
+            <div className="w-40">
               <p className="text-left text-[#aeb3b6] text-sm">FROM</p>
               <input
                 type="number"
                 placeholder="0"
                 value={amountFrom}
                 onChange={handleFromChange}
-                className={`appearance-none bg-transparent border-1 p-0 text-3xl w-100 focus-visible:ring-0 [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none `}
+                className={`appearance-none bg-transparent border-1 p-0 text-3xl w-100 [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none `}
                 style={{
                   minWidth: '140px',
                   width: `${amountTo.toString().length + 2}ch`,
@@ -490,14 +490,14 @@ const BuySellCard = () => {
 
         <Card className="bg-gray-50 border-2 border-gray-20">
           <CardContent className="p-4 flex justify-between items-center">
-            <div>
+            <div className="w-40">
               <p className="text-left  text-[#aeb3b6] text-sm">TO</p>
               <input
                 type="number"
                 placeholder="0"
                 value={amountTo}
                 onChange={(e) => setAmountTo(Number(e.target.value))}
-                className={`appearance-none bg-transparent border-0 p-0 text-3xl w-24 focus-visible:ring-0 focus-visible:ring-offset-0 [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none border-0 outline-none`}
+                className={`appearance-none bg-transparent p-0 text-3xl w-24 [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none border-0 outline-none`}
                 style={{
                   minWidth: '140px', // Set a reasonable minimum width
                   width: `${amountTo.toString().length + 0.2}ch`, // Dynamically adjust width
