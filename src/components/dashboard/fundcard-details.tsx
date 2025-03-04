@@ -12,6 +12,7 @@ import type { FundDetailsProps } from '@/types';
 import { Copy } from 'lucide-react';
 import { daoAddress } from '@/constants/addresses';
 import ClickToCopy from '../copyToClipboard';
+import { telegramLink, twitterLink } from '@/constants/links';
 
 const FundDetails: React.FC<FundDetailsProps> = (props) => {
   interface TokenChangeState {
@@ -175,7 +176,7 @@ const FundDetails: React.FC<FundDetailsProps> = (props) => {
               style={{ width: '100%' }}
             />
           </a>
-          <a>
+          <a href={telegramLink} target="_blank" rel="noopener noreferrer">
             <Image
               src="/assets/telegram-icon.svg"
               alt="defai-cartel"
@@ -185,7 +186,7 @@ const FundDetails: React.FC<FundDetailsProps> = (props) => {
               style={{ width: '100%' }}
             />
           </a>
-          <a>
+          <a href={twitterLink} target="_blank" rel="noopener noreferrer">
             <Image
               src="/assets/x.svg"
               alt="defai-cartel"

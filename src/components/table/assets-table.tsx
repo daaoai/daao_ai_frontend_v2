@@ -27,14 +27,14 @@ export function AssetTable({ columns, data }: AssetTableProps) {
   });
 
   return (
-    <div className="space-y-4 text-center rounded-md border-none w-full">
+    <div className="space-y-4 text-center rounded-md border-none w-full pb-4">
       {/* Table */}
       <Table>
         <TableHeader>
           {table.getHeaderGroups().map((headerGroup) => (
             <TableRow key={headerGroup.id} className={`border-none mb-2 text-yellow text-semibold`}>
               {headerGroup.headers.map((header) => (
-                <TableHead key={header.id} className={`mb-2 text-yellow text-normal p-4 text-center text-xl`}>
+                <TableHead key={header.id} className={`mb-2 text-yellow text-normal text-left text-xl`}>
                   {header.isPlaceholder ? null : flexRender(header.column.columnDef.header, header.getContext())}
                 </TableHead>
               ))}
@@ -44,16 +44,16 @@ export function AssetTable({ columns, data }: AssetTableProps) {
         <TableBody>
           {table.getRowModel().rows.length > 0 ? (
             table.getRowModel().rows.map((row) => (
-              <TableRow key={row.id}>
+              <TableRow key={row.id} className="!border-none">
                 {row.getVisibleCells().map((cell) => (
-                  <TableCell key={cell.id} className="text-center text-base md:text-lg w-min">
+                  <TableCell key={cell.id} className="text-left text-base md:text-lg w-min ">
                     {flexRender(cell.column.columnDef.cell, cell.getContext())}
                   </TableCell>
                 ))}
               </TableRow>
             ))
           ) : (
-            <TableRow>
+            <TableRow className="!border-none">
               <TableCell colSpan={columns.length} className="text-center py-4">
                 No data available
               </TableCell>

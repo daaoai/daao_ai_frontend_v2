@@ -4,16 +4,19 @@ export const socialLinks: FooterData[] = [
   {
     label: 'Telegram',
     href: 'https://t.me/daaoai',
-    src: '/public/assets/telegram.svg',
+    src: '/assets/telegram-icon.svg',
     alt: 'Telegram Icon',
   },
   {
     label: 'Twitter/X',
     href: 'https://x.com/daaoai',
-    src: '/assets/x-icon.svg',
+    src: '/assets/x.svg',
     alt: 'Twitter Icon',
   },
 ];
+
+export const telegramLink = 'https://t.me/daaoai';
+export const twitterLink = 'https://x.com/daaoai';
 
 export const DefaiCartelLinks: FooterData[] = [
   {
