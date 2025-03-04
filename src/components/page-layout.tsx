@@ -68,9 +68,9 @@ const MainContainer: React.FC<LayoutProps & { children: React.ReactNode }> = ({
     <>
       <Navbar />
       <main
-        className={`sm:overflow-hidden relative min-h-screen flex flex-wrap flex-${flexDirection} ${justifyClass} ${alignClass} gap-${gap} pt-16`}
+        className={`sm:overflow-hidden relative min-h-screen bg-black flex flex-wrap flex-${flexDirection} ${justifyClass} ${alignClass} gap-${gap} pt-16`}
       >
-        <div className="h-min max-w-7xl mx-auto w-full relative z-10 bg-black flex flex-col flex-wrap items-center justify-center text-center pb-8">
+        <div className="h-min max-w-7xl w-full relative z-10 bg-black flex flex-col flex-wrap items-center justify-center text-center pb-8">
           {children}
         </div>
       </main>

@@ -37,7 +37,7 @@ const Farms: React.FC = () => {
 
   return (
     <PageLayout title="App" description="main-app">
-      <div className="w-screen overflow-hidden gap-20 flex flex-col justify-center items-center py-16 px-2 lg:px-44">
+      <div className="w-screen overflow-hidden gap-20 flex flex-col justify-center items-center py-16 px-2">
         <div className="container mx-auto px-4 py-8">
           <h1 className="text-5xl font-bold mb-8 text-center font-sora">&lt;&lt;&lt;Farming Pools&gt;&gt;&gt;</h1>
           <FarmTabs activeFarms={activeFarms} inactiveFarms={inactiveFarms} isLoading={isPoolListLoading} />

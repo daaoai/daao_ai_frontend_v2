@@ -16,14 +16,24 @@ export const Navbar = () => {
 
   return (
     <div className="fixed z-50 flex w-full justify-between items-center px-6 py-4 bg-black">
-      <Link href={navContent.home.href} className="flex items-center justify-start">
+      <Link href={navContent.home.href} className="flex items-center justify-start" prefetch shallow>
         <Image src={navContent.home.logo} alt="logo" width={150} height={150} />
       </Link>
       <div className="flex items-center gap-12">
-        <Link href={navContent.dashboard.href} className="font-medium hidden md:block font-sora text-sm">
+        <Link
+          href={navContent.dashboard.href}
+          className="font-medium hidden md:block font-sora text-sm"
+          prefetch
+          shallow
+        >
           {navContent.dashboard.text}
         </Link>
-        <Link href={navContent.farms.href} className="text-white font-medium hidden md:block font-sora text-sm">
+        <Link
+          href={navContent.farms.href}
+          className="text-white font-medium hidden md:block font-sora text-sm"
+          prefetch
+          shallow
+        >
           {navContent.farms.text}
         </Link>
         <Link

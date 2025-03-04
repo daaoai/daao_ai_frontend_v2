@@ -11,6 +11,7 @@ import { handleCopy } from '@/utils/copy';
 import type { FundDetailsProps } from '@/types';
 import { Copy } from 'lucide-react';
 import { daoAddress } from '@/constants/addresses';
+import ClickToCopy from '../copyToClipboard';
 
 const FundDetails: React.FC<FundDetailsProps> = (props) => {
   interface TokenChangeState {
@@ -115,9 +116,12 @@ const FundDetails: React.FC<FundDetailsProps> = (props) => {
   }, [setPriceUsd]);
 
   return (
-    <Card className="bg-[#0d0d0d] text-white sm:p-2  w-full">
-      <CardHeader className="flex flex-row items-center justify-between gap-4 sm:gap-6 pb-4 sm:pb-6">
-        <div className="flex items-center gap-4 sm:gap-6">
+    <Card className="text-white sm:p-2  w-full border-none">
+      <div className="w-full">
+        <Image src="/assets/defaiCartel.svg" alt="defai-cartel" width={600} height={300} style={{ width: '100%' }} />
+      </div>
+
+      {/* <div className="flex items-center gap-4 sm:gap-6">
           <div className="w-12 h-12 sm:w-16 sm:h-16 bg-white rounded-full flex-shrink-0 overflow-hidden">
             <Image
               className="w-full h-full object-cover"
@@ -130,10 +134,32 @@ const FundDetails: React.FC<FundDetailsProps> = (props) => {
           <CardTitle className={`text-xl sm:text-2xl md:text-3xl font-semibold`}>
             ${props.shortname} {props.longname}
           </CardTitle>
-        </div>
-
+        </div> */}
+      <div className="border-2 border-gray-30 rounded-md my-4 p-6 flex items-center justify-between">
         <Liquidity />
-      </CardHeader>
+        <div className="flex flex-col gap-2">
+          <p className="text-gray-70 font-rubik text-sm font-normal">LP VALUE</p>
+          <p>12</p>
+        </div>
+        <div className="text-gray-70 font-rubik text-sm font-normal">
+          <p>LP BALANCE</p>
+          <p>12</p>
+        </div>
+        <div className="text-gray-70 font-rubik text-sm font-normal">
+          <p>24H VOLUME</p>
+          <p>12</p>
+        </div>
+      </div>
+      <div className="flex justify-between w-full">
+        <div className="w-fit flex gap-x-2">
+          <h5>$CARTEL</h5>
+          <div className="bg-[#053738] p-1 rounded-md flex gap-x-2">
+            <p>{shortenAddress(daoTokenAddress)}</p>
+            <ClickToCopy copyText={daoTokenAddress} className="text-teal-20" />
+          </div>
+        </div>
+        <div className="w-fit flex"></div>
+      </div>
 
       <CardContent className="space-y-4 sm:space-y-6">
         <Card className="bg-[#1b1c1d] border-[#27292a] w-full">
@@ -156,7 +182,7 @@ const FundDetails: React.FC<FundDetailsProps> = (props) => {
                   }`}
                 >
                   {`${commaSeparator(Number(tokenChange?.token || 0).toFixed(2))} (${Number(
-                    tokenChange?.percent || 0
+                    tokenChange?.percent || 0,
                   ).toFixed(2)}%)`}
                 </p>
               </CardContent>

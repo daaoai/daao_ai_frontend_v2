@@ -1,3 +1,4 @@
+'use client';
 import { useState, useEffect, useCallback } from 'react';
 import { ethers } from 'ethers';
 import ModeTokenLogo from '/public/assets/mode.png';
@@ -24,6 +25,7 @@ import React from 'react';
 import { clPoolRouterAddress, modeTokenAddress, swapRouterAddress, veloFactoryAddress } from '@/constants/addresses';
 import { tickSpacing } from '@/constants/modeChain';
 import { Settings2 } from 'lucide-react';
+import SlippageModal from '../slippageModal';
 
 const BuySellCard = () => {
   const { toast } = useToast();
@@ -383,6 +385,10 @@ const BuySellCard = () => {
   const closeBurnTicketModal = useCallback(() => setIsBurnTicketModalOpen(false), []);
   const openCollectedTicketModal = useCallback(() => setIsCollectedTicketModalOpen(true), []);
   const closeCollectedTicketModal = useCallback(() => setIsCollectedTicketModalOpen(false), []);
+  const [isSettingModalOpen, setIsSettingModalOpen] = useState(false);
+
+  const openSettingModal = useCallback(() => setIsSettingModalOpen(true), []);
+  const closeSettingModal = useCallback(() => setIsSettingModalOpen(false), []);
 
   const handleBurnTicketModal = () => {
     if (account.address) {
@@ -396,20 +402,20 @@ const BuySellCard = () => {
   };
 
   return (
-    <Card className="h-full w-full max-w-xl bg-[#0e0e0e] text-white">
+    <Card className="h-full w-full max-w-xl bg-[#0e0e0e] text-white border-none">
       <CardContent className="p-6 space-y-6">
         <div className="flex items-center justify-between">
           <Tabs value={activeTab} onValueChange={(val) => setActiveTab(val as 'buy' | 'sell')} className="w-full h-12">
-            <TabsList className="grid grid-cols-2 bg-[#1b1c1d] h-12">
+            <TabsList className="flex gap-4 bg-[#1b1c1d] h-12">
               <TabsTrigger
                 value="buy"
-                className="data-[state=active]:bg-white data-[state=active]:text-black data-[state=inactive]:text-white w-full data-[state=active]:h-10 lg:text-xl md:text-lg sm:text-md"
+                className="data-[state=active]:bg-teal-40 bg-white text-black  w-full data-[state=active]:h-10 lg:text-xl md:text-lg sm:text-md"
               >
                 Buy
               </TabsTrigger>
               <TabsTrigger
                 value="sell"
-                className="data-[state=active]:bg-white data-[state=active]:text-black data-[state=inactive]:text-white w-full data-[state=active]:h-10  lg:text-xl md:text-lg sm:text-md"
+                className="data-[state=active]:bg-teal-40 bg-white text-black w-full data-[state=active]:h-10  lg:text-xl md:text-lg sm:text-md"
               >
                 Sell
               </TabsTrigger>
@@ -417,24 +423,25 @@ const BuySellCard = () => {
           </Tabs>
         </div>
 
-        {slippageOpen && (
-          <div className="border p-3 bg-[#1b1c1d] rounded-md">
-            <label className="block text-sm text-[#aeb3b6] mb-1">Slippage Tolerance (%)</label>
-            <div className="flex items-center gap-2">
-              <input
-                type="number"
-                placeholder="slippage"
-                value={slippageTolerance}
-                onChange={(e) => setSlippageTolerance(e.target.value)}
-                className="p-1 bg-transparent border border-[#242626] rounded text-white w-20"
-                step="0.1"
-              />
-              <span className="text-[#aeb3b6]">%</span>
-            </div>
-          </div>
-        )}
+        <div className="flex w-full gap-2 items-center justify-between">
+          <button onClick={() => setAmountFrom('0.1')} className="bg-gray-40 rounded-md p-2 text-sm">
+            0.1 ETH
+          </button>
+          <button onClick={() => setAmountFrom('0.25')} className="bg-gray-40 rounded-md p-2 text-sm">
+            0.25 ETH
+          </button>
+          <button onClick={() => setAmountFrom('0.5')} className="bg-gray-40 rounded-md p-2 text-sm">
+            0.5 ETH
+          </button>
+          <button onClick={() => setAmountFrom('1')} className="bg-gray-40 rounded-md p-2 text-sm">
+            1 ETH
+          </button>
+          <button onClick={() => setAmountFrom('5')} className="bg-gray-40 rounded-md p-2 text-sm">
+            5 ETH
+          </button>
+        </div>
 
-        <Card className="bg-[#1b1c1d] border-0">
+        <Card className="bg-gray-50 border-2 border-gray-20">
           <CardContent className="p-4 flex justify-between items-center">
             <div>
               <p className="text-left text-[#aeb3b6] text-sm">FROM</p>
@@ -443,7 +450,7 @@ const BuySellCard = () => {
                 placeholder="0"
                 value={amountFrom}
                 onChange={handleFromChange}
-                className={`appearance-none bg-transparent border-0 p-0 text-3xl w-100 focus-visible:ring-0 [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none `}
+                className={`appearance-none bg-transparent border-1 p-0 text-3xl w-100 focus-visible:ring-0 [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none `}
                 style={{
                   minWidth: '140px',
                   width: `${amountTo.toString().length + 2}ch`,
@@ -481,7 +488,7 @@ const BuySellCard = () => {
           </CardContent>
         </Card>
 
-        <Card className="bg-[#1b1c1d] border-0">
+        <Card className="bg-gray-50 border-2 border-gray-20">
           <CardContent className="p-4 flex justify-between items-center">
             <div>
               <p className="text-left  text-[#aeb3b6] text-sm">TO</p>
@@ -524,9 +531,13 @@ const BuySellCard = () => {
             <p className="lg:text-lg md:text-md sm:text-sm">-</p>
           </div>
         </div> */}
+        <div className="flex justify-between items-start">
+          <p className="text-sm">Slippage</p>
+          <p className="text-sm">{slippageTolerance}</p>
+        </div>
 
         <Button
-          className="w-full bg-white text-black hover:bg-gray-200"
+          className="w-full bg-teal-50 text-black hover:bg-teal-60"
           onClick={handleSwap}
           disabled={isSwapping}
           style={{ height: '3rem' }}
@@ -536,12 +547,15 @@ const BuySellCard = () => {
         <button
           type="button"
           title="settings"
-          onClick={() => setSlippageOpen(!slippageOpen)}
-          className="p-2 hover:bg-[#1b1c1d] rounded-md flex items-center gap-4"
+          onClick={openSettingModal}
+          className="p-2 hover:bg-[#1b1c1d] rounded-md flex items-center gap-4 text-paleGreen"
         >
-          <Settings2 size={20} />
+          <Settings2 size={20} className="text-paleGreen" />
           Set Slippage
         </button>
+        <ModalWrapper isOpen={isSettingModalOpen} onClose={closeSettingModal}>
+          <SlippageModal onClose={closeSettingModal} setSlippageTolerance={setSlippageTolerance} />
+        </ModalWrapper>
         {/* @devs please don't remove this comented code */}
         {/* <Button
           className="w-full bg-white text-black hover:bg-gray-200 active:scale-95 transition-transform ease-in-out duration-150"

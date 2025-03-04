@@ -24,4 +24,5 @@ export interface FarmPool {
   userInfo: UserInfo;
   unclaimedReward: bigint;
   apr: number;
+  depositTokenName: string;
 }

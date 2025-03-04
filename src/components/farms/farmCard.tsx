@@ -32,7 +32,9 @@ const FarmCard = ({ farm, isLoading }: FarmCardProps) => {
       })
       .replace(' ', '/');
 
-  const description = `Active from ${formatDate(startTimeMs)} until ${formatDate(endTimeMs)}`;
+  const description = `${formatDate(startTimeMs)} - ${formatDate(endTimeMs)}`;
+  // const description = `Active from ${formatDate(startTimeMs)} until ${formatDate(endTimeMs)}`;
+
   const name = `Farm Pool (${depositToken.slice(0, 6)}...)`;
   const aprFormatted = `${apr.toFixed(2)}%`;
   const tvlFormatted = abbreviateNumber(totalStackedUSD);
@@ -60,9 +62,9 @@ const FarmCard = ({ farm, isLoading }: FarmCardProps) => {
                 className="absolute left-[30px] top-0 w-[50px] h-[50px] rounded-full"
               />
             </div>
-            <div className="flex flex-col gap-1">
-              <h2 className="text-xl font-bold">{name}</h2>
-              <p className="text-[#aeb3b6] text-sm">{description}</p>
+            <div className="flex flex-col items-start gap-1">
+              <h2 className="text-xl font-bold">${farm.depositTokenName}</h2>
+              <p className="text-gray-70 text-sm">{description}</p>
             </div>
           </div>
           <Badge
@@ -103,7 +105,6 @@ const FarmCard = ({ farm, isLoading }: FarmCardProps) => {
           </div>
         </div>
       </CardContent>
-
       <Button variant="secondary" className="bg-teal-50 text-white h-14 m-6" disabled={!isActive}>
         <Link
           href={`/dapp/farms/mode/${poolAddress}`}

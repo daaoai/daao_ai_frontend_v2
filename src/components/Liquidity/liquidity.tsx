@@ -102,10 +102,6 @@ const Liquidity = () => {
     return { address, symbol, name };
   };
 
-  console.log(isModalOpen, 'isModalOpen');
-  console.log(token0Decimals, 'token0Decimals');
-  console.log(error, 'error');
-
   // *Getting Quote
 
   const fetchCurrentPrice = async () => {
@@ -645,9 +641,9 @@ const Liquidity = () => {
               <Button
                 variant="ghost"
                 size="sm"
-                className="bg-white text-black text-sm rounded-full p-4 hover:bg-white hover:text-black"
+                className="bg-teal-50 text-black text-sm rounded-md p-4 hover:bg-teal-60 hover:text-black"
               >
-                Add liquidity
+                Manage
               </Button>
             </DialogTrigger>
 

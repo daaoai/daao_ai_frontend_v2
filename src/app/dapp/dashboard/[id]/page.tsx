@@ -1,3 +1,4 @@
+'use client';
 import { PageLayout } from '@/components/page-layout';
 import React, { useState, useEffect } from 'react';
 import FundDetails from '@/components/dashboard/fundcard-details';
@@ -210,7 +211,7 @@ const Dashboard: React.FC = () => {
 
   return (
     <PageLayout title="App" description="main-app" app={true}>
-      <div className={`w-screen overflow-hidden gap-20 flex flex-col justify-center items-center py-16 px-2 lg:px-44`}>
+      <div className={`overflow-hidden gap-20 flex flex-col justify-center items-center py-16 px-2`}>
         <div className="grid gap-2 md:gap-3 lg:grid-cols-[60%_40%] w-full">
           <div className="p-2 sm:p-4 flex items-center justify-center">
             <FundDetails {...props} />
@@ -220,27 +221,27 @@ const Dashboard: React.FC = () => {
           </div>
         </div>
 
-        <div className="w-full flex justify-center lg:justify-start items-center lg:items-start px-8 py-0 my-0">
+        <div className="w-full flex justify-center lg:justify-start items-center lg:items-start px-8 border-2 border-gray-30 pt-8 rounded-md">
           <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
             {/* <TabsList className="h-12 bg-[#1b1c1d] justify-start items-center gap-6 inline-flex mb-6"> */}
             <TabsList className="h-12  justify-start items-center gap-6 mb-6 flex">
               <TabsTrigger
                 value="trades"
-                className="px-4 py-3 rounded border justify-center items-center gap-2 flex transition-all 
-               data-[state=active]:bg-green-400  data-[state=inactive]:bg-gray-300 data-[state=inactive]:text-black data-[state=active]:border-black 
+                className="px-4 py-2 rounded border justify-center items-center gap-2 flex transition-all 
+               data-[state=active]:bg-teal-50  data-[state=inactive]:bg-gray-300 data-[state=inactive]:text-black data-[state=active]:border-black 
                data-[state=active]:text-black data-[state=active]:text-xl 
                bg-[#27292a] text-[#aeb3b6] text-lg"
               >
-                <span className="font-semibold font-['Work Sans'] tracking-tight">Trades</span>
+                <span className="font-normal text-sm font-rubik tracking-tight">Trades</span>
               </TabsTrigger>
               <TabsTrigger
                 value="assets"
-                className="px-4 py-3 rounded justify-center items-center gap-2 flex transition-all 
-                data-[state=active]:bg-green-400 data-[state=active]:border-black data-[state=inactive]:bg-gray-300 data-[state=inactive]:text-black
+                className="px-4 py-2 rounded justify-center items-center gap-2 flex transition-all 
+                data-[state=active]:bg-teal-50 data-[state=active]:border-black data-[state=inactive]:bg-gray-300 data-[state=inactive]:text-black
                data-[state=active]:text-black data-[state=active]:text-xl 
                bg-[#27292a] text-[#aeb3b6] text-lg"
               >
-                <span className="font-semibold font-['Work Sans'] tracking-tight">Assets</span>
+                <span className="font-normal text-sm font-rubik tracking-tight">Assets</span>
               </TabsTrigger>
             </TabsList>
 

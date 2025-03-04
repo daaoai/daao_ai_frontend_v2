@@ -63,7 +63,7 @@ const AppHome: React.FC = () => {
 
   return (
     <PageLayout title="App" description="main-app" app={true}>
-      <div className="relative min-h-screen w-screen overflow-hidden">
+      <div className="relative min-h-screen overflow-hidden">
         <div className="app_main_container">
           <div className="hero_section_main_container">
             <div className="hero_section_container">

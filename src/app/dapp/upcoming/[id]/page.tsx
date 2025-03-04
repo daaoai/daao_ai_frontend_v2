@@ -50,7 +50,7 @@ const Upcoming: React.FC = () => {
 
   return (
     <PageLayout title="App" description="main-app" app={true}>
-      <div className={`w-screen overflow-hidden gap-20 flex flex-col justify-center items-center py-16 px-2 lg:px-44`}>
+      <div className={`overflow-hidden gap-20 flex flex-col justify-center items-center py-16 px-2`}>
         <div className="grid md:grid-cols-[55%_45%] gap-6 lg:gap-8">
           <UpcomingFunds {...props} />
           <BurnCard {...props} />

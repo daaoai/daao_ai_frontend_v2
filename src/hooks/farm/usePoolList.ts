@@ -88,6 +88,13 @@ const usePoolList = () => {
             functionName: 'decimals',
           })),
         });
+
+        const depositTokenName = (await publicClient?.readContract({
+          address: results[4],
+          abi: CARTEL,
+          functionName: 'name',
+        })) as string;
+
         const decimalResults = decimals?.map((res) => res.result || null) as [number, number];
         const rewardEmmisionUsd =
           Number(formatUnits(results[3] || BigInt(0), decimalResults[0])) * Number(rewardTokenPrice || 0);
@@ -118,6 +125,7 @@ const usePoolList = () => {
           },
           unclaimedReward: userResult[1] || BigInt(0),
           poolAddress,
+          depositTokenName,
           apr,
         };
       }
