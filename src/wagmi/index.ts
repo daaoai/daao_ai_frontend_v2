@@ -1,7 +1,7 @@
 'use client';
 import { POLLING_INTERVAL } from '@/constants/wagmi';
 import { cookieStorage, createConfig, createStorage, http } from 'wagmi';
-import { mode, goerli, sepolia } from 'wagmi/chains';
+import { mode, goerli, sepolia, berachain, monadTestnet } from 'wagmi/chains';
 import { connectorsForWallets } from '@rainbow-me/rainbowkit';
 import {
   frontierWallet,
@@ -33,7 +33,7 @@ const connectors = connectorsForWallets(
 
 export const getWagmiConfig = () => {
   return createConfig({
-    chains: [mode, goerli, sepolia],
+    chains: [mode, goerli, sepolia, berachain, monadTestnet],
     storage: createStorage({
       storage: cookieStorage,
     }),
@@ -43,6 +43,8 @@ export const getWagmiConfig = () => {
       [mode.id]: http(),
       [goerli.id]: http(),
       [sepolia.id]: http(),
+      [monadTestnet.id]: http(),
+      [berachain.id]: http(),
     },
     ssr: true,
     connectors,
