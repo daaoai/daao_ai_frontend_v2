@@ -19,16 +19,15 @@ export default [
     rules: {
       // Convert errors to warnings
       // '@typescript-eslint/no-unused-vars': 'error',
-
       // Other rules from your previous config
-      'prefer-const': 'error',
-      'no-var': 'error',
+      // 'prefer-const': 'error',
+      // 'no-var': 'error',
       // 'object-shorthand': 'error',
-      'quote-props': ['error', 'as-needed'],
-      'react/jsx-fragments': ['warn', 'syntax'],
-      'react/react-in-jsx-scope': 'off',
-      'react/prop-types': 'off',
-      '@typescript-eslint/no-explicit-any': 'off',
+      // 'quote-props': ['error', 'as-needed'],
+      // 'react/jsx-fragments': ['warn', 'syntax'],
+      // 'react/react-in-jsx-scope': 'off',
+      // 'react/prop-types': 'off',
+      // '@typescript-eslint/no-explicit-any': 'off',
     },
     settings: {
       react: {

@@ -151,7 +151,7 @@ const FundDetails: React.FC<FundDetailsProps> = (props) => {
         >
           Manage
         </button>
-        <ModalWrapper isOpen={isLiquidityModalOpen} onClose={closeLiquidityModalOpen} className="max-w-[56rem]">
+        <ModalWrapper isOpen={isLiquidityModalOpen} onClose={closeLiquidityModalOpen} className="!max-w-[56rem]">
           <Liquidity onClose={closeLiquidityModalOpen} />
         </ModalWrapper>
         <div className="flex flex-col gap-2">
