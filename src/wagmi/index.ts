@@ -28,7 +28,7 @@ const connectors = connectorsForWallets(
       ],
     },
   ],
-  { appName: 'Daao.ai', projectId: process.env.NEXT_PUBLIC_PROJECT_ID || '' },
+  { appName: 'Daao.ai', projectId: '762399822f3c6326e60b27c2c2085d52' || '' },
 );
 
 export const getWagmiConfig = () => {
