@@ -94,34 +94,37 @@ const HomePage: NextPage = () => {
         id: '179',
         title: 'To Be Announced',
         token: 'TBA',
-        status: 'live',
+        status: 'soon',
         imgSrc: FUND_CARD_PLACEHOLDER_IMAGE,
       },
-      {
-        id: '180',
-        title: 'To Be Announced',
-        token: 'TBA',
-        status: 'live',
-        imgSrc: FUND_CARD_PLACEHOLDER_IMAGE,
-      },
+    ];
+  };
+
+  const getUpcomingFunds = (): Fund[] => {
+    return [
       {
         id: '181',
-        title: 'To Be Announced',
-        token: 'TBA',
-        status: 'live',
+        title: 'Coming Soon',
+        status: 'soon',
         imgSrc: FUND_CARD_PLACEHOLDER_IMAGE,
       },
       {
         id: '182',
-        title: 'To Be Announced',
-        token: 'TBA',
-        status: 'live',
+        title: 'Coming Soon',
+        status: 'soon',
+        imgSrc: FUND_CARD_PLACEHOLDER_IMAGE,
+      },
+      {
+        id: '183',
+        title: 'Coming Soon',
+        status: 'soon',
         imgSrc: FUND_CARD_PLACEHOLDER_IMAGE,
       },
     ];
   };
 
   const FEATURED_FUNDS: Fund[] = getFeaturedFunds();
+  const UPCOMING_FUNDS: Fund[] = getUpcomingFunds();
 
   const onFundClick = (fundId: string, type: 'dashboard' | 'upcoming') => {
     if (!isConnected) {
@@ -176,6 +179,11 @@ const HomePage: NextPage = () => {
       <div className="my-24">
         <p className="text-white font-regular text-5xl">&lt;&lt;&lt;Featured Funds&gt;&gt;&gt;</p>
         <FundSection funds={FEATURED_FUNDS} onFundClick={(fundId) => onFundClick(fundId, 'dashboard')} />
+      </div>
+
+      <div className="my-24">
+        <p className="text-white font-regular text-5xl">&lt;&lt;&lt;Upcoming Funds&gt;&gt;&gt;</p>
+        <FundSection funds={UPCOMING_FUNDS} onFundClick={(fundId) => onFundClick(fundId, 'dashboard')} />
       </div>
 
       <div className="relative">
