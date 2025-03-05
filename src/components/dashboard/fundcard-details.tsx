@@ -21,6 +21,8 @@ const FundDetails: React.FC<FundDetailsProps> = (props) => {
 
   const { daoBalance } = useFundContext();
   const [marketCap, setMarketCap] = useState<number | null>(null);
+  const [liquidity, setLiquidity] = useState<number | null>(null);
+  const [volume, setVolume] = useState<number | null>(null);
   const [daoTokenAddress, setDaoTokenAddress] = useState('');
   const [price, setPrice] = useState<number | null>(null);
   const { setPriceUsd } = useFundContext();
@@ -100,7 +102,11 @@ const FundDetails: React.FC<FundDetailsProps> = (props) => {
           // setPriceUsd(23)
           // const marketCap = (Number(data[0].priceUsd) * 10 ** 9).toFixed(0)
           const marketCap = Number(data[0].marketCap).toFixed(0);
+          const liq = Number(data[0].liquidity?.usd).toFixed(0);
+          const volume = Number(data[0].volume?.h24).toFixed(0);
           setMarketCap(Number(marketCap));
+          setLiquidity(Number(liq));
+          setVolume(Number(volume));
           const percentageChange = Number(data?.[0]?.priceChange?.h24);
           const tokenChangeValue = calculateTokenChange(Number(marketCap), percentageChange);
           setTokenChange({
@@ -154,18 +160,20 @@ const FundDetails: React.FC<FundDetailsProps> = (props) => {
         <ModalWrapper isOpen={isLiquidityModalOpen} onClose={closeLiquidityModalOpen} className="!max-w-[56rem]">
           <Liquidity onClose={closeLiquidityModalOpen} />
         </ModalWrapper>
-        <div className="flex flex-col gap-2">
-          <p className="text-gray-70 font-rubik text-sm font-normal">LP VALUE</p>
-          <p>12</p>
-        </div>
-        <div className="text-gray-70 font-rubik text-sm font-normal">
-          <p>LP BALANCE</p>
-          <p>12</p>
-        </div>
-        <div className="text-gray-70 font-rubik text-sm font-normal">
-          <p>24H VOLUME</p>
-          <p>12</p>
-        </div>
+        {/* 
+          <div className="flex flex-col gap-2">
+            <p className="text-gray-70 font-rubik text-sm font-normal">LP VALUE</p>
+            <p>12</p>
+          </div>
+          <div className="text-gray-70 font-rubik text-sm font-normal">
+            <p>LP BALANCE</p>
+            <p>12</p>
+          </div>
+          <div className="text-gray-70 font-rubik text-sm font-normal">
+            <p>24H VOLUME</p>
+            <p>12</p>
+          </div>
+         */}
       </div>
       <div className="flex justify-between w-full mb-4">
         <div className="w-fit flex gap-x-2 items-center">
@@ -219,7 +227,7 @@ const FundDetails: React.FC<FundDetailsProps> = (props) => {
         </p>
       </div>
       <div className="w-full">
-        <PoolDetailCard />
+        <PoolDetailCard marketCap={marketCap || 0} liquidity={liquidity || 0} volume={volume || 0} />
       </div>
 
       {/* 
