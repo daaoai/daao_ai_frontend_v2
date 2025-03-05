@@ -21,7 +21,7 @@ const FarmTabs: React.FC<FarmTabsProps> = ({ activeFarms, inactiveFarms, isLoadi
     }
     if (farms.length > 0) {
       return (
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 justify-items-start">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 justify-items-start relative z-20">
           {farms.map((farm, index) => (
             <FarmCard key={`${farm.poolAddress}-${index}`} farm={farm} isLoading={isLoading} />
           ))}

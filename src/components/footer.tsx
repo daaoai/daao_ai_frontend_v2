@@ -32,8 +32,7 @@ const FooterTopContent: React.FC<FooterProps> = ({ app }) => {
     <div className="flex flex-col md:flex-row justify-between items-center gap-4 w-full p-4 border-b border-[#212121]">
       {/* logo */}
       <div className="flex flex-col justify-center items-center text-muted-foreground">
-        <Image src = "/assets/daao-logo.svg" alt = "logo" width = {200} height = {200} />
-
+        <Image src="/assets/daao-logo.svg" alt="logo" width={200} height={200} />
       </div>
 
       {/* Footer Links (Terms, Cookie Policy, etc.) */}
@@ -92,7 +91,7 @@ export const FooterIconLink: React.FC<FooterData> = ({ href, label, children }) 
 
 const FooterContainer: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   return (
-    <footer className="bg-white/50 dark:bg-black/50 rounded-t-xl px-6 pb-10 pt-20 md:p-16 md:py-16 flex flex-col lg:flex-row items-start justify-between gap-4">
+    <footer className="bg-black/50 rounded-t-xl px-6 pb-10 pt-20 md:p-16 md:py-16 flex flex-col lg:flex-row items-start justify-between gap-4">
       {children}
     </footer>
   );

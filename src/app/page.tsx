@@ -23,6 +23,7 @@ import { useRouter } from 'next/navigation';
 import { useToast } from '@/hooks/use-toast';
 import { ConnectWalletButton } from '@/components/connect-button';
 import PoolDetailCard from '@/components/poolDetailCard';
+import FAQDaao from '@/components/faqDaao';
 
 const HomePage: NextPage = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -133,41 +134,65 @@ const HomePage: NextPage = () => {
 
   return (
     <PageLayout>
-      <div className="flex justify-between gap-20 w-full pt-24 items-center">
-        <Image src="/assets/defaiCartel.svg" alt="defai-cartel" width={400} height={400} />
-        <div className="flex flex-col items-start gap-6">
-          <p className="text-5xl font-sora font-medium text-white">Defai Cartel</p>
-          <Link
-            href="https://velodrome.finance/swap?from=0xdfc7c877a950e49d2610114102175a06c2e3167a&to=0x98e0ad23382184338ddcec0e13685358ef845f30&chain0=34443&chain1=34443"
-            className="text-teal-60 font-normal"
-          >
-            Trade On Velodrome
-          </Link>
-          <p className="text-gray-10 font-normal font-rubik text-lg text-left">
-            Dorem ipsum dolor sit amet, consectetur adipiscing elit. Nunc vulputate libero et velit interdum, ac aliquet
-            odio mattis. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos.
-            Curabitur tempus urna at turpis condimentum lobortis.
-          </p>
-          <PoolDetailCard />
+      <div className="relative">
+        {/* Background image */}
+        <div className="absolute inset-0 z-0 top-[20rem] pt-[22rem]">
+          <Image
+            src="/assets/brand.svg"
+            alt="Background Asset"
+            layout="fill"
+            objectFit="cover"
+            className=" absolute opacity-80"
+          />
+        </div>
+
+        {/* Foreground content */}
+        <div className="relative z-10 flex justify-between gap-20 w-full pt-24 items-center">
+          <Image src="/assets/defaiCartel.svg" alt="defai-cartel" width={400} height={400} />
+          <div className="flex flex-col items-start gap-6">
+            <p className="text-5xl font-sora font-medium text-white">Defai Cartel</p>
+            <Link
+              href="https://velodrome.finance/swap?from=0xdfc7c877a950e49d2610114102175a06c2e3167a&to=0x98e0ad23382184338ddcec0e13685358ef845f30&chain0=34443&chain1=34443"
+              className="text-teal-60 font-normal"
+            >
+              Trade On Velodrome
+            </Link>
+            <p className="text-gray-10 font-normal font-rubik text-lg text-left">
+              Dorem ipsum dolor sit amet, consectetur adipiscing elit. Nunc vulputate libero et velit interdum, ac
+              aliquet odio mattis. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos
+              himenaeos. Curabitur tempus urna at turpis condimentum lobortis.
+            </p>
+            <PoolDetailCard />
+          </div>
         </div>
       </div>
+
       <div className="my-24">
         <p className="text-white font-regular text-5xl">&lt;&lt;&lt;Featured Funds&gt;&gt;&gt;</p>
         <FundSection funds={FEATURED_FUNDS} onFundClick={(fundId) => onFundClick(fundId, 'dashboard')} />
       </div>
 
-      <div className="flex flex-col gap-16 items-center justify-center">
-        <Image src="/assets/circle-image.svg" alt="defai-cartel" width={300} height={400} />
-        <div className="flex flex-col gap-8 items-center">
-          <p className="text-teal-40 font-normal font-sora text-4xl">Available to everyone</p>
-          <p className="text-7xl font-sora font-normal text-white max-w-4xl">Launch your next fund on D.A.A.O</p>
-          {/* <div className='bg-'> */}
-          <button className="text-black w-fit bg-white rounded-full px-4 py-2">Launch A DAO</button>
-          {/* </div> */}
+      <div className="relative">
+        <div className="absolute inset-0 z-0">
+          <Image src="/assets/brand.svg" alt="Background Asset" layout="fill" className=" absolute opacity-90" />
+        </div>
+        <div className="flex flex-col gap-16 items-center justify-center">
+          <Image src="/assets/circle-image.svg" alt="defai-cartel" width={300} height={400} />
+          <div className="flex flex-col gap-8 items-center z-10">
+            <p className="text-teal-40 font-normal font-sora text-4xl">Available to everyone</p>
+            <p className="text-7xl font-sora font-normal text-white max-w-4xl">Launch your next fund on D.A.A.O</p>
+            {/* <div className='bg-'> */}
+            <Link href="https://t.me/arcanelabs" className="text-black w-fit bg-white rounded-full px-4 py-2">
+              Launch A DAO
+            </Link>
+            {/* </div> */}
+          </div>
         </div>
       </div>
-      <div>
-        <p>Faqs</p>
+
+      <div className="w-8/12 max-w-xl flex items-center flex-col mt-12">
+        <p className="text-center text-3xl font-bold">FAQs</p>
+        <FAQDaao />
       </div>
 
       {/* <div className="sm:my-[-40px] relative flex justify-center items-center h-max">
