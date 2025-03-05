@@ -4,12 +4,9 @@ import { useFundContext } from './FundContext';
 import Liquidity from '../Liquidity/liquidity';
 import { ethers } from 'ethers';
 import { CONTRACT_ABI } from '@/daao-sdk/abi/abi';
-import { Card, CardContent, CardHeader, CardTitle } from '@/shadcn/components/ui/card';
-import { commaSeparator } from '@/utils/string';
+import { Card } from '@/shadcn/components/ui/card';
 import { shortenAddress } from '@/utils/address';
-import { handleCopy } from '@/utils/copy';
 import type { FundDetailsProps } from '@/types';
-import { Copy } from 'lucide-react';
 import { daoAddress } from '@/constants/addresses';
 import ClickToCopy from '../copyToClipboard';
 import { telegramLink, twitterLink } from '@/constants/links';
@@ -154,7 +151,7 @@ const FundDetails: React.FC<FundDetailsProps> = (props) => {
         >
           Manage
         </button>
-        <ModalWrapper isOpen={isLiquidityModalOpen} onClose={closeLiquidityModalOpen} className="max-w-6xl">
+        <ModalWrapper isOpen={isLiquidityModalOpen} onClose={closeLiquidityModalOpen} className="max-w-[56rem]">
           <Liquidity onClose={closeLiquidityModalOpen} />
         </ModalWrapper>
         <div className="flex flex-col gap-2">
