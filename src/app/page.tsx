@@ -28,7 +28,9 @@ import FAQDaao from '@/components/faqDaao';
 const HomePage: NextPage = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [price, setPrice] = useState<number | null>(0);
-  const [marketCap, setMarketCap] = useState<number | null>(0);
+  const [marketCap, setMarketCap] = useState<number | null>(null);
+  const [liquidity, setLiquidity] = useState<number | null>(null);
+  const [volume, setVolume] = useState<number | null>(null);
 
   const { isConnected } = useAccount();
   const router = useRouter();
@@ -57,7 +59,11 @@ const HomePage: NextPage = () => {
         if (data && Array.isArray(data) && data[0]) {
           setPrice(data[0].priceUsd);
           const marketCap = Number(data[0].marketCap).toFixed(0);
+          const liq = Number(data[0].liquidity?.usd).toFixed(0);
+          const volume = Number(data[0].volume?.h24).toFixed(0);
           setMarketCap(Number(marketCap));
+          setLiquidity(Number(liq));
+          setVolume(Number(volume));
         } else {
           console.warn('Market data not in expected format.');
         }
@@ -162,7 +168,7 @@ const HomePage: NextPage = () => {
               aliquet odio mattis. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos
               himenaeos. Curabitur tempus urna at turpis condimentum lobortis.
             </p>
-            <PoolDetailCard />
+            <PoolDetailCard marketCap={marketCap || 0} liquidity={liquidity || 0} volume={volume || 0} />
           </div>
         </div>
       </div>
