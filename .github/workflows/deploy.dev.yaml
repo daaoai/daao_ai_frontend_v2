@@ -15,6 +15,8 @@ jobs:
         uses: appleboy/ssh-action@master
         env:
           PROJECT_DIR: ${{ secrets.PROJECT_DIR }}
+          NEXT_PUBLIC_ENV: ${{ secrets.NEXT_PUBLIC_ENV }}
+          NEXT_PUBLIC_PROJECT_ID: ${{ secrets.NEXT_PUBLIC_PROJECT_ID }}
         with:
           host: ${{ secrets.DEV_EC2_HOST }}
           username: ${{ secrets.EC2_USERNAME }}
@@ -37,6 +39,8 @@ jobs:
         uses: appleboy/ssh-action@master
         env:
           PROJECT_DIR: ${{ secrets.PROJECT_DIR }}
+          NEXT_PUBLIC_ENV: ${{ secrets.NEXT_PUBLIC_ENV }}
+          NEXT_PUBLIC_PROJECT_ID: ${{ secrets.NEXT_PUBLIC_PROJECT_ID }}
         with:
           host: ${{ secrets.DEV_EC2_HOST }}
           username: ${{ secrets.EC2_USERNAME }}
@@ -59,6 +63,8 @@ jobs:
         uses: appleboy/ssh-action@master
         env:
           PROJECT_DIR: ${{ secrets.PROJECT_DIR }}
+          NEXT_PUBLIC_ENV: ${{ secrets.NEXT_PUBLIC_ENV }}
+          NEXT_PUBLIC_PROJECT_ID: ${{ secrets.NEXT_PUBLIC_PROJECT_ID }}
         with:
           host: ${{ secrets.DEV_EC2_HOST }}
           username: ${{ secrets.EC2_USERNAME }}
@@ -81,6 +87,8 @@ jobs:
         uses: appleboy/ssh-action@master
         env:
           PROJECT_DIR: ${{ secrets.PROJECT_DIR }}
+          NEXT_PUBLIC_ENV: ${{ secrets.NEXT_PUBLIC_ENV }}
+          NEXT_PUBLIC_PROJECT_ID: ${{ secrets.NEXT_PUBLIC_PROJECT_ID }}
         with:
           host: ${{ secrets.DEV_EC2_HOST }}
           username: ${{ secrets.EC2_USERNAME }}
