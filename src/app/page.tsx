@@ -81,7 +81,7 @@ const HomePage: NextPage = () => {
         title: 'DeFAI Cartel',
         token: 'CARTEL',
         status: 'trading',
-        imgSrc: CURRENT_DAO_IMAGE,
+        imgSrc: '/assets/defaiCartel.svg',
       },
       {
         id: '178',

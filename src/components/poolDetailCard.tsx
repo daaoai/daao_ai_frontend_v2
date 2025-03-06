@@ -2,7 +2,7 @@ import { abbreviateNumber } from '@/utils/numbers';
 
 const PoolDetailCard = ({ marketCap, liquidity, volume }: { marketCap: number; liquidity: number; volume: number }) => {
   return (
-    <div className="flex space-x-8 bg-black text-white p-6 shadow-md w-full">
+    <div className="flex space-x-8 bg-black text-white shadow-md w-full">
       <div className="flex flex-col gap-2 border-t border-gray-20 pt-2 items-start justify-start">
         <p className="text-lightYellow font-rubik text-base font-normal">MARKETCAP</p>
         <p className="text-2xl text-white font-normal">${abbreviateNumber(marketCap)}</p>

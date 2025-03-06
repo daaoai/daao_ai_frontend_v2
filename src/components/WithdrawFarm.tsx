@@ -183,7 +183,7 @@ const WithdrawFarms: React.FC<WithdrawProps> = ({ onClose, poolAddress, poolData
         <div className="flex flex-col gap-4">
           <p className="text-white">
             Tokens Staked: {formatUnits(poolData.userInfo.stackedAmount, 18)}
-            CARTL
+            CARTEL
           </p>
 
           {withdrawTimeLeft && <p className="text-yellow-400">Withdrawal available in: {withdrawTimeLeft}</p>}

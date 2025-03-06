@@ -26,11 +26,11 @@ const FundCard: React.FC<FundCardProps> = (props) => {
         <div className="self-stretch justify-between items-center inline-flex">
           <div className="text-white text-lg md:text-xl font-semibold">{props.title}</div>
         </div>
-        <div className="self-stretch justify-between items-center inline-flex">
+        <div className="self-stretch items-center inline-flex">
           {props.token && <div className="text-center text-white text-lg md:text-xl font-bold">${props.token}</div>}
           {props.status && (
             <div
-              className={`px-2 py-1 rounded-sm justify-center items-center gap-2 flex ${statusStyles[props.status]}`}
+              className={`ml-auto px-2 py-1 rounded-sm flex justify-center items-center gap-2 ${statusStyles[props.status]}`}
             >
               <div className="text-center text-xs md:text-sm font-semibold">
                 {props.status.charAt(0).toUpperCase() + props.status.slice(1)}
