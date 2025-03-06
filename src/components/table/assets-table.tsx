@@ -32,12 +32,12 @@ export function AssetTable({ columns, data }: AssetTableProps) {
   });
 
   return (
-    <div className="space-y-4 text-center rounded-md border-none w-full pb-4">
+    <div className="space-y-4 text-center rounded-md border-none  pb-4 max-w-[18rem]  sm:max-w-full  lg:max-full w-full overflow-x-auto">
       {/* Table */}
       <Table>
         <TableHeader>
           {table.getHeaderGroups().map((headerGroup) => (
-            <TableRow key={headerGroup.id} className={`border-none mb-2 text-yellow text-semibold`}>
+            <TableRow key={headerGroup.id} className={`border-none mb-2 text-yellow text-semibold overflow-x-scroll`}>
               {headerGroup.headers.map((header) => (
                 <TableHead key={header.id} className={`mb-2 text-yellow text-normal text-left text-xl`}>
                   {header.isPlaceholder ? null : flexRender(header.column.columnDef.header, header.getContext())}
@@ -52,7 +52,7 @@ export function AssetTable({ columns, data }: AssetTableProps) {
               <TableRow key={row.id} className="!border-none">
                 {row.getVisibleCells().map((cell) => {
                   return (
-                    <TableCell key={cell.id} className="text-left text-base md:text-lg w-min ">
+                    <TableCell key={cell.id} className="text-left text-base md:text-lg min-w-32">
                       <div className="flex justify-start items-center gap-2">
                         {cell.column.id === 'token' && (
                           <Image

@@ -216,7 +216,7 @@ const FundDetails: React.FC<FundDetailsProps> = (props) => {
           </a>
         </div>
       </div>
-      <div className="flex w-full flex-col items-start gap-y-3">
+      <div className="flex w-full flex-col items-start gap-y-3 pb-6">
         <h2 className="text-sm sm:text-base md:text-lg lg:text-xl font-semibold">Defai Cartel</h2>
         <p className=" sm:text-xs lg:text-sm text-left text-[#AEB3B6]">
           DeFAI Venture DAO is a DeFAI Investment DAO dedicated to advancing the DeFAI movement by strategically

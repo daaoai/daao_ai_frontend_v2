@@ -159,7 +159,7 @@ const HomePage: NextPage = () => {
         </div>
 
         {/* Foreground content */}
-        <div className="relative z-10 flex justify-between gap-20 w-full pt-24 items-center">
+        <div className="relative z-10 flexflex justify-between gap-20 w-full pt-24 items-center">
           <Image
             src="/assets/defaiCartel.svg"
             alt="defai-cartel"
