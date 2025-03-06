@@ -219,11 +219,7 @@ const FundDetails: React.FC<FundDetailsProps> = (props) => {
       <div className="flex w-full flex-col items-start gap-y-3">
         <h2 className="text-sm sm:text-base md:text-lg lg:text-xl font-semibold">Defai Cartel</h2>
         <p className=" sm:text-xs lg:text-sm text-left text-[#AEB3B6]">
-          lorem ipsum dolor sit amet Lorem ipsum dolor sit amet consectetur adipisicing elit. Libero, ipsam inventore
-          non illum corrupti, quibusdam sequi dolorum corporis ipsum ea porro ad soluta qui recusandae. Voluptatem
-          officia labore recusandae animi inventore alias eum maxime, dolorum illo commodi totam nobis soluta veniam
-          ratione sit nesciunt quae at facilis mollitia ab maiores? Eligendi, omnis nemo? Exercitationem repellat
-          veritatis, rem, dolorem ipsa non, nesciunt in quia quam vel debitis. Cupiditate temporibus deleniti, mollitia
+          Where autonomous agents meet decentralized innovation, driving seamless collaboration for a smarter future.
         </p>
       </div>
       <div className="w-full">

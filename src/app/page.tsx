@@ -167,9 +167,8 @@ const HomePage: NextPage = () => {
               Trade On Velodrome
             </Link>
             <p className="text-gray-10 font-normal font-rubik text-lg text-left">
-              Dorem ipsum dolor sit amet, consectetur adipiscing elit. Nunc vulputate libero et velit interdum, ac
-              aliquet odio mattis. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos
-              himenaeos. Curabitur tempus urna at turpis condimentum lobortis.
+              Where autonomous agents meet decentralized innovation, driving seamless collaboration for a smarter
+              future.
             </p>
             <PoolDetailCard marketCap={marketCap || 0} liquidity={liquidity || 0} volume={volume || 0} />
           </div>
