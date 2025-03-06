@@ -48,7 +48,7 @@ export function FundSection({ title, subtitle, funds, onFundClick }: FundSection
                 >
                   <FundCard
                     title={fund.title}
-                    token={fund.token}
+                    token={fund.token || ''}
                     uId={fund.id}
                     status={fund.status}
                     imgSrc={fund.imgSrc}
