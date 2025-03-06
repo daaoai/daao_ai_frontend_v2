@@ -445,28 +445,28 @@ const BuySellCard = () => {
 
         <div className="flex w-full gap-2 items-center justify-between">
           <button
-            onClick={() => setAmountFrom('100')}
-            className="bg-gray-40 rounded-md p-2 text-sm active:scale-95 transition-transform ease-in-out duration-150"
-          >
-            100 Mode
-          </button>
-          <button
-            onClick={() => setAmountFrom('500')}
-            className="bg-gray-40 rounded-md p-2 text-sm active:scale-95 transition-transform ease-in-out duration-150"
-          >
-            500 Mode
-          </button>
-          <button
             onClick={() => setAmountFrom('1000')}
             className="bg-gray-40 rounded-md p-2 text-sm active:scale-95 transition-transform ease-in-out duration-150"
           >
             1000 Mode
           </button>
           <button
-            onClick={() => setAmountFrom('5000')}
+            onClick={() => setAmountFrom('10000')}
             className="bg-gray-40 rounded-md p-2 text-sm active:scale-95 transition-transform ease-in-out duration-150"
           >
-            5000 Mode
+            10000 Mode
+          </button>
+          <button
+            onClick={() => setAmountFrom('50000')}
+            className="bg-gray-40 rounded-md p-2 text-sm active:scale-95 transition-transform ease-in-out duration-150"
+          >
+            50000 Mode
+          </button>
+          <button
+            onClick={() => setAmountFrom('10000')}
+            className="bg-gray-40 rounded-md p-2 text-sm active:scale-95 transition-transform ease-in-out duration-150"
+          >
+            10000 Mode
           </button>
         </div>
 

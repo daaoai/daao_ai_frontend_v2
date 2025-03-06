@@ -167,8 +167,10 @@ const HomePage: NextPage = () => {
               Trade On Velodrome
             </Link>
             <p className="text-gray-10 font-normal font-rubik text-lg text-left">
-              Where autonomous agents meet decentralized innovation, driving seamless collaboration for a smarter
-              future.
+              DeFAI Venture DAO is a DeFAI Investment DAO dedicated to advancing the DeFAI movement by strategically
+              investing in AI Agents and AI-focused DAOs on Mode. As a collective force in decentralized AI finance,
+              $CARTEL empowers the AI-driven movement on Mode, fostering the growth of autonomous, AI-powered
+              ecosystems.
             </p>
             <PoolDetailCard marketCap={marketCap || 0} liquidity={liquidity || 0} volume={volume || 0} />
           </div>

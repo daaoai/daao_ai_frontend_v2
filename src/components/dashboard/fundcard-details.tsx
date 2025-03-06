@@ -219,7 +219,9 @@ const FundDetails: React.FC<FundDetailsProps> = (props) => {
       <div className="flex w-full flex-col items-start gap-y-3">
         <h2 className="text-sm sm:text-base md:text-lg lg:text-xl font-semibold">Defai Cartel</h2>
         <p className=" sm:text-xs lg:text-sm text-left text-[#AEB3B6]">
-          Where autonomous agents meet decentralized innovation, driving seamless collaboration for a smarter future.
+          DeFAI Venture DAO is a DeFAI Investment DAO dedicated to advancing the DeFAI movement by strategically
+          investing in AI Agents and AI-focused DAOs on Mode. As a collective force in decentralized AI finance, $CARTEL
+          empowers the AI-driven movement on Mode, fostering the growth of autonomous, AI-powered ecosystems.{' '}
         </p>
       </div>
       <div className="w-full">
