@@ -21,7 +21,9 @@ const InfoRow = ({ label, value, mode }: InfoRowProps) => {
       >
         <span className="text-muted-foreground">{label}</span>
         <div className="flex items-center gap-2">
-          <span className="text-right text-lightYellow text-foreground">{mode ? shortenAddress(value) : value}</span>
+          {value && (
+            <span className="text-right text-lightYellow text-foreground">{mode ? shortenAddress(value) : value}</span>
+          )}
           {mode && (
             <Copy
               className="h-4 w-4 text-muted-foreground hover:text-foreground transition-colors"

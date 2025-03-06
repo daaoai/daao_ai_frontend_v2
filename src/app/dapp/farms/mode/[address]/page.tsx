@@ -13,10 +13,7 @@ import { Skeleton } from '@/shadcn/components/ui/skeleton';
 import { Badge } from '@/shadcn/components/ui/badge';
 import ClickToCopy from '@/components/copyToClipboard';
 import AnimatedSkeleton from '@/components/animatedSkeleton';
-function shortenAddress(addr: string): string {
-  if (!addr) return '';
-  return addr.slice(0, 6) + '...' + addr.slice(-4);
-}
+import { shortenAddress } from '@/utils/address';
 
 const FarmStake = () => {
   const params = useParams();

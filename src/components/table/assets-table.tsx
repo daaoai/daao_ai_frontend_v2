@@ -5,7 +5,7 @@ import { ColumnDef, flexRender, getCoreRowModel, useReactTable, getPaginationRow
 
 type Asset = {
   token: string;
-  // tokenIcon?: string
+  tokenIcon?: string;
   balance: number;
   price: number;
   totalValue: number;

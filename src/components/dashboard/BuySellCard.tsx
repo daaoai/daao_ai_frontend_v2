@@ -479,12 +479,7 @@ const BuySellCard = () => {
                 placeholder="0"
                 value={amountFrom}
                 onChange={handleFromChange}
-                className={`appearance-none bg-transparent border-1 p-0 text-3xl w-100 [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none `}
-                style={{
-                  minWidth: '140px',
-                  width: `${amountTo.toString().length + 2}ch`,
-                  height: '3.5rem',
-                }}
+                className={`appearance-none w-full bg-transparent border-1 p-0 text-3xl w-100 [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none `}
               />
             </div>
             <div className="space-y-2 text-right">
@@ -526,12 +521,7 @@ const BuySellCard = () => {
                 placeholder="0"
                 value={amountTo}
                 onChange={(e) => setAmountTo(Number(e.target.value))}
-                className={`appearance-none bg-transparent p-0 text-3xl w-24 [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none border-0 outline-none`}
-                style={{
-                  minWidth: '140px', // Set a reasonable minimum width
-                  width: `${amountTo.toString().length + 0.2}ch`, // Dynamically adjust width
-                  height: '3.5rem',
-                }}
+                className={`appearance-none w-full bg-transparent p-0 text-3xl [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none border-0 outline-none`}
               />
             </div>
             <div className="space-y-2 text-right">
