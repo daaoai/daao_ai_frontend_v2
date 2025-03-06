@@ -159,7 +159,7 @@ const FarmStake = () => {
          bg-black border-b border-gray-20
          rounded-md shadow-md"
             >
-              <p className="text-teal-70 font-rubik text-lg">Stacked CARTEL</p>
+              <p className="text-teal-70 font-rubik text-lg">Staked CARTEL</p>
               {isPoolDetailsLoading ? (
                 <AnimatedSkeleton className="w-40 h-4" />
               ) : (

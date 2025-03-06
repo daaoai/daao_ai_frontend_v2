@@ -140,6 +140,9 @@ const HomePage: NextPage = () => {
     // Navigate to the fund page if connected
     router.push(`/dapp/${fundId}`);
   };
+  const redirectToDashboard = () => {
+    router.push('/dapp/1');
+  };
 
   return (
     <PageLayout>
@@ -157,7 +160,14 @@ const HomePage: NextPage = () => {
 
         {/* Foreground content */}
         <div className="relative z-10 flex justify-between gap-20 w-full pt-24 items-center">
-          <Image src="/assets/defaiCartel.svg" alt="defai-cartel" width={400} height={400} />
+          <Image
+            src="/assets/defaiCartel.svg"
+            alt="defai-cartel"
+            width={400}
+            height={400}
+            onClick={redirectToDashboard}
+            className="cursor-pointer"
+          />
           <div className="flex flex-col items-start gap-6">
             <p className="text-5xl font-sora font-medium text-white">Defai Cartel</p>
             <Link

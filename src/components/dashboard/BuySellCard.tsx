@@ -403,7 +403,7 @@ const BuySellCard = () => {
   };
 
   return (
-    <Card className="h-full w-full max-w-xl bg-[#0e0e0e] text-white border-none">
+    <Card className="h-fit w-full max-w-xl bg-[#0e0e0e] text-white border-none">
       <CardContent className="p-6 space-y-6">
         <div className="flex items-center justify-between">
           <Tabs value={activeTab} onValueChange={(val) => setActiveTab(val as 'buy' | 'sell')} className="w-full h-12">
@@ -463,10 +463,10 @@ const BuySellCard = () => {
             50000 Mode
           </button>
           <button
-            onClick={() => setAmountFrom('10000')}
+            onClick={() => setAmountFrom('100000')}
             className="bg-gray-40 rounded-md p-2 text-sm active:scale-95 transition-transform ease-in-out duration-150"
           >
-            10000 Mode
+            100000 Mode
           </button>
         </div>
 
