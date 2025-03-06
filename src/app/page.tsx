@@ -148,7 +148,7 @@ const HomePage: NextPage = () => {
     <PageLayout>
       <div className="relative">
         {/* Background image */}
-        <div className="absolute inset-0 z-0 top-[20rem] pt-[22rem]">
+        <div className="absolute inset-0 z-0 top-[22rem] pt-[22rem]">
           <Image
             src="/assets/brand.svg"
             alt="Background Asset"
@@ -187,7 +187,7 @@ const HomePage: NextPage = () => {
         </div>
       </div>
 
-      <div className="my-24">
+      <div className="mb-18 mt-32">
         <p className="text-white font-regular text-5xl">&lt;&lt;&lt;Featured Funds&gt;&gt;&gt;</p>
         <FundSection funds={FEATURED_FUNDS} onFundClick={(fundId) => onFundClick(fundId, 'dashboard')} />
       </div>
@@ -197,9 +197,14 @@ const HomePage: NextPage = () => {
         <FundSection funds={UPCOMING_FUNDS} onFundClick={(fundId) => onFundClick(fundId, 'dashboard')} />
       </div>
 
-      <div className="relative">
-        <div className="absolute inset-0 z-0">
-          <Image src="/assets/brand.svg" alt="Background Asset" layout="fill" className=" absolute opacity-90" />
+      <div className="relative w-full">
+        <div className="absolute inset-0 z-0 -left-[13rem]">
+          <Image
+            src="/assets/brand.svg"
+            alt="Background Asset"
+            layout="fill"
+            className="absolute opacity-90  filter blur-sm"
+          />
         </div>
         <div className="flex flex-col gap-16 items-center justify-center">
           <Image src="/assets/circle-image.svg" alt="defai-cartel" width={300} height={400} />
