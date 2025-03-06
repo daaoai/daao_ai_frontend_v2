@@ -33,7 +33,12 @@ const connectors = connectorsForWallets(
 
 export const getWagmiConfig = () => {
   return createConfig({
-    chains: [mode, goerli, sepolia, berachain, monadTestnet],
+    chains: [
+      mode,
+      //  goerli, sepolia,
+      berachain,
+      monadTestnet,
+    ],
     storage: createStorage({
       storage: cookieStorage,
     }),
@@ -41,8 +46,8 @@ export const getWagmiConfig = () => {
     syncConnectedChain: true,
     transports: {
       [mode.id]: http(),
-      [goerli.id]: http(),
-      [sepolia.id]: http(),
+      // [goerli.id]: http(),
+      // [sepolia.id]: http(),
       [monadTestnet.id]: http(),
       [berachain.id]: http(),
     },
