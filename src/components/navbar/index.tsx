@@ -9,7 +9,8 @@ export const Navbar = () => {
   const pathname = usePathname();
 
   const navLinks = [
-    { name: 'Dashboard', href: '/dapp/dashboard/1' },
+    // { name: 'Dashboard', href: '/dapp/dashboard/1' },
+    { name: 'WhitePaper', href: 'https://docsend.com/view/z9eqsrurcmdky2dn' },
     { name: 'Farms', href: '/dapp/farms' },
     { name: 'Launch DAO', href: 'https://t.me/arcanelabs', external: true },
   ];

@@ -138,7 +138,7 @@ const HomePage: NextPage = () => {
       return;
     }
     // Navigate to the fund page if connected
-    router.push(`/dapp/${type}/${fundId}`);
+    router.push(`/dapp/${fundId}`);
   };
 
   return (

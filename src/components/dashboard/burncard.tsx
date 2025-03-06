@@ -65,7 +65,7 @@ export default function BurnCard(props: UpcomingFundDetailsProps) {
   const checkFinalisedFundraising = async () => {
     await refetch();
     if (fetchedData?.finalisedFundraising) {
-      window.location.href = '/dapp/dashboard/1';
+      window.location.href = '/dapp/1';
     } else {
       toast({
         title: 'Fundraising is not finalised yet',
