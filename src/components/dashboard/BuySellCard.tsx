@@ -448,25 +448,25 @@ const BuySellCard = () => {
             onClick={() => setAmountFrom('1000')}
             className="bg-gray-40 rounded-md p-2 text-sm active:scale-95 transition-transform ease-in-out duration-150"
           >
-            1000 Mode
+            1000 MODE
           </button>
           <button
             onClick={() => setAmountFrom('10000')}
             className="bg-gray-40 rounded-md p-2 text-sm active:scale-95 transition-transform ease-in-out duration-150"
           >
-            10000 Mode
+            10000 MODE
           </button>
           <button
             onClick={() => setAmountFrom('50000')}
             className="bg-gray-40 rounded-md p-2 text-sm active:scale-95 transition-transform ease-in-out duration-150"
           >
-            50000 Mode
+            50000 MODE
           </button>
           <button
             onClick={() => setAmountFrom('100000')}
             className="bg-gray-40 rounded-md p-2 text-sm active:scale-95 transition-transform ease-in-out duration-150"
           >
-            100000 Mode
+            100000 MODE
           </button>
         </div>
 
