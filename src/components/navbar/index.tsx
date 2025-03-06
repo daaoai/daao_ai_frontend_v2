@@ -9,7 +9,6 @@ export const Navbar = () => {
   const pathname = usePathname();
 
   const navLinks = [
-    // { name: 'Dashboard', href: '/dapp/dashboard/1' },
     { name: 'WhitePaper', href: 'https://docsend.com/view/z9eqsrurcmdky2dn' },
     { name: 'Farms', href: '/dapp/farms' },
     { name: 'Launch DAO', href: 'https://t.me/arcanelabs', external: true },
@@ -27,6 +26,22 @@ export const Navbar = () => {
         {navLinks.map((link) => {
           const isActive = pathname === link.href || pathname.startsWith(link.href);
 
+          // Only apply responsive visibility classes to Launch DAO link
+          if (link.name === 'Launch DAO') {
+            return (
+              <a
+                key={link.name}
+                href={link.href}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-white font-medium text-sm font-sora hidden md:block"
+              >
+                {link.name}
+              </a>
+            );
+          }
+
+          // For other links, render normally (if external, use <a>, else use <Link>)
           return link.external ? (
             <a
               key={link.name}
@@ -41,7 +56,7 @@ export const Navbar = () => {
             <Link
               key={link.name}
               href={link.href}
-              className={`relative font-medium hidden md:block font-sora text-sm transition-all ${
+              className={`relative font-medium font-sora text-sm transition-all ${
                 isActive ? 'text-teal-50' : 'text-white'
               }`}
               prefetch

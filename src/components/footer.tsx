@@ -36,13 +36,13 @@ const FooterTopContent: React.FC<FooterProps> = ({ app }) => {
       </div>
 
       {/* Footer Links (Terms, Cookie Policy, etc.) */}
-      <div className="flex flex-col lg:flex-row gap-4 justify-center md:text-right md:items-right items:center text-center py-8">
+      {/* <div className="flex flex-col lg:flex-row gap-4 justify-center md:text-right md:items-right items:center text-center py-8">
         {footerLinks.map((link, index) => (
           <FooterLink key={index} href={link.href} label={link.label}>
             {link.label}
           </FooterLink>
         ))}
-      </div>
+      </div> */}
     </div>
   );
 };
@@ -91,7 +91,7 @@ export const FooterIconLink: React.FC<FooterData> = ({ href, label, children }) 
 
 const FooterContainer: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   return (
-    <footer className="bg-black/50 rounded-t-xl px-6 pb-10 pt-20 md:p-16 md:py-16 flex flex-col lg:flex-row items-start justify-between gap-4">
+    <footer className="bg-black/50 rounded-t-xl px-6 pb-4 pt-8 md:pb-10 md:pt-20 md:p-16 md:py-16 flex flex-col lg:flex-row items-start justify-between gap-4">
       {children}
     </footer>
   );

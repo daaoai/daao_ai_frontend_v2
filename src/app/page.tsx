@@ -168,7 +168,7 @@ const HomePage: NextPage = () => {
             onClick={redirectToDashboard}
             className="cursor-pointer"
           />
-          <div className="flex flex-col items-start gap-6">
+          <div className="flex flex-col sm:items-start gap-6">
             <p className="text-5xl font-sora font-medium text-white">Defai Cartel</p>
             <Link
               href="https://velodrome.finance/swap?from=0xdfc7c877a950e49d2610114102175a06c2e3167a&to=0x98e0ad23382184338ddcec0e13685358ef845f30&chain0=34443&chain1=34443"
@@ -188,12 +188,12 @@ const HomePage: NextPage = () => {
       </div>
 
       <div className="mb-18 mt-32">
-        <p className="text-white font-regular text-5xl">&lt;&lt;&lt;Featured Funds&gt;&gt;&gt;</p>
+        <p className="text-white font-regular text-3xl md:text-5xl">&lt;&lt;&lt;Featured Funds&gt;&gt;&gt;</p>
         <FundSection funds={FEATURED_FUNDS} onFundClick={(fundId) => onFundClick(fundId, 'dashboard')} />
       </div>
 
       <div className="my-24">
-        <p className="text-white font-regular text-5xl">&lt;&lt;&lt;Upcoming Funds&gt;&gt;&gt;</p>
+        <p className="text-white font-regular text-3xl md:text-5xl">&lt;&lt;&lt;Upcoming Funds&gt;&gt;&gt;</p>
         <FundSection funds={UPCOMING_FUNDS} onFundClick={(fundId) => onFundClick(fundId, 'dashboard')} />
       </div>
 
@@ -209,8 +209,10 @@ const HomePage: NextPage = () => {
         <div className="flex flex-col gap-16 items-center justify-center">
           <Image src="/assets/circle-image.svg" alt="defai-cartel" width={300} height={400} />
           <div className="flex flex-col gap-8 items-center z-10">
-            <p className="text-teal-40 font-normal font-sora text-4xl">Available to everyone</p>
-            <p className="text-7xl font-sora font-normal text-white max-w-4xl">Launch your next fund on D.A.A.O</p>
+            <p className="text-teal-40 font-normal font-sora text-2xl md:text-4xl">Available to everyone</p>
+            <p className="text-3xl sm:text-4xl lg:text-7xl font-sora font-normal text-white max-w-4xl">
+              Launch your next fund on D.A.A.O
+            </p>
             {/* <div className='bg-'> */}
             <Link href="https://t.me/arcanelabs" className="text-black w-fit bg-white rounded-full px-4 py-2">
               Launch A DAO
@@ -220,7 +222,7 @@ const HomePage: NextPage = () => {
         </div>
       </div>
 
-      <div className="w-8/12 max-w-xl flex items-center flex-col mt-12">
+      <div className="w-full md:w-8/12 max-w-xl flex items-center flex-col mt-20">
         <p className="text-center text-3xl font-bold">FAQs</p>
         <FAQDaao />
       </div>
