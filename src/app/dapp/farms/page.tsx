@@ -38,7 +38,7 @@ const Farms: React.FC = () => {
 
   return (
     <PageLayout title="App" description="main-app">
-      <div className="w-screen overflow-hidden gap-20 flex flex-col justify-center items-center pt-16 px-2">
+      <div className="w-full overflow-hidden gap-y-20 flex flex-col justify-center items-center pt-16">
         <div className="container mx-auto px-4 py-8 relative">
           <div className="absolute inset-0 z-0 top-[24rem] pt-[18rem]">
             <Image
@@ -49,7 +49,9 @@ const Farms: React.FC = () => {
               className=" absolute opacity-80"
             />
           </div>
-          <h1 className="text-5xl font-bold mb-8 text-center font-sora">&lt;&lt;&lt;Farming Pools&gt;&gt;&gt;</h1>
+          <h1 className="text-2xl md:text-3xl lg:text-5xl font-bold mb-8 text-center font-sora">
+            &lt;&lt;&lt;Farming Pools&gt;&gt;&gt;
+          </h1>
           <FarmTabs activeFarms={activeFarms} inactiveFarms={inactiveFarms} isLoading={isPoolListLoading} />
         </div>
       </div>

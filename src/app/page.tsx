@@ -159,7 +159,7 @@ const HomePage: NextPage = () => {
         </div>
 
         {/* Foreground content */}
-        <div className="relative z-10 flex flex-col md:flex-row justify-between gap-20 w-full pt-24 items-center">
+        <div className="relative z-10 flex flex-col md:flex-row justify-between gap-10 lg:gap-20 w-full pt-24 items-center">
           <Image
             src="/assets/defaiCartel.svg"
             alt="defai-cartel"
@@ -187,12 +187,12 @@ const HomePage: NextPage = () => {
         </div>
       </div>
 
-      <div className="mb-18 mt-32">
+      <div className="mb-18 mt-32 w-full flex flex-col gap-5">
         <p className="text-white font-regular text-3xl md:text-5xl">&lt;&lt;&lt;Featured Funds&gt;&gt;&gt;</p>
         <FundSection funds={FEATURED_FUNDS} onFundClick={(fundId) => onFundClick(fundId, 'dashboard')} />
       </div>
 
-      <div className="my-24">
+      <div className="my-24 flex flex-col gap-5 w-full">
         <p className="text-white font-regular text-3xl md:text-5xl">&lt;&lt;&lt;Upcoming Funds&gt;&gt;&gt;</p>
         <FundSection funds={UPCOMING_FUNDS} onFundClick={(fundId) => onFundClick(fundId, 'dashboard')} />
       </div>

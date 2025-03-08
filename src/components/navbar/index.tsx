@@ -1,12 +1,15 @@
 import Link from 'next/link';
-import React from 'react';
+import React, { useState } from 'react';
 import { ConnectWalletButton } from '../connect-button';
 import Image from 'next/image';
 import { usePathname } from 'next/navigation';
 import { motion } from 'framer-motion';
+import { Menu, X } from 'lucide-react';
+import MobileMenu from './MobileMenu';
 
 export const Navbar = () => {
   const pathname = usePathname();
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   const navLinks = [
     { name: 'WhitePaper', href: 'https://docsend.com/view/z9eqsrurcmdky2dn' },
@@ -15,70 +18,69 @@ export const Navbar = () => {
   ];
 
   return (
-    <div className="fixed z-50 flex w-full justify-between items-center px-6 py-4 bg-black">
-      {/* Logo */}
-      <Link href="/" className="flex items-center justify-start" prefetch shallow>
-        <Image src="/assets/daao-logo.svg" alt="logo" width={150} height={150} />
-      </Link>
+    <div className="fixed z-50 w-full bg-black">
+      <div className="flex justify-between items-center px-4 md:px-6 py-4">
+        {/* Logo */}
+        <Link href="/" className="flex items-center justify-start" prefetch shallow>
+          <Image src="/assets/daao-logo.svg" alt="logo" width={150} height={150} />
+        </Link>
 
-      {/* Navigation Links */}
-      <div className="flex items-center gap-12">
-        {navLinks.map((link) => {
-          const isActive = pathname === link.href || pathname.startsWith(link.href);
+        {/* Desktop Navigation */}
+        <div className="hidden md:flex items-center gap-12">
+          {navLinks.map((link) => {
+            const isActive = pathname === link.href || pathname.startsWith(link.href);
 
-          // Only apply responsive visibility classes to Launch DAO link
-          if (link.name === 'Launch DAO') {
-            return (
+            return link.external ? (
               <a
                 key={link.name}
                 href={link.href}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-white font-medium text-sm font-sora hidden md:block"
+                className="text-white font-medium text-sm font-sora"
               >
                 {link.name}
               </a>
+            ) : (
+              <Link
+                key={link.name}
+                href={link.href}
+                className={`relative font-medium font-sora text-sm transition-all ${
+                  isActive ? 'text-teal-50' : 'text-white'
+                }`}
+                prefetch
+                shallow
+              >
+                {link.name}
+                {isActive && (
+                  <motion.div
+                    layoutId="underline"
+                    className="absolute left-0 bottom-0 h-[2px] bg-teal-50 w-full"
+                    initial={{ width: 0 }}
+                    animate={{ width: '100%' }}
+                    transition={{ type: 'spring', stiffness: 300, damping: 25 }}
+                  />
+                )}
+              </Link>
             );
-          }
+          })}
+          <ConnectWalletButton icons={true} />
+        </div>
 
-          // For other links, render normally (if external, use <a>, else use <Link>)
-          return link.external ? (
-            <a
-              key={link.name}
-              href={link.href}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-white font-medium text-sm font-sora"
-            >
-              {link.name}
-            </a>
-          ) : (
-            <Link
-              key={link.name}
-              href={link.href}
-              className={`relative font-medium font-sora text-sm transition-all ${
-                isActive ? 'text-teal-50' : 'text-white'
-              }`}
-              prefetch
-              shallow
-            >
-              {link.name}
-              {isActive && (
-                <motion.div
-                  layoutId="underline"
-                  className="absolute left-0 bottom-0 h-[2px] bg-teal-50 w-full"
-                  initial={{ width: 0 }}
-                  animate={{ width: '100%' }}
-                  transition={{ type: 'spring', stiffness: 300, damping: 25 }}
-                />
-              )}
-            </Link>
-          );
-        })}
-
-        {/* Connect Wallet Button */}
-        <ConnectWalletButton icons={true} />
+        {/* Mobile Menu Button */}
+        <div className="md:hidden flex items-center gap-4">
+          <ConnectWalletButton icons={true} />
+          <button
+            onClick={() => setIsMenuOpen(!isMenuOpen)}
+            className="text-white p-2 hover:bg-gray-800 rounded-lg transition-colors"
+            aria-label="Toggle menu"
+          >
+            {isMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+          </button>
+        </div>
       </div>
+
+      {/* Mobile Menu */}
+      <MobileMenu isOpen={isMenuOpen} onClose={() => setIsMenuOpen(false)} pathname={pathname} />
     </div>
   );
 };

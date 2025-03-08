@@ -17,11 +17,15 @@ const FarmTabs: React.FC<FarmTabsProps> = ({ activeFarms, inactiveFarms, isLoadi
 
   const renderFarms = (farms: FarmPool[], emptyMessage: string) => {
     if (isLoading) {
-      return <FarmCardSkeleton />;
+      return (
+        <div className="flex items-start gap-6 justify-center relative z-20 flex-wrap">
+          <FarmCardSkeleton />
+        </div>
+      );
     }
     if (farms.length > 0) {
       return (
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 justify-items-start relative z-20">
+        <div className="flex items-start gap-6 justify-center relative z-20 flex-wrap">
           {farms.map((farm, index) => (
             <FarmCard key={`${farm.poolAddress}-${index}`} farm={farm} isLoading={isLoading} />
           ))}
@@ -33,7 +37,7 @@ const FarmTabs: React.FC<FarmTabsProps> = ({ activeFarms, inactiveFarms, isLoadi
 
   return (
     <Tabs value={activeTab} onValueChange={setActiveTab}>
-      <div className="relative">
+      <div className="relative flex justify-center items-center">
         <TabsList className="mb-4 flex space-x-2 bg-transparent p-1 border border-gray-700 rounded-md w-fit">
           <TabsTrigger
             value="active"

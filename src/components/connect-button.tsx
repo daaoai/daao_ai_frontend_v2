@@ -49,7 +49,7 @@ export const ConnectWalletButton: React.FC<ConnectWalletButtonProps> = ({ classN
                       )}
                     >
                       {icons ? <Wallet className="w-3 h-3" /> : <></>}
-                      <span className={`test-white font-semibold`}>Connect Wallet</span>
+                      <span className="text-white font-semibold">Connect Wallet</span>
                     </Button>
                   </div>
                 );
@@ -61,22 +61,23 @@ export const ConnectWalletButton: React.FC<ConnectWalletButtonProps> = ({ classN
                     onClick={openChainModal}
                     type="button"
                     className={cn(
-                      'text-sm p-2 bg-red-500 text-white rounded-xl flex items-center gap-2 font-bold leading-normal ',
+                      'text-sm p-2 bg-red-500 text-white rounded-xl flex items-center gap-2 font-bold leading-normal',
                       className,
                     )}
                   >
-                    Wrong network
+                    <span className="sm:block hidden">Wrong network</span>
+                    <span className="sm:hidden block">Wrong</span>
                   </Button>
                 );
               }
 
               return (
-                <div className="flex gap-2 items-center">
+                <div className="flex gap-1 items-center">
                   <Button
                     onClick={openChainModal}
                     type="button"
                     className={cn(
-                      'text-sm p-2 bg-dark-white text-dark-black rounded-xl flex items-center gap-2 font-bold leading-normal',
+                      'text-sm p-2 bg-dark-white text-dark-black rounded-xl flex items-center gap-2 font-bold leading-normal min-w-0',
                       className,
                     )}
                   >
@@ -88,7 +89,6 @@ export const ConnectWalletButton: React.FC<ConnectWalletButtonProps> = ({ classN
                           height: 20,
                           borderRadius: 999,
                           overflow: 'hidden',
-                          marginRight: 4,
                         }}
                       >
                         {chain.iconUrl && (
@@ -96,19 +96,28 @@ export const ConnectWalletButton: React.FC<ConnectWalletButtonProps> = ({ classN
                         )}
                       </div>
                     )}
-                    {chain.name}
+                    <span className="hidden sm:block">{chain.name}</span>
+                    <span className="block sm:hidden">{chain.name?.slice(0, 4)}</span>
                   </Button>
 
                   <Button
                     onClick={openAccountModal}
                     type="button"
                     className={cn(
-                      'text-sm p-2 bg-[#27292a] rounded-xl flex items-center gap-2 font-bold leading-normal ',
+                      'text-sm p-2 bg-[#27292a] rounded-xl flex items-center gap-2 font-bold leading-normal truncate max-w-[120px] sm:max-w-none',
                       className,
                     )}
                   >
-                    {account.displayName}
-                    {account.displayBalance ? ` (${account.displayBalance})` : ''}
+                    <span className="truncate">
+                      {/* Show shorter version on mobile */}
+                      <span className="hidden sm:block">
+                        {account.displayName}
+                        {account.displayBalance ? ` (${account.displayBalance})` : ''}
+                      </span>
+                      <span className="block sm:hidden">
+                        {account.displayName?.slice(0, 6)}...{account.displayName?.slice(-4)}
+                      </span>
+                    </span>
                   </Button>
                 </div>
               );

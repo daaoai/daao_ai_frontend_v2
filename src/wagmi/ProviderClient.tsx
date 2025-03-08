@@ -10,6 +10,8 @@ import { Provider as ReduxProvider } from 'react-redux';
 // import { SessionProvider } from 'next-auth/react';
 import { ThemeProvider } from '@/components/theme-provider';
 import { FundProvider } from '@/components/dashboard/FundContext';
+import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 interface ProviderClientProps {
   wagmiCookie: string | null;
@@ -35,7 +37,21 @@ const ProviderClient = ({ wagmiCookie, children }: ProviderClientProps) => {
               disableTransitionOnChange
             >
               {/* <Layout font={'fontChoice'}> */}
-              <FundProvider>{children}</FundProvider>
+              <FundProvider>
+                {children}
+                <ToastContainer
+                  position="bottom-right"
+                  autoClose={5000}
+                  hideProgressBar={false}
+                  newestOnTop={false}
+                  closeOnClick
+                  rtl={false}
+                  pauseOnFocusLoss
+                  draggable
+                  pauseOnHover
+                  theme="dark" // or "light"
+                />
+              </FundProvider>
               {/* </Layout> */}
             </ThemeProvider>
           </RainbowKitProvider>

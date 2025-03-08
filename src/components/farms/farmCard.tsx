@@ -44,8 +44,8 @@ const FarmCard = ({ farm, isLoading }: FarmCardProps) => {
   return (
     <Card className="box-border w-full max-w-[420px] bg-[#0d0d0d] border-[#383838] text-white flex flex-col">
       <CardContent className="p-6 flex flex-col gap-6 flex-grow">
-        <div className="flex gap-4 justify-between items-start">
-          <div className="flex items-start gap-3">
+        <div className="flex  gap-4 justify-between items-start">
+          <div className="flex flex-col md:flex-row items-start gap-3">
             <div className="relative w-20 h-[50px] flex-shrink-0">
               <Image
                 src={GAMBLE_IMAGE}

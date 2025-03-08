@@ -3,8 +3,8 @@ import { useState, useEffect, useCallback } from 'react';
 import { ethers } from 'ethers';
 import ModeTokenLogo from '/public/assets/mode.png';
 import Image from 'next/image';
-import { useToast } from '@/hooks/use-toast';
 import { useAccount, useReadContracts } from 'wagmi';
+import { toast } from 'react-toastify';
 import { useFetchBalance } from '../../hooks/useFetchBalance';
 import { useFundContext } from './FundContext';
 import TicketPurchase from '../ticket';
@@ -29,7 +29,6 @@ import SlippageModal from '../slippageModal';
 import { motion } from 'framer-motion';
 
 const BuySellCard = () => {
-  const { toast } = useToast();
   const account = useAccount();
   const [activeTab, setActiveTab] = useState<'buy' | 'sell'>('buy');
   const [amountFrom, setAmountFrom] = useState('');
@@ -170,20 +169,14 @@ const BuySellCard = () => {
     try {
       if (activeTab === 'buy') {
         if (Number(modeBalance) < Number(newFromValue)) {
-          toast({
-            title: 'Insufficient balance',
-            variant: 'destructive',
-          });
+          toast.error('Insufficient balance');
           setAmountTo(0);
           return;
         }
       }
       if (activeTab === 'sell') {
         if (Number(daoBalance) < Number(newFromValue)) {
-          toast({
-            title: 'Insufficient balance',
-            variant: 'destructive',
-          });
+          toast.error('Insufficient balance');
           setAmountTo(0);
           return;
         }
@@ -276,31 +269,19 @@ const BuySellCard = () => {
 
       if (!window.ethereum) throw new Error('No Ethereum provider found');
       if (!amountFrom) {
-        toast({
-          title: 'No amount specified',
-          variant: 'destructive',
-        });
+        toast.error('No amount specified');
         return;
       }
       if (amountFrom === '0') {
-        toast({
-          title: 'Amount must be greater than 0',
-          variant: 'destructive',
-        });
+        toast.error('Amount must be greater than 0');
         return;
       }
       if (activeTab === 'buy' && Number(modeBalance) < Number(amountFrom)) {
-        toast({
-          title: 'Insufficient balance',
-          variant: 'destructive',
-        });
+        toast.error('Insufficient balance');
         return;
       }
       if (activeTab === 'sell' && Number(daoBalance) < Number(amountFrom)) {
-        toast({
-          title: 'Insufficient balance',
-          variant: 'destructive',
-        });
+        toast.error('Insufficient balance');
         return;
       }
       await window.ethereum.request({ method: 'eth_requestAccounts' });
@@ -357,6 +338,7 @@ const BuySellCard = () => {
       setAmountFrom('');
       setAmountTo(0);
       console.log('Swap successful!', receipt);
+      toast.success('Swap/Buy successful');
     } catch (error) {
       console.error('Error during swap:', error);
     } finally {
@@ -395,10 +377,7 @@ const BuySellCard = () => {
     if (account.address) {
       openBurnTicketModal();
     } else {
-      toast({
-        title: 'Wallet Not Connected',
-        variant: 'destructive',
-      });
+      toast.error('Wallet Not Connected');
     }
   };
 
@@ -422,7 +401,7 @@ const BuySellCard = () => {
                 {/* Buy Tab */}
                 <TabsTrigger
                   value="buy"
-                  className={`relative w-full z-10 lg:text-xl md:text-lg sm:text-md px-4 py-2 transition-all ${
+                  className={`relative w-full lg:text-xl md:text-lg sm:text-md px-4 py-2 transition-all ${
                     activeTab === 'buy' ? 'text-black' : 'text-white'
                   }`}
                 >
@@ -432,7 +411,7 @@ const BuySellCard = () => {
                 {/* Sell Tab */}
                 <TabsTrigger
                   value="sell"
-                  className={`relative w-full z-10 lg:text-xl md:text-lg sm:text-md px-4 py-2 transition-all ${
+                  className={`relative w-full lg:text-xl md:text-lg sm:text-md px-4 py-2 transition-all ${
                     activeTab === 'sell' ? 'text-black' : 'text-white'
                   }`}
                 >
