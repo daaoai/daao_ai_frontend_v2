@@ -208,6 +208,7 @@ const Dashboard: React.FC = () => {
     },
   ];
 
+
   const [activeTab, setActiveTab] = useState('trades');
 
   return (
