@@ -1,5 +1,7 @@
-"use client"
+'use client';
 
+import { Button } from '@/shadcn/components/ui/button';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/shadcn/components/ui/table';
 import {
   ColumnDef,
   SortingState,
@@ -8,31 +10,17 @@ import {
   getPaginationRowModel,
   getSortedRowModel,
   useReactTable,
-} from "@tanstack/react-table"
+} from '@tanstack/react-table';
 
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table"
-import { Button } from "../ui/button";
-import { useState } from "react";
-import { workSans } from "@/lib/fonts";
+import { useState } from 'react';
 
 interface LeaderboardTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
   data: TData[];
 }
 
-export function LeaderboardDataTable<TData, TValue>({
-  columns,
-  data,
-}: LeaderboardTableProps<TData, TValue>) {
-
-  const [sorting, setSorting] = useState<SortingState>([])
+export function LeaderboardDataTable<TData, TValue>({ columns, data }: LeaderboardTableProps<TData, TValue>) {
+  const [sorting, setSorting] = useState<SortingState>([]);
 
   const table = useReactTable({
     data,
@@ -44,25 +32,20 @@ export function LeaderboardDataTable<TData, TValue>({
     state: {
       sorting,
     },
-  })
+  });
 
   return (
     <div className="rounded-md border bg-[#191919]">
       <Table>
         <TableHeader>
           {table.getHeaderGroups().map((headerGroup) => (
-            <TableRow key={headerGroup.id} className={`border-b border-black mb-2 text-[#e4e6e7] text-bold ${workSans.className}`}>
+            <TableRow key={headerGroup.id} className={`border-b border-black mb-2 text-[#e4e6e7] text-bold`}>
               {headerGroup.headers.map((header) => {
                 return (
-                  <TableHead key={header.id} className={`mb-2 text-[#e4e6e7] text-bold ${workSans.className} p-4 text-left`}>
-                    {header.isPlaceholder
-                      ? null
-                      : flexRender(
-                        header.column.columnDef.header,
-                        header.getContext()
-                      )}
+                  <TableHead key={header.id} className={`mb-2 text-[#e4e6e7] text-bold p-4 text-left`}>
+                    {header.isPlaceholder ? null : flexRender(header.column.columnDef.header, header.getContext())}
                   </TableHead>
-                )
+                );
               })}
             </TableRow>
           ))}
@@ -70,15 +53,9 @@ export function LeaderboardDataTable<TData, TValue>({
         <TableBody>
           {table.getRowModel().rows?.length ? (
             table.getRowModel().rows.map((row) => (
-              <TableRow
-                key={row.id}
-                data-state={row.getIsSelected() && "selected"}
-                className="text-left"
-              >
+              <TableRow key={row.id} data-state={row.getIsSelected() && 'selected'} className="text-left">
                 {row.getVisibleCells().map((cell) => (
-                  <TableCell key={cell.id}>
-                    {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                  </TableCell>
+                  <TableCell key={cell.id}>{flexRender(cell.column.columnDef.cell, cell.getContext())}</TableCell>
                 ))}
               </TableRow>
             ))
@@ -93,26 +70,15 @@ export function LeaderboardDataTable<TData, TValue>({
       </Table>
       <div className="flex items-center justify-end space-x-2 p-4">
         <div className="flex w-[100px] items-center justify-center text-sm font-medium">
-          Page {table.getState().pagination.pageIndex + 1} of{" "}
-          {table.getPageCount()}
+          Page {table.getState().pagination.pageIndex + 1} of {table.getPageCount()}
         </div>
-        <Button
-          variant="outline"
-          size="sm"
-          onClick={() => table.previousPage()}
-          disabled={!table.getCanPreviousPage()}
-        >
+        <Button variant="outline" size="sm" onClick={() => table.previousPage()} disabled={!table.getCanPreviousPage()}>
           Previous
         </Button>
-        <Button
-          variant="outline"
-          size="sm"
-          onClick={() => table.nextPage()}
-          disabled={!table.getCanNextPage()}
-        >
+        <Button variant="outline" size="sm" onClick={() => table.nextPage()} disabled={!table.getCanNextPage()}>
           Next
         </Button>
       </div>
     </div>
-  )
+  );
 }

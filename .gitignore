@@ -37,3 +37,10 @@ yarn-error.log*
 
 # typescript
 *.tsbuildinfo
+
+
+package-lock.json
+pnpm-lock.yaml
+
+# Don't ignore husky directory
+!.husky

@@ -1,12 +1,19 @@
-"use client"
+'use client';
 
-import { ColumnDef } from "@tanstack/react-table"
-import Image from "next/image"
+import { ColumnDef } from '@tanstack/react-table';
+
+type Asset = {
+  token: string;
+  // tokenIcon?: string
+  balance: number;
+  price: number;
+  totalValue: number;
+};
 
 export const assetColumns: ColumnDef<Asset>[] = [
   {
-    accessorKey: "token",
-    header: "Token",
+    accessorKey: 'token',
+    header: 'Token',
     cell: ({ row }) => (
       <div className="flex items-center space-x-2">
         {/* <Image
@@ -21,18 +28,18 @@ export const assetColumns: ColumnDef<Asset>[] = [
     ),
   },
   {
-    accessorKey: "balance",
-    header: "Balance",
+    accessorKey: 'balance',
+    header: 'Balance',
     cell: ({ row }) => row.original.balance.toFixed(2),
   },
   {
-    accessorKey: "price",
-    header: "Price",
+    accessorKey: 'price',
+    header: 'Price',
     cell: ({ row }) => <span>$&nbsp;{row.original.price}</span>,
   },
   {
-    accessorKey: "totalValue",
-    header: "Total Value",
+    accessorKey: 'totalValue',
+    header: 'Total Value',
     cell: ({ row }) => <span>$&nbsp;{row.original.totalValue.toFixed(2)}</span>,
   },
-]
+];

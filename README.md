@@ -1,5 +1,7 @@
 <!-- Improved compatibility of back to top link: See: https://github.com/daaoai/daao_ai_frontend_v2/pull/73 -->
+
 <a id="readme-top"></a>
+
 <!--
 *** Thanks for checking out the Best-README-Template. If you have a suggestion
 *** that would make this better, please fork the repo and create a pull request
@@ -7,8 +9,6 @@
 *** Don't forget to give the project a star!
 *** Thanks again! Now go create something AMAZING! :D
 -->
-
-
 
 <!-- PROJECT SHIELDS -->
 <!--
@@ -18,18 +18,20 @@
 *** for contributors-url, forks-url, etc. This is an optional, concise syntax you may use.
 *** https://www.markdownguide.org/basic-syntax/#reference-style-links
 -->
+
 [![Contributors][contributors-shield]][contributors-url]
 [![Forks][forks-shield]][forks-url]
 [![Stargazers][stars-shield]][stars-url]
 [![Issues][issues-shield]][issues-url]
 [![Unlicense License][license-shield]][license-url]
+
 <!-- [![LinkedIn][linkedin-shield]][linkedin-url] -->
 
 <!-- PROJECT LOGO -->
 <br />
 <div align="center">
   <a href="https://github.com/daaoai/daao_ai_frontend_v2">
-    <img src="./public/images/roman-guy.svg" alt="Logo" width="200" height="200">
+    <img src="./public/assets/roman-guy.svg" alt="Logo" width="200" height="200">
   </a>
 
   <h3 align="center">DAAO.ai</h3>
@@ -76,11 +78,12 @@
 <!-- Live Demo: [link-here](link-here) -->
 
 <!-- ABOUT THE PROJECT -->
+
 ## About The Project
 
 ![Product Name Screen Shot](http://0x0.st/8ZlG.png)
 
-A **Next.js** frontend for the DAAO project, powered by **TypeScript**, **RainbowKit**, **Wagmi**, **Shadcn**, and **TailwindCSS**. 
+A **Next.js** frontend for the DAAO project, powered by **TypeScript**, **RainbowKit**, **Wagmi**, **Shadcn**, and **TailwindCSS**.
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
@@ -115,7 +118,9 @@ and more!
 <!-- - **Bun** for Fast Package Management: Support for Bun to speed up dependency installation and script execution. -->
 
 ---
+
 <!-- GETTING STARTED -->
+
 ## Getting Started
 
 ### Prerequisites
@@ -130,43 +135,45 @@ This project uses Bun for managing dependencies. If you don't have Bun installed
 
    ```bash
    git clone https://github.com/daaoai/daao_ai_frontend_v2.git daao_frontend
-   cd daao_frontend 
+   cd daao_frontend
 
    ```
-  - Once Bun is installed, run:
 
-    ```bash
-    bun install
-    ```
+- Once Bun is installed, run:
 
-  - Set up Environment Variables:
+  ```bash
+  bun install
+  ```
 
-    Copy the .env.example file to .env.local and update the variables as needed:
+- Set up Environment Variables:
 
-    ```bash
-    cp .env.example .env.local
-    ```
+  Copy the .env.example file to .env.local and update the variables as needed:
 
-  - Start the development server:
-      - Make sure you do this from the root of the project and not from some subdirectory
-    ```bash
-    bun run dev
-    ```
+  ```bash
+  cp .env.example .env.local
+  ```
 
-    - To build the project instead do
+- Start the development server:
 
-    ```sh
-    bun run build
-    bun run start
-    ```
+  - Make sure you do this from the root of the project and not from some subdirectory
 
+  ```bash
+  bun run dev
+  ```
 
+  - To build the project instead do
+
+  ```sh
+  bun run build
+  bun run start
+  ```
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
 ---
 
 <!-- CONTRIBUTING -->
+
 ## Contributing
 
 Contributions are what make the open source community such an amazing place to learn, inspire, and create. Any contributions you make are **greatly appreciated**.
@@ -194,6 +201,7 @@ Don't forget to give the project a star! Thanks again!
 
 <!-- MARKDOWN LINKS & IMAGES -->
 <!-- https://www.markdownguide.org/basic-syntax/#reference-style-links -->
+
 [contributors-shield]: https://img.shields.io/github/contributors/daaoai/daao_ai_frontend_v2.svg?style=for-the-badge
 [contributors-url]: https://github.com/daaoai/daao_ai_frontend_v2/graphs/contributors
 [forks-shield]: https://img.shields.io/github/forks/daaoai/daao_ai_frontend_v2.svg?style=for-the-badge
@@ -204,6 +212,8 @@ Don't forget to give the project a star! Thanks again!
 [issues-url]: https://github.com/daaoai/daao_ai_frontend_v2/issues
 [license-shield]: https://img.shields.io/github/license/daaoai/daao_ai_frontend_v2.svg?style=for-the-badge
 [license-url]: https://github.com/daaoai/daao_ai_frontend_v2/blob/master/LICENSE.txt
+
 <!-- [linkedin-shield]: https://img.shields.io/badge/-LinkedIn-black.svg?style=for-the-badge&logo=linkedin&colorB=555 -->
 <!-- [linkedin-url]: https://linkedin.com/in/othneildrew -->
+
 [product-screenshot]: images/screenshot.png

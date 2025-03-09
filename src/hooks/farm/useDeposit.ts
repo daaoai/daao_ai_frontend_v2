@@ -1,11 +1,9 @@
-import { FARM_ABI } from "@/abi/farm";
-import { POOL_ABI } from "@/abi/pool";
-import { usePublicClient, useWriteContract } from "wagmi";
-import useAllowance from "../useAllowance";
-import { Abi, Hex } from "viem";
-import { handleViemTransactionError } from "@/utils/approval";
-import { useToast } from "../use-toast";
-import { workSans } from "@/lib/fonts";
+import { POOL_ABI } from '@/daao-sdk/abi/pool';
+import { usePublicClient, useWriteContract } from 'wagmi';
+import useAllowance from '../useAllowance';
+import { Abi, Hex } from 'viem';
+import { handleViemTransactionError } from '@/utils/approval';
+import { useToast } from '../use-toast';
 
 const useDeposit = () => {
   const publicClient = usePublicClient();
@@ -33,7 +31,7 @@ const useDeposit = () => {
       const tx = await writeContractAsync({
         address: poolAddress,
         abi: POOL_ABI,
-        functionName: "deposit",
+        functionName: 'deposit',
         args: [amount],
       });
       const receipt = await publicClient?.waitForTransactionReceipt({
@@ -45,12 +43,11 @@ const useDeposit = () => {
       console.log({ error });
       const { errorMsg } = handleViemTransactionError({
         abi: POOL_ABI as Abi,
-        error: error,
+        error,
       });
       toast({
         title: errorMsg,
-        variant: "destructive",
-        className: `${workSans.className}`,
+        variant: 'destructive',
       });
     }
   };

@@ -1,22 +1,26 @@
-"use client"
+'use client';
 
-import { ColumnDef } from "@tanstack/react-table"
-import { Button } from "../ui/button"
-import { Check, X } from "lucide-react"
+import { Button } from '@/shadcn/components/ui/button';
+import { ColumnDef } from '@tanstack/react-table';
+import { Check, X } from 'lucide-react';
+
+type dashboardData = {
+  address: string;
+};
 
 export const DashboardColumns: ColumnDef<dashboardData>[] = [
   {
-    accessorKey: "address",
-    header: "Wallet Address",
+    accessorKey: 'address',
+    header: 'Wallet Address',
     cell: ({ row }) => (
       <div className="text-[#498ff8] text-sm font-normal font-['Work Sans'] leading-normal tracking-tight">
-        {row.getValue("address")}
+        {row.getValue('address')}
       </div>
     ),
   },
   {
-    id: "actions",
-    cell: ({ row }) => (
+    id: 'actions',
+    cell: () => (
       <div className="flex justify-end space-x-2">
         <Button
           variant="outline"
@@ -35,4 +39,4 @@ export const DashboardColumns: ColumnDef<dashboardData>[] = [
       </div>
     ),
   },
-]
+];
