@@ -91,7 +91,7 @@ export const FooterIconLink: React.FC<FooterData> = ({ href, label, children }) 
 
 const FooterContainer: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   return (
-    <footer className="bg-black/50 rounded-t-xl px-6 pb-4 pt-8 md:pb-10 md:pt-20 md:p-16 md:py-16 flex flex-col lg:flex-row items-start justify-between gap-4">
+    <footer className="bg-black/50 rounded-t-xl px-6 py-6 flex flex-col lg:flex-row items-start justify-between gap-4">
       {children}
     </footer>
   );

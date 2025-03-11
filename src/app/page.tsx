@@ -148,7 +148,7 @@ const HomePage: NextPage = () => {
     <PageLayout>
       <div className="relative">
         {/* Background image */}
-        <div className="absolute inset-0 z-0 top-[22rem] pt-[22rem]">
+        <div className="absolute inset-0 z-0 top-[22rem] pt-[23rem] -left-[8rem]">
           <Image
             src="/assets/brand.svg"
             alt="Background Asset"

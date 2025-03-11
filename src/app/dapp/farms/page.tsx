@@ -38,7 +38,7 @@ const Farms: React.FC = () => {
 
   return (
     <PageLayout title="App" description="main-app">
-      <div className="w-full overflow-hidden gap-y-20 flex flex-col justify-center items-center pt-16">
+      <div className="w-full overflow-hidden gap-y-20 flex flex-col justify-center items-center pt-16 pb-16">
         <div className="container mx-auto px-4 py-8 relative">
           <div className="absolute inset-0 z-0 top-[24rem] pt-[18rem]">
             <Image

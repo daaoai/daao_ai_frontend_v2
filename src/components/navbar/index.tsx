@@ -12,9 +12,13 @@ export const Navbar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   const navLinks = [
-    { name: 'WhitePaper', href: 'https://docsend.com/view/z9eqsrurcmdky2dn' },
     { name: 'Farms', href: '/dapp/farms' },
-    { name: 'Launch DAO', href: 'https://t.me/arcanelabs', external: true },
+    {
+      name: 'Launch DAO',
+      href: 'https://t.me/arcanelabs',
+      external: true,
+    },
+    { name: 'WhitePaper', href: 'https://docsend.com/view/z9eqsrurcmdky2dn' },
   ];
 
   return (
