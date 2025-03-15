@@ -19,14 +19,14 @@ const FarmTabs: React.FC<FarmTabsProps> = ({ activeFarms, inactiveFarms, isLoadi
   const renderFarms = (farms: FarmPool[], emptyMessage: string) => {
     if (isLoading) {
       return (
-        <div className="flex items-start gap-6 justify-center relative z-20 flex-wrap">
+        <div className="flex items-start gap-6 justify-start relative z-20 flex-wrap">
           <FarmCardSkeleton />
         </div>
       );
     }
     if (farms.length > 0) {
       return (
-        <div className="flex items-start gap-6 justify-center relative z-20 flex-wrap">
+        <div className="flex items-start gap-6 justify-start relative z-20 flex-wrap">
           {farms.map((farm, index) => (
             <FarmCard key={`${farm.poolAddress}-${index}`} farm={farm} isLoading={isLoading} />
           ))}
@@ -38,18 +38,15 @@ const FarmTabs: React.FC<FarmTabsProps> = ({ activeFarms, inactiveFarms, isLoadi
 
   return (
     <div>
-      {/* <div className="flex items-center justify-start gap-2 border rounded-md border-text-green p-4 my-8">
-        <Info width={60} height={60} className="text-midGreen" />
+      <div className="flex items-center justify-start gap-2 border rounded-md border-gray-20 p-4 my-8">
+        <Info width={20} height={20} className="text-midGreen" />
         <p className="text-midGreen">
-          Stake your DAO tokens to earn Daao.ai Whitelist Tokens (CARTEL). Burn 1M CARTEL for a guaranteed lowest tier
-          whitelist spot on any Daao.ai project, or burn less for a weighted raffle entry. CARTEL is a whitelist utility
-          token with no inherent market value. It is not a governance or platform token. Do not trade or speculate on
-          it.
+          Stake tokens to earn a whitelist. Degens who stay loyal are guaranteed a whitelist on daao.ai
         </p>
-      </div> */}
+      </div>
 
       <Tabs value={activeTab} onValueChange={setActiveTab}>
-        <div className="relative flex justify-center items-center">
+        <div className="relative flex justify-start items-center">
           <TabsList className="mb-4 flex space-x-2 bg-transparent p-1 border border-gray-700 rounded-md w-fit">
             <TabsTrigger
               value="active"
