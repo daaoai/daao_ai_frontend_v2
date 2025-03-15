@@ -169,7 +169,7 @@ const HomePage: NextPage = () => {
             className="cursor-pointer"
           />
           <div className="flex flex-col sm:items-start gap-6">
-            <p className="text-5xl font-sora font-medium text-white">Defai Cartel</p>
+            <p className="text-5xl font-sora font-medium text-white">DeFAI Cartel</p>
             <Link
               href="https://velodrome.finance/swap?from=0xdfc7c877a950e49d2610114102175a06c2e3167a&to=0x98e0ad23382184338ddcec0e13685358ef845f30&chain0=34443&chain1=34443"
               className="text-teal-60 font-normal"
