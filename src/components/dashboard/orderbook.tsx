@@ -50,7 +50,7 @@ const Orderbook = ({ name, created, owner, token, ethRaised }: OrderbookProps) =
     <Card className="w-full max-w-md mx-auto border-none">
       <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
         <div className="text-lg text-white font-semibold flex flex-col gap-2 items-start">
-          <p className="text-teal-40 text-lg font-normal">Defai Cartel</p>
+          <p className="text-teal-40 text-lg font-normal">DeFAI Cartel</p>
           <p className="text-teal-20 text-sm font-normal">$Cartel</p>
         </div>
         <div className="relative h-10 w-10 overflow-hidden rounded-full bg-[#f7931a]">

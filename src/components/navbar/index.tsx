@@ -15,7 +15,7 @@ export const Navbar = () => {
     { name: 'Farms', href: '/dapp/farms' },
     {
       name: 'Launch DAO',
-      href: 'https://t.me/arcanelabs',
+      href: 'https://docs.google.com/forms/d/e/1FAIpQLScbKuEH18VXPg29Ek4yeX3spXclZCXV6HHfDtmK9Vh8XMQigA/viewform?usp=header',
       external: true,
     },
     { name: 'WhitePaper', href: 'https://docsend.com/view/z9eqsrurcmdky2dn' },

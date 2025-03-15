@@ -87,7 +87,7 @@ const FarmStake = () => {
       <div className="flex items-center justify-center p-4 mt-8">
         <div className="w-full max-w-lg bg-gray-50 border border-[#383838] rounded-lg p-5 shadow-md ">
           <div className="flex items-center justify-between mb-4">
-            <h2 className="text-lg font-semibold">Defai Cartel</h2>
+            <h2 className="text-lg font-semibold">DeFAI Cartel</h2>
             {isPoolDetailsLoading ? (
               <AnimatedSkeleton className="w-10 h-4" />
             ) : (
