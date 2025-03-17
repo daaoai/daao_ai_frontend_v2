@@ -86,7 +86,7 @@ const HomePage: NextPage = () => {
 
   useEffect(() => {
     const modeRpc = "https://rpc.scroll.io";
-    const daoAddress = "0xEc7b0FD288E87eBC1C301E360092c645567e79B9";
+    const daoAddress = "0x402f35e11cC6E89E80EFF4205956716aCd94be04";
     const fetchMarketData = async () => {
       const provider = new ethers.providers.JsonRpcProvider(modeRpc);
 

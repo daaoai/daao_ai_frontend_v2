@@ -20,22 +20,47 @@ import velodromeFactoryABI from "../../veloABI.json";
 import swapRouter from "../../swapSimulateABI.json";
 import { useToast } from "@/hooks/use-toast";
 // import { parseAbi } from 'viem'
-import { useAccount, useReadContracts } from "wagmi";
+import {
+  useAccount,
+  useReadContracts,
+  usePublicClient,
+  useWalletClient,
+} from "wagmi";
 // import contractABI from "../../abi.json";
 import { useFetchBalance } from "./fetchBalance";
 import { set } from "date-fns";
 // import { fetchData } from "next-auth/client/_utils"
 import { useFundContext } from "./FundContext";
 import { quoterAddress, SWAP_ROUTER_ADDRESS } from "@/common/common";
+import {
+  createPublicClient,
+  Hex,
+  http,
+  parseUnits,
+  formatUnits,
+  WalletClient,
+  erc20Abi,
+  maxUint256,
+} from "viem";
+import { scroll } from "viem/chains"; // or whatever chain you're using
+import { numberToString } from "@/utils/number";
 
-const TICK_SPACING = 100;
+const TICK_SPACING = 10000;
 const VELODROME_FACTORY_ADDRESS = "0x46B3fDF7b5CDe91Ac049936bF0bDb12c5d22202e";
 const CL_POOL_ROUTER_ADDRESS = "0xC3a15f812901205Fc4406Cd0dC08Fe266bF45a1E";
 const MODE_TOKEN_ADDRESS = "0xd29687c813D741E2F938F4aC377128810E217b1b";
 
+// Create the public client outside the component (could be in a separate config file)
+const publicClient = createPublicClient({
+  chain: scroll,
+  transport: http(),
+});
+
 const Buysell = () => {
   const { toast } = useToast();
   const account = useAccount();
+  const publicClients = usePublicClient();
+  const { data: walletClient } = useWalletClient();
   const [activeTab, setActiveTab] = useState<"buy" | "sell">("buy");
   const [amountFrom, setAmountFrom] = useState("");
   const [amountTo, setAmountTo] = useState(0);
@@ -88,24 +113,21 @@ const Buysell = () => {
   useEffect(() => {
     const fetchPoolAddress = async () => {
       if (!daoTokenAddress) return;
-      if (!window.ethereum) {
-        console.log("MetaMask is not installed");
-        return;
-      }
 
       try {
-        const provider = new ethers.providers.Web3Provider(window.ethereum);
-        const factoryContract = new ethers.Contract(
-          VELODROME_FACTORY_ADDRESS,
-          velodromeFactoryABI,
-          provider
-        );
-        const pool = await factoryContract.callStatic.getPool(
-          MODE_TOKEN_ADDRESS,
-          daoTokenAddress,
-          TICK_SPACING
-        );
-        console.log("factoryContract:", factoryContract);
+        console.log("Attempting to get pool for:", {
+          token1: MODE_TOKEN_ADDRESS,
+          token2: daoTokenAddress,
+          tickSpacing: TICK_SPACING,
+        });
+
+        const pool = (await publicClient.readContract({
+          address: VELODROME_FACTORY_ADDRESS,
+          abi: velodromeFactoryABI,
+          functionName: "getPool",
+          args: [MODE_TOKEN_ADDRESS, daoTokenAddress, TICK_SPACING],
+        })) as Hex;
+
         console.log("Pool:", pool);
 
         if (pool) {
@@ -113,9 +135,10 @@ const Buysell = () => {
           console.log("Pool Address:", pool);
         } else {
           console.log("Pool does not exist for these tokens.");
+          setPoolAddress("");
         }
       } catch (error) {
-        console.error("Error fetching pool address:", error);
+        setPoolAddress("");
       }
     };
 
@@ -188,15 +211,15 @@ const Buysell = () => {
   const zeroForOne = computeZeroForOne();
 
   async function simulateSwap(newFromValue: string) {
-    console.log(window.ethereum, "windoethereum");
     console.log(poolAddress, "poolAddress");
     console.log(currentSqrtPrice, "currentSqrtPrice");
-
     console.log(modeBalance, "modeBalancemodeBalance");
     console.log(newFromValue, "newFromValuenewFromValue");
 
-    if (!window.ethereum || !poolAddress || !currentSqrtPrice) return;
+    if (!poolAddress || !currentSqrtPrice) return;
+
     try {
+      // Balance checks
       if (activeTab === "buy") {
         if (Number(modeBalance) < Number(newFromValue)) {
           toast({
@@ -219,45 +242,51 @@ const Buysell = () => {
           return;
         }
       }
-      const provider = new ethers.providers.Web3Provider(window.ethereum);
-      const signer = provider.getSigner();
-      const clPoolRouter = new ethers.Contract(
-        // SWAP_ROUTER_ADDRESS,
-        // swapRouter,
-        quoterAddress,
-        QUOTER_ABI,
-        signer
-      );
-      console.log(clPoolRouter, "clPoolRouter");
-      const amountSpecified = ethers.utils.parseUnits(newFromValue, 18);
-      const minOutput = 0;
-      if (!currentSqrtPrice) return;
-      const sqrtPriceBN = ethers.BigNumber.from(currentSqrtPrice);
-      let sqrtPriceLimitBN: ethers.BigNumber;
-      const slippageBps = 1;
+
+      if (!walletClient) {
+        throw new Error("Wallet not connected");
+      }
+
+      const amountSpecified = parseUnits(newFromValue, 18);
+
+      // Convert sqrtPrice calculations to bigint
+      const sqrtPriceBN = BigInt(currentSqrtPrice);
+      let sqrtPriceLimitBN: bigint;
+      const slippageBps = BigInt(1);
+
       if (zeroForOne) {
-        sqrtPriceLimitBN = sqrtPriceBN.mul(100 - slippageBps).div(100);
+        sqrtPriceLimitBN =
+          (sqrtPriceBN * (BigInt(100) - slippageBps)) / BigInt(100);
       } else {
-        sqrtPriceLimitBN = sqrtPriceBN.mul(100 + slippageBps).div(100);
+        sqrtPriceLimitBN =
+          (sqrtPriceBN * (BigInt(100) + slippageBps)) / BigInt(100);
       }
 
       console.log("sqrtPriceLimitBN:", currentSqrtPrice);
       console.log("zeroForOne:", zeroForOne);
+
       const sqrtPriceLimitX96 = currentSqrtPrice;
-      const deadline = Math.floor(Date.now() / 1000) + 5 * 60;
-      const amount1 = await clPoolRouter.callStatic.quoteExactInputSingle(
-        poolAddress,
-        zeroForOne,
-        amountSpecified,
-        sqrtPriceLimitX96
-      );
+      const deadline = BigInt(Math.floor(Date.now() / 1000) + 5 * 60);
+
+      if (!publicClients) return;
+      // Simulate the swap using public client
+      const { result: amount1 } = await publicClients.simulateContract({
+        address: quoterAddress,
+        abi: QUOTER_ABI,
+        functionName: "quoteExactInputSingle",
+        args: [
+          poolAddress,
+          zeroForOne,
+          amountSpecified,
+          BigInt(sqrtPriceLimitX96),
+        ],
+      });
+
       console.log(amount1, "amount1");
 
-      let outBnAbs = amount1;
-      if (outBnAbs.lt(0)) {
-        outBnAbs = outBnAbs.mul(-1);
-      }
-      const outTokens = ethers.utils.formatUnits(outBnAbs, 18);
+      // Convert negative values to positive
+      const outBnAbs = amount1 < BigInt(0) ? -amount1 : amount1;
+      const outTokens = formatUnits(BigInt(outBnAbs), 18);
 
       console.log("Simulated swap output:", outTokens);
       setAmountTo(parseFloat(outTokens));
@@ -277,62 +306,20 @@ const Buysell = () => {
     simulateSwap(val);
   }
 
-  async function checkAndApproveDAO(signer: ethers.Signer) {
-    if (!daoTokenAddress) return;
-    const userAddress = await signer.getAddress();
-    const daoTokenContract = new ethers.Contract(
-      daoTokenAddress,
-      daoABI,
-      signer
-    );
-
-    const requiredAmountBN = ethers.utils.parseUnits(amountFrom || "0", 18);
-
-    const currentAllowance: ethers.BigNumber = await daoTokenContract.allowance(
-      userAddress,
-      CL_POOL_ROUTER_ADDRESS
-    );
-    if (currentAllowance.lt(requiredAmountBN)) {
-      console.log("Approving DAO tokens...");
-      const approveTx = await daoTokenContract.approve(
-        CL_POOL_ROUTER_ADDRESS,
-        requiredAmountBN
-      );
-      await approveTx.wait();
-      console.log("DAO token approval completed!");
-    }
-  }
-
-  async function checkAndApproveMODE(signer: ethers.Signer) {
-    if (!daoTokenAddress) return;
-    const userAddress = await signer.getAddress();
-    const ModeTokenContract = new ethers.Contract(
-      MODE_TOKEN_ADDRESS,
-      modeABI,
-      signer
-    );
-
-    const requiredAmountBN = ethers.utils.parseUnits(amountFrom || "0", 18);
-
-    const currentAllowance: ethers.BigNumber =
-      await ModeTokenContract.allowance(userAddress, CL_POOL_ROUTER_ADDRESS);
-    console.log("Current allowance:", currentAllowance.toString());
-    if (currentAllowance.lt(requiredAmountBN)) {
-      console.log("Approving DAO tokens...");
-      const approveTx = await ModeTokenContract.approve(
-        CL_POOL_ROUTER_ADDRESS,
-        requiredAmountBN
-      );
-      await approveTx.wait();
-      console.log("DAO token approval completed!");
-    }
-  }
-
   async function handleSwap() {
     try {
       setIsSwapping(true);
 
-      if (!window.ethereum) throw new Error("No Ethereum provider found");
+      if (!account.address || !walletClient) {
+        toast({
+          title: "Please connect your wallet",
+          variant: "destructive",
+          className: `${workSans.className}`,
+        });
+        return;
+      }
+
+      // Input validation
       if (!amountFrom) {
         toast({
           title: "No amount specified",
@@ -341,6 +328,7 @@ const Buysell = () => {
         });
         return;
       }
+
       if (amountFrom === "0") {
         toast({
           title: "Amount must be greater than 0",
@@ -349,6 +337,8 @@ const Buysell = () => {
         });
         return;
       }
+
+      // Balance checks
       if (activeTab === "buy" && Number(modeBalance) < Number(amountFrom)) {
         toast({
           title: "Insufficient balance",
@@ -357,6 +347,7 @@ const Buysell = () => {
         });
         return;
       }
+
       if (activeTab === "sell" && Number(daoBalance) < Number(amountFrom)) {
         toast({
           title: "Insufficient balance",
@@ -365,93 +356,57 @@ const Buysell = () => {
         });
         return;
       }
-      await window.ethereum.request({ method: "eth_requestAccounts" });
-      const provider = new ethers.providers.Web3Provider(window.ethereum);
-      const signer = provider.getSigner();
+
+      // Handle approvals
       if (activeTab === "sell") {
-        await checkAndApproveDAO(signer);
+        await checkAndApproveDAO(walletClient);
       } else if (activeTab === "buy") {
-        await checkAndApproveMODE(signer);
+        await checkAndApproveMODE(walletClient);
       }
-      const clPoolRouter = new ethers.Contract(
-        SWAP_ROUTER_ADDRESS,
-        router,
-        signer
-      );
-      const amountSpecified = ethers.utils.parseUnits(
-        amountFrom || "0",
-        "ether"
-      );
-      console.log("amountSpecified:", amountSpecified.toString());
 
+      const amountSpecified = parseUnits(amountFrom || "0", 18);
       const slipDecimal = parseFloat(slippageTolerance) / 100;
-      console.log("Slippage decimal:", slipDecimal);
-      const quotedOut = amountTo;
-      const minOutputNumber = quotedOut * (1 - slipDecimal);
-      console.log("minOutputNumber:", minOutputNumber);
-      const minOutputBN = ethers.utils.parseUnits(
-        minOutputNumber.toFixed(6),
-        18
-      );
-      console.log("minOutput:", minOutputBN);
+      const minOutputNumber = amountTo * (1 - slipDecimal);
+      const minOutputBN = parseUnits(minOutputNumber.toFixed(6), 18);
+      const deadline = BigInt(Math.floor(Date.now() / 1000) + 60 * 5);
+      const sqrtPriceLimitX96 = BigInt(currentSqrtPrice);
 
-      const deadline = Math.floor(Date.now() / 1000) + 60 * 5;
-      console.log("deadline:", deadline);
-      if (!currentSqrtPrice) {
-        throw new Error(
-          "No currentSqrtPrice found. Please ensure slot0 is loaded."
-        );
-      }
+      // Execute swap using writeContract
+      const hash = await walletClient.writeContract({
+        address: SWAP_ROUTER_ADDRESS,
+        abi: router,
+        functionName: "getSwapResult",
+        args: [
+          poolAddress,
+          zeroForOne,
+          Number(amountSpecified),
+          sqrtPriceLimitX96,
+          minOutputBN,
+          deadline,
+        ],
+      });
 
-      const sqrtPriceBN = ethers.BigNumber.from(currentSqrtPrice);
-      let sqrtPriceLimitBN: ethers.BigNumber;
-      const slippageBps = 1;
-
-      if (zeroForOne) {
-        sqrtPriceLimitBN = sqrtPriceBN.mul(100 - slippageBps).div(100);
-      } else {
-        sqrtPriceLimitBN = sqrtPriceBN.mul(100 + slippageBps).div(100);
-      }
-      //4295128750
-      const sqrtPriceLimitX96 = currentSqrtPrice;
-      console.log("zeroforone is", zeroForOne);
-      console.log("sqrtPriceLimitX96:", sqrtPriceLimitX96);
-      console.log(amountSpecified);
-      console.log(minOutputBN);
-      console.log(deadline);
-
-      const tx = await clPoolRouter.getSwapResult(
-        poolAddress,
-        zeroForOne,
-        amountSpecified,
-        sqrtPriceLimitX96,
-        minOutputBN,
-        deadline
-      );
-
-      const receipt = await tx.wait();
-      // alert(`Swap successful!\nTransaction Hash: ${receipt.transactionHash}`)
+      // Wait for transaction
+      const receipt = await publicClient.waitForTransactionReceipt({ hash });
+      console.log("Swap successful!", receipt);
 
       await fetchSlot0();
       setAmountFrom("");
       setAmountTo(0);
-      console.log("Swap successful!", receipt);
     } catch (error) {
       console.error("Error during swap:", error);
     } finally {
+      // Update balances
       if (activeTab === "buy") {
-        // Spent SCROLL
         setModeBalance((prev) =>
           (Number(prev) - Number(amountFrom)).toString()
         );
-        // Gained DAO
         setDaoBalance((prev) => (Number(prev) + Number(amountTo)).toString());
       } else {
-        // Spent DAO
         setDaoBalance((prev) => (Number(prev) - Number(amountFrom)).toString());
-        // Gained SCROLL
         setModeBalance((prev) => (Number(prev) + Number(amountTo)).toString());
       }
+
       refetch();
       refreshData();
       setIsSwapping(false);
@@ -459,6 +414,34 @@ const Buysell = () => {
       setAmountTo(0);
     }
   }
+
+  // Update approval functions
+  async function checkAndApproveDAO(walletClient: WalletClient) {
+    const hash = await walletClient.writeContract({
+      chain: scroll,
+      account: account.address!,
+      address: daoTokenAddress as `0x${string}`,
+      abi: erc20Abi,
+      functionName: "approve",
+      args: [SWAP_ROUTER_ADDRESS, maxUint256],
+    });
+
+    await publicClient.waitForTransactionReceipt({ hash });
+  }
+
+  async function checkAndApproveMODE(walletClient: WalletClient) {
+    const hash = await walletClient.writeContract({
+      chain: scroll,
+      account: account.address!,
+      address: MODE_TOKEN_ADDRESS as `0x${string}`,
+      abi: erc20Abi,
+      functionName: "approve",
+      args: [SWAP_ROUTER_ADDRESS, maxUint256],
+    });
+
+    await publicClient.waitForTransactionReceipt({ hash });
+  }
+
   const fromLabel = activeTab === "buy" ? "SCROLL" : "CARTEL";
   const toLabel = activeTab === "buy" ? "CARTEL" : "SCROLL";
 
@@ -577,7 +560,7 @@ const Buysell = () => {
               <input
                 type="number"
                 placeholder="0"
-                value={amountTo}
+                value={numberToString(amountTo)}
                 onChange={(e) => setAmountTo(Number(e.target.value))}
                 className={`appearance-none bg-transparent border-0 p-0 text-3xl w-24 focus-visible:ring-0 focus-visible:ring-offset-0 ${workSans.className} focus-visible:ring-0 [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none border-0 outline-none`}
                 style={{
