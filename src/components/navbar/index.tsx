@@ -28,14 +28,13 @@ export const Navbar = () => {
         <Link href="/" className="flex items-center justify-start" prefetch shallow>
           <Image src="/assets/daao-logo.svg" alt="logo" width={150} height={150} />
         </Link>
-
         {/* Desktop Navigation */}
         <div className="hidden md:flex items-center gap-12">
           {navLinks.map((link) => {
             const isActive = pathname === link.href || pathname.startsWith(link.href);
 
-            return link.external ? (
-              <a
+            return link.external || link.name === 'WhitePaper' ? (
+              <Link
                 key={link.name}
                 href={link.href}
                 target="_blank"
@@ -43,7 +42,7 @@ export const Navbar = () => {
                 className="text-white font-medium text-sm font-sora"
               >
                 {link.name}
-              </a>
+              </Link>
             ) : (
               <Link
                 key={link.name}
@@ -67,6 +66,7 @@ export const Navbar = () => {
               </Link>
             );
           })}
+
           <ConnectWalletButton icons={true} />
         </div>
 
