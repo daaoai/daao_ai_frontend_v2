@@ -1,6 +1,6 @@
 import Web3 from 'web3';
-import { CONTRACT_ABI } from '../daao-sdk/abi/abi';
-import { ERC_20_ABI } from '../daao-sdk/abi/erc20';
+import { CONTRACT_ABI } from '../daao-sdk/src/abi/abi';
+import { ERC_20_ABI } from '../daao-sdk/src/abi/erc20';
 import { daoAddress, modeTokenAddress } from '@/constants/addresses';
 
 let web3: Web3 | null = null;

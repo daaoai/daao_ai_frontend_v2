@@ -3,7 +3,7 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { useFundContext } from './FundContext';
 import Liquidity from '../Liquidity/liquidity';
 import { ethers } from 'ethers';
-import { CONTRACT_ABI } from '@/daao-sdk/abi/abi';
+import { CONTRACT_ABI } from '@/daao-sdk/src/abi/abi';
 import { Card } from '@/shadcn/components/ui/card';
 import { shortenAddress } from '@/utils/address';
 import type { FundDetailsProps } from '@/types';

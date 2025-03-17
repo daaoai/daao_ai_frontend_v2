@@ -1,5 +1,5 @@
 import { ethers } from 'ethers';
-import { CONTRACT_ABI } from '../daao-sdk/abi/abi';
+import { CONTRACT_ABI } from '../daao-sdk/src/abi/abi';
 import { daoAddress } from '@/constants/addresses';
 
 const TIER_LABELS = ['None', 'Platinum', 'Gold', 'Silver'];

@@ -1,4 +1,4 @@
-import { TICKETS } from '@/daao-sdk/abi/tickets';
+import { TICKETS } from '@/daao-sdk/src/abi/tickets';
 import { TICKETS_CONTRACT_ADDRESS, MODE_CHAIN_ID } from '@/constants/ticket';
 import { useAccount, useReadContracts } from 'wagmi';
 import { Hex } from 'viem';

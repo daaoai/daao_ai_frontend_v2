@@ -1,4 +1,4 @@
-import { TICKETS } from '@/daao-sdk/abi/tickets';
+import { TICKETS } from '@/daao-sdk/src/abi/tickets';
 import { TICKETS_CONTRACT_ADDRESS } from '@/constants/ticket';
 import { useReadContracts } from 'wagmi';
 const useGetTicketPrice = () => {

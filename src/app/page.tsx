@@ -11,7 +11,7 @@ import { Link as UILink } from 'lucide-react';
 import { FooterIconLink } from '@/components/footer';
 import CheckWaitlistModal from '@/components/landing/waitlist-modal';
 import { ethers } from 'ethers';
-import { CONTRACT_ABI } from '@/daao-sdk/abi/abi';
+import { CONTRACT_ABI } from '@/daao-sdk/src/abi/abi';
 import { Button } from '@/shadcn/components/ui/button';
 import { Card, CardContent } from '@/shadcn/components/ui/card';
 import { formatNumber } from '@/utils/numbers';

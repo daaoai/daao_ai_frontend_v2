@@ -1,4 +1,4 @@
-import { CARTEL } from '@/daao-sdk/abi/cartel';
+import { CARTEL } from '@/daao-sdk/src/abi/cartel';
 import { CARTEL_TOKEN_ADDRESS, MODE_CHAIN_ID } from '@/constants/ticket';
 import { Hex } from 'viem';
 import { useAccount, useReadContracts } from 'wagmi';

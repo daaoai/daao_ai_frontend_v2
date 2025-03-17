@@ -1,0 +1,29 @@
+
+{
+   "34443": {
+                "daoId": "1",
+                "chain": "mode",
+                "daoContract": "0xEc7b0FD288E87eBC1C301E360092c645567e79B9",
+                "name": "CARTEL Dao",
+                "symbol": "CARTEL",
+                "decimals": 18,
+                "daoDescription": "DeFAI Venture DAO is a DeFAI Investment DAO dedicated to advancing the DeFAI movement by strategically investing in AI Agents and AI-focused DAOs on Mode. As a collective force in decentralized AI finance",
+                "socials": {
+                    "twitter": "https://twitter.com/MonadDao",
+                    "telegram": "https://t.me/MonadDao",
+                    "discord": "https://discord.gg/MonadDao",
+                    "website": "https://MonadDao.com"
+                },
+                "dexScreenerPriceApi": "https://api.dexscreener.com/latest/dex/pairs/mode/0x000...000",
+                "daoTokenLogo": "https://i.ibb.co/0r00000/logo.png",
+                "daoTokenCoverPicture": "https://i.ibb.co/0r00000/cover.png",
+                "dex": {
+                    "dexName": "Velodrome",
+                    "swapRouter": "0xB11f2310D1b3FF589af56b981c17BC57dee1D488",
+                    "factory": "0x04625B046C69577EfC40e6c0Bb83CDBAfab5a55F",
+                    "nonFungiblePositionManager": "0x991d5546C4B442B4c5fdc4c8B8b8d131DEB24702",
+                    "quoterContract": "0xD24a61656AB0d70994Ef5F42fE11AA95c0a1d329"
+                }
+    
+            }
+}

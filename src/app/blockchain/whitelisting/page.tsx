@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import Web3 from 'web3';
-import { DAO } from '@/daao-sdk/abi/dao';
+import { DAO } from '@/daao-sdk/src/abi/dao';
 import { daoAddress } from '@/constants/addresses';
 import { requestAccounts } from '@/utils/requestAccount';
 

@@ -19,12 +19,12 @@ import { tickToPrice, nearestUsableTick, priceToClosestTick } from '@uniswap/v3-
 import JSBI from 'jsbi';
 import { toast } from '@/hooks/use-toast';
 import { useAccount } from 'wagmi';
-import { ERC_20_ABI } from '@/daao-sdk/abi/erc20';
-import { VELO_POOL_ABI } from '@/daao-sdk/abi/veloPool';
-import { VELO_FACTORY_ABI } from '@/daao-sdk/abi/veloFactory';
-import { NON_FUNGIBLE_POSITION_MANAGER_ABI } from '@/daao-sdk/abi/nonFungiblePositionManager';
-import { QUOTER_ABI } from '@/daao-sdk/abi/quoterAbi';
-import { DAO } from '@/daao-sdk/abi/dao';
+import { ERC_20_ABI } from '@/daao-sdk/src/abi/erc20';
+import { VELO_POOL_ABI } from '@/daao-sdk/src/abi/veloPool';
+import { VELO_FACTORY_ABI } from '@/daao-sdk/src/abi/veloFactory';
+import { NON_FUNGIBLE_POSITION_MANAGER_ABI } from '@/daao-sdk/src/abi/nonFungiblePositionManager';
+import { QUOTER_ABI } from '@/daao-sdk/src/abi/quoterAbi';
+import { DAO } from '@/daao-sdk/src/abi/dao';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/shadcn/components/ui/dialog';
 import { Button } from '@/shadcn/components/ui/button';
 import { Input } from '@/shadcn/components/ui/input';

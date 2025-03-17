@@ -1,10 +1,10 @@
 import { usePublicClient, useWriteContract } from 'wagmi';
-import { POOL_ABI } from '@/daao-sdk/abi/pool';
+import { POOL_ABI } from '@/daao-sdk/src/abi/pool';
 import { useToast } from '../use-toast';
 import { handleViemTransactionError } from '@/utils/approval';
 import { Abi, Hex } from 'viem';
 import { FARM_CONTRACT_ADDRESS } from '@/constants/farm';
-import { FARM_ABI } from '@/daao-sdk/abi/farm';
+import { FARM_ABI } from '@/daao-sdk/src/abi/farm';
 
 const useWithDraw = () => {
   const publicClient = usePublicClient();

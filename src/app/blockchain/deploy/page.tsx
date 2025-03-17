@@ -2,8 +2,8 @@
 
 import React, { useState } from 'react';
 import Web3 from 'web3';
-import { DAO } from '@/daao-sdk/abi/dao';
-import { DaoBytecode } from '@/daao-sdk/bytecode/daoByteCode';
+import { DAO } from '@/daao-sdk/src/abi/dao';
+import { DaoBytecode } from '@/daao-sdk/src/bytecode/daoByteCode';
 
 const DeployDAO: React.FC = () => {
   const [daoName, setDaoName] = useState<string>('');

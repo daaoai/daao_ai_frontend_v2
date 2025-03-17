@@ -1,8 +1,8 @@
 import { useState } from 'react';
 import { Abi, Hex, parseUnits, zeroAddress } from 'viem';
 import { useAccount, usePublicClient, useWriteContract } from 'wagmi';
-import { TICKETS } from '@/daao-sdk/abi/tickets';
-import { CARTEL } from '@/daao-sdk/abi/cartel';
+import { TICKETS } from '@/daao-sdk/src/abi/tickets';
+import { CARTEL } from '@/daao-sdk/src/abi/cartel';
 import { CARTEL_TOKEN_ADDRESS, TICKETS_CONTRACT_ADDRESS } from '@/constants/ticket';
 import { decodeEventLog } from 'viem';
 import { useToast } from './use-toast';

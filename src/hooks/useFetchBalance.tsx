@@ -2,8 +2,8 @@ import { useEffect, useState } from 'react';
 // import { useToast } from '@/hooks/use-toast';
 import { useReadContracts } from 'wagmi';
 import { ethers } from 'ethers';
-import { CONTRACT_ABI } from '@/daao-sdk/abi/abi';
-import { MODE_ABI } from '@/daao-sdk/abi/mode';
+import { CONTRACT_ABI } from '@/daao-sdk/src/abi/abi';
+import { MODE_ABI } from '@/daao-sdk/src/abi/mode';
 import { daoAddress, modeTokenAddress } from '@/constants/addresses';
 
 const wagmiModeContract = {

@@ -1,4 +1,4 @@
-import { POOL_ABI } from '@/daao-sdk/abi/pool';
+import { POOL_ABI } from '@/daao-sdk/src/abi/pool';
 import { usePublicClient, useWriteContract } from 'wagmi';
 import useAllowance from '../useAllowance';
 import { Abi, Hex } from 'viem';

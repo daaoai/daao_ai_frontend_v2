@@ -1,4 +1,4 @@
-import { CARTEL } from '@/daao-sdk/abi/cartel';
+import { CARTEL } from '@/daao-sdk/src/abi/cartel';
 import { CARTEL_TOKEN_ADDRESS } from '@/constants/ticket';
 import { handleViemTransactionError } from '@/utils/approval';
 import { Abi, Hex } from 'viem';

@@ -11,13 +11,13 @@ import TicketPurchase from '../ticket';
 import { ModalWrapper } from '../modalWrapper';
 import CollectedTickets from '../collectedTickets';
 import useGetUserTickets from '@/hooks/useGetUserTickets';
-import { MODE_ABI } from '@/daao-sdk/abi/mode';
-import { DAO_TOKEN_ABI } from '@/daao-sdk/abi/daoToken';
-import { VELO_POOL_ABI } from '@/daao-sdk/abi/veloPool';
-import { VELO_FACTORY_ABI } from '@/daao-sdk/abi/veloFactory';
-import { SWAP_ROUTER_SIMULATE } from '@/daao-sdk/abi/swapRouterSimulate';
+import { MODE_ABI } from '@/daao-sdk/src/abi/mode';
+import { DAO_TOKEN_ABI } from '@/daao-sdk/src/abi/daoToken';
+import { VELO_POOL_ABI } from '@/daao-sdk/src/abi/veloPool';
+import { VELO_FACTORY_ABI } from '@/daao-sdk/src/abi/veloFactory';
+import { SWAP_ROUTER_SIMULATE } from '@/daao-sdk/src/abi/swapRouterSimulate';
 import { CURRENT_DAO_IMAGE } from '@/constants/links';
-import { ROUTER_ABI } from '@/daao-sdk/abi/router';
+import { ROUTER_ABI } from '@/daao-sdk/src/abi/router';
 import { Card, CardContent } from '@/shadcn/components/ui/card';
 import { Tabs, TabsList, TabsTrigger } from '@/shadcn/components/ui/tabs';
 import { Button } from '@/shadcn/components/ui/button';
@@ -27,9 +27,16 @@ import { tickSpacing } from '@/constants/modeChain';
 import { Settings2 } from 'lucide-react';
 import SlippageModal from '../slippageModal';
 import { motion } from 'framer-motion';
+import { parseEther } from 'ethers/lib/utils';
+import { useDaaoSdk } from '@/hooks/useDaaoSdk';
+import { Abi } from 'viem';
+import { useSelector } from 'react-redux';
+import { RootState } from '@/store';
 
 const BuySellCard = () => {
   const account = useAccount();
+  const { supportedChainsData } = useSelector((state: RootState) => state.chains);
+  const { chainService } = useDaaoSdk();
   const [activeTab, setActiveTab] = useState<'buy' | 'sell'>('buy');
   const [amountFrom, setAmountFrom] = useState('');
   const [amountTo, setAmountTo] = useState(0);
@@ -45,7 +52,7 @@ const BuySellCard = () => {
   const { ticketIds, refetch: refetchTickets } = useGetUserTickets();
   const accountAddress = account.address as `0x${string}`;
   const { data: fetchedData, refreshData } = useFetchBalance(accountAddress);
-
+  console.log('fetchedData', fetchedData);
   const { data: daoReadData, refetch } = useReadContracts({
     contracts: daoTokenAddress
       ? [
@@ -85,13 +92,20 @@ const BuySellCard = () => {
       }
 
       try {
-        const provider = new ethers.providers.Web3Provider(window.ethereum);
-        const factoryContract = new ethers.Contract(veloFactoryAddress, VELO_FACTORY_ABI, provider);
-        const pool = await factoryContract.callStatic.getPool(modeTokenAddress, daoTokenAddress, tickSpacing);
+        // const provider = new ethers.providers.Web3Provider(window.ethereum);
+        // const factoryContract = new ethers.Contract( veloFactoryAddress, VELO_FACTORY_ABI, provider );
+        const publicClient = chainService?.getClient();
+        const pool = await publicClient?.readContract({
+          address: veloFactoryAddress,
+          abi: VELO_FACTORY_ABI as Abi,
+          functionName: 'getPool',
+          args: [modeTokenAddress, daoTokenAddress, tickSpacing],
+        });
+        // const pool = await factoryContract.callStatic.getPool(modeTokenAddress, daoTokenAddress, tickSpacing);
         console.log('Pool:', pool);
 
         if (pool && pool !== ethers.constants.AddressZero) {
-          setPoolAddress(pool);
+          setPoolAddress(pool as `0x${string}`);
           console.log('Pool Address:', pool);
         } else {
           console.log('Pool does not exist for these tokens.');
@@ -165,7 +179,7 @@ const BuySellCard = () => {
   const zeroForOne = computeZeroForOne();
 
   async function simulateSwap(newFromValue: string) {
-    if (!window.ethereum || !poolAddress || !currentSqrtPrice) return;
+    if (!window.ethereum || !poolAddress || !currentSqrtPrice || !account.chainId) return;
     try {
       if (activeTab === 'buy') {
         if (Number(modeBalance) < Number(newFromValue)) {
@@ -181,36 +195,25 @@ const BuySellCard = () => {
           return;
         }
       }
-      const provider = new ethers.providers.Web3Provider(window.ethereum);
-      const signer = provider.getSigner();
-      const clPoolRouter = new ethers.Contract(swapRouterAddress, SWAP_ROUTER_SIMULATE, signer);
-      const amountSpecified = ethers.utils.parseUnits(newFromValue, 18);
-      // const minOutput = 0;
-      if (!currentSqrtPrice) return;
-      // const sqrtPriceBN = ethers.BigNumber.from(currentSqrtPrice);
-      // let sqrtPriceLimitBN: ethers.BigNumber;
-      // const slippageBps = 1;
-      // if (zeroForOne) {
-      //   sqrtPriceLimitBN = sqrtPriceBN.mul(100 - slippageBps).div(100);
-      // } else {
-      //   sqrtPriceLimitBN = sqrtPriceBN.mul(100 + slippageBps).div(100);
-      // }
-      console.log('sqrtPriceLimitBN:', currentSqrtPrice);
-      console.log('zeroForOne:', zeroForOne);
-      const sqrtPriceLimitX96 = currentSqrtPrice;
-      // const deadline = Math.floor(Date.now() / 1000) + 5 * 60;
-      const amount1 = await clPoolRouter.callStatic.quoteExactInputSingle(
-        poolAddress,
-        zeroForOne,
-        amountSpecified,
-        sqrtPriceLimitX96,
-      );
 
-      let outBnAbs = amount1;
-      if (outBnAbs.lt(0)) {
-        outBnAbs = outBnAbs.mul(-1);
+      // Simulate the swap using SDK
+      const result = await chainService?.simulate({
+        address: supportedChainsData[account.chainId].dexInfo.swapRouterAddress,
+        abi: SWAP_ROUTER_SIMULATE as Abi,
+        functionName: 'quoteExactInputSingle',
+        args: [poolAddress, zeroForOne, parseEther(newFromValue), currentSqrtPrice],
+        account: account.address,
+      });
+
+      if (!result?.success || !result?.result) {
+        throw new Error(result?.error || 'Simulation failed');
       }
-      const outTokens = ethers.utils.formatUnits(outBnAbs, 18);
+      console.log('result', result);
+      // Process the result
+      const amountOut = result.result as bigint;
+      const outAmount = amountOut < 0n ? -amountOut : amountOut;
+
+      const outTokens = ethers.utils.formatUnits(outAmount, 18);
 
       console.log('Simulated swap output:', outTokens);
       setAmountTo(parseFloat(outTokens));

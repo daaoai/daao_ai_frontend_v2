@@ -3,9 +3,9 @@ import { useAccount, usePublicClient } from 'wagmi';
 import useTokenPrice from '../useTokenPrice';
 import { formatUnits } from 'viem';
 import { FarmPool } from '@/types/farm';
-import { FARM_FACTORY_ABI } from '@/daao-sdk/abi/farmFactory';
-import { POOL_ABI } from '@/daao-sdk/abi/pool';
-import { CARTEL } from '@/daao-sdk/abi/cartel';
+import { FARM_FACTORY_ABI } from '@/daao-sdk/src/abi/farmFactory';
+import { POOL_ABI } from '@/daao-sdk/src/abi/pool';
+import { CARTEL } from '@/daao-sdk/src/abi/cartel';
 
 const usePoolList = () => {
   const { address } = useAccount();

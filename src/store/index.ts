@@ -1,12 +1,14 @@
 'use client';
 import { appEnv } from '@/constants/app';
 import { configureStore, createAction } from '@reduxjs/toolkit';
-const rootReducer = (state = {}) => state;
+import chainsReducer from './reducers/chain';
 
 export const updateVersion = createAction<void>('global/updateVersion');
 
 export const store = configureStore({
-  reducer: rootReducer,
+  reducer: {
+    chains: chainsReducer,
+  },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({
       serializableCheck: {},

@@ -1,0 +1,21 @@
+
+ {  
+    "34443": {
+                "chainId": 34443,
+                "name": "Mode",
+                "rpcUrl": "https://34443.rpc.thirdweb.com",
+                "blockExplorer": "https://modescan.io",
+                "nativeCurrency": {
+                    "name": "ETH",
+                    "symbol": "ETH",
+                    "decimals": 18
+                },
+                "dexInfo": {
+                    "type": "Velodrome",
+                    "factoryAddress": "0x04625B046C69577EfC40e6c0Bb83CDBAfab5a55F",
+                    "routerAddress": "0x0000000000000000000000000000000000000000",
+                    "swapRouterAddress": "0xB11f2310D1b3FF589af56b981c17BC57dee1D488",
+                    "quoterAddress": "0xD24a61656AB0d70994Ef5F42fE11AA95c0a1d329"
+                }
+            }
+}
