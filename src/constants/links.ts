@@ -17,6 +17,8 @@ export const socialLinks: FooterData[] = [
 
 export const telegramLink = 'https://t.me/daaoai';
 export const twitterLink = 'https://x.com/daaoai';
+export const telegramDeFAILink = 'https://t.me/defaicartel';
+export const twitterDeFAILink = 'https://x.com/DeFAICartel';
 
 export const DefaiCartelLinks: FooterData[] = [
   {
