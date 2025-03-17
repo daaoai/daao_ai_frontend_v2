@@ -9,7 +9,7 @@ import { shortenAddress } from '@/utils/address';
 import type { FundDetailsProps } from '@/types';
 import { daoAddress } from '@/constants/addresses';
 import ClickToCopy from '../copyToClipboard';
-import { telegramLink, twitterLink } from '@/constants/links';
+import { telegramDeFAILink, telegramLink, twitterDeFAILink, twitterLink } from '@/constants/links';
 import PoolDetailCard from '../poolDetailCard';
 import { ModalWrapper } from '../modalWrapper';
 
@@ -194,7 +194,7 @@ const FundDetails: React.FC<FundDetailsProps> = (props) => {
               style={{ width: '100%' }}
             />
           </a>
-          <a href={telegramLink} target="_blank" rel="noopener noreferrer">
+          <a href={telegramDeFAILink} target="_blank" rel="noopener noreferrer">
             <Image
               src="/assets/telegram-icon.svg"
               alt="defai-cartel"
@@ -204,7 +204,7 @@ const FundDetails: React.FC<FundDetailsProps> = (props) => {
               style={{ width: '100%' }}
             />
           </a>
-          <a href={twitterLink} target="_blank" rel="noopener noreferrer">
+          <a href={twitterDeFAILink} target="_blank" rel="noopener noreferrer">
             <Image
               src="/assets/x.svg"
               alt="defai-cartel"
