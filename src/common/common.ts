@@ -11,8 +11,8 @@ export const quoterAddress = "0x3bC8f037691Ce1d28c0bB224BD33563b49F99dE8";
 export const veloFactoryAddress = "0x46B3fDF7b5CDe91Ac049936bF0bDb12c5d22202e";
 export const nonFungiblePositionManagerAddress =
   "0x0389879e0156033202C44BF784ac18fC02edeE4f";
-export const swapRouter = "0x2151030abf5d0050A88039FD30Ac7E85AD1e4Ea3";
+export const swapRouter = "0x89dbe9e898c46a34bbe22c227d3c2e74d24b760b";
 export const daoAddress = "0x402f35e11cC6E89E80EFF4205956716aCd94be04";
 export const modeChainId = 534352;
 export const modeTokenAddress = "0xd29687c813D741E2F938F4aC377128810E217b1b";
-export const SWAP_ROUTER_ADDRESS = "0x2151030abf5d0050A88039FD30Ac7E85AD1e4Ea3";
+export const SWAP_ROUTER_ADDRESS = "0x89dbe9e898c46a34bbe22c227d3c2e74d24b760b";

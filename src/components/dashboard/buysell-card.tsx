@@ -41,14 +41,15 @@ import {
   WalletClient,
   erc20Abi,
   maxUint256,
+  type Address,
 } from "viem";
 import { scroll } from "viem/chains"; // or whatever chain you're using
 import { numberToString } from "@/utils/number";
 
 const TICK_SPACING = 10000;
 const VELODROME_FACTORY_ADDRESS = "0x46B3fDF7b5CDe91Ac049936bF0bDb12c5d22202e";
-const CL_POOL_ROUTER_ADDRESS = "0xC3a15f812901205Fc4406Cd0dC08Fe266bF45a1E";
-const MODE_TOKEN_ADDRESS = "0xd29687c813D741E2F938F4aC377128810E217b1b";
+// const CL_POOL_ROUTER_ADDRESS = "0xC3a15f812901205Fc4406Cd0dC08Fe266bF45a1E";
+const MODE_TOKEN_ADDRESS = "0xd29687c813D741E2F938F4aC377128810E217b1b"; // 0xd29687c813D741E2F938F4aC377128810E217b1b
 
 // Create the public client outside the component (could be in a separate config file)
 const publicClient = createPublicClient({
@@ -72,7 +73,7 @@ const Buysell = () => {
   const [modeBalance, setModeBalance] = useState("0");
   const [daoTokenAddress, setDaoTokenAddress] = useState("");
   const [poolAddress, setPoolAddress] = useState("");
-  const [fetcher, setFetcher] = useState(false);
+  // const [fetcher, setFetcher] = useState(false);
   const { daoBalance, setDaoBalance } = useFundContext();
 
   const accountAddress = account.address as `0x${string}`;
@@ -173,15 +174,29 @@ const Buysell = () => {
 
   async function fetchPoolTokens() {
     if (!poolAddress) return;
-    if (!window.ethereum) return;
+
     try {
-      const provider = new ethers.providers.Web3Provider(window.ethereum);
-      const poolContract = new ethers.Contract(poolAddress, poolAbi, provider);
-      const t0 = await poolContract.token0();
-      const t1 = await poolContract.token1();
-      if (t0 === MODE_TOKEN_ADDRESS) {
+      // Read token0
+      const token0 = await publicClient.readContract({
+        address: poolAddress as Address,
+        abi: poolAbi,
+        functionName: "token0",
+      });
+
+      // Read token1
+      const token1 = await publicClient.readContract({
+        address: poolAddress as Address,
+        abi: poolAbi,
+        functionName: "token1",
+      });
+
+      console.log("token0:", token0);
+      console.log("token1:", token1);
+
+      // Check which token is MODE
+      if (token0 === MODE_TOKEN_ADDRESS) {
         setFirstTokenMode(true);
-      } else if (t1 === MODE_TOKEN_ADDRESS) {
+      } else if (token1 === MODE_TOKEN_ADDRESS) {
         setFirstTokenMode(false);
       }
     } catch (error) {
@@ -198,6 +213,7 @@ const Buysell = () => {
   }
 
   function computeZeroForOne() {
+    console.log(firstTokenMode, "---- firstTokenMode");
     if (firstTokenMode === null) {
       return false;
     }
@@ -209,6 +225,8 @@ const Buysell = () => {
   }
 
   const zeroForOne = computeZeroForOne();
+
+  console.log(zeroForOne, "---- zeroForOne");
 
   async function simulateSwap(newFromValue: string) {
     console.log(poolAddress, "poolAddress");
@@ -370,6 +388,17 @@ const Buysell = () => {
       const minOutputBN = parseUnits(minOutputNumber.toFixed(6), 18);
       const deadline = BigInt(Math.floor(Date.now() / 1000) + 60 * 5);
       const sqrtPriceLimitX96 = BigInt(currentSqrtPrice);
+
+      console.log({
+        input: [
+          poolAddress,
+          zeroForOne,
+          Number(amountSpecified),
+          sqrtPriceLimitX96,
+          minOutputBN,
+          deadline,
+        ],
+      });
 
       // Execute swap using writeContract
       const hash = await walletClient.writeContract({
