@@ -27,42 +27,44 @@ import { FundProvider } from "../components/dashboard/FundContext";
 
 function MyApp({ Component, pageProps }: AppProps) {
   const fontChoice = pageProps.useSyneMono ? syne.className : gold.className;
-  console.log('Mode chain ID', config);
+  console.log("Mode chain ID", config);
 
   return (
     <WagmiProvider config={config}>
-      <SessionProvider session={pageProps.session}>
-        <QueryClientProvider client={client}>
-          <RainbowKitSiweNextAuthProvider
+      {/* <SessionProvider session={pageProps.session}> */}
+      <QueryClientProvider client={client}>
+        {/* <RainbowKitSiweNextAuthProvider
             getSiweMessageOptions={getSiweMessageOptions}
+          > */}
+        <RainbowKitProvider>
+          <ThemeProvider
+            attribute="class"
+            defaultTheme="dark"
+            enableSystem
+            disableTransitionOnChange
           >
-            <RainbowKitProvider>
-              <ThemeProvider
-                attribute="class"
-                defaultTheme="dark"
-                enableSystem
-                disableTransitionOnChange
-              >
-                <Layout font={fontChoice}>
-                  <FundProvider>
-                    <Component {...pageProps} />
-                  </FundProvider>
-                </Layout>
-              </ThemeProvider>
-            </RainbowKitProvider>
-          </RainbowKitSiweNextAuthProvider>
-        </QueryClientProvider>
-      </SessionProvider>
+            <Layout font={fontChoice}>
+              <FundProvider>
+                <Component {...pageProps} />
+              </FundProvider>
+            </Layout>
+          </ThemeProvider>
+        </RainbowKitProvider>
+        {/* </RainbowKitSiweNextAuthProvider> */}
+      </QueryClientProvider>
+      {/* </SessionProvider> */}
     </WagmiProvider>
   );
 }
 
-function Layout({ children, font }: { children: React.ReactNode; font?: string }) {
-  return (
-    <div className={font || gold.className}>
-      {children}
-    </div>
-  );
+function Layout({
+  children,
+  font,
+}: {
+  children: React.ReactNode;
+  font?: string;
+}) {
+  return <div className={font || gold.className}>{children}</div>;
 }
 
 export default MyApp;

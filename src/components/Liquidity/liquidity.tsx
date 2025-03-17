@@ -56,7 +56,7 @@ const Liquidity = () => {
     const [token0Amount, setToken0Amount] = useState('');
     const [token1Amount, setToken1Amount] = useState('');
     const [token0, setToken0] = useState('CARTEL');
-    const [token1, setToken1] = useState('MODE');
+    const [token1, setToken1] = useState('SCROLL');
     const [selectedRange, setSelectedRange] = useState('25');
     const [customRange, setCustomRange] = useState('');
     const [daoToken, setDaoToken] = useState<{
@@ -748,7 +748,8 @@ const Liquidity = () => {
                                         <div className="flex justify-between items-center mb-2">
                                             <div className="flex items-center gap-2 rounded-full px-3 py-1 cursor-pointer">
                                                 <Image
-                                                    src={daoToken?.symbol === token0 ? CURRENT_DAO_IMAGE : ModeTokenLogo}
+                                                    src={daoToken?.symbol === token0 ? CURRENT_DAO_IMAGE :                 "https://scrollscan.com/assets/generic/html/favicon-light.ico"
+                                                    }
                                                     alt="Token logo"
                                                     width={24}
                                                     height={24}
@@ -788,7 +789,8 @@ const Liquidity = () => {
                                         <div className="flex justify-between items-center mb-2">
                                             <div className="flex items-center gap-2 rounded-full px-3 py-1 cursor-pointer">
                                                 <Image
-                                                    src={daoToken?.symbol === token1 ? CURRENT_DAO_IMAGE : ModeTokenLogo}
+                                                    src={daoToken?.symbol === token1 ? CURRENT_DAO_IMAGE :                 "https://scrollscan.com/assets/generic/html/favicon-light.ico"
+                                                    }
                                                     alt="Token logo"
                                                     width={24}
                                                     height={24}

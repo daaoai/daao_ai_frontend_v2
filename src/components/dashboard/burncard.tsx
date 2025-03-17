@@ -1,28 +1,24 @@
-import { Card, CardContent, CardHeader } from "@/components/ui/card"
-import { Input } from "@/components/ui/input"
-import { Button } from "@/components/ui/button"
-import { Separator } from "@/components/ui/separator"
-import { handleContribute } from "@/contributeFund"
-import { useEffect, useState } from "react"
-import { useToast } from '@/hooks/use-toast';
-import { useAccount, useReadContracts } from 'wagmi'
+import { Card, CardContent, CardHeader } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import { Separator } from "@/components/ui/separator";
+import { handleContribute } from "@/contributeFund";
+import { useEffect, useState } from "react";
+import { useToast } from "@/hooks/use-toast";
+import { useAccount, useReadContracts } from "wagmi";
 import contractABI from "../../abi.json";
 // import { useFetchBalance } from "./fetchBalance"
 import { useFundContext } from "./FundContext";
-import { workSans } from "@/lib/fonts"
-
-
+import { workSans } from "@/lib/fonts";
 
 const wagmiDaoContract = {
   address: "0xEc7b0FD288E87eBC1C301E360092c645567e79B9",
-  abi: contractABI
-
+  abi: contractABI,
 } as const;
-
 
 export default function BurnCard(props: UpcomingFundDetailsProps) {
   const { toast } = useToast();
-  const {isConnected} = useAccount();
+  const { isConnected } = useAccount();
   const { fetchedData, refreshData, updateTotalContributed } = useFundContext();
   const [amount, setAmount] = useState<number>();
   const [balance, setBalance] = useState("");
@@ -33,21 +29,29 @@ export default function BurnCard(props: UpcomingFundDetailsProps) {
   const [maxLimit, setMaxLimit] = useState(0);
   const [fundraisingFinalized, setFundraisingFinalized] = useState(false);
   const [leftoutAmount, setLeftoutAmount] = useState(0);
-  const [maxAmount , setMaxAmount] = useState(0);
+  const [maxAmount, setMaxAmount] = useState(0);
 
   useEffect(() => {
     if (fetchedData) {
-      if (balance === "" || tier === "" || isWhitelisted === false || maxLimit === 0 || leftoutAmount === 0) {
+      if (
+        balance === "" ||
+        tier === "" ||
+        isWhitelisted === false ||
+        maxLimit === 0 ||
+        leftoutAmount === 0
+      ) {
         setBalance(fetchedData.balance);
         setTier(fetchedData.userTierLabel);
         setisWhitelisted(fetchedData.isWhitelisted);
         setMaxLimit(fetchedData.maxLimit);
-        setLeftoutAmount(fetchedData.maxLimit - fetchedData.contributedAmountYet);
+        setLeftoutAmount(
+          fetchedData.maxLimit - fetchedData.contributedAmountYet
+        );
       }
       console.log("goalReached is ", fetchedData.goalReached);
       if (fetchedData.goalReached) {
         setGoalReached(true);
-      };
+      }
       console.log("Balance is ", balance);
     }
   }, [fetchedData]);
@@ -57,11 +61,15 @@ export default function BurnCard(props: UpcomingFundDetailsProps) {
       {
         ...wagmiDaoContract,
         functionName: "fundraisingFinalized",
-      }
+      },
     ],
-  })
+  });
 
-  if (data && typeof data[0]?.result === "boolean" && data[0]?.result !== fundraisingFinalized) {
+  if (
+    data &&
+    typeof data[0]?.result === "boolean" &&
+    data[0]?.result !== fundraisingFinalized
+  ) {
     setFundraisingFinalized(data[0]?.result);
   }
 
@@ -73,7 +81,7 @@ export default function BurnCard(props: UpcomingFundDetailsProps) {
       toast({
         title: "Fundraising is not finalised yet",
         variant: "destructive",
-        className: `${workSans.className}`
+        className: `${workSans.className}`,
       });
     }
   };
@@ -83,14 +91,13 @@ export default function BurnCard(props: UpcomingFundDetailsProps) {
     setAmount(value);
   };
   const handleMaxAmount = () => {
-    if(balance === "" || leftoutAmount === 0) return;
-    if(Number(balance) > leftoutAmount){
-    setAmount(leftoutAmount);
-    }
-    else if(Number(balance) < leftoutAmount){
+    if (balance === "" || leftoutAmount === 0) return;
+    if (Number(balance) > leftoutAmount) {
+      setAmount(leftoutAmount);
+    } else if (Number(balance) < leftoutAmount) {
       setAmount(Number(balance));
     }
-  }
+  };
 
   const handleContributefunction = async () => {
     try {
@@ -99,8 +106,8 @@ export default function BurnCard(props: UpcomingFundDetailsProps) {
           title: "Please connect your wallet first",
           description: "It looks like your wallet isn't connected",
           variant: "destructive",
-          className: `${workSans.className}`
-        })
+          className: `${workSans.className}`,
+        });
         return;
       }
       if (!amount || amount <= 0) {
@@ -116,8 +123,8 @@ export default function BurnCard(props: UpcomingFundDetailsProps) {
         toast({
           title: "You do not have enough balance to contribute this amount",
           variant: "destructive",
-          className: `${workSans.className}`
-        })
+          className: `${workSans.className}`,
+        });
 
         return;
       }
@@ -125,8 +132,8 @@ export default function BurnCard(props: UpcomingFundDetailsProps) {
         toast({
           title: "You are not whitelisted to contribute to this fund",
           variant: "destructive",
-          className: `${workSans.className}`
-        })
+          className: `${workSans.className}`,
+        });
         return;
       }
       setIsContributing(true);
@@ -136,22 +143,24 @@ export default function BurnCard(props: UpcomingFundDetailsProps) {
         toast({
           title: "Amount exceeds tier limit",
           variant: "destructive",
-          className: `${workSans.className}`
+          className: `${workSans.className}`,
         });
         setIsContributing(false);
         return;
       }
 
-      if(tx===5){
-       setBalance((prev) => (Number(prev) - Number(amount)).toFixed(3));
-      setLeftoutAmount((prev) => Number((Number(prev) - Number(amount)).toFixed(3)));
+      if (tx === 5) {
+        setBalance((prev) => (Number(prev) - Number(amount)).toFixed(3));
+        setLeftoutAmount((prev) =>
+          Number((Number(prev) - Number(amount)).toFixed(3))
+        );
       }
 
       if (tx === 1) {
         toast({
           title: "Error contributing to fund",
           variant: "destructive",
-          className: `${workSans.className}`
+          className: `${workSans.className}`,
         });
         setIsContributing(false);
         return;
@@ -160,7 +169,7 @@ export default function BurnCard(props: UpcomingFundDetailsProps) {
         toast({
           title: "Amount exceeds tier limit",
           variant: "destructive",
-          className: `${workSans.className}`
+          className: `${workSans.className}`,
         });
         setIsContributing(false);
         return;
@@ -169,7 +178,7 @@ export default function BurnCard(props: UpcomingFundDetailsProps) {
       setIsContributing(false);
       toast({
         title: "Successfully contributed to the fund",
-        className: `${workSans.className} bg-[#2ca585]`
+        className: `${workSans.className} bg-[#2ca585]`,
       });
       await refreshData();
       updateTotalContributed(amount);
@@ -178,8 +187,7 @@ export default function BurnCard(props: UpcomingFundDetailsProps) {
       console.error("Error contributing to fund:", error);
       setIsContributing(false);
     }
-   
-  }
+  };
 
   return (
     <Card className="text-left w-full max-w-3xl bg-[#0d0d0d] border-[#383838] text-white font-['Work Sans']">
@@ -187,7 +195,9 @@ export default function BurnCard(props: UpcomingFundDetailsProps) {
         <>
           <CardHeader className="space-y-9">
             <div className="flex items-center gap-3">
-              <span className="text-[#409cff] text-2xl sm:text-3xl font-semibold">Whitelist</span>
+              <span className="text-[#409cff] text-2xl sm:text-3xl font-semibold">
+                Whitelist
+              </span>
               <h2 className="text-2xl sm:text-3xl font-semibold">Allocation</h2>
             </div>
             <div className="space-y-6">
@@ -199,12 +209,27 @@ export default function BurnCard(props: UpcomingFundDetailsProps) {
                   value={amount}
                   onChange={handleInputChange}
                 />
-                <button className="text-[#e4e6e7] text-sm sm:text-base font-medium" onClick={handleMaxAmount}>MAX</button>
+                <button
+                  className="text-[#e4e6e7] text-sm sm:text-base font-medium"
+                  onClick={handleMaxAmount}
+                >
+                  MAX
+                </button>
               </div>
               <div className="space-y-3">
-                <p className="text-base sm:text-lg font-medium">Balance: <span className="font-semibold">{Number(balance).toFixed(3)}</span></p>
-                <p className="text-base sm:text-lg font-medium">Tier: <span className="font-semibold">{tier}</span></p>
-                <p className="text-base sm:text-lg font-medium">Limit Left: <span className="font-semibold">{leftoutAmount} MODE</span></p>
+                <p className="text-base sm:text-lg font-medium">
+                  Balance:{" "}
+                  <span className="font-semibold">
+                    {Number(balance).toFixed(3)}
+                  </span>
+                </p>
+                <p className="text-base sm:text-lg font-medium">
+                  Tier: <span className="font-semibold">{tier}</span>
+                </p>
+                <p className="text-base sm:text-lg font-medium">
+                  Limit Left:{" "}
+                  <span className="font-semibold">{leftoutAmount} SCROLL</span>
+                </p>
 
                 <Button
                   variant="outline"
@@ -224,43 +249,35 @@ export default function BurnCard(props: UpcomingFundDetailsProps) {
           <div className="space-y-10">
             <h3 className="text-[#409cff] text-2xl sm:text-2xl font-semibold mt-7 mx-4 my-6">
               Goal Has Been Reached
-
             </h3>
 
-
             <Button
-
               className="bg-[#409cff] text-white text-lg sm:text-xl font-semibold hover:bg-[#307bcc] w-100 mx-8"
               onClick={checkFinalisedFundraising}
             >
-
               Go to Token Dashboard
             </Button>
-
           </div>
         </>
       )}
       <CardContent className="space-y-8 mt-8">
         <div className="space-y-4">
-
           <h3 className="text-[#409cff] text-xl sm:text-2xl font-semibold">
             About Token
           </h3>
           <div className="text-base sm:text-lg">
-            {
-              props.aboutToken.trim()
-                .split("\n")
-                .map((paragraph, index) => (
-                  <p key={index} className="text-base sm:text-lg">
-                    {paragraph}
-                    <br />
-                  </p>
-                ))
-            }
+            {props.aboutToken
+              .trim()
+              .split("\n")
+              .map((paragraph, index) => (
+                <p key={index} className="text-base sm:text-lg">
+                  {paragraph}
+                  <br />
+                </p>
+              ))}
           </div>
         </div>
       </CardContent>
     </Card>
-  )
+  );
 }
-

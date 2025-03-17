@@ -1,37 +1,31 @@
-import {
-  getDefaultConfig,
-  connectorsForWallets,
-
-} from '@rainbow-me/rainbowkit';
-import { mode , mainnet} from 'wagmi/chains';
+import { getDefaultConfig, connectorsForWallets } from "@rainbow-me/rainbowkit";
+import { scroll, mainnet } from "wagmi/chains";
 import {
   metaMaskWallet,
   coinbaseWallet,
   walletConnectWallet,
-  injectedWallet
-} from '@rainbow-me/rainbowkit/wallets';
-import { http, createConfig } from 'wagmi'
+  injectedWallet,
+} from "@rainbow-me/rainbowkit/wallets";
+import { http, createConfig } from "wagmi";
 
 export const config = getDefaultConfig({
-  appName: 'RainbowKit App',
-  projectId: 'YOUR_PROJECT_ID',
-  chains: [mode],
+  appName: "RainbowKit App",
+  projectId: "YOUR_PROJECT_ID",
+  chains: [scroll],
   ssr: true,
-  
+
   wallets: [
     {
-      groupName: 'Recommended',
+      groupName: "Recommended",
       wallets: [
         metaMaskWallet,
         coinbaseWallet,
         walletConnectWallet,
-        injectedWallet
-        
+        injectedWallet,
       ],
     },
   ],
   transports: {
-    [mode.id]: http(mode.rpcUrls.default.http[0]), // Ensure RPC is set correctly
+    [scroll.id]: http(scroll.rpcUrls.default.http[0]), // Ensure RPC is set correctly
   },
-  
 });

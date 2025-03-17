@@ -1,29 +1,29 @@
-import { PageLayout } from '@/components/page-layout';
-import React, { useState, useEffect } from 'react';
-import { workSans } from '@/lib/fonts';
-import FundDetails from '@/components/dashboard/fundcard-details';
-import Buysell from '@/components/dashboard/buysell-card';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@radix-ui/react-tabs';
-import Orderbook from '@/components/dashboard/orderbook';
-import { getContractData } from "../../../getterFunctions"
-import { useFetchBalance } from "../../../components/dashboard/fetchBalance"
+import { PageLayout } from "@/components/page-layout";
+import React, { useState, useEffect } from "react";
+import { workSans } from "@/lib/fonts";
+import FundDetails from "@/components/dashboard/fundcard-details";
+import Buysell from "@/components/dashboard/buysell-card";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@radix-ui/react-tabs";
+import Orderbook from "@/components/dashboard/orderbook";
+import { getContractData } from "../../../getterFunctions";
+import { useFetchBalance } from "../../../components/dashboard/fetchBalance";
 import { useAccount } from "wagmi";
-import { CURRENT_DAO_IMAGE, FUND_CARD_PLACEHOLDER_IMAGE } from '@/lib/links';
-import { AssetTable } from '@/components/table/assets-table';
-import { assetColumns } from '@/components/table/assets-columns';
+import { CURRENT_DAO_IMAGE, FUND_CARD_PLACEHOLDER_IMAGE } from "@/lib/links";
+import { AssetTable } from "@/components/table/assets-table";
+import { assetColumns } from "@/components/table/assets-columns";
 import { useFundContext } from "../../../components/dashboard/FundContext";
 
 const Dashboard: React.FC = () => {
   const account = useAccount();
   const accountAddress = account.address as `0x${string}`;
   const { data: fetchedData, refreshData } = useFetchBalance(accountAddress);
-  const [daoTokenAddress, setDaoTokenAddress] = useState('');
+  const [daoTokenAddress, setDaoTokenAddress] = useState("");
   const { daoBalance, priceUsd } = useFundContext();
   useEffect(() => {
-    console.log("daoToken is", fetchedData?.daoToken)
+    console.log("daoTokenis", fetchedData?.daoToken);
     if (!fetchedData) return;
     if (!daoTokenAddress) {
-      setDaoTokenAddress(fetchedData?.daoToken)
+      setDaoTokenAddress(fetchedData?.daoToken);
     }
   }, [fetchedData]);
 
@@ -31,7 +31,8 @@ const Dashboard: React.FC = () => {
     icon: CURRENT_DAO_IMAGE, // Placeholder image URL
     shortname: "CARTEL",
     longname: "",
-    description: "DeFAI Venture DAO is a DeFAI Investment DAO dedicated to advancing the DeFAI movement by strategically investing in AI Agents and AI-focused DAOs on Mode. As a collective force in decentralized AI finance, $CARTEL empowers the AI-driven movement on Mode, fostering the growth of autonomous, AI-powered ecosystems.",
+    description:
+      "DeFAI Venture DAO is a DeFAI Investment DAO dedicated to advancing the DeFAI movement by strategically investing in AI Agents and AI-focused DAOs on Mode. As a collective force in decentralized AI finance, $CARTEL empowers the AI-driven movement on Mode, fostering the growth of autonomous, AI-powered ecosystems.",
     holdings: 0,
     modeAddress: "0x5edbe707191Ae3A5bd5FEa5EDa0586f7488bD961",
   };
@@ -44,17 +45,16 @@ const Dashboard: React.FC = () => {
       price: priceUsd,
       totalValue: priceUsd * Number(daoBalance),
     },
-  ]
+  ];
 
-  const [activeTab, setActiveTab] = useState("trades")
+  const [activeTab, setActiveTab] = useState("trades");
 
   return (
     <PageLayout title="App" description="main-app" app={true}>
-      <div className={`w-screen overflow-hidden gap-20 ${workSans.className} flex flex-col justify-center items-center py-16 px-2 lg:px-44`}>
-
-        <div
-          className="grid gap-2 md:gap-3 lg:grid-cols-[60%_40%] w-full"
-        >
+      <div
+        className={`w-screen overflow-hidden gap-20 ${workSans.className} flex flex-col justify-center items-center py-16 px-2 lg:px-44`}
+      >
+        <div className="grid gap-2 md:gap-3 lg:grid-cols-[60%_40%] w-full">
           <div className="p-2 sm:p-4 flex items-center justify-center">
             <FundDetails {...props} />
           </div>
@@ -63,11 +63,14 @@ const Dashboard: React.FC = () => {
           </div>
         </div>
 
-        <div className='w-full flex justify-center lg:justify-start items-center lg:items-start px-8 py-0 my-0'>
-          <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+        <div className="w-full flex justify-center lg:justify-start items-center lg:items-start px-8 py-0 my-0">
+          <Tabs
+            value={activeTab}
+            onValueChange={setActiveTab}
+            className="w-full"
+          >
             {/* <TabsList className="h-12 bg-[#1b1c1d] justify-start items-center gap-6 inline-flex mb-6"> */}
             <TabsList className="h-12  justify-start items-center gap-6 mb-6 flex">
-
               <TabsTrigger
                 value="trades"
                 className="px-4 py-3 rounded border justify-center items-center gap-2 flex transition-all 
@@ -113,7 +116,7 @@ const Dashboard: React.FC = () => {
                     owner="0xb51eC6F7D3E0D0FEae495eFe1f0751dE66b6be95"
                     token={daoTokenAddress}
                     tradingEnds="10/3/2025"
-                    ethRaised="100 MODE"
+                    ethRaised="100 SCROLL"
                   />
                 </div>
               </div>
@@ -131,8 +134,7 @@ const Dashboard: React.FC = () => {
                       className="h-[400px] w-full border-0 sm:h-[600px]"
                       src={`https://dexscreener.com/mode/${daoTokenAddress}?embed=1&loadChartSettings=0&trades=0&tabs=0&info=0&chartLeftToolbar=0&chartTheme=dark&theme=dark&chartStyle=0&chartType=usd&interval=15`}
                     ></iframe>
-                  )
-                  }
+                  )}
                 </div>
 
                 {/* Right Section - 30% */}
@@ -143,31 +145,24 @@ const Dashboard: React.FC = () => {
                     owner="0xb51eC6F7D3E0D0FEae495eFe1f0751dE66b6be95"
                     token={daoTokenAddress}
                     tradingEnds="10/3/2025"
-                    ethRaised="1,000,000 MODE"
+                    ethRaised="1,000,000 SCROLL"
                   />
                 </div>
               </div>
             </TabsContent>
 
-
-
             <TabsContent value="assets" className="w-full">
               <div className="p-2 flex flex-col justify-center items-center">
                 <div className="w-full flex justify-between items-center py-4">
-                  <span className='font-bold text-xl'>Token Balances</span>
+                  <span className="font-bold text-xl">Token Balances</span>
                 </div>
                 <AssetTable columns={assetColumns} data={assetsData} />
               </div>
             </TabsContent>
           </Tabs>
-
         </div>
-
-
-
-
       </div>
-    </PageLayout >
+    </PageLayout>
   );
 };
 

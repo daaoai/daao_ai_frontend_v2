@@ -6,7 +6,11 @@ import { Typography } from "@/components/ui/typography";
 import Link from "next/link";
 import Image from "next/image";
 import { ArrowRight } from "lucide-react";
-import { CURRENT_DAO_IMAGE, DefaiCartelLinks, WHITEPAPER_URL } from "@/lib/links";
+import {
+  CURRENT_DAO_IMAGE,
+  DefaiCartelLinks,
+  WHITEPAPER_URL,
+} from "@/lib/links";
 import { FooterIconLink } from "@/components/footer";
 import { gold, syne } from "@/lib/fonts";
 // import { Input } from "@/components/ui/input";
@@ -15,7 +19,6 @@ import CheckWaitlistModal from "@/components/landing/waitlist-modal";
 import { ethers } from "ethers";
 import contractABI from "../abi.json";
 import { commaSeparator, formatNumber } from "@/lib/utils";
-
 
 const HomePage: NextPage = () => {
   // const [email, setEmail] = useState("");
@@ -74,58 +77,62 @@ const HomePage: NextPage = () => {
   //   }
   // };
 
-
-  const calculateTokenChange = (marketCap: number, percentageChange: number): number => {
+  const calculateTokenChange = (
+    marketCap: number,
+    percentageChange: number
+  ): number => {
     return (marketCap * percentageChange) / 100;
   };
 
   useEffect(() => {
-    const modeRpc = "https://mainnet.mode.network/";
-    const daoAddress = "0xEc7b0FD288E87eBC1C301E360092c645567e79B9"
+    const modeRpc = "https://rpc.scroll.io";
+    const daoAddress = "0xEc7b0FD288E87eBC1C301E360092c645567e79B9";
     const fetchMarketData = async () => {
-
       const provider = new ethers.providers.JsonRpcProvider(modeRpc);
 
       const signer = provider.getSigner();
 
-      const contract = new ethers.Contract(daoAddress as string, contractABI, provider);
-      const daoToken = (await contract.daoToken());
+      const contract = new ethers.Contract(
+        daoAddress as string,
+        contractABI,
+        provider
+      );
+      const daoToken = await contract.daoToken();
       // setDaoTokenAddress(daoToken)
       // if (!daoTokenAddress) return
 
-
       // const url = `https://api.dexscreener.com/token-pairs/v1/mode/${daoTokenAddress}`
-      const url = `https://api.dexscreener.com/token-pairs/v1/mode/${daoToken}`
-      console.log("url is ", url)
+      const url = `https://api.dexscreener.com/token-pairs/v1/mode/${daoToken}`;
+      console.log("url is ", url);
       try {
         // Replace with your actual endpoint or logic
-        const response = await fetch(
-          url,
-        )
-        const data = await response.json()
-        console.log("Data from api is  is ", data)
+        const response = await fetch(url);
+        const data = await response.json();
+        console.log("Data from api is  is ", data);
 
         if (data && Array.isArray(data) && data[0]) {
-          setPrice(data[0].priceUsd)
+          setPrice(data[0].priceUsd);
           // setPriceUsd(data[0].priceUsd)
           // setPriceUsd(23)
           // const marketCap = (Number(data[0].priceUsd) * 10 ** 9).toFixed(0)
-          const marketCap = (Number(data[0].marketCap)).toFixed(0)
+          const marketCap = Number(data[0].marketCap).toFixed(0);
           setMarketCap(Number(marketCap));
-
         } else {
-          console.warn('Market data not in expected format.')
+          console.warn("Market data not in expected format.");
         }
       } catch (error) {
-        console.error('Error fetching market data:', error)
+        console.error("Error fetching market data:", error);
       }
-    }
-    fetchMarketData()
+    };
+    fetchMarketData();
     // }, [daoTokenAddress, setPriceUsd])
-  }, [])
+  }, []);
 
   return (
-    <PageLayout title="Homepage" description="Welcome to a Network of Decentralized Autonomous Agentic Organizations">
+    <PageLayout
+      title="Homepage"
+      description="Welcome to a Network of Decentralized Autonomous Agentic Organizations"
+    >
       {/* Star Image */}
       <div className="sm:my-[-40px] relative flex justify-center items-center h-max">
         <Image
@@ -137,38 +144,41 @@ const HomePage: NextPage = () => {
           sizes="(max-width: 768px) 740px"
         />
         <div className="absolute inset-0 flex flex-col items-center justify-center gap-2">
-          <Typography variant="h1" className={`text-center text-white text-3xl md:text-5xl lg:text-6xl ${syne.className}`}>
-            Decentralized Autonomous<br />Agentic Organization
+          <Typography
+            variant="h1"
+            className={`text-center text-white text-3xl md:text-5xl lg:text-6xl ${syne.className}`}
+          >
+            Decentralized Autonomous
+            <br />
+            Agentic Organization
           </Typography>
-          <Typography variant="h3" className={`lg:pt-6 pt-2 text-center text-white lg:text-xl w-5/6 md:text-lg text-sm ${syne.className}`}>
-            Where autonomous agents meet decentralized innovation, driving seamless collaboration for a smarter future.
+          <Typography
+            variant="h3"
+            className={`lg:pt-6 pt-2 text-center text-white lg:text-xl w-5/6 md:text-lg text-sm ${syne.className}`}
+          >
+            Where autonomous agents meet decentralized innovation, driving
+            seamless collaboration for a smarter future.
           </Typography>
 
           <div className="flex flex-col sm:flex-row justify-center items-center gap-4 mt-6 w-min">
-            <Link
-              href={WHITEPAPER_URL}
-              target="_blank"
-              className="w-full"
-            >
+            <Link href={WHITEPAPER_URL} target="_blank" className="w-full">
               <Button
                 variant="connect"
                 className={`w-full py-4 sm:py-6 px-6 sm:px-10 bg-white rounded-lg border border-[#bedaff] flex justify-center items-center max-w-xs sm:max-w-none`}
               >
-                <div className={`text-center text-black text-base sm:text-xl font-normal ${gold.className} leading-tight tracking-wide`}>
+                <div
+                  className={`text-center text-black text-base sm:text-xl font-normal ${gold.className} leading-tight tracking-wide`}
+                >
                   Whitepaper
                 </div>
               </Button>
             </Link>
-            <Link
-              href="/app"
-              className="w-full"
-            >
+            <Link href="/app" className="w-full">
               <Button
                 variant="connect"
                 className={`py-4 sm:py-6 px-6 sm:px-10 bg-transparent rounded-lg xl border border-[#bedaff] flex justify-center items-center max-w-xs sm:max-w-none`}
               >
                 <div className="flex justify-center items-center gap-2 text-center text-white text-sm sm:text-base font-normal goldman leading-tight tracking-wide">
-
                   Go to app <ArrowRight />
                 </div>
               </Button>
@@ -177,10 +187,7 @@ const HomePage: NextPage = () => {
         </div>
       </div>
 
-      <CheckWaitlistModal
-        isOpen={isOpen}
-        setIsOpen={setIsOpen}
-      />
+      <CheckWaitlistModal isOpen={isOpen} setIsOpen={setIsOpen} />
 
       {/*waitlist*/}
       <Card className="w-[calc(100%-2rem)] max-w-[500px] bg-gradient-to-br from-black via-[#061023] to-[#0e070e] rounded-2xl shadow-[0px_4px_36px_0px_rgba(255,255,255,0.10)] border border-[#212121]">
@@ -195,8 +202,9 @@ const HomePage: NextPage = () => {
           </div>
           <Link href="/app">
             <div className="flex flex-col items-center gap-2">
-
-              <h2 className={`text-center text-white text-xl sm:text-2xl font-normal ${gold.className} leading-tight tracking-wide`}>
+              <h2
+                className={`text-center text-white text-xl sm:text-2xl font-normal ${gold.className} leading-tight tracking-wide`}
+              >
                 DeFAI Cartel
               </h2>
 
@@ -236,7 +244,9 @@ const HomePage: NextPage = () => {
               </div> */}
 
               <div className="flex items-center gap-2">
-                <p className={`text-[#d1ea48] text-lg sm:text-xl font-normal ${gold.className}`}>
+                <p
+                  className={`text-[#d1ea48] text-lg sm:text-xl font-normal ${gold.className}`}
+                >
                   $CARTEL
                 </p>
                 <div className="flex items-center gap-2 bg-gradient-to-r from-green-500 to-emerald-400 animate-gradient-x px-3 py-1 rounded-full">
@@ -252,22 +262,31 @@ const HomePage: NextPage = () => {
               {/* Add price and market cap display */}
               <div className="flex flex-col gap-4 mt-2">
                 <div className="flex gap-4">
-                  <p className={`text-white text-sm sm:text-base ${gold.className}`}>
-                    Price: <span className="text-[#d1ea48]">$ {Number(price).toFixed(6)}</span>
+                  <p
+                    className={`text-white text-sm sm:text-base ${gold.className}`}
+                  >
+                    Price:{" "}
+                    <span className="text-[#d1ea48]">
+                      $ {Number(price).toFixed(6)}
+                    </span>
                   </p>
-                  <p className={`text-white text-sm sm:text-base ${gold.className}`}>
-                    MCAP: <span className="text-[#d1ea48]">{formatNumber(Number(marketCap || 0))}</span>
+                  <p
+                    className={`text-white text-sm sm:text-base ${gold.className}`}
+                  >
+                    MCAP:{" "}
+                    <span className="text-[#d1ea48]">
+                      {formatNumber(Number(marketCap || 0))}
+                    </span>
                   </p>
                 </div>
               </div>
-
-
-
-
             </div>
           </Link>
 
-          <Link href="https://velodrome.finance/swap?from=0xdfc7c877a950e49d2610114102175a06c2e3167a&to=0x98e0ad23382184338ddcec0e13685358ef845f30&chain0=34443&chain1=34443" target="_blank">
+          <Link
+            href="https://velodrome.finance/swap?from=0xdfc7c877a950e49d2610114102175a06c2e3167a&to=0x98e0ad23382184338ddcec0e13685358ef845f30&chain0=34443&chain1=34443"
+            target="_blank"
+          >
             <div className="flex items-center gap-1.5 justify-center">
               <span className={`text-[#d1ea48] text-sm ${syne.className}`}>
                 Trade On Velodrome
@@ -302,7 +321,11 @@ const HomePage: NextPage = () => {
             */}
           <div className="flex flex-wrap justify-center gap-4">
             {DefaiCartelLinks.map((social, index) => (
-              <FooterIconLink key={index} href={social.href} label={social.label}>
+              <FooterIconLink
+                key={index}
+                href={social.href}
+                label={social.label}
+              >
                 {social.children}
               </FooterIconLink>
             ))}
