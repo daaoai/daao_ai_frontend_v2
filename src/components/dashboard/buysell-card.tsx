@@ -163,7 +163,7 @@ const Buysell = () => {
       // const poolContract = new ethers.Contract(poolAddress, poolAbi, provider);
       // const [sqrtPriceX96] = await poolContract.slot0();
       setCurrentSqrtPrice(
-        zeroForOne === true
+        zeroForOne === false
           ? "4295128750"
           : "1461446703485210103287273052203988822378723970300"
       );
@@ -422,6 +422,11 @@ const Buysell = () => {
       await fetchSlot0();
       setAmountFrom("");
       setAmountTo(0);
+      toast({
+        title: "Successfull",
+        variant: "default",
+        className: `${workSans.className}`,
+      });
     } catch (error) {
       console.error("Error during swap:", error);
     } finally {
@@ -476,7 +481,7 @@ const Buysell = () => {
 
   return (
     <Card className="h-full w-full max-w-xl bg-[#0e0e0e] text-white">
-      <CardContent className="p-6 space-y-6">
+      <CardContent className="p-6 flex flex-col gap-6">
         <div className="flex items-center justify-between">
           <Tabs
             value={activeTab}
@@ -517,7 +522,7 @@ const Buysell = () => {
                 type="number"
                 value={slippageTolerance}
                 onChange={(e) => setSlippageTolerance(e.target.value)}
-                className="p-1 bg-transparent border border-[#242626] rounded text-white w-20"
+                className="p-1 bg-transparent border  border-[#242626] rounded text-white !w-28"
                 step="0.1"
               />
               <span className="text-[#aeb3b6]">%</span>
@@ -527,14 +532,14 @@ const Buysell = () => {
 
         <Card className="bg-[#1b1c1d] border-0">
           <CardContent className="p-4 flex justify-between items-center">
-            <div>
+            <div className="!w-28">
               <p className="text-left text-[#aeb3b6] text-sm">FROM</p>
               <input
                 type="number"
                 placeholder="0"
                 value={amountFrom}
                 onChange={handleFromChange}
-                className={`appearance-none bg-transparent border-0 p-0 text-3xl w-100 f${workSans.className} focus-visible:ring-0 [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none `}
+                className={`appearance-none bg-transparent border-0 p-0 text-3xl !w-28 f${workSans.className} focus-visible:ring-0 [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none `}
                 style={{
                   minWidth: "140px", // Set a reasonable minimum width
                   width: `${amountTo.toString().length + 2}ch`, // Dynamically adjust width
@@ -584,14 +589,14 @@ const Buysell = () => {
 
         <Card className="bg-[#1b1c1d] border-0">
           <CardContent className="p-4 flex justify-between items-center">
-            <div>
+            <div className="!w-28">
               <p className="text-left  text-[#aeb3b6] text-sm">TO</p>
               <input
                 type="number"
                 placeholder="0"
-                value={numberToString(amountTo)}
+                value={numberToString(Number(amountTo).toFixed(4))}
                 onChange={(e) => setAmountTo(Number(e.target.value))}
-                className={`appearance-none bg-transparent border-0 p-0 text-3xl w-24 focus-visible:ring-0 focus-visible:ring-offset-0 ${workSans.className} focus-visible:ring-0 [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none border-0 outline-none`}
+                className={`appearance-none  bg-transparent border-0 p-0 text-3xl w-2 focus-visible:ring-0 focus-visible:ring-offset-0 ${workSans.className} focus-visible:ring-0 [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none border-0 outline-none`}
                 style={{
                   minWidth: "140px", // Set a reasonable minimum width
                   width: `${amountTo.toString().length + 0.2}ch`, // Dynamically adjust width
