@@ -1,9 +1,13 @@
 'use client';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { ArrowLeft } from 'lucide-react';
 import { Card, CardContent, CardHeader } from '@/shadcn/components/ui/card';
 import ClickToCopy from '../copyToClipboard';
 import { shortenAddress } from '@/utils/address';
+import usePoolList from '@/hooks/farm/usePoolList';
+import { FarmPool, Position } from '@/types/farm';
+import useHarvest from '@/hooks/farm/useHarvest';
+import useLpFarms from '@/hooks/farm/uselpFarms';
 
 interface LPFarm {
   id: number;
@@ -18,16 +22,59 @@ interface LPFarmsProps {
   daoTokenAddress: string;
 }
 
+const CONTRACT_ADDRESS = '0x7303dbc086a18459A4dc74e74f2Dcc2a2a26131B';
+
 const LPFarms: React.FC<LPFarmsProps> = ({ onClose, daoTokenAddress }) => {
   const [viewMode, setViewMode] = useState<'unstaked' | 'staked'>('unstaked');
+  const [poolDetails, setPoolDetails] = useState<FarmPool | null>(null);
   const [lpFarmsData, setLpFarmsData] = useState<LPFarm[]>([
     { id: 1, tokenId: 6783, value: '$7890', canStake: true, apr: '12%' },
     { id: 2, tokenId: 6790, value: '$4560', canStake: false, apr: '15%' },
   ]);
 
+  const [userPositions, setUserPositions] = useState<Position[]>([]);
+
+  const { harvest } = useHarvest();
+  const { getPositionList } = useLpFarms();
+  const { getPoolDetails } = usePoolList();
+
+  const fetchPoolDetails = async () => {
+    try {
+      const data = await getPoolDetails({ poolAddress: CONTRACT_ADDRESS });
+      setPoolDetails(data);
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  const fetchPositionList = async () => {
+    try {
+      const data = await getPositionList();
+      console.log('fetchPositionList - data', { data });
+      setUserPositions(data);
+    } catch (error) {
+      console.log('fetchPositionList - error');
+      console.error(error);
+    }
+  };
+
+  useEffect(() => {
+    fetchPoolDetails();
+    fetchPositionList();
+  }, []);
+
+  // For claim
+  const handleHarvest = async () => {
+    if (poolDetails?.unclaimedReward && poolDetails.unclaimedReward > BigInt(0)) {
+      harvest({ poolAddress: CONTRACT_ADDRESS });
+    }
+  };
+
   const toggleView = () => {
     setViewMode(viewMode === 'unstaked' ? 'staked' : 'unstaked');
   };
+
+  console.log({ poolDetails });
 
   return (
     <div className="w-full">
@@ -74,7 +121,7 @@ const LPFarms: React.FC<LPFarmsProps> = ({ onClose, daoTokenAddress }) => {
             <div className="flex justify-between items-center">
               <div className="flex items-center">
                 <span className="mr-2">🪙</span>
-                <span className="text-[#F8DE7F]">999 DAAO</span>
+                <span className="text-[#F8DE7F]">{poolDetails?.unclaimedReward} DAAO</span>
               </div>
               <button className="bg-white text-black text-xs font-medium px-3 py-1 rounded">CLAIM</button>
             </div>

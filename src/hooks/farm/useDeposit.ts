@@ -22,10 +22,8 @@ const useDeposit = () => {
   }) => {
     try {
       let allowanceSufficient = await checkAllowance(amount, poolAddress);
-      console.log({ allowanceSufficient, tokenAddress, amount });
       if (!allowanceSufficient) {
         const approvalTx = await requestAllowance(amount, poolAddress);
-        console.log({ approvalTx });
         allowanceSufficient = true;
       }
       const tx = await writeContractAsync({

@@ -105,7 +105,7 @@ const usePoolList = () => {
           totalStackedUSD && rewardEmmisionUsd
             ? Math.abs(Number(((rewardEmmisionUsd * 365 * 24 * 3600) / totalStackedUSD) * 100) || 0)
             : 0;
-        console.log(apr);
+
         return {
           startTime: results[0][0] || BigInt(0),
           endTime: results[0][1] || BigInt(0),
@@ -138,6 +138,7 @@ const usePoolList = () => {
 
   const getPoolList = async () => {
     const poolAddresses = await getPoolAddresses();
+    console.log({ poolAddresses });
     const poolDetaisPromise = poolAddresses?.map((poolAddress) => getPoolDetails({ poolAddress })) || [];
     const poolListData = await Promise.allSettled(poolDetaisPromise);
     const poolList: FarmPool[] = (
