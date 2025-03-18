@@ -41,4 +41,6 @@ export interface Position {
   tokensOwed0: bigint;
   tokensOwed1: bigint;
   liquidityUsd: string;
+  id: number;
+  apr: number;
 }

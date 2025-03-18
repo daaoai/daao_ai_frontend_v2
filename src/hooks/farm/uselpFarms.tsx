@@ -13,7 +13,7 @@ const POOL_ADDRESS = '0x7303dbc086a18459A4dc74e74f2Dcc2a2a26131B';
 const useLpFarms = () => {
   const { address } = useAccount();
   const publicClient = usePublicClient();
-  const { fetchTokenPrice, fetchTokenPriceGeko } = useTokenPrice();
+  const { fetchTokenPrice } = useTokenPrice();
 
   const getPositionsIds = async () => {
     try {
@@ -60,7 +60,7 @@ const useLpFarms = () => {
 
       const liquidityUsd = (token0Amount + token1Amount).toFixed(4);
 
-      return { ...positionDetails, liquidityUsd };
+      return { ...positionDetails, liquidityUsd, id: Number(positionId), apr: 0 };
     } catch (error) {
       console.error(error);
       return null;

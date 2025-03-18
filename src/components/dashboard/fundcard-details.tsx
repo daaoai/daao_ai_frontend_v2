@@ -19,7 +19,6 @@ const FundDetails: React.FC<FundDetailsProps> = (props) => {
     percent: number;
     token: number;
   }
-
   const { daoBalance } = useFundContext();
   const [marketCap, setMarketCap] = useState<number | null>(null);
   const [liquidity, setLiquidity] = useState<number | null>(null);
@@ -162,7 +161,7 @@ const FundDetails: React.FC<FundDetailsProps> = (props) => {
           Manage
         </button>
         <button
-          className="bg-teal-50 text-black text-sm rounded-md p-2 hover:bg-teal-60 active:scale-95 transition-transform ease-in-out duration-150"
+          className="underline text-teal-50 text-sm rounded-md p-2 active:scale-95 transition-transform ease-in-out duration-150"
           onClick={openFarmModalOpen}
         >
           LP Farms
