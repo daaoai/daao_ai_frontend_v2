@@ -6,7 +6,7 @@ import { CLPoolUtils } from '@/utils/v3Pools';
 import { usePublicClient, useWriteContract } from 'wagmi';
 import { useAccount } from 'wagmi';
 import useTokenPrice from '../useTokenPrice';
-import { formatUnits, type Abi, type TransactionReceipt } from 'viem';
+import { Address, formatUnits, type Abi, type TransactionReceipt } from 'viem';
 import { LP_FARM_ABI } from '@/daao-sdk/abi/lpFarm';
 import {
   LP_FARM_END_TIME,
@@ -52,8 +52,22 @@ const useLpFarms = () => {
         abi: NON_FUNGIBLE_POSITION_MANAGER_ABI,
         functionName: 'positions',
         args: [positionId],
-      })) as Position;
+      })) as [bigint, Address, Address, Address, number, number, number, bigint, bigint, bigint, bigint, bigint];
 
+      const [
+        nonce,
+        operator,
+        token0,
+        token1,
+        tickSpacing,
+        tickLower,
+        tickUpper,
+        liquidity,
+        feeGrowthInside0LastX128,
+        feeGrowthInside1LastX128,
+        tokensOwed0,
+        tokensOwed1,
+      ] = positionDetails;
       const poolDetails = (await publicClient?.readContract({
         address: '0xF70e76cC5a39Aad1953BeF3D1647C8B36f3f6324',
         abi: VELO_POOL_ABI,
@@ -63,13 +77,13 @@ const useLpFarms = () => {
       console.log(positionDetails, 'positionDetailspositionDetails');
 
       const amounts = CLPoolUtils.getTokenAmountsForLiquidity({
-        liquidity: positionDetails.liquidity.toString(),
+        liquidity: liquidity.toString(),
         sqrtPriceX96: poolDetails[0].toString(),
-        lowerTick: positionDetails.tickLower,
-        upperTick: positionDetails.tickUpper,
+        lowerTick: tickLower,
+        upperTick: tickUpper,
       });
 
-      const tokenPricePromises = [fetchTokenPrice(positionDetails.token0), fetchTokenPrice(positionDetails.token1)];
+      const tokenPricePromises = [fetchTokenPrice(token0), fetchTokenPrice(token1)];
       const [token0Price, token1Price] = await Promise.all(tokenPricePromises);
 
       const token0Amount = Number(formatUnits(BigInt(amounts.amount0InWei), 18)) * token0Price;
@@ -77,7 +91,23 @@ const useLpFarms = () => {
 
       const liquidityUsd = (token0Amount + token1Amount).toFixed(4);
 
-      return { ...positionDetails, liquidityUsd, id: Number(positionId), apr: 0 };
+      return {
+        nonce,
+        operator,
+        token0,
+        token1,
+        tickSpacing,
+        tickLower,
+        tickUpper,
+        liquidity,
+        feeGrowthInside0LastX128,
+        feeGrowthInside1LastX128,
+        tokensOwed0,
+        tokensOwed1,
+        liquidityUsd,
+        id: Number(positionId),
+        apr: 0,
+      };
     } catch (error) {
       console.error(error);
       return null;
