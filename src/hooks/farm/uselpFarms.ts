@@ -18,6 +18,7 @@ import {
 import { useToast } from '../use-toast';
 import { handleViemTransactionError } from '@/utils/approval';
 import { V3_STACKER_ABI } from '@/daao-sdk/abi/v3Stacker';
+import { ethers } from 'ethers';
 
 const POOL_ADDRESS = '0xf70e76cc5a39aad1953bef3d1647c8b36f3f6324';
 const UNISWAP_V3_STAKER = '0xEf2A8A6F368158fCf4B3b783f85d3C39fa420c77';
@@ -127,33 +128,19 @@ const useLpFarms = () => {
     }
   };
 
+  // For a single incentive
+  const encodeSingleIncentive = (incentiveKey: (string | bigint)[]) => {
+    return ethers.utils.defaultAbiCoder.encode(
+      ['(address rewardToken, address pool, uint256 startTime, uint256 endTime, address refundee)'],
+      [incentiveKey],
+    );
+  };
+
   const stakeFarm = async (tokenId: BigInt) => {
     console.log(tokenId, 'tokenIdtokenId');
 
     try {
-      const encodedData = encodeAbiParameters(
-        [
-          {
-            components: [
-              { name: 'rewardToken', type: 'address' },
-              { name: 'pool', type: 'address' },
-              { name: 'startTime', type: 'uint256' },
-              { name: 'endTime', type: 'uint256' },
-              { name: 'refundee', type: 'address' },
-            ],
-            type: 'tuple',
-          },
-        ],
-        [
-          {
-            rewardToken: LP_FARM_REWARD_TOKEN,
-            pool: LP_FARM_POOL,
-            startTime: LP_FARM_START_TIME,
-            endTime: LP_FARM_END_TIME,
-            refundee: LP_FARM_REFUNDEE,
-          },
-        ],
-      );
+      const encodedData = encodeSingleIncentive(KEY_STRUCT);
       const approvalTx = await writeContractAsync({
         address: nonFungiblePositionManagerAddress,
         abi: NON_FUNGIBLE_POSITION_MANAGER_ABI,
