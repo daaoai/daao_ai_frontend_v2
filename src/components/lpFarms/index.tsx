@@ -36,8 +36,7 @@ const LPFarms: React.FC<LPFarmsProps> = ({ onClose, daoTokenAddress }) => {
   const [stackedPositions, setStackedPositions] = useState<Position[]>([]);
 
   const { harvest } = useHarvest();
-  const { getPositionList, rewardInfo, unStakeFarm, stakeFarm, getStackedPositionsIds, getStackedPositionList } =
-    useLpFarms();
+  const { getPositionList, unStakeFarm, stakeFarm, getStackedPositionList } = useLpFarms();
   const { getPoolDetails } = usePoolList();
 
   const fetchPoolDetails = async () => {

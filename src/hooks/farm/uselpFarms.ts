@@ -6,7 +6,7 @@ import { CLPoolUtils } from '@/utils/v3Pools';
 import { usePublicClient, useWriteContract } from 'wagmi';
 import { useAccount } from 'wagmi';
 import useTokenPrice from '../useTokenPrice';
-import { Address, formatUnits, type Abi, type TransactionReceipt } from 'viem';
+import { Address, encodeAbiParameters, formatUnits, type Abi, type TransactionReceipt } from 'viem';
 import { LP_FARM_ABI } from '@/daao-sdk/abi/lpFarm';
 import {
   LP_FARM_END_TIME,
@@ -131,26 +131,63 @@ const useLpFarms = () => {
     console.log(tokenId, 'tokenIdtokenId');
 
     try {
-      const tx = await writeContractAsync({
-        address: lpFarmAddress,
-        abi: LP_FARM_ABI,
-        functionName: 'stakeToken',
-        args: [KEY_STRUCT, tokenId],
+      const encodedData = encodeAbiParameters(
+        [
+          {
+            components: [
+              { name: 'rewardToken', type: 'address' },
+              { name: 'pool', type: 'address' },
+              { name: 'startTime', type: 'uint256' },
+              { name: 'endTime', type: 'uint256' },
+              { name: 'refundee', type: 'address' },
+            ],
+            type: 'tuple',
+          },
+        ],
+        [
+          {
+            rewardToken: LP_FARM_REWARD_TOKEN,
+            pool: LP_FARM_POOL,
+            startTime: LP_FARM_START_TIME,
+            endTime: LP_FARM_END_TIME,
+            refundee: LP_FARM_REFUNDEE,
+          },
+        ],
+      );
+      const approvalTx = await writeContractAsync({
+        address: nonFungiblePositionManagerAddress,
+        abi: NON_FUNGIBLE_POSITION_MANAGER_ABI,
+        functionName: 'safeTransferFrom',
+        args: [address, UNISWAP_V3_STAKER, tokenId, encodedData],
       });
-      console.log(tx, 'txtxtx');
 
-      const receipt = (await publicClient?.waitForTransactionReceipt({
-        hash: tx,
+      const approvalReceipt = (await publicClient?.waitForTransactionReceipt({
+        hash: approvalTx,
         confirmations: 1,
       })) as TransactionReceipt;
-      console.log(receipt, 'receiptreceipt');
 
-      if (receipt.status === 'success') {
-        toast({
-          title: 'Stake Successful',
-          description: `Your Stake was Successfull`,
-          variant: 'default',
+      if (approvalReceipt.status === 'success') {
+        const tx = await writeContractAsync({
+          address: lpFarmAddress,
+          abi: LP_FARM_ABI,
+          functionName: 'stakeToken',
+          args: [KEY_STRUCT, tokenId],
         });
+        console.log(tx, 'tx');
+
+        const receipt = (await publicClient?.waitForTransactionReceipt({
+          hash: tx,
+          confirmations: 1,
+        })) as TransactionReceipt;
+        console.log(receipt, 'receiptreceipt');
+
+        if (receipt.status === 'success') {
+          toast({
+            title: 'Stake Successful',
+            description: `Your Stake was Successfull`,
+            variant: 'default',
+          });
+        }
       }
     } catch (error) {
       console.error(error);
