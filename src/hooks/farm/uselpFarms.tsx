@@ -133,7 +133,7 @@ const useLpFarms = () => {
         address: lpFarmAddress,
         abi: LP_FARM_ABI,
         functionName: 'stakeToken',
-        args: [...KEY_STRUCT, tokenId],
+        args: [KEY_STRUCT, tokenId],
       });
       const receipt = (await publicClient?.waitForTransactionReceipt({
         hash: tx,
@@ -166,7 +166,7 @@ const useLpFarms = () => {
         address: lpFarmAddress,
         abi: LP_FARM_ABI,
         functionName: 'unstakeToken',
-        args: [...KEY_STRUCT, tokenId],
+        args: [KEY_STRUCT, tokenId],
       });
       const receipt = (await publicClient?.waitForTransactionReceipt({
         hash: tx,
@@ -244,7 +244,7 @@ const useLpFarms = () => {
         address: lpFarmAddress,
         abi: LP_FARM_ABI,
         functionName: 'getRewardInfo',
-        args: [...KEY_STRUCT, tokenId],
+        args: [KEY_STRUCT, tokenId],
       })) as [BigInt, BigInt];
 
       return { reward: rewardDetails[0], secondsInsideX128: rewardDetails[1] };
