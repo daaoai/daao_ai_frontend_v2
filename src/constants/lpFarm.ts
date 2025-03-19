@@ -1,0 +1,5 @@
+export const LP_FARM_REWARD_TOKEN = '0x98E0AD23382184338dDcEC0E13685358EF845f30'; // Replace with actual address
+export const LP_FARM_POOL = '0xF70e76cC5a39Aad1953BeF3D1647C8B36f3f6324'; // Replace with actual address
+export const LP_FARM_START_TIME = BigInt(1742374013); // Example uint256 value
+export const LP_FARM_END_TIME = BigInt(1744966013); // Example uint256 value
+export const LP_FARM_REFUNDEE = '0x6F1313f206dB52139EB6892Bfd88aC9Ae36Dc54E'; // Replace with actual address

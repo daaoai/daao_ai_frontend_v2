@@ -30,6 +30,10 @@ const CONTRACT_ADDRESS = '0x7303dbc086a18459A4dc74e74f2Dcc2a2a26131B';
 const LPFarms: React.FC<LPFarmsProps> = ({ onClose, daoTokenAddress }) => {
   const [viewMode, setViewMode] = useState<'unstaked' | 'staked'>('unstaked');
   const [poolDetails, setPoolDetails] = useState<FarmPool | null>(null);
+  const [isStakeLoading, setIsStakeLoading] = useState(false);
+  // const [isUnStakeLoading, setIsUnStakeLoading] = useState(false);
+  // const [isUnStakeLoading, setIsUnStakeLoading] = useState(false);
+
   // const [lpFarmsData, setLpFarmsData] = useState<LPFarm[]>([
   //   { id: 1, tokenId: 6783, value: '$7890', canStake: true, apr: '12%' },
   //   { id: 2, tokenId: 6790, value: '$4560', canStake: false, apr: '15%' },
@@ -42,7 +46,7 @@ const LPFarms: React.FC<LPFarmsProps> = ({ onClose, daoTokenAddress }) => {
   const [userPositions, setUserPositions] = useState<Position[]>([]);
 
   const { harvest } = useHarvest();
-  const { getPositionList } = useLpFarms();
+  const { getPositionList, rewardInfo, unStakeFarm, stakeFarm } = useLpFarms();
   const { getPoolDetails } = usePoolList();
 
   const fetchPoolDetails = async () => {
@@ -57,7 +61,7 @@ const LPFarms: React.FC<LPFarmsProps> = ({ onClose, daoTokenAddress }) => {
   const fetchPositionList = async () => {
     try {
       const data = await getPositionList();
-      console.log('fetchPositionList - data', { data });
+      console.log('fetchPositionListdata', { data });
       setUserPositions(data);
     } catch (error) {
       console.log('fetchPositionList - error');
@@ -65,9 +69,12 @@ const LPFarms: React.FC<LPFarmsProps> = ({ onClose, daoTokenAddress }) => {
     }
   };
 
+  console.log(userPositions, 'userPositions');
+
   useEffect(() => {
     fetchPoolDetails();
     fetchPositionList();
+    // rewardInfo();
   }, []);
 
   // For claim
@@ -79,6 +86,19 @@ const LPFarms: React.FC<LPFarmsProps> = ({ onClose, daoTokenAddress }) => {
 
   const toggleView = () => {
     setViewMode(viewMode === 'unstaked' ? 'staked' : 'unstaked');
+  };
+
+  const handleStakeFarm = async (id) => {
+    try {
+      // setLoad(true)
+      await stakeFarm(BigInt(position.id));
+    } catch (err) {
+      console.log({ err });
+    }
+  };
+
+  const handleUnStakeFarm = (id) => {
+    stakeFarm(BigInt(position.id));
   };
 
   console.log({ poolDetails });
@@ -169,9 +189,19 @@ const LPFarms: React.FC<LPFarmsProps> = ({ onClose, daoTokenAddress }) => {
                     </td>
                     <td className="px-4 py-3 text-right">
                       {viewMode === 'unstaked' ? (
-                        <button className="text-black bg-[#D1FF53] text-xs px-3 py-1 rounded">Stake</button>
+                        <button
+                          className="text-black bg-[#D1FF53] text-xs px-3 py-1 rounded"
+                          onClick={() => stakeFarm(BigInt(position.id))}
+                        >
+                          Stake
+                        </button>
                       ) : (
-                        <button className="text-black bg-[#FFAAAB] text-xs px-3 py-1 rounded">Unstake</button>
+                        <button
+                          className="text-black bg-[#FFAAAB] text-xs px-3 py-1 rounded"
+                          onClick={() => unStakeFarm(BigInt(position.id))}
+                        >
+                          Unstake
+                        </button>
                       )}
                     </td>
                   </tr>
