@@ -196,8 +196,8 @@ const LPFarms: React.FC<LPFarmsProps> = ({ onClose, daoTokenAddress }) => {
                     <td className="px-4 py-3">
                       {viewMode === 'unstaked'
                         ? position.token0 === modeTokenAddress || position.token1 === CARTEL_TOKEN_ADDRESS
-                          ? 'Yes'
-                          : 'No'
+                          ? 'No'
+                          : 'Yes'
                         : position.apr}
                     </td>
                     <td className="px-4 py-3 text-right">

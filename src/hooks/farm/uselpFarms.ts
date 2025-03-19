@@ -128,6 +128,8 @@ const useLpFarms = () => {
   };
 
   const stakeFarm = async (tokenId: BigInt) => {
+    console.log(tokenId, 'tokenIdtokenId');
+
     try {
       const tx = await writeContractAsync({
         address: lpFarmAddress,
@@ -135,10 +137,13 @@ const useLpFarms = () => {
         functionName: 'stakeToken',
         args: [KEY_STRUCT, tokenId],
       });
+      console.log(tx, 'txtxtx');
+
       const receipt = (await publicClient?.waitForTransactionReceipt({
         hash: tx,
         confirmations: 1,
       })) as TransactionReceipt;
+      console.log(receipt, 'receiptreceipt');
 
       if (receipt.status === 'success') {
         toast({
@@ -161,6 +166,7 @@ const useLpFarms = () => {
   };
 
   const unStakeFarm = async (tokenId: BigInt) => {
+    console.log(tokenId, 'tokenIdtokenId');
     try {
       const tx = await writeContractAsync({
         address: lpFarmAddress,
@@ -168,10 +174,12 @@ const useLpFarms = () => {
         functionName: 'unstakeToken',
         args: [KEY_STRUCT, tokenId],
       });
+      console.log(tx, 'txtxtx');
       const receipt = (await publicClient?.waitForTransactionReceipt({
         hash: tx,
         confirmations: 1,
       })) as TransactionReceipt;
+      console.log(receipt, 'receiptreceipt');
       if (receipt.status === 'success') {
         toast({
           title: 'Unstake Successful',
