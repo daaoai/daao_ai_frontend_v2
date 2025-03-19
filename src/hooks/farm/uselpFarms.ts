@@ -32,6 +32,13 @@ const useLpFarms = () => {
   const { writeContractAsync } = useWriteContract();
 
   const KEY_STRUCT = [LP_FARM_REWARD_TOKEN, LP_FARM_POOL, LP_FARM_START_TIME, LP_FARM_END_TIME, LP_FARM_REFUNDEE];
+  const KEY_STRUCT2 = [
+    LP_FARM_REWARD_TOKEN,
+    LP_FARM_POOL,
+    BigInt('1742397189'),
+    BigInt('1744989189'),
+    LP_FARM_REFUNDEE,
+  ];
 
   const getPositionsIds = async () => {
     try {
@@ -140,7 +147,7 @@ const useLpFarms = () => {
     console.log(tokenId, 'tokenIdtokenId');
 
     try {
-      const encodedData = encodeSingleIncentive(KEY_STRUCT);
+      const encodedData = encodeSingleIncentive(KEY_STRUCT2);
       const approvalTx = await writeContractAsync({
         address: nonFungiblePositionManagerAddress,
         abi: NON_FUNGIBLE_POSITION_MANAGER_ABI,
