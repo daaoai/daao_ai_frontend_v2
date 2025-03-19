@@ -183,7 +183,7 @@ const useLpFarms = () => {
         address: lpFarmAddress,
         abi: LP_FARM_ABI,
         functionName: 'unstakeToken',
-        args: [KEY_STRUCT, tokenId],
+        args: [KEY_STRUCT2, tokenId],
       });
       const receipt = (await publicClient?.waitForTransactionReceipt({
         hash: tx,
