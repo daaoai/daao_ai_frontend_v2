@@ -17,8 +17,10 @@ import {
 } from '@/constants/lpFarm';
 import { useToast } from '../use-toast';
 import { handleViemTransactionError } from '@/utils/approval';
+import { V3_STACKER_ABI } from '@/daao-sdk/abi/v3Stacker';
 
 const POOL_ADDRESS = '0xf70e76cc5a39aad1953bef3d1647c8b36f3f6324';
+const UNISWAP_V3_STAKER = '0xEf2A8A6F368158fCf4B3b783f85d3C39fa420c77';
 
 const useLpFarms = () => {
   const { toast } = useToast();
@@ -191,6 +193,51 @@ const useLpFarms = () => {
     }
   };
 
+  const getStackedPositionsIds = async () => {
+    try {
+      const stackedPositions = (await publicClient?.readContract({
+        address: UNISWAP_V3_STAKER,
+        abi: V3_STACKER_ABI,
+        functionName: 'getUserStakedTokens',
+        args: [address],
+      })) as bigint[];
+      console.log({ stackedPositions });
+      return stackedPositions;
+    } catch (error) {
+      console.error(error);
+      return [];
+    }
+  };
+
+  const getStackedPositionList = async (): Promise<Position[]> => {
+    try {
+      const stackedPositionsIds = await getStackedPositionsIds();
+      const positionResults = await Promise.allSettled(
+        stackedPositionsIds.map((positionId) => getPositionDetails(positionId)),
+      );
+
+      // Filter out rejected promises and map successful results to Position objects
+      const stackedPositionList = positionResults
+        .filter((result): result is PromiseFulfilledResult<Position> => result.status === 'fulfilled')
+        .map((result) => {
+          const positionArray = result.value;
+          return positionArray;
+        });
+
+      // Log any failed position fetches
+      positionResults.forEach((result, index) => {
+        if (result.status === 'rejected') {
+          console.error(`Failed to fetch position ${stackedPositionsIds[index]}:`, result.reason);
+        }
+      });
+
+      return stackedPositionList;
+    } catch (error) {
+      console.error('Error fetching staked positions:', error);
+      return [];
+    }
+  };
+
   const rewardInfo = async (tokenId: BigInt) => {
     try {
       const rewardDetails = (await publicClient?.readContract({
@@ -214,7 +261,15 @@ const useLpFarms = () => {
     }
   };
 
-  return { getPositionList, getPositionDetails, stakeFarm, unStakeFarm, rewardInfo };
+  return {
+    getPositionList,
+    getPositionDetails,
+    stakeFarm,
+    unStakeFarm,
+    rewardInfo,
+    getStackedPositionsIds,
+    getStackedPositionList,
+  };
 };
 
 export default useLpFarms;

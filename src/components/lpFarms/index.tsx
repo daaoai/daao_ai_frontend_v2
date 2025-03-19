@@ -31,22 +31,13 @@ const LPFarms: React.FC<LPFarmsProps> = ({ onClose, daoTokenAddress }) => {
   const [viewMode, setViewMode] = useState<'unstaked' | 'staked'>('unstaked');
   const [poolDetails, setPoolDetails] = useState<FarmPool | null>(null);
   const [isStakeLoading, setIsStakeLoading] = useState(false);
-  // const [isUnStakeLoading, setIsUnStakeLoading] = useState(false);
-  // const [isUnStakeLoading, setIsUnStakeLoading] = useState(false);
-
-  // const [lpFarmsData, setLpFarmsData] = useState<LPFarm[]>([
-  //   { id: 1, tokenId: 6783, value: '$7890', canStake: true, apr: '12%' },
-  //   { id: 2, tokenId: 6790, value: '$4560', canStake: false, apr: '15%' },
-  //   { id: 3, tokenId: 6790, value: '$4560', canStake: false, apr: '15%' },
-  //   { id: 4, tokenId: 6790, value: '$4560', canStake: false, apr: '15%' },
-  //   { id: 5, tokenId: 6790, value: '$4560', canStake: false, apr: '15%' },
-  //   { id: 6, tokenId: 6790, value: '$4560', canStake: false, apr: '15%' },
-  // ]);
-
+  const [isUnStakeLoading, setIsUnStakeLoading] = useState(false);
   const [userPositions, setUserPositions] = useState<Position[]>([]);
+  const [stackedPositions, setStackedPositions] = useState<Position[]>([]);
 
   const { harvest } = useHarvest();
-  const { getPositionList, rewardInfo, unStakeFarm, stakeFarm } = useLpFarms();
+  const { getPositionList, rewardInfo, unStakeFarm, stakeFarm, getStackedPositionsIds, getStackedPositionList } =
+    useLpFarms();
   const { getPoolDetails } = usePoolList();
 
   const fetchPoolDetails = async () => {
@@ -69,15 +60,30 @@ const LPFarms: React.FC<LPFarmsProps> = ({ onClose, daoTokenAddress }) => {
     }
   };
 
+  const fetchStackedPositionList = async () => {
+    try {
+      const data = await getStackedPositionList();
+      setStackedPositions(data);
+    } catch (error) {
+      console.log('fetchStackedPositionList - error');
+      console.error(error);
+    }
+  };
+
   console.log(userPositions, 'userPositions');
 
   useEffect(() => {
     fetchPoolDetails();
-    fetchPositionList();
-    // rewardInfo();
   }, []);
 
-  // For claim
+  useEffect(() => {
+    if (viewMode === 'staked') {
+      fetchStackedPositionList();
+    } else {
+      fetchPositionList();
+    }
+  }, [viewMode]);
+
   const handleHarvest = async () => {
     if (poolDetails?.unclaimedReward && poolDetails.unclaimedReward > BigInt(0)) {
       harvest({ poolAddress: CONTRACT_ADDRESS });
@@ -88,20 +94,27 @@ const LPFarms: React.FC<LPFarmsProps> = ({ onClose, daoTokenAddress }) => {
     setViewMode(viewMode === 'unstaked' ? 'staked' : 'unstaked');
   };
 
-  const handleStakeFarm = async (id) => {
+  const handleStakeFarm = async (id: number) => {
     try {
-      // setLoad(true)
-      await stakeFarm(BigInt(position.id));
+      setIsStakeLoading(true);
+      await stakeFarm(BigInt(id));
+      setIsStakeLoading(false);
     } catch (err) {
       console.log({ err });
+      setIsStakeLoading(false);
     }
   };
 
-  const handleUnStakeFarm = (id) => {
-    stakeFarm(BigInt(position.id));
+  const handleUnStakeFarm = async (id: number) => {
+    try {
+      setIsUnStakeLoading(true);
+      await unStakeFarm(BigInt(id));
+      setIsUnStakeLoading(false);
+    } catch (err) {
+      console.log({ err });
+      setIsUnStakeLoading(false);
+    }
   };
-
-  console.log({ poolDetails });
 
   return (
     <div className="w-full">
@@ -175,7 +188,7 @@ const LPFarms: React.FC<LPFarmsProps> = ({ onClose, daoTokenAddress }) => {
                 </tr>
               </thead>
               <tbody className="bg-black text-white">
-                {userPositions.map((position, index) => (
+                {(viewMode === 'unstaked' ? userPositions : stackedPositions).map((position, index) => (
                   <tr key={position.id}>
                     <td className="px-4 py-3">{index + 1}</td>
                     <td className="px-4 py-3">{position.id}</td>
@@ -191,14 +204,14 @@ const LPFarms: React.FC<LPFarmsProps> = ({ onClose, daoTokenAddress }) => {
                       {viewMode === 'unstaked' ? (
                         <button
                           className="text-black bg-[#D1FF53] text-xs px-3 py-1 rounded"
-                          onClick={() => stakeFarm(BigInt(position.id))}
+                          onClick={() => handleStakeFarm(position.id)}
                         >
                           Stake
                         </button>
                       ) : (
                         <button
                           className="text-black bg-[#FFAAAB] text-xs px-3 py-1 rounded"
-                          onClick={() => unStakeFarm(BigInt(position.id))}
+                          onClick={() => handleUnStakeFarm(position.id)}
                         >
                           Unstake
                         </button>
