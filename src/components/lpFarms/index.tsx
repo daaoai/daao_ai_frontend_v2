@@ -36,7 +36,7 @@ const LPFarms: React.FC<LPFarmsProps> = ({ onClose, daoTokenAddress }) => {
   const [stackedPositions, setStackedPositions] = useState<Position[]>([]);
 
   const { harvest } = useHarvest();
-  const { getPositionList, unStakeFarm, stakeFarm, getStackedPositionList } = useLpFarms();
+  const { getPositionList, unStakeFarm, stakeFarm, getStackedPositionList, rewardInfo } = useLpFarms();
   const { getPoolDetails } = usePoolList();
 
   const fetchPoolDetails = async () => {
@@ -53,6 +53,9 @@ const LPFarms: React.FC<LPFarmsProps> = ({ onClose, daoTokenAddress }) => {
       const data = await getPositionList();
       console.log('fetchPositionListdata', { data });
       setUserPositions(data);
+      const ids = data.map((position) => BigInt(position.id));
+      const rewardInfoData = await rewardInfo(ids);
+      console.log('rewardInfoData', { rewardInfoData });
     } catch (error) {
       console.log('fetchPositionList - error');
       console.error(error);
@@ -63,6 +66,9 @@ const LPFarms: React.FC<LPFarmsProps> = ({ onClose, daoTokenAddress }) => {
     try {
       const data = await getStackedPositionList();
       setStackedPositions(data);
+      const ids = data.map((position) => BigInt(position.id));
+      const rewardInfoData = await rewardInfo(ids);
+      console.log('rewardInfoData', { rewardInfoData });
     } catch (error) {
       console.log('fetchStackedPositionList - error');
       console.error(error);
@@ -83,11 +89,11 @@ const LPFarms: React.FC<LPFarmsProps> = ({ onClose, daoTokenAddress }) => {
     }
   }, [viewMode]);
 
-  const handleHarvest = async () => {
-    if (poolDetails?.unclaimedReward && poolDetails.unclaimedReward > BigInt(0)) {
-      harvest({ poolAddress: CONTRACT_ADDRESS });
-    }
-  };
+  // const handleHarvest = async () => {
+  //   if (poolDetails?.unclaimedReward && poolDetails.unclaimedReward > BigInt(0)) {
+  //     harvest({ poolAddress: CONTRACT_ADDRESS });
+  //   }
+  // };
 
   const toggleView = () => {
     setViewMode(viewMode === 'unstaked' ? 'staked' : 'unstaked');

@@ -25,7 +25,6 @@ const UNISWAP_V3_STAKER = '0xEf2A8A6F368158fCf4B3b783f85d3C39fa420c77';
 
 const useLpFarms = () => {
   const { toast } = useToast();
-
   const { address } = useAccount();
   const publicClient = usePublicClient();
   const { fetchTokenPrice } = useTokenPrice();
@@ -144,44 +143,26 @@ const useLpFarms = () => {
   };
 
   const stakeFarm = async (tokenId: BigInt) => {
-    console.log(tokenId, 'tokenIdtokenId');
-
     try {
       const encodedData = encodeSingleIncentive(KEY_STRUCT2);
-      const approvalTx = await writeContractAsync({
+      const tx = await writeContractAsync({
         address: nonFungiblePositionManagerAddress,
         abi: NON_FUNGIBLE_POSITION_MANAGER_ABI,
         functionName: 'safeTransferFrom',
         args: [address, UNISWAP_V3_STAKER, tokenId, encodedData],
       });
 
-      const approvalReceipt = (await publicClient?.waitForTransactionReceipt({
-        hash: approvalTx,
+      const receipt = (await publicClient?.waitForTransactionReceipt({
+        hash: tx,
         confirmations: 1,
       })) as TransactionReceipt;
 
-      if (approvalReceipt.status === 'success') {
-        const tx = await writeContractAsync({
-          address: lpFarmAddress,
-          abi: LP_FARM_ABI,
-          functionName: 'stakeToken',
-          args: [KEY_STRUCT, tokenId],
+      if (receipt.status === 'success') {
+        toast({
+          title: 'Stake Successful',
+          description: `Your Stake was Successfull`,
+          variant: 'default',
         });
-        console.log(tx, 'tx');
-
-        const receipt = (await publicClient?.waitForTransactionReceipt({
-          hash: tx,
-          confirmations: 1,
-        })) as TransactionReceipt;
-        console.log(receipt, 'receiptreceipt');
-
-        if (receipt.status === 'success') {
-          toast({
-            title: 'Stake Successful',
-            description: `Your Stake was Successfull`,
-            variant: 'default',
-          });
-        }
       }
     } catch (error) {
       console.error(error);
@@ -197,7 +178,6 @@ const useLpFarms = () => {
   };
 
   const unStakeFarm = async (tokenId: BigInt) => {
-    console.log(tokenId, 'tokenIdtokenId');
     try {
       const tx = await writeContractAsync({
         address: lpFarmAddress,
@@ -205,7 +185,6 @@ const useLpFarms = () => {
         functionName: 'unstakeToken',
         args: [KEY_STRUCT, tokenId],
       });
-      console.log(tx, 'txtxtx');
       const receipt = (await publicClient?.waitForTransactionReceipt({
         hash: tx,
         confirmations: 1,
@@ -277,16 +256,20 @@ const useLpFarms = () => {
     }
   };
 
-  const rewardInfo = async (tokenId: BigInt) => {
+  const rewardInfo = async (tokenIds: BigInt[]) => {
     try {
-      const rewardDetails = (await publicClient?.readContract({
-        address: lpFarmAddress,
-        abi: LP_FARM_ABI,
-        functionName: 'getRewardInfo',
-        args: [KEY_STRUCT, tokenId],
-      })) as [BigInt, BigInt];
+      const rewardDetails = await publicClient?.multicall({
+        contracts: tokenIds.map((tokenId) => ({
+          address: lpFarmAddress as Address,
+          abi: LP_FARM_ABI,
+          functionName: 'getRewardInfo',
+          args: [KEY_STRUCT, tokenId],
+        })),
+      });
 
-      return { reward: rewardDetails[0], secondsInsideX128: rewardDetails[1] };
+      console.log({ rewardDetails });
+
+      return { };
     } catch (error) {
       console.error(error);
       const { errorMsg } = handleViemTransactionError({
