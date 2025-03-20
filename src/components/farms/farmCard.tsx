@@ -3,7 +3,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { formatUnits } from 'viem';
 import { abbreviateNumber } from '@/utils/numbers';
-import { CURRENT_DAO_IMAGE, GAMBLE_IMAGE } from '@/constants/links';
+import { CURRENT_DAO_IMAGE, tokenImageLinks } from '@/constants/links';
 import { Badge } from '@/shadcn/components/ui/badge';
 import { Card, CardContent } from '@/shadcn/components/ui/card';
 import { Button } from '@/shadcn/components/ui/button';
@@ -48,15 +48,15 @@ const FarmCard = ({ farm, isLoading }: FarmCardProps) => {
           <div className="flex flex-col md:flex-row items-start gap-3">
             <div className="relative w-20 h-[50px] flex-shrink-0">
               <Image
-                src={GAMBLE_IMAGE}
-                alt="Gambl Token"
+                src={tokenImageLinks[farm.rewardTokenName.toUpperCase() as keyof typeof tokenImageLinks]}
+                alt="Reward Token"
                 width={16}
                 height={16}
                 className="absolute left-0 top-0 w-[50px] h-[50px] rounded-full"
               />
               <Image
                 src={CURRENT_DAO_IMAGE}
-                alt="DAO Token"
+                alt="Deposit Token"
                 width={16}
                 height={16}
                 className="absolute left-[30px] top-0 w-[50px] h-[50px] rounded-full"
@@ -99,7 +99,7 @@ const FarmCard = ({ farm, isLoading }: FarmCardProps) => {
             <div className="flex items-center gap-4">
               <DollarSign className="text-midGreen" width={18} height={18} />
               <p className="text-sm text-midGreen font-rubik">
-                Total Remaining Rewards : {abbreviateNumber(Number(earnInfo))} GAMBL
+                Total Remaining Rewards : {abbreviateNumber(Number(earnInfo))} {farm.rewardTokenName}
               </p>
             </div>
           </div>

@@ -25,6 +25,7 @@ export interface FarmPool {
   unclaimedReward: bigint;
   apr: number;
   depositTokenName: string;
+  rewardTokenName: string;
 }
 
 export interface Position {
