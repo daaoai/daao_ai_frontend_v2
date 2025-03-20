@@ -19,6 +19,7 @@ import { useToast } from '../use-toast';
 import { handleViemTransactionError } from '@/utils/approval';
 import { V3_STACKER_ABI } from '@/daao-sdk/abi/v3Stacker';
 import { ethers } from 'ethers';
+import { toast as reactToast } from 'react-toastify'; // Ensure to import react-toastify's toast function
 
 const POOL_ADDRESS = '0xf70e76cc5a39aad1953bef3d1647c8b36f3f6324';
 const UNISWAP_V3_STAKER = '0xEf2A8A6F368158fCf4B3b783f85d3C39fa420c77';
@@ -158,11 +159,7 @@ const useLpFarms = () => {
       })) as TransactionReceipt;
 
       if (receipt.status === 'success') {
-        toast({
-          title: 'Stake Successful',
-          description: `Your Stake was Successfull`,
-          variant: 'default',
-        });
+        reactToast.success('Your Stake was Successfull');
       }
     } catch (error) {
       console.error(error);
@@ -170,10 +167,7 @@ const useLpFarms = () => {
         abi: LP_FARM_ABI as Abi,
         error,
       });
-      toast({
-        title: errorMsg,
-        variant: 'destructive',
-      });
+      reactToast.error(errorMsg);
     }
   };
 
@@ -192,11 +186,7 @@ const useLpFarms = () => {
       })) as TransactionReceipt;
       console.log(receipt, 'receiptreceipt');
       if (receipt.status === 'success') {
-        toast({
-          title: 'Unstake Successful',
-          description: `Your Unstake was Successfull`,
-          variant: 'default',
-        });
+        reactToast.success('Your Unstake was Successfull');
       }
       return receipt;
     } catch (error) {
@@ -205,10 +195,7 @@ const useLpFarms = () => {
         abi: LP_FARM_ABI as Abi,
         error,
       });
-      toast({
-        title: errorMsg,
-        variant: 'destructive',
-      });
+      reactToast.error(errorMsg);
     }
   };
 
@@ -257,33 +244,6 @@ const useLpFarms = () => {
     }
   };
 
-  // const rewardInfo = async (tokenIds: BigInt[]) => {
-  //   try {
-  //     const rewardDetails = await publicClient?.multicall({
-  //       contracts: tokenIds.map((tokenId) => ({
-  //         address: UNISWAP_V3_STAKER as Address,
-  //         abi: V3_STACKER_ABI,
-  //         functionName: 'getRewardInfo',
-  //         args: [KEY_STRUCT2, tokenId],
-  //       })),
-  //     });
-
-  //     console.log({ rewardDetails });
-
-  //     return {};
-  //   } catch (error) {
-  //     console.error(error);
-  //     const { errorMsg } = handleViemTransactionError({
-  //       abi: LP_FARM_ABI as Abi,
-  //       error,
-  //     });
-  //     toast({
-  //       title: errorMsg,
-  //       variant: 'destructive',
-  //     });
-  //   }
-  // };
-
   const rewardInfo = async (tokenIds: BigInt[]) => {
     try {
       const rewardDetails = await publicClient?.multicall({
@@ -307,10 +267,8 @@ const useLpFarms = () => {
         abi: LP_FARM_ABI as Abi,
         error,
       });
-      toast({
-        title: errorMsg,
-        variant: 'destructive',
-      });
+      reactToast.error(errorMsg);
+
       return BigInt(0);
     }
   };
@@ -328,11 +286,7 @@ const useLpFarms = () => {
         confirmations: 1,
       })) as TransactionReceipt;
       if (receipt.status === 'success') {
-        toast({
-          title: 'Claim Reward Successfull',
-          description: `Your Claim was Successfull`,
-          variant: 'default',
-        });
+        reactToast.success('Your Stake was Successful');
       }
       return receipt;
     } catch (error) {
@@ -341,10 +295,7 @@ const useLpFarms = () => {
         abi: LP_FARM_ABI as Abi,
         error,
       });
-      toast({
-        title: errorMsg,
-        variant: 'destructive',
-      });
+      reactToast.error(errorMsg);
     }
   };
 

@@ -12,6 +12,8 @@ import { modeTokenAddress } from '@/constants/addresses';
 import { CARTEL_TOKEN_ADDRESS } from '@/constants/ticket';
 import Image from 'next/image';
 import { formatUnits } from 'viem';
+import AnimatedSkeleton from '../animatedSkeleton';
+import { CURRENT_DAO_IMAGE, GAMBLE_IMAGE } from '@/constants/links';
 
 interface LPFarm {
   id: number;
@@ -99,15 +101,12 @@ const LPFarms: React.FC<LPFarmsProps> = ({ onClose, daoTokenAddress }) => {
   //   }
   // };
 
-  const toggleView = () => {
-    setViewMode(viewMode === 'unstaked' ? 'staked' : 'unstaked');
-  };
-
   const handleStakeFarm = async (id: number) => {
     try {
       setIsStakeLoading(true);
       await stakeFarm(BigInt(id));
       setIsStakeLoading(false);
+      await fetchPositionList;
     } catch (err) {
       console.log({ err });
       setIsStakeLoading(false);
@@ -118,6 +117,7 @@ const LPFarms: React.FC<LPFarmsProps> = ({ onClose, daoTokenAddress }) => {
     try {
       setIsUnStakeLoading(true);
       await unStakeFarm(BigInt(id));
+      await fetchStackedPositionList;
       setIsUnStakeLoading(false);
     } catch (err) {
       console.log({ err });
@@ -139,14 +139,23 @@ const LPFarms: React.FC<LPFarmsProps> = ({ onClose, daoTokenAddress }) => {
         <CardHeader className="p-4 border-gray-800">
           <div className="bg-black p-4 rounded-md border-[#302F2F] border-b">
             <div className="flex items-center gap-3">
-              <Image
-                src="/assets/defai-cartel-image.svg"
-                alt="defai-cartel"
-                width={30}
-                height={40}
-                className="rounded-full object-cover"
-              />
-              <h2 className="text-xl font-medium text-green-400">DeFAI Cartel</h2>
+              <div className="relative w-20 h-[35px] flex-shrink-0">
+                <Image
+                  src="/assets/mode.png"
+                  alt="Gambl Token"
+                  width={16}
+                  height={16}
+                  className="absolute left-0 top-0 w-[35px] h-[35px] rounded-full"
+                />
+                <Image
+                  src="/assets/defai-cartel-image.svg"
+                  alt="DeFai Cartel"
+                  width={16}
+                  height={16}
+                  className="absolute left-[30px] top-0 w-[35px] h-[35px] rounded-full object-cover"
+                />
+              </div>
+              <h2 className="text-xl font-medium text-[#DFFE01]">DeFAI Cartel</h2>
               <span className="bg-[#D0F0BF] text-black text-xs px-2 py-0.5 rounded ml-auto">Active</span>
             </div>
             <div className="bg-[#053738] p-1 rounded-lg flex gap-x-2 px-3 w-fit mt-6">
@@ -177,9 +186,15 @@ const LPFarms: React.FC<LPFarmsProps> = ({ onClose, daoTokenAddress }) => {
             <div className="text-gray-400 mb-2 text-left">Total Claimable Rewards</div>
             <div className="flex justify-between items-center">
               <div className="flex items-center">
-                {/* <span className="mr-2">🪙</span> */}
+                <Image
+                  src="/assets/defai-cartel-image.svg"
+                  alt="DeFai Cartel"
+                  width={16}
+                  height={16}
+                  className=" rounded-full h-8 object-cover w-8 mr-4"
+                />
                 <span className="text-[#F8DE7F]">
-                  {formatUnits(unClaimedReward, 18)} DAAO
+                  {formatUnits(unClaimedReward, 18)} CARTEL
                   {/* {poolDetails?.unclaimedReward} */}
                 </span>
               </div>
@@ -207,37 +222,51 @@ const LPFarms: React.FC<LPFarmsProps> = ({ onClose, daoTokenAddress }) => {
                 </tr>
               </thead>
               <tbody className="bg-black text-white">
-                {(viewMode === 'unstaked' ? userPositions : stackedPositions).map((position, index) => (
-                  <tr key={position.id}>
-                    <td className="px-4 py-3">{index + 1}</td>
-                    <td className="px-4 py-3">{position.id}</td>
-                    <td className="px-4 py-3">{position.liquidityUsd}</td>
-                    <td className="px-4 py-3">
-                      {viewMode === 'unstaked'
-                        ? position.token0 === modeTokenAddress || position.token1 === CARTEL_TOKEN_ADDRESS
-                          ? 'No'
-                          : 'Yes'
-                        : position.apr}
-                    </td>
-                    <td className="px-4 py-3 text-right">
-                      {viewMode === 'unstaked' ? (
-                        <button
-                          className="text-black bg-[#D1FF53] text-xs px-3 py-1 rounded"
-                          onClick={() => handleStakeFarm(position.id)}
-                        >
-                          Stake
-                        </button>
-                      ) : (
-                        <button
-                          className="text-black bg-[#FFAAAB] text-xs px-3 py-1 rounded"
-                          onClick={() => handleUnStakeFarm(position.id)}
-                        >
-                          Unstake
-                        </button>
-                      )}
+                {isStakeLoading || isUnStakeLoading ? (
+                  <tr>
+                    <td className="text-center py-4" colSpan={5}>
+                      <AnimatedSkeleton className="w-14 h-6 rounded-md" />
                     </td>
                   </tr>
-                ))}
+                ) : (viewMode === 'unstaked' ? userPositions : stackedPositions).length === 0 ? (
+                  <tr>
+                    <td colSpan={5} className="text-center py-4 text-gray-400">
+                      No results found
+                    </td>
+                  </tr>
+                ) : (
+                  (viewMode === 'unstaked' ? userPositions : stackedPositions).map((position, index) => (
+                    <tr key={position.id}>
+                      <td className="px-4 py-3">{index + 1}</td>
+                      <td className="px-4 py-3">{position.id}</td>
+                      <td className="px-4 py-3">{position.liquidityUsd}</td>
+                      <td className="px-4 py-3">
+                        {viewMode === 'unstaked'
+                          ? position.token0 === modeTokenAddress || position.token1 === CARTEL_TOKEN_ADDRESS
+                            ? 'No'
+                            : 'Yes'
+                          : position.apr}
+                      </td>
+                      <td className="px-4 py-3 text-right">
+                        {viewMode === 'unstaked' ? (
+                          <button
+                            className="text-black bg-[#D1FF53] text-xs px-3 py-1 rounded"
+                            onClick={() => handleStakeFarm(position.id)}
+                          >
+                            Stake
+                          </button>
+                        ) : (
+                          <button
+                            className="text-black bg-[#FFAAAB] text-xs px-3 py-1 rounded"
+                            onClick={() => handleUnStakeFarm(position.id)}
+                          >
+                            Unstake
+                          </button>
+                        )}
+                      </td>
+                    </tr>
+                  ))
+                )}
               </tbody>
             </table>
           </div>
