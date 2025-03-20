@@ -30,7 +30,7 @@ const useLpFarms = () => {
   const { fetchTokenPrice } = useTokenPrice();
   const { writeContractAsync } = useWriteContract();
 
-  const KEY_STRUCT = [LP_FARM_REWARD_TOKEN, LP_FARM_POOL, LP_FARM_START_TIME, LP_FARM_END_TIME, LP_FARM_REFUNDEE];
+  // const KEY_STRUCT = [LP_FARM_REWARD_TOKEN, LP_FARM_POOL, LP_FARM_START_TIME, LP_FARM_END_TIME, LP_FARM_REFUNDEE];
   const KEY_STRUCT2 = [
     LP_FARM_REWARD_TOKEN,
     LP_FARM_POOL,
@@ -179,9 +179,10 @@ const useLpFarms = () => {
 
   const unStakeFarm = async (tokenId: BigInt) => {
     try {
+      console.log([KEY_STRUCT2, tokenId], 'keystruct2');
       const tx = await writeContractAsync({
-        address: lpFarmAddress,
-        abi: LP_FARM_ABI,
+        address: UNISWAP_V3_STAKER,
+        abi: V3_STACKER_ABI,
         functionName: 'unstakeToken',
         args: [KEY_STRUCT2, tokenId],
       });
@@ -256,20 +257,84 @@ const useLpFarms = () => {
     }
   };
 
+  // const rewardInfo = async (tokenIds: BigInt[]) => {
+  //   try {
+  //     const rewardDetails = await publicClient?.multicall({
+  //       contracts: tokenIds.map((tokenId) => ({
+  //         address: UNISWAP_V3_STAKER as Address,
+  //         abi: V3_STACKER_ABI,
+  //         functionName: 'getRewardInfo',
+  //         args: [KEY_STRUCT2, tokenId],
+  //       })),
+  //     });
+
+  //     console.log({ rewardDetails });
+
+  //     return {};
+  //   } catch (error) {
+  //     console.error(error);
+  //     const { errorMsg } = handleViemTransactionError({
+  //       abi: LP_FARM_ABI as Abi,
+  //       error,
+  //     });
+  //     toast({
+  //       title: errorMsg,
+  //       variant: 'destructive',
+  //     });
+  //   }
+  // };
+
   const rewardInfo = async (tokenIds: BigInt[]) => {
     try {
       const rewardDetails = await publicClient?.multicall({
         contracts: tokenIds.map((tokenId) => ({
-          address: lpFarmAddress as Address,
-          abi: LP_FARM_ABI,
+          address: UNISWAP_V3_STAKER as Address,
+          abi: V3_STACKER_ABI,
           functionName: 'getRewardInfo',
-          args: [KEY_STRUCT, tokenId],
+          args: [KEY_STRUCT2, tokenId],
         })),
       });
 
-      console.log({ rewardDetails });
-
-      return { };
+      const totalFirstRewards = rewardDetails?.reduce((acc: bigint, item: any) => {
+        const firstValue = item?.result?.[0] ?? BigInt(0);
+        return acc + firstValue;
+      }, BigInt(0));
+      console.log('Total of first reward values:', totalFirstRewards);
+      return totalFirstRewards || BigInt(0);
+    } catch (error) {
+      console.error(error);
+      const { errorMsg } = handleViemTransactionError({
+        abi: LP_FARM_ABI as Abi,
+        error,
+      });
+      toast({
+        title: errorMsg,
+        variant: 'destructive',
+      });
+      return BigInt(0);
+    }
+  };
+  const claimRewards = async (rewardTokenAmount: BigInt) => {
+    console.log([LP_FARM_REWARD_TOKEN, address, rewardTokenAmount], 'fgyhbvbhgbnvb');
+    try {
+      const tx = await writeContractAsync({
+        address: UNISWAP_V3_STAKER,
+        abi: V3_STACKER_ABI,
+        functionName: 'claimReward',
+        args: [LP_FARM_REWARD_TOKEN, address, rewardTokenAmount],
+      });
+      const receipt = (await publicClient?.waitForTransactionReceipt({
+        hash: tx,
+        confirmations: 1,
+      })) as TransactionReceipt;
+      if (receipt.status === 'success') {
+        toast({
+          title: 'Claim Reward Successfull',
+          description: `Your Claim was Successfull`,
+          variant: 'default',
+        });
+      }
+      return receipt;
     } catch (error) {
       console.error(error);
       const { errorMsg } = handleViemTransactionError({
@@ -289,6 +354,7 @@ const useLpFarms = () => {
     stakeFarm,
     unStakeFarm,
     rewardInfo,
+    claimRewards,
     getStackedPositionsIds,
     getStackedPositionList,
   };

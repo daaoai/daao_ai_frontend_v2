@@ -11,6 +11,7 @@ import useLpFarms from '@/hooks/farm/uselpFarms';
 import { modeTokenAddress } from '@/constants/addresses';
 import { CARTEL_TOKEN_ADDRESS } from '@/constants/ticket';
 import Image from 'next/image';
+import { formatUnits } from 'viem';
 
 interface LPFarm {
   id: number;
@@ -34,11 +35,12 @@ const LPFarms: React.FC<LPFarmsProps> = ({ onClose, daoTokenAddress }) => {
   const [isUnStakeLoading, setIsUnStakeLoading] = useState(false);
   const [userPositions, setUserPositions] = useState<Position[]>([]);
   const [stackedPositions, setStackedPositions] = useState<Position[]>([]);
+  const [unClaimedReward, setUnclaimedRewards] = useState(BigInt(0));
 
   const { harvest } = useHarvest();
-  const { getPositionList, unStakeFarm, stakeFarm, getStackedPositionList, rewardInfo } = useLpFarms();
+  const { getPositionList, unStakeFarm, stakeFarm, getStackedPositionList, rewardInfo, claimRewards } = useLpFarms();
   const { getPoolDetails } = usePoolList();
-
+  console.log(unClaimedReward, 'unClaimedReward');
   const fetchPoolDetails = async () => {
     try {
       const data = await getPoolDetails({ poolAddress: CONTRACT_ADDRESS });
@@ -55,6 +57,7 @@ const LPFarms: React.FC<LPFarmsProps> = ({ onClose, daoTokenAddress }) => {
       setUserPositions(data);
       const ids = data.map((position) => BigInt(position.id));
       const rewardInfoData = await rewardInfo(ids);
+      setUnclaimedRewards(rewardInfoData);
       console.log('rewardInfoData', { rewardInfoData });
     } catch (error) {
       console.log('fetchPositionList - error');
@@ -68,6 +71,7 @@ const LPFarms: React.FC<LPFarmsProps> = ({ onClose, daoTokenAddress }) => {
       setStackedPositions(data);
       const ids = data.map((position) => BigInt(position.id));
       const rewardInfoData = await rewardInfo(ids);
+      setUnclaimedRewards(rewardInfoData);
       console.log('rewardInfoData', { rewardInfoData });
     } catch (error) {
       console.log('fetchStackedPositionList - error');
@@ -174,9 +178,19 @@ const LPFarms: React.FC<LPFarmsProps> = ({ onClose, daoTokenAddress }) => {
             <div className="flex justify-between items-center">
               <div className="flex items-center">
                 {/* <span className="mr-2">🪙</span> */}
-                <span className="text-[#F8DE7F]">{poolDetails?.unclaimedReward} DAAO</span>
+                <span className="text-[#F8DE7F]">
+                  {formatUnits(unClaimedReward, 18)} DAAO
+                  {/* {poolDetails?.unclaimedReward} */}
+                </span>
               </div>
-              <button className="bg-white text-black text-xs font-medium px-3 py-1 rounded">CLAIM</button>
+              <button
+                className="bg-white text-black text-xs font-medium px-3 py-1 rounded"
+                onClick={() => {
+                  claimRewards(unClaimedReward);
+                }}
+              >
+                CLAIM
+              </button>
             </div>
           </div>
           <div className="overflow-x-auto rounded-md h-32 max-h-32 overflow-y-scroll">
