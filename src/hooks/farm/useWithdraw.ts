@@ -5,7 +5,7 @@ import { handleViemTransactionError } from '@/utils/approval';
 import { Abi, Hex } from 'viem';
 import { FARM_CONTRACT_ADDRESS } from '@/constants/farm';
 import { FARM_ABI } from '@/daao-sdk/abi/farm';
-import { toast as reactToast } from 'react-toastify'; // Ensure to import react-toastify's toast function
+import { toast as reactToast } from 'react-toastify';
 
 const useWithDraw = () => {
   const publicClient = usePublicClient();

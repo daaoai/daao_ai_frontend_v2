@@ -26,7 +26,7 @@ const usePoolList = () => {
   };
   const getPoolAddresses = async () => {
     const totalLengthOfPool = await getTotalPoolLength();
-    const length = Number(totalLengthOfPool) || 0;
+    const length = Number(Number(totalLengthOfPool) || 0);
     const array = new Array(length).fill(0);
     const response = await publicClient?.multicall({
       contracts: array.map((_, index) => ({

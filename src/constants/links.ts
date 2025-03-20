@@ -54,7 +54,7 @@ export const CURRENT_DAO_IMAGE = '/assets/defiCartel.png';
 export const GAMBLE_IMAGE = '/assets/gamble.jpeg';
 
 export const tokenImageLinks = {
-  GAMBLE: '/assets/gamble.jpeg',
-  CARTEL: '/assets/defiCartel.png',
-  PACKY: '/assets/packy.png',
+  GAMBL: '/assets/gamble.jpeg',
+  'CARTEL TOKEN': '/assets/defiCartel.png',
+  PACKY: '/assets/packy.jpg',
 };

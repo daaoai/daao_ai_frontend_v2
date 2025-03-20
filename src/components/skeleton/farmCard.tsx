@@ -5,7 +5,7 @@ import AnimatedSkeleton from '../animatedSkeleton';
 
 const FarmCardSkeleton = () => {
   return (
-    <Card className="box-border w-full max-w-[420px] bg-[#0d0d0d] border-[#383838] text-white flex flex-col">
+    <Card className="box-border w-full max-w-[360px] bg-[#0d0d0d] border-[#383838] text-white flex flex-col">
       <CardContent className="p-6 flex flex-col gap-6 flex-grow">
         {/* Top Section: Title & Images */}
         <div className="flex justify-between items-start">
