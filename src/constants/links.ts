@@ -55,6 +55,6 @@ export const GAMBLE_IMAGE = '/assets/gamble.jpeg';
 
 export const tokenImageLinks = {
   GAMBL: '/assets/gamble.jpeg',
-  'CARTEL TOKEN': '/assets/defiCartel.png',
+  CARTEL: '/assets/defiCartel.png',
   PACKY: '/assets/packy.jpg',
 };

@@ -96,7 +96,7 @@ const usePoolList = () => {
         const rewardTokenName = (await publicClient?.readContract({
           address: results[2][0],
           abi: CARTEL,
-          functionName: 'name',
+          functionName: 'symbol',
         })) as string;
 
         const decimalResults = decimals?.map((res) => res.result || null) as [number, number];
