@@ -22,10 +22,10 @@ import { ethers } from 'ethers';
 import { toast as reactToast } from 'react-toastify'; // Ensure to import react-toastify's toast function
 
 const POOL_ADDRESS = '0xf70e76cc5a39aad1953bef3d1647c8b36f3f6324';
-const UNISWAP_V3_STAKER = '0xEf2A8A6F368158fCf4B3b783f85d3C39fa420c77';
+const UNISWAP_V3_STAKER = '0xd9cC1D4565102AE6118476EF0E531e7956487099';
 
 const useLpFarms = () => {
-  const { toast } = useToast();
+  // const { toast } = useToast();
   const { address } = useAccount();
   const publicClient = usePublicClient();
   const { fetchTokenPrice } = useTokenPrice();
@@ -35,8 +35,8 @@ const useLpFarms = () => {
   const KEY_STRUCT2 = [
     LP_FARM_REWARD_TOKEN,
     LP_FARM_POOL,
-    BigInt('1742397189'),
-    BigInt('1744989189'),
+    BigInt(LP_FARM_START_TIME),
+    BigInt(LP_FARM_END_TIME),
     LP_FARM_REFUNDEE,
   ];
 
@@ -55,6 +55,21 @@ const useLpFarms = () => {
     }
   };
 
+  const getNumberOfStakedForPosition = async (tokenId: bigint) => {
+    try {
+      const response = (await publicClient?.readContract({
+        address: UNISWAP_V3_STAKER,
+        abi: V3_STACKER_ABI,
+        functionName: 'deposits',
+        args: [tokenId],
+      })) as [Address, number, number, number]; // Type assertion for the tuple response
+      return response[1];
+    } catch (error) {
+      console.error(error);
+      return BigInt(0);
+    }
+  };
+
   const getPositionDetails = async (positionId: bigint) => {
     try {
       const positionDetails = (await publicClient?.readContract({
@@ -63,7 +78,7 @@ const useLpFarms = () => {
         functionName: 'positions',
         args: [positionId],
       })) as [bigint, Address, Address, Address, number, number, number, bigint, bigint, bigint, bigint, bigint];
-
+      const numberOfStakes = await getNumberOfStakedForPosition(positionId);
       const [
         nonce,
         operator,
@@ -117,6 +132,7 @@ const useLpFarms = () => {
         liquidityUsd,
         id: Number(positionId),
         apr: 0,
+        numberOfStakes,
       };
     } catch (error) {
       console.error(error);
@@ -146,6 +162,7 @@ const useLpFarms = () => {
   const stakeFarm = async (tokenId: BigInt) => {
     try {
       const encodedData = encodeSingleIncentive(KEY_STRUCT2);
+      console.log([address, UNISWAP_V3_STAKER, tokenId, encodedData], 'stakeFarm');
       const tx = await writeContractAsync({
         address: nonFungiblePositionManagerAddress,
         abi: NON_FUNGIBLE_POSITION_MANAGER_ABI,
@@ -218,6 +235,9 @@ const useLpFarms = () => {
   const getStackedPositionList = async (): Promise<Position[]> => {
     try {
       const stackedPositionsIds = await getStackedPositionsIds();
+
+      const rewardInfo = await getRewardInfo(stackedPositionsIds);
+
       const positionResults = await Promise.allSettled(
         stackedPositionsIds.map((positionId) => getPositionDetails(positionId)),
       );
@@ -226,8 +246,8 @@ const useLpFarms = () => {
       const stackedPositionList = positionResults
         .filter((result): result is PromiseFulfilledResult<Position> => result.status === 'fulfilled')
         .map((result) => {
-          const positionArray = result.value;
-          return positionArray;
+          const position = result.value;
+          return { ...position, rewardInfo: rewardInfo[position.id.toString()] };
         });
 
       // Log any failed position fetches
@@ -244,7 +264,7 @@ const useLpFarms = () => {
     }
   };
 
-  const rewardInfo = async (tokenIds: BigInt[]) => {
+  const getRewardInfo = async (tokenIds: BigInt[]) => {
     try {
       const rewardDetails = await publicClient?.multicall({
         contracts: tokenIds.map((tokenId) => ({
@@ -255,12 +275,14 @@ const useLpFarms = () => {
         })),
       });
 
-      const totalFirstRewards = rewardDetails?.reduce((acc: bigint, item: any) => {
+      const rewardInfo = rewardDetails?.reduce((acc: { [key: string]: bigint }, item: any, index: number) => {
         const firstValue = item?.result?.[0] ?? BigInt(0);
-        return acc + firstValue;
-      }, BigInt(0));
-      console.log('Total of first reward values:', totalFirstRewards);
-      return totalFirstRewards || BigInt(0);
+        const tokenId = tokenIds[index];
+        acc[tokenId.toString()] = firstValue;
+        return acc;
+      }, {});
+
+      return rewardInfo || {};
     } catch (error) {
       console.error(error);
       const { errorMsg } = handleViemTransactionError({
@@ -269,9 +291,25 @@ const useLpFarms = () => {
       });
       reactToast.error(errorMsg);
 
+      return {};
+    }
+  };
+
+  const getClaimableRewards = async () => {
+    try {
+      const claimableRewards = (await publicClient?.readContract({
+        address: UNISWAP_V3_STAKER,
+        abi: V3_STACKER_ABI,
+        functionName: 'rewards',
+        args: [LP_FARM_REWARD_TOKEN, address],
+      })) as bigint;
+      return claimableRewards;
+    } catch (error) {
+      console.error(error);
       return BigInt(0);
     }
   };
+
   const claimRewards = async (rewardTokenAmount: BigInt) => {
     console.log([LP_FARM_REWARD_TOKEN, address, rewardTokenAmount], 'fgyhbvbhgbnvb');
     try {
@@ -286,7 +324,7 @@ const useLpFarms = () => {
         confirmations: 1,
       })) as TransactionReceipt;
       if (receipt.status === 'success') {
-        reactToast.success('Your Stake was Successful');
+        reactToast.success('Your Claim was Successful');
       }
       return receipt;
     } catch (error) {
@@ -303,8 +341,8 @@ const useLpFarms = () => {
     getPositionList,
     getPositionDetails,
     stakeFarm,
+    getClaimableRewards,
     unStakeFarm,
-    rewardInfo,
     claimRewards,
     getStackedPositionsIds,
     getStackedPositionList,

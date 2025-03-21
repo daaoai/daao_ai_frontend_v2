@@ -4,16 +4,16 @@ import { ChevronLeft } from 'lucide-react';
 import { Card, CardContent, CardHeader } from '@/shadcn/components/ui/card';
 import ClickToCopy from '../copyToClipboard';
 import { shortenAddress } from '@/utils/address';
-import usePoolList from '@/hooks/farm/usePoolList';
-import { FarmPool, Position } from '@/types/farm';
-import useHarvest from '@/hooks/farm/useHarvest';
+// import usePoolList from '@/hooks/farm/usePoolList';
+import { Position } from '@/types/farm';
+// import useHarvest from '@/hooks/farm/useHarvest';
 import useLpFarms from '@/hooks/farm/uselpFarms';
 import { modeTokenAddress } from '@/constants/addresses';
 import { CARTEL_TOKEN_ADDRESS } from '@/constants/ticket';
 import Image from 'next/image';
 import { formatUnits } from 'viem';
 import AnimatedSkeleton from '../animatedSkeleton';
-import { CURRENT_DAO_IMAGE, GAMBLE_IMAGE } from '@/constants/links';
+// import { CURRENT_DAO_IMAGE, GAMBLE_IMAGE } from '@/constants/links';
 
 interface LPFarm {
   id: number;
@@ -32,35 +32,38 @@ const CONTRACT_ADDRESS = '0x7303dbc086a18459A4dc74e74f2Dcc2a2a26131B';
 
 const LPFarms: React.FC<LPFarmsProps> = ({ onClose, daoTokenAddress }) => {
   const [viewMode, setViewMode] = useState<'unstaked' | 'staked'>('unstaked');
-  const [poolDetails, setPoolDetails] = useState<FarmPool | null>(null);
+  // const [poolDetails, setPoolDetails] = useState<FarmPool | null>(null);
   const [isStakeLoading, setIsStakeLoading] = useState(false);
   const [isUnStakeLoading, setIsUnStakeLoading] = useState(false);
   const [userPositions, setUserPositions] = useState<Position[]>([]);
   const [stackedPositions, setStackedPositions] = useState<Position[]>([]);
   const [unClaimedReward, setUnclaimedRewards] = useState(BigInt(0));
+  const [isClaimingRewards, setIsClaimingRewards] = useState(false);
 
-  const { harvest } = useHarvest();
-  const { getPositionList, unStakeFarm, stakeFarm, getStackedPositionList, rewardInfo, claimRewards } = useLpFarms();
-  const { getPoolDetails } = usePoolList();
-  console.log(unClaimedReward, 'unClaimedReward');
-  const fetchPoolDetails = async () => {
-    try {
-      const data = await getPoolDetails({ poolAddress: CONTRACT_ADDRESS });
-      setPoolDetails(data);
-    } catch (error) {
-      console.error(error);
-    }
-  };
+  const {
+    getPositionList,
+    unStakeFarm,
+    stakeFarm,
+    getStackedPositionList,
+    getClaimableRewards,
+    claimRewards,
+  } = useLpFarms();
+  // const { getPoolDetails } = usePoolList();
+
+  // const fetchPoolDetails = async () => {
+  //   try {
+  //     const data = await getPoolDetails({ poolAddress: CONTRACT_ADDRESS });
+  //     setPoolDetails(data);
+  //   } catch (error) {
+  //     console.error(error);
+  //   }
+  // };
 
   const fetchPositionList = async () => {
     try {
       const data = await getPositionList();
       console.log('fetchPositionListdata', { data });
       setUserPositions(data);
-      const ids = data.map((position) => BigInt(position.id));
-      const rewardInfoData = await rewardInfo(ids);
-      setUnclaimedRewards(rewardInfoData);
-      console.log('rewardInfoData', { rewardInfoData });
     } catch (error) {
       console.log('fetchPositionList - error');
       console.error(error);
@@ -71,12 +74,18 @@ const LPFarms: React.FC<LPFarmsProps> = ({ onClose, daoTokenAddress }) => {
     try {
       const data = await getStackedPositionList();
       setStackedPositions(data);
-      const ids = data.map((position) => BigInt(position.id));
-      const rewardInfoData = await rewardInfo(ids);
-      setUnclaimedRewards(rewardInfoData);
-      console.log('rewardInfoData', { rewardInfoData });
     } catch (error) {
       console.log('fetchStackedPositionList - error');
+      console.error(error);
+    }
+  };
+
+  const fetchClaimableRewards = async () => {
+    try {
+      const data = await getClaimableRewards();
+      setUnclaimedRewards(data);
+    } catch (error) {
+      console.log('fetchClaimableRewards - error');
       console.error(error);
     }
   };
@@ -84,7 +93,8 @@ const LPFarms: React.FC<LPFarmsProps> = ({ onClose, daoTokenAddress }) => {
   console.log(userPositions, 'userPositions');
 
   useEffect(() => {
-    fetchPoolDetails();
+    // fetchPoolDetails();
+    fetchClaimableRewards();
   }, []);
 
   useEffect(() => {
@@ -117,7 +127,7 @@ const LPFarms: React.FC<LPFarmsProps> = ({ onClose, daoTokenAddress }) => {
     try {
       setIsUnStakeLoading(true);
       await unStakeFarm(BigInt(id));
-      await fetchStackedPositionList;
+      await fetchClaimableRewards();
       setIsUnStakeLoading(false);
     } catch (err) {
       console.log({ err });
@@ -125,6 +135,19 @@ const LPFarms: React.FC<LPFarmsProps> = ({ onClose, daoTokenAddress }) => {
     }
   };
 
+  const handleClaimRewards = async () => {
+    try {
+      setIsClaimingRewards(true);
+      await claimRewards(unClaimedReward);
+      await fetchClaimableRewards();
+      setIsClaimingRewards(false);
+    } catch (err) {
+      console.log({ err });
+      setIsClaimingRewards(false);
+    }
+  };
+
+  console.log(stackedPositions, 'stackedPositions');
   return (
     <div className="w-full">
       <Card className=" text-white border-gray-800 bg-[#101010]">
@@ -200,11 +223,10 @@ const LPFarms: React.FC<LPFarmsProps> = ({ onClose, daoTokenAddress }) => {
               </div>
               <button
                 className="bg-white text-black text-xs font-medium px-3 py-1 rounded"
-                onClick={() => {
-                  claimRewards(unClaimedReward);
-                }}
+                onClick={handleClaimRewards}
+                disabled={isClaimingRewards}
               >
-                CLAIM
+                {isClaimingRewards ? 'Claiming...' : 'CLAIM'}
               </button>
             </div>
           </div>
@@ -216,7 +238,7 @@ const LPFarms: React.FC<LPFarmsProps> = ({ onClose, daoTokenAddress }) => {
                   <th className="text-left px-4 py-2 text-gray-400">Token ID</th>
                   <th className="text-left px-4 py-2 text-gray-400">Value</th>
                   <th className="text-left px-4 py-2 text-gray-400">
-                    {viewMode === 'unstaked' ? 'Can Stake?' : 'APR'}
+                    {viewMode === 'unstaked' ? 'Can Stake?' : 'Rewards'}
                   </th>
                   <th className="px-4 py-2 text-right"></th>
                 </tr>
@@ -245,7 +267,7 @@ const LPFarms: React.FC<LPFarmsProps> = ({ onClose, daoTokenAddress }) => {
                           ? position.token0 === modeTokenAddress || position.token1 === CARTEL_TOKEN_ADDRESS
                             ? 'No'
                             : 'Yes'
-                          : position.apr}
+                          : formatUnits(position.rewardInfo, 18)}
                       </td>
                       <td className="px-4 py-3 text-right">
                         {viewMode === 'unstaked' ? (
