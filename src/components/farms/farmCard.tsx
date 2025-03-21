@@ -62,9 +62,11 @@ const FarmCard = ({ farm, isLoading }: FarmCardProps) => {
                 className="absolute left-[30px] top-0 w-[50px] h-[50px] rounded-full"
               />
             </div>
-            <div className="flex flex-col items-start gap-1">
-              <h2 className="text-xl font-bold">${farm.depositTokenName}</h2>
-              <p className="text-gray-70 text-sm">{description}</p>
+            <div className="flex items-start gap-1">
+              <h2 className="text-md font-bold">${farm.depositTokenName}</h2>
+              <h2 className="text-md font-bold">${farm.rewardTokenName}</h2>
+
+              {/* <p className="text-gray-70 text-sm">{description}</p> */}
             </div>
           </div>
           <Badge
