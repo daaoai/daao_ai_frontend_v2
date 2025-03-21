@@ -4,6 +4,7 @@ import useAllowance from '../useAllowance';
 import { Abi, Hex } from 'viem';
 import { handleViemTransactionError } from '@/utils/approval';
 import { useToast } from '../use-toast';
+import { toast as reactToast } from 'react-toastify'; // Ensure to import react-toastify's toast function
 
 const useDeposit = () => {
   const publicClient = usePublicClient();
@@ -22,10 +23,8 @@ const useDeposit = () => {
   }) => {
     try {
       let allowanceSufficient = await checkAllowance(amount, poolAddress);
-      console.log({ allowanceSufficient, tokenAddress, amount });
       if (!allowanceSufficient) {
         const approvalTx = await requestAllowance(amount, poolAddress);
-        console.log({ approvalTx });
         allowanceSufficient = true;
       }
       const tx = await writeContractAsync({
@@ -45,10 +44,7 @@ const useDeposit = () => {
         abi: POOL_ABI as Abi,
         error,
       });
-      toast({
-        title: errorMsg,
-        variant: 'destructive',
-      });
+      reactToast.error(errorMsg);
     }
   };
 

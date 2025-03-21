@@ -26,9 +26,8 @@ const usePoolList = () => {
   };
   const getPoolAddresses = async () => {
     const totalLengthOfPool = await getTotalPoolLength();
-    const length = totalLengthOfPool || 0;
+    const length = Number(Number(totalLengthOfPool) || 0);
     const array = new Array(length).fill(0);
-
     const response = await publicClient?.multicall({
       contracts: array.map((_, index) => ({
         abi: FARM_FACTORY_ABI,
@@ -94,6 +93,11 @@ const usePoolList = () => {
           abi: CARTEL,
           functionName: 'name',
         })) as string;
+        const rewardTokenName = (await publicClient?.readContract({
+          address: results[2][0],
+          abi: CARTEL,
+          functionName: 'symbol',
+        })) as string;
 
         const decimalResults = decimals?.map((res) => res.result || null) as [number, number];
         const rewardEmmisionUsd =
@@ -105,7 +109,7 @@ const usePoolList = () => {
           totalStackedUSD && rewardEmmisionUsd
             ? Math.abs(Number(((rewardEmmisionUsd * 365 * 24 * 3600) / totalStackedUSD) * 100) || 0)
             : 0;
-        console.log(apr);
+
         return {
           startTime: results[0][0] || BigInt(0),
           endTime: results[0][1] || BigInt(0),
@@ -126,6 +130,7 @@ const usePoolList = () => {
           unclaimedReward: userResult[1] || BigInt(0),
           poolAddress,
           depositTokenName,
+          rewardTokenName,
           apr,
         };
       }
@@ -138,8 +143,8 @@ const usePoolList = () => {
 
   const getPoolList = async () => {
     const poolAddresses = await getPoolAddresses();
-    const poolDetaisPromise = poolAddresses?.map((poolAddress) => getPoolDetails({ poolAddress })) || [];
-    const poolListData = await Promise.allSettled(poolDetaisPromise);
+    const poolDetailsPromise = poolAddresses?.map((poolAddress) => getPoolDetails({ poolAddress })) || [];
+    const poolListData = await Promise.allSettled(poolDetailsPromise);
     const poolList: FarmPool[] = (
       poolListData.filter(
         (poolDetailsRes) => poolDetailsRes.status === 'fulfilled' && poolDetailsRes.value,

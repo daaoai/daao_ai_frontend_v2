@@ -52,3 +52,9 @@ export const FUND_CARD_PLACEHOLDER_IMAGE: string = '/assets/new-upcoming-img.jpe
 export const CURRENT_DAO_LINK = 'https://www.defaicartel.xyz/';
 export const CURRENT_DAO_IMAGE = '/assets/defiCartel.png';
 export const GAMBLE_IMAGE = '/assets/gamble.jpeg';
+
+export const tokenImageLinks = {
+  GAMBL: '/assets/gamble.jpeg',
+  CARTEL: '/assets/defiCartel.png',
+  PACKY: '/assets/packy.jpg',
+};

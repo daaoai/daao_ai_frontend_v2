@@ -3,6 +3,7 @@ import { POOL_ABI } from '@/daao-sdk/abi/pool';
 import { useToast } from '../use-toast';
 import { handleViemTransactionError } from '@/utils/approval';
 import { Abi } from 'viem';
+import { toast as reactToast } from 'react-toastify'; // Ensure to import react-toastify's toast function
 
 const useHarvest = () => {
   const publicClient = usePublicClient();

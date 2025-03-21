@@ -5,6 +5,7 @@ import { handleViemTransactionError } from '@/utils/approval';
 import { Abi, Hex } from 'viem';
 import { FARM_CONTRACT_ADDRESS } from '@/constants/farm';
 import { FARM_ABI } from '@/daao-sdk/abi/farm';
+import { toast as reactToast } from 'react-toastify';
 
 const useWithDraw = () => {
   const publicClient = usePublicClient();
@@ -13,11 +14,7 @@ const useWithDraw = () => {
 
   const withdraw = async ({ poolAddress, amount }: { poolAddress: `0x${string}`; amount: bigint }) => {
     try {
-      toast({
-        title: 'Processing Withdrawal...',
-        description: `Withdrawing ${amount} tokens.`,
-        variant: 'default',
-      });
+      reactToast.success('Processing Withdrawal...');
 
       const withdrawResponse = await writeContractAsync({
         address: poolAddress,
@@ -29,12 +26,8 @@ const useWithDraw = () => {
         hash: withdrawResponse,
         confirmations: 1,
       });
+      reactToast.success('Withdrawal Successful');
 
-      toast({
-        title: 'Withdrawal Successful',
-        description: `Your withdrawal of ${amount} tokens is confirmed.`,
-        variant: 'default',
-      });
       console.log({ withdraw: receipt });
       return receipt;
     } catch (error) {
@@ -54,11 +47,7 @@ const useWithDraw = () => {
 
   const startWithdraw = async () => {
     try {
-      toast({
-        title: 'Initiating Withdrawal...',
-        description: 'Your withdrawal request is being processed.',
-        variant: 'default',
-      });
+      reactToast.success('Initiating Withdrawal...');
 
       const startWithdrawResponse = await writeContractAsync({
         address: FARM_CONTRACT_ADDRESS,
@@ -75,11 +64,7 @@ const useWithDraw = () => {
         const withdrawTime = await getWithdrawalTime({
           address: FARM_CONTRACT_ADDRESS,
         });
-        toast({
-          title: 'Withdrawal Initiated',
-          description: `You can withdraw in ${withdrawTime}.`,
-          variant: 'default',
-        });
+        reactToast.success('Withdrawal Initiated');
       }
       console.log({ startWithdraw: receipt });
       return receipt;
@@ -89,11 +74,8 @@ const useWithDraw = () => {
         abi: POOL_ABI as Abi,
         error,
       });
-      toast({
-        title: 'Start Withdrawal Failed',
-        description: errorMsg,
-        variant: 'destructive',
-      });
+
+      reactToast.error(errorMsg);
     }
   };
 
@@ -127,11 +109,7 @@ const useWithDraw = () => {
         error,
       });
 
-      toast({
-        title: 'Error Fetching Withdrawal Time',
-        description: errorMsg,
-        variant: 'destructive',
-      });
+      reactToast.error(errorMsg);
 
       return 'Unknown Time';
     }

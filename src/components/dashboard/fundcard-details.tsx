@@ -12,13 +12,13 @@ import ClickToCopy from '../copyToClipboard';
 import { telegramDeFAILink, telegramLink, twitterDeFAILink, twitterLink } from '@/constants/links';
 import PoolDetailCard from '../poolDetailCard';
 import { ModalWrapper } from '../modalWrapper';
+import LPFarms from '../lpFarms';
 
 const FundDetails: React.FC<FundDetailsProps> = (props) => {
   interface TokenChangeState {
     percent: number;
     token: number;
   }
-
   const { daoBalance } = useFundContext();
   const [marketCap, setMarketCap] = useState<number | null>(null);
   const [liquidity, setLiquidity] = useState<number | null>(null);
@@ -33,6 +33,9 @@ const FundDetails: React.FC<FundDetailsProps> = (props) => {
   const [isLiquidityModalOpen, setIsLiquidityModalOpen] = useState(false);
   const openLiquidityModalOpen = useCallback(() => setIsLiquidityModalOpen(true), []);
   const closeLiquidityModalOpen = useCallback(() => setIsLiquidityModalOpen(false), []);
+  const [isLPFarmModalOpen, setIsLPFarmModalOpen] = useState(false);
+  const openFarmModalOpen = useCallback(() => setIsLPFarmModalOpen(true), []);
+  const closeFarmModalOpen = useCallback(() => setIsLPFarmModalOpen(false), []);
 
   // useEffect(() => {
   //   const fetchContractData = async () => {
@@ -150,15 +153,25 @@ const FundDetails: React.FC<FundDetailsProps> = (props) => {
             ${props.shortname} {props.longname}
           </CardTitle>
         </div> */}
-      <div className="border-2 border-gray-30 rounded-md my-4 p-6 flex items-center justify-between">
+      <div className="border-2 border-gray-30 rounded-md my-4 p-6 flex items-center gap-6">
         <button
           className="bg-teal-50 text-black text-sm rounded-md p-2 hover:bg-teal-60 active:scale-95 transition-transform ease-in-out duration-150"
           onClick={openLiquidityModalOpen}
         >
           Manage
         </button>
+        <button
+          className="underline text-teal-50 text-sm rounded-md p-2 active:scale-95 transition-transform ease-in-out duration-150"
+          onClick={openFarmModalOpen}
+        >
+          LP Farms
+        </button>
+
         <ModalWrapper isOpen={isLiquidityModalOpen} onClose={closeLiquidityModalOpen} className="!max-w-[56rem]">
           <Liquidity onClose={closeLiquidityModalOpen} />
+        </ModalWrapper>
+        <ModalWrapper isOpen={isLPFarmModalOpen} onClose={closeFarmModalOpen}>
+          <LPFarms onClose={closeFarmModalOpen} daoTokenAddress={daoTokenAddress} />
         </ModalWrapper>
         {/* 
           <div className="flex flex-col gap-2">
