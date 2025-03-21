@@ -91,7 +91,7 @@ const usePoolList = () => {
         const depositTokenName = (await publicClient?.readContract({
           address: results[4],
           abi: CARTEL,
-          functionName: 'name',
+          functionName: 'symbol',
         })) as string;
         const rewardTokenName = (await publicClient?.readContract({
           address: results[2][0],
