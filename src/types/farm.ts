@@ -44,4 +44,6 @@ export interface Position {
   liquidityUsd: string;
   id: number;
   apr: number;
+  rewardInfo: bigint;
+  numberOfStakes: number;
 }
