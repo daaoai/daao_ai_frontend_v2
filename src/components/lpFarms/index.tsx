@@ -39,6 +39,7 @@ const LPFarms: React.FC<LPFarmsProps> = ({ onClose, daoTokenAddress }) => {
   const [stackedPositions, setStackedPositions] = useState<Position[]>([]);
   const [unClaimedReward, setUnclaimedRewards] = useState(BigInt(0));
   const [isClaimingRewards, setIsClaimingRewards] = useState(false);
+  const [isWithdrawingPosition, setIsWithdrawingPosition] = useState(false);
 
   const {
     getPositionList,
@@ -47,17 +48,8 @@ const LPFarms: React.FC<LPFarmsProps> = ({ onClose, daoTokenAddress }) => {
     getStackedPositionList,
     getClaimableRewards,
     claimRewards,
+    withdrawPosition,
   } = useLpFarms();
-  // const { getPoolDetails } = usePoolList();
-
-  // const fetchPoolDetails = async () => {
-  //   try {
-  //     const data = await getPoolDetails({ poolAddress: CONTRACT_ADDRESS });
-  //     setPoolDetails(data);
-  //   } catch (error) {
-  //     console.error(error);
-  //   }
-  // };
 
   const fetchPositionList = async () => {
     try {
@@ -128,6 +120,7 @@ const LPFarms: React.FC<LPFarmsProps> = ({ onClose, daoTokenAddress }) => {
       setIsUnStakeLoading(true);
       await unStakeFarm(BigInt(id));
       await fetchClaimableRewards();
+      await fetchStackedPositionList();
       setIsUnStakeLoading(false);
     } catch (err) {
       console.log({ err });
@@ -144,6 +137,18 @@ const LPFarms: React.FC<LPFarmsProps> = ({ onClose, daoTokenAddress }) => {
     } catch (err) {
       console.log({ err });
       setIsClaimingRewards(false);
+    }
+  };
+
+  const handleWithdrawPosition = async (id: number) => {
+    try {
+      setIsWithdrawingPosition(true);
+      await withdrawPosition(BigInt(id));
+      await fetchStackedPositionList();
+      setIsWithdrawingPosition(false);
+    } catch (err) {
+      console.log({ err });
+      setIsWithdrawingPosition(false);
     }
   };
 
@@ -278,12 +283,25 @@ const LPFarms: React.FC<LPFarmsProps> = ({ onClose, daoTokenAddress }) => {
                             Stake
                           </button>
                         ) : (
-                          <button
-                            className="text-black bg-[#FFAAAB] text-xs px-3 py-1 rounded"
-                            onClick={() => handleUnStakeFarm(position.id)}
-                          >
-                            Unstake
-                          </button>
+                          <>
+                            {position.numberOfStakes > 0 && (
+                              <button
+                                className="text-black bg-[#FFAAAB] text-xs px-3 py-1 rounded"
+                                onClick={() => handleUnStakeFarm(position.id)}
+                              >
+                                Unstake
+                              </button>
+                            )}
+                            {position.numberOfStakes === 0 && (
+                              <button
+                                className="text-black bg-[#FFAAAB] text-xs px-3 py-1 rounded"
+                                onClick={() => handleWithdrawPosition(position.id)}
+                                disabled={isWithdrawingPosition}
+                              >
+                                {isWithdrawingPosition ? 'Withdrawing...' : 'Withdraw'}
+                              </button>
+                            )}
+                          </>
                         )}
                       </td>
                     </tr>

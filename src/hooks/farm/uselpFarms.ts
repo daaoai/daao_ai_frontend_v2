@@ -324,7 +324,34 @@ const useLpFarms = () => {
         confirmations: 1,
       })) as TransactionReceipt;
       if (receipt.status === 'success') {
-        reactToast.success('Your Claim was Successful');
+        reactToast.success('Your Stake was Successful');
+      }
+      return receipt;
+    } catch (error) {
+      console.error(error);
+      const { errorMsg } = handleViemTransactionError({
+        abi: LP_FARM_ABI as Abi,
+        error,
+      });
+      reactToast.error(errorMsg);
+    }
+  };
+
+  const withdrawPosition = async (tokenId: bigint) => {
+    try {
+      const encodedData = encodeSingleIncentive(KEY_STRUCT2);
+      const tx = await writeContractAsync({
+        address: UNISWAP_V3_STAKER,
+        abi: V3_STACKER_ABI,
+        functionName: 'withdrawToken',
+        args: [tokenId, address, encodedData],
+      });
+      const receipt = (await publicClient?.waitForTransactionReceipt({
+        hash: tx,
+        confirmations: 1,
+      })) as TransactionReceipt;
+      if (receipt.status === 'success') {
+        reactToast.success('Your Withdraw was Successful');
       }
       return receipt;
     } catch (error) {
@@ -346,6 +373,7 @@ const useLpFarms = () => {
     claimRewards,
     getStackedPositionsIds,
     getStackedPositionList,
+    withdrawPosition,
   };
 };
 
