@@ -19,13 +19,6 @@ const useAllowance = () => {
         functionName: 'allowance',
         args: [address, spender],
       });
-      console.log({
-        allowance,
-        requiredAmount,
-        address,
-        spender,
-        CARTEL_TOKEN_ADDRESS,
-      });
       return BigInt(allowance as bigint) >= BigInt(requiredAmount);
     } catch (err) {
       console.error('checkAllowance error:', err);
