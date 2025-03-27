@@ -34,7 +34,7 @@ const WithdrawFarms: React.FC<WithdrawProps> = ({ onClose, poolAddress, poolData
   useEffect(() => {
     const fetchWithdrawalTime = async () => {
       if (address) {
-        const timeLeft = await getWithdrawalTime({ address });
+        const timeLeft = await getWithdrawalTime({ address ,poolAddress});
         if (timeLeft === 'Available Now') {
           setWithdrawEnable(true);
         } else if (timeLeft === 'Not Initiated') {
@@ -122,7 +122,7 @@ const WithdrawFarms: React.FC<WithdrawProps> = ({ onClose, poolAddress, poolData
       });
 
       try {
-        const txn = await startWithdraw();
+        const txn = await startWithdraw({poolAddress});
         if (txn?.status === 'success') {
           setWithdrawEnable(true);
           setWithdrawTxnMessage({
@@ -162,7 +162,7 @@ const WithdrawFarms: React.FC<WithdrawProps> = ({ onClose, poolAddress, poolData
   };
 
   console.log(formatUnits(poolData.userInfo.stackedAmount, 18), 'fghgvbhj');
-
+  console.log({withDrawEnable})
   return (
     <Card className="w-full max-w-lg bg-gray-40 border border-gray-30 rounded-xl shadow-lg text-white">
       <CardHeader className="flex flex-row justify-between items-center px-6 py-4 border-b border-[#1E1E1E]">
@@ -191,6 +191,7 @@ const WithdrawFarms: React.FC<WithdrawProps> = ({ onClose, poolAddress, poolData
           <button
             className="w-full flex items-center justify-center gap-2 px-3 py-2 text-white rounded-md bg-black hover:bg-gray-50 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
             onClick={withDrawEnable ? handleWithdraw : handleWithdrawFlow}
+            // onClick={handleWithdraw}
             disabled={withdrawAmount === 0 || loading}
           >
             {loading ? (
