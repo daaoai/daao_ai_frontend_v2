@@ -45,12 +45,12 @@ const useWithDraw = () => {
     }
   };
 
-  const startWithdraw = async () => {
+  const startWithdraw = async ({poolAddress}:{poolAddress:Hex}) => {
     try {
       reactToast.success('Initiating Withdrawal...');
 
       const startWithdrawResponse = await writeContractAsync({
-        address: FARM_CONTRACT_ADDRESS,
+        address: poolAddress,
         abi: FARM_ABI,
         functionName: 'startWithdraw',
       });
@@ -61,9 +61,9 @@ const useWithDraw = () => {
       });
 
       if (receipt?.status === 'success') {
-        const withdrawTime = await getWithdrawalTime({
-          address: FARM_CONTRACT_ADDRESS,
-        });
+        // const withdrawTime = await getWithdrawalTime({
+        //   address: FARM_CONTRACT_ADDRESS,
+        // });
         reactToast.success('Withdrawal Initiated');
       }
       console.log({ startWithdraw: receipt });
@@ -79,10 +79,10 @@ const useWithDraw = () => {
     }
   };
 
-  const getWithdrawalTime = async ({ address }: { address: Hex }) => {
+  const getWithdrawalTime = async ({ address, poolAddress }: { address: Hex; poolAddress:Hex }) => {
     try {
       const withdrawalTime = await publicClient?.readContract({
-        address: FARM_CONTRACT_ADDRESS,
+        address: poolAddress,
         abi: FARM_ABI,
         functionName: 'withdrawalTime',
         args: [address],
