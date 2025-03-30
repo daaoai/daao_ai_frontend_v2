@@ -45,7 +45,7 @@ const useWithDraw = () => {
     }
   };
 
-  const startWithdraw = async ({poolAddress}:{poolAddress:Hex}) => {
+  const startWithdraw = async ({ poolAddress }: { poolAddress: Hex }) => {
     try {
       reactToast.success('Initiating Withdrawal...');
 
@@ -79,25 +79,24 @@ const useWithDraw = () => {
     }
   };
 
-  const getWithdrawalTime = async ({ address, poolAddress }: { address: Hex; poolAddress:Hex }) => {
+  const getWithdrawalTime = async ({ address, poolAddress }: { address: Hex; poolAddress: Hex }) => {
     try {
-      const withdrawalTime = await publicClient?.readContract({
+      const withdrawalTime = (await publicClient?.readContract({
         address: poolAddress,
         abi: FARM_ABI,
         functionName: 'withdrawalTime',
         args: [address],
-      });
-
-      if (Number(withdrawalTime) === 0) return 'Not Initiated';
+      })) as string;
+      // const withdrawalTime = BigInt(1743311984);
+      if (!withdrawalTime || Number(withdrawalTime) === 0) return 'Not Initiated';
 
       const currentTime = BigInt(Math.floor(Date.now() / 1000));
-      const remainingTime = BigInt(Math.floor(Number(withdrawalTime))) - currentTime;
-      console.log({ withdrawalTime });
-      if (remainingTime > 0) {
+
+      if (BigInt(withdrawalTime) > currentTime) {
+        const remainingTime = BigInt(withdrawalTime) - currentTime;
         const days = Math.floor(Number(remainingTime) / (60 * 60 * 24));
         const hours = Math.floor((Number(remainingTime) % (60 * 60 * 24)) / (60 * 60));
         const minutes = Math.floor((Number(remainingTime) % (60 * 60)) / 60);
-
         return `${days} days, ${hours} hours, ${minutes} minutes`;
       }
 
@@ -105,7 +104,7 @@ const useWithDraw = () => {
     } catch (error) {
       console.log({ error });
       const { errorMsg } = handleViemTransactionError({
-        abi: POOL_ABI as Abi,
+        abi: FARM_ABI as Abi,
         error,
       });
 
