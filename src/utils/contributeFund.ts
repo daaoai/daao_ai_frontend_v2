@@ -1,5 +1,5 @@
 import Web3 from 'web3';
-import { CONTRACT_ABI } from '../daao-sdk/abi/abi';
+import { CONTRACT_ABI } from '../daao-sdk/abi/daao';
 import { ERC_20_ABI } from '../daao-sdk/abi/erc20';
 import { daoAddress, modeTokenAddress } from '@/constants/addresses';
 

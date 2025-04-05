@@ -1,16 +1,16 @@
 import { FARM_FACTORY_CONTRACT_ADDRESS } from '@/constants/farm';
-import { useAccount, usePublicClient } from 'wagmi';
-import useTokenPrice from '../useTokenPrice';
-import { formatUnits } from 'viem';
-import { FarmPool } from '@/types/farm';
+import { CARTEL } from '@/daao-sdk/abi/cartel';
 import { FARM_FACTORY_ABI } from '@/daao-sdk/abi/farmFactory';
 import { POOL_ABI } from '@/daao-sdk/abi/pool';
-import { CARTEL } from '@/daao-sdk/abi/cartel';
+import { FarmPool } from '@/types/farm';
+import { formatUnits } from 'viem';
+import { useAccount, usePublicClient } from 'wagmi';
+import useTokenPrice from '../useTokenPrice';
 
 const usePoolList = () => {
   const { address } = useAccount();
   const publicClient = usePublicClient();
-  const { fetchTokenPrice, fetchTokenPriceGeko } = useTokenPrice();
+  const { fetchTokenPriceDexScreener, fetchTokenPriceCoingecko } = useTokenPrice();
   const getTotalPoolLength = async () => {
     try {
       const response = await publicClient?.readContract({
@@ -78,8 +78,8 @@ const usePoolList = () => {
       ];
 
       if (results) {
-        const rewardTokenPrice = await fetchTokenPriceGeko(results[2][0]); // GAMBL TOKEN
-        const depositTokenPrice = await fetchTokenPrice(results[4]);
+        const rewardTokenPrice = await fetchTokenPriceCoingecko(results[2][0]); // GAMBL TOKEN
+        const depositTokenPrice = await fetchTokenPriceDexScreener(results[4]);
         const decimals = await publicClient?.multicall({
           contracts: [results[2][0], results[4]].map((address, index) => ({
             abi: CARTEL,

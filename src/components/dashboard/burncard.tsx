@@ -3,7 +3,7 @@ import { useToast } from '@/hooks/use-toast';
 import { useAccount, useReadContracts } from 'wagmi';
 // import { useFetchBalance } from "./fetchBalance"
 import { useFundContext } from './FundContext';
-import { CONTRACT_ABI } from '@/daao-sdk/abi/abi';
+import { CONTRACT_ABI } from '@/daao-sdk/abi/daao';
 import { Card, CardContent, CardHeader } from '@/shadcn/components/ui/card';
 import { Input } from '@/shadcn/components/ui/input';
 import { Button } from '@/shadcn/components/ui/button';

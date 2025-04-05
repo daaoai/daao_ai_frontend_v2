@@ -1,0 +1,20 @@
+{
+  "0x0000000000000000000000000000000000000000": {
+    "address": "0x0000000000000000000000000000000000000000",
+    "name": "Monad",
+    "symbol": "MON",
+    "decimals": 18
+  },
+  "0x760AfE86e5de5fa0Ee542fc7B7B713e1c5425701": {
+    "address": "0x760AfE86e5de5fa0Ee542fc7B7B713e1c5425701",
+    "decimals": 18,
+    "symbol": "WMON",
+    "name": "Wrapped Monad"
+  },
+  "0xf3eB9892e8d030BE8b1015248840e1A6850aF058": {
+    "address": "0xf3eB9892e8d030BE8b1015248840e1A6850aF058",
+    "decimals": 18,
+    "symbol": "ScrollDao",
+    "name": "Scroll DAO"
+  }
+}

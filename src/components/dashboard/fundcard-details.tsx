@@ -3,7 +3,7 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { useFundContext } from './FundContext';
 import Liquidity from '../Liquidity/liquidity';
 import { ethers } from 'ethers';
-import { CONTRACT_ABI } from '@/daao-sdk/abi/abi';
+import { DAAO_CONTRACT_ABI } from '@/daao-sdk/abi/daao';
 import { Card } from '@/shadcn/components/ui/card';
 import { shortenAddress } from '@/utils/address';
 import type { FundDetailsProps } from '@/types';
@@ -85,7 +85,7 @@ const FundDetails: React.FC<FundDetailsProps> = (props) => {
 
       // const signer = provider.getSigner();
 
-      const contract = new ethers.Contract(daoAddress as string, CONTRACT_ABI, provider);
+      const contract = new ethers.Contract(daoAddress as string, DAAO_CONTRACT_ABI, provider);
       const daoToken = await contract.daoToken();
       setDaoTokenAddress(daoToken);
       // if (!daoTokenAddress) return

@@ -1,29 +1,21 @@
 'use client';
-import { PageLayout } from '@/components/page-layout';
-import { NextPage } from 'next/types';
-import React, { useEffect, useState } from 'react';
-import { Typography } from '@/components/typography';
-import Link from 'next/link';
-import Image from 'next/image';
-import { ArrowRight } from 'lucide-react';
-import { CURRENT_DAO_IMAGE, DefaiCartelLinks, FUND_CARD_PLACEHOLDER_IMAGE, WHITEPAPER_URL } from '@/constants/links';
-import { Link as UILink } from 'lucide-react';
-import { FooterIconLink } from '@/components/footer';
-import CheckWaitlistModal from '@/components/landing/waitlist-modal';
-import { ethers } from 'ethers';
-import { CONTRACT_ABI } from '@/daao-sdk/abi/abi';
-import { Button } from '@/shadcn/components/ui/button';
-import { Card, CardContent } from '@/shadcn/components/ui/card';
-import { formatNumber } from '@/utils/numbers';
-import { daoAddress } from '@/constants/addresses';
-import { FundSection } from '@/components/dashboard/fundsection';
-import type { Fund } from '@/types/fund';
-import { useAccount } from 'wagmi';
-import { useRouter } from 'next/navigation';
-import { useToast } from '@/hooks/use-toast';
 import { ConnectWalletButton } from '@/components/connect-button';
-import PoolDetailCard from '@/components/poolDetailCard';
+import { FundSection } from '@/components/dashboard/fundsection';
 import FAQDaao from '@/components/faqDaao';
+import { PageLayout } from '@/components/page-layout';
+import PoolDetailCard from '@/components/poolDetailCard';
+import { daoAddress } from '@/constants/addresses';
+import { FUND_CARD_PLACEHOLDER_IMAGE } from '@/constants/links';
+import { DAAO_CONTRACT_ABI } from '@/daao-sdk/abi/daao';
+import { useToast } from '@/hooks/use-toast';
+import type { Fund } from '@/types/fund';
+import { ethers } from 'ethers';
+import Image from 'next/image';
+import Link from 'next/link';
+import { useRouter } from 'next/navigation';
+import { NextPage } from 'next/types';
+import { useEffect, useState } from 'react';
+import { useAccount } from 'wagmi';
 
 const HomePage: NextPage = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -42,7 +34,7 @@ const HomePage: NextPage = () => {
 
       // const signer = provider.getSigner();
 
-      const contract = new ethers.Contract(daoAddress as string, CONTRACT_ABI, provider);
+      const contract = new ethers.Contract(daoAddress as string, DAAO_CONTRACT_ABI, provider);
       const daoToken = await contract.daoToken();
       // setDaoTokenAddress(daoToken)
       // if (!daoTokenAddress) return
