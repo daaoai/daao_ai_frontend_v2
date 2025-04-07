@@ -5,7 +5,7 @@ import { Card, CardContent, CardHeader } from '@/shadcn/components/ui/card';
 import ClickToCopy from '../copyToClipboard';
 import { shortenAddress } from '@/utils/address';
 // import usePoolList from '@/hooks/farm/usePoolList';
-import { Position } from '@/types/farm';
+import { FarmPool, Position } from '@/types/farm';
 // import useHarvest from '@/hooks/farm/useHarvest';
 import useLpFarms from '@/hooks/farm/uselpFarms';
 import { modeTokenAddress } from '@/constants/addresses';
@@ -13,6 +13,7 @@ import { CARTEL_TOKEN_ADDRESS } from '@/constants/ticket';
 import Image from 'next/image';
 import { formatUnits } from 'viem';
 import AnimatedSkeleton from '../animatedSkeleton';
+import usePoolList from '@/hooks/farm/usePoolList';
 // import { CURRENT_DAO_IMAGE, GAMBLE_IMAGE } from '@/constants/links';
 
 interface LPFarm {
@@ -32,7 +33,7 @@ const CONTRACT_ADDRESS = '0x7303dbc086a18459A4dc74e74f2Dcc2a2a26131B';
 
 const LPFarms: React.FC<LPFarmsProps> = ({ onClose, daoTokenAddress }) => {
   const [viewMode, setViewMode] = useState<'unstaked' | 'staked'>('unstaked');
-  // const [poolDetails, setPoolDetails] = useState<FarmPool | null>(null);
+  const [poolDetails, setPoolDetails] = useState<FarmPool | null>(null);
   const [isStakeLoading, setIsStakeLoading] = useState(false);
   const [isUnStakeLoading, setIsUnStakeLoading] = useState(false);
   const [userPositions, setUserPositions] = useState<Position[]>([]);
@@ -40,6 +41,7 @@ const LPFarms: React.FC<LPFarmsProps> = ({ onClose, daoTokenAddress }) => {
   const [unClaimedReward, setUnclaimedRewards] = useState(BigInt(0));
   const [isClaimingRewards, setIsClaimingRewards] = useState(false);
   const [isWithdrawingPosition, setIsWithdrawingPosition] = useState(false);
+  console.log(poolDetails?.apr, 'hgvbnmk');
 
   const {
     getPositionList,
@@ -50,6 +52,8 @@ const LPFarms: React.FC<LPFarmsProps> = ({ onClose, daoTokenAddress }) => {
     claimRewards,
     withdrawPosition,
   } = useLpFarms();
+
+  const { getPoolDetails } = usePoolList();
 
   const fetchPositionList = async () => {
     try {
@@ -82,10 +86,21 @@ const LPFarms: React.FC<LPFarmsProps> = ({ onClose, daoTokenAddress }) => {
     }
   };
 
+  const fetchPoolDetails = async () => {
+    try {
+      const data = await getPoolDetails({ poolAddress: CONTRACT_ADDRESS });
+      console.log('fetchPoolDetailsdata', { data });
+      setPoolDetails(data);
+    } catch (error) {
+      console.log('fetchPoolDetails - error');
+      console.error(error);
+    }
+  };
+
   console.log(userPositions, 'userPositions');
 
   useEffect(() => {
-    // fetchPoolDetails();
+    fetchPoolDetails();
     fetchClaimableRewards();
   }, []);
 
@@ -189,6 +204,9 @@ const LPFarms: React.FC<LPFarmsProps> = ({ onClose, daoTokenAddress }) => {
             <div className="bg-[#053738] p-1 rounded-lg flex gap-x-2 px-3 w-fit mt-6">
               <p className="text-sm sm:text-base">{shortenAddress(CONTRACT_ADDRESS)}</p>
               <ClickToCopy copyText={CONTRACT_ADDRESS} className="text-teal-20" />
+            </div>
+            <div className="flex items-center gap-2">
+              <p>APR</p> <p className="text-white">{poolDetails?.apr}</p>
             </div>
           </div>
         </CardHeader>
