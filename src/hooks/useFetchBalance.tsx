@@ -1,17 +1,13 @@
 import { chainsData } from '@/config/chains';
 import { TIER_LABELS } from '@/constants/contribution';
-import { fetchDaoInfo, fetchTierLimits, fetchUserContributionInfo } from '@/helpers/contribution';
 import { UserContributionInfo } from '@/types/contribution';
-import { getPublicClient } from '@/utils/publicClient';
-import { useEffect, useRef, useState } from 'react';
-import { erc20Abi, formatUnits } from 'viem';
+import * as lodash from 'lodash';
+import { useEffect, useState } from 'react';
+import { formatUnits } from 'viem';
 import { useAccount } from 'wagmi';
 
 export const useFetchBalance = () => {
   const { address: account, chainId } = useAccount();
-
-  const prevAccountRef = useRef<string | undefined>(undefined);
-  const prevChainIdRef = useRef<number | undefined>(undefined);
 
   const [data, setData] = useState({
     balance: '0',
@@ -35,64 +31,9 @@ export const useFetchBalance = () => {
         const daoAddress = chainData.daoAddress;
         const tokenDetails = chainData.contribution.token;
 
-        const getDaoInfo = async () => {
-          return fetchDaoInfo({
-            daoAddress,
-            chainId,
-          });
-        };
-
-        const getUserContributionInfo = async () => {
-          return fetchUserContributionInfo({
-            account,
-            daoAddress,
-            chainId,
-            tokenDecimals: tokenDetails.decimals,
-          });
-        };
-
-        const getTierLimits = async (tier: number) => {
-          return fetchTierLimits({
-            chainId,
-            tier,
-            daoAddress,
-          });
-        };
-
-        const daoInfo = await getDaoInfo();
-
         let userContributionInfo: UserContributionInfo | undefined;
         let balance = BigInt(0);
         let tierLimit = BigInt(0);
-
-        if (account) {
-          const publicClient = getPublicClient(chainId);
-          const [balanceRes, userContributionInfoRes] = await Promise.allSettled([
-            daoInfo?.isPaymentTokenNative
-              ? publicClient.getBalance({
-                  address: account,
-                })
-              : publicClient.readContract({
-                  abi: erc20Abi,
-                  address: tokenDetails.address,
-                  functionName: 'balanceOf',
-                  args: [account],
-                }),
-            getUserContributionInfo(),
-          ]);
-
-          if (balanceRes.status === 'fulfilled') {
-            balance = balanceRes.value as bigint;
-          } else {
-            console.error('Balance fetch error:', balanceRes.reason);
-          }
-          if (userContributionInfoRes.status === 'fulfilled') {
-            userContributionInfo = userContributionInfoRes.value;
-            tierLimit = await getTierLimits(userContributionInfo.whitelistInfo.tier);
-          } else {
-            console.error('User contribution info fetch error:', userContributionInfoRes.reason);
-          }
-        }
 
         setData((prev) => ({
           ...prev,
@@ -100,13 +41,6 @@ export const useFetchBalance = () => {
           tierNumber: userContributionInfo?.whitelistInfo.tier || 0,
           isWhitelisted: userContributionInfo?.whitelistInfo.isWhitelisted || false,
           contributedAmountYet: userContributionInfo?.contributions || BigInt(0),
-          daoToken: daoInfo?.daoToken || '',
-          goalReached: daoInfo?.goalReached || false,
-          finalisedFundraising: daoInfo?.fundraisingFinalized || false,
-          endDate: (Number(daoInfo?.fundraisingDeadline) * 1000).toString(),
-          maxLimit: tierLimit,
-          fundraisingGoal: daoInfo?.fundraisingGoal.toString() || '0',
-          totalRaised: daoInfo?.totalRaised.toString() || '0',
           userTierLabel: userContributionInfo?.whitelistInfo.tier
             ? TIER_LABELS[userContributionInfo?.whitelistInfo.tier] || 'None'
             : 'None',
@@ -117,8 +51,12 @@ export const useFetchBalance = () => {
     }
   };
 
+  const throttledRefreshData = lodash.throttle(() => refreshData(), 1000);
+
   useEffect(() => {
-    // refreshData();
+    if (account && chainId) {
+      throttledRefreshData();
+    }
   }, [account, chainId]);
 
   const refreshData = async () => {

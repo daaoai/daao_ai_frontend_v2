@@ -88,7 +88,7 @@ const BuySellCard = () => {
 
   const handleActiveTabChage = (val: string) => {
     setActiveTab(val as 'buy' | 'sell');
-    setFormattedSrcAmount('0');
+    setFormattedSrcAmount('');
     setToAmount(BigInt(0));
   };
 
@@ -210,6 +210,7 @@ const BuySellCard = () => {
               <p className="text-left  text-[#aeb3b6] text-sm">TO</p>
               <input
                 type="number"
+                disabled
                 placeholder="0"
                 value={formattedToAmount}
                 onChange={(e) => {}}

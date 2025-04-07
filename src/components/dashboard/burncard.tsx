@@ -1,26 +1,25 @@
-import { useEffect, useState } from 'react';
 import { useToast } from '@/hooks/use-toast';
+import { useEffect, useState } from 'react';
 import { useAccount, useReadContracts } from 'wagmi';
 // import { useFetchBalance } from "./fetchBalance"
-import { useFundContext } from './FundContext';
-import { CONTRACT_ABI } from '@/daao-sdk/abi/daao';
+import { daoAddress } from '@/constants/addresses';
+import { DAAO_CONTRACT_ABI } from '@/daao-sdk/abi/daao';
+import { Button } from '@/shadcn/components/ui/button';
 import { Card, CardContent, CardHeader } from '@/shadcn/components/ui/card';
 import { Input } from '@/shadcn/components/ui/input';
-import { Button } from '@/shadcn/components/ui/button';
 import { Separator } from '@/shadcn/components/ui/separator';
-import { handleContribute } from '@/utils/contributeFund';
 import { UpcomingFundDetailsProps } from '@/types';
+import { handleContribute } from '@/utils/contributeFund';
 import React from 'react';
-import { daoAddress } from '@/constants/addresses';
 
 const wagmiDaoContract = {
   address: daoAddress,
-  abi: CONTRACT_ABI,
+  abi: DAAO_CONTRACT_ABI,
 } as const;
 export default function BurnCard(props: UpcomingFundDetailsProps) {
   const { toast } = useToast();
   const { isConnected } = useAccount();
-  const { fetchedData, refreshData, updateTotalContributed } = useFundContext();
+  // const { fetchedData, refreshData, updateTotalContributed } = useFundContext();
   const [amount, setAmount] = useState<number>();
   const [balance, setBalance] = useState('');
   const [goalReached, setGoalReached] = useState(false);
@@ -33,21 +32,21 @@ export default function BurnCard(props: UpcomingFundDetailsProps) {
   // const [maxAmount, setMaxAmount] = useState(0);
 
   useEffect(() => {
-    if (fetchedData) {
-      if (balance === '' || tier === '' || isWhitelisted === false || maxLimit === 0 || leftoutAmount === 0) {
-        setBalance(fetchedData.balance);
-        setTier(fetchedData.userTierLabel);
-        setisWhitelisted(fetchedData.isWhitelisted);
-        setMaxLimit(fetchedData.maxLimit);
-        setLeftoutAmount(fetchedData.maxLimit - fetchedData.contributedAmountYet);
-      }
-      console.log('goalReached is ', fetchedData.goalReached);
-      if (fetchedData.goalReached) {
-        setGoalReached(true);
-      }
-      console.log('Balance is ', balance);
-    }
-  }, [fetchedData]);
+    // if (fetchedData) {
+    //   if (balance === '' || tier === '' || isWhitelisted === false || maxLimit === 0 || leftoutAmount === 0) {
+    //     setBalance(fetchedData.balance);
+    //     setTier(fetchedData.userTierLabel);
+    //     setisWhitelisted(fetchedData.isWhitelisted);
+    //     setMaxLimit(fetchedData.maxLimit);
+    //     setLeftoutAmount(fetchedData.maxLimit - fetchedData.contributedAmountYet);
+    //   }
+    //   console.log('goalReached is ', fetchedData.goalReached);
+    //   if (fetchedData.goalReached) {
+    //     setGoalReached(true);
+    //   }
+    //   console.log('Balance is ', balance);
+    // }
+  }, []);
 
   const { data, refetch } = useReadContracts({
     contracts: [
@@ -64,14 +63,14 @@ export default function BurnCard(props: UpcomingFundDetailsProps) {
 
   const checkFinalisedFundraising = async () => {
     await refetch();
-    if (fetchedData?.finalisedFundraising) {
-      window.location.href = '/dapp/1';
-    } else {
-      toast({
-        title: 'Fundraising is not finalised yet',
-        variant: 'destructive',
-      });
-    }
+    // if (fetchedData?.finalisedFundraising) {
+    //   window.location.href = '/dapp/1';
+    // } else {
+    //   toast({
+    //     title: 'Fundraising is not finalised yet',
+    //     variant: 'destructive',
+    //   });
+    // }
   };
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -160,8 +159,8 @@ export default function BurnCard(props: UpcomingFundDetailsProps) {
         title: 'Successfully contributed to the fund',
         className: `bg-[#2ca585]`,
       });
-      await refreshData();
-      updateTotalContributed(amount);
+      // await refreshData();
+      // updateTotalContributed(amount);
       setAmount(0);
     } catch (error) {
       console.error('Error contributing to fund:', error);

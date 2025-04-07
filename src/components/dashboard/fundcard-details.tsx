@@ -19,7 +19,6 @@ const FundDetails: React.FC<FundDetailsProps> = (props) => {
     percent: number;
     token: number;
   }
-  const { daoBalance } = useFundContext();
   const [marketCap, setMarketCap] = useState<number | null>(null);
   const [liquidity, setLiquidity] = useState<number | null>(null);
   const [volume, setVolume] = useState<number | null>(null);

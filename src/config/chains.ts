@@ -32,7 +32,7 @@ export const chainsData: {
       symbol: 'MON',
       decimals: 18,
     },
-    daoAddress: '0xC201EA874E80fDaf67EEDf6ffB957F84FbB61468',
+    daoAddress: '0x61d4B36dC50Fd637f162f2cd1667e6F0FC2Fb9Da',
     dexInfo: {
       type: 'uniswap',
       factoryAddress: '0x961235a9020B05C44DF1026D956D1F4D78014276',

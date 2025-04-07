@@ -1,7 +1,9 @@
+import { chainsData } from '@/config/chains';
 import { tokensByChainId } from '@/tokens';
-import { Token, SupportedChain } from '@/types/chains';
+import { SupportedChain, Token } from '@/types/chains';
 import { erc20Abi, Hex } from 'viem';
 import { multicallForSameContract } from './multicall';
+import { getPublicClient } from './publicClient';
 
 const fetchErc20Info = async ({ address, chainId }: { address: Hex; chainId: number }) => {
   const multicallRes = (await multicallForSameContract({
@@ -35,4 +37,26 @@ export const getTokenDetails = async ({
     return await fetchErc20Info({ address, chainId });
   }
   return tokenDetails;
+};
+export const isNativeCurrency = (address: string, chainId: number): boolean => {
+  const chainInfo = chainsData[chainId];
+  return chainInfo?.nativeCurrency.address === address;
+};
+
+export const fetchTokenBalance = async ({ token, account, chainId }: { token: Hex; account: Hex; chainId: number }) => {
+  try {
+    const publicClient = getPublicClient(chainId);
+    const balance = isNativeCurrency(token, chainId)
+      ? await publicClient.getBalance({ address: account })
+      : await publicClient.readContract({
+          address: token,
+          abi: erc20Abi,
+          functionName: 'balanceOf',
+          args: [account],
+        });
+    return balance;
+  } catch (error) {
+    console.error('Error fetching token balance:', error);
+    return BigInt(0);
+  }
 };

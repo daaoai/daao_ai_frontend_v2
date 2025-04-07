@@ -1,7 +1,6 @@
 'use client';
 import BuySellCard from '@/components/dashboard/BuySellCard';
 import FundDetails from '@/components/dashboard/fundcard-details';
-import { useFundContext } from '@/components/dashboard/FundContext';
 import Orderbook from '@/components/dashboard/orderbook';
 import { PageLayout } from '@/components/page-layout';
 import { assetColumns } from '@/components/table/assets-columns';
@@ -15,7 +14,6 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@radix-ui/react-tabs';
 import axios from 'axios';
 import { motion } from 'framer-motion';
 import React, { useEffect, useState } from 'react';
-import { useAccount } from 'wagmi';
 
 export interface Token {
   address: string;
@@ -114,7 +112,6 @@ const Dashboard: React.FC = () => {
   const [daaoHoldingTokens, setDaoHoldingTokens] = useState<ApiResponse | null>(null);
   const { fetchTokenPriceCoingecko } = useTokenPrice();
 
-  const { daoBalance, priceUsd } = useFundContext();
   useEffect(() => {
     if (!fetchedData) return;
     if (!daoTokenAddress) {
@@ -195,16 +192,6 @@ const Dashboard: React.FC = () => {
 
     fetchTokensWithPrices();
   }, []);
-
-  const assetsData: Asset[] = [
-    {
-      token: 'CARTEL',
-      // tokenIcon: CURRENT_DAO_IMAGE,
-      balance: Number(daoBalance),
-      price: priceUsd,
-      totalValue: priceUsd * Number(daoBalance),
-    },
-  ];
 
   const [activeTab, setActiveTab] = useState('trades');
 
