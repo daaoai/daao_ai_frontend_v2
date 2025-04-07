@@ -1,0 +1,20 @@
+{
+  "0x0000000000000000000000000000000000000000": {
+    "address": "0x0000000000000000000000000000000000000000",
+    "name": "BNB",
+    "symbol": "BNB",
+    "decimals": 18
+  },
+  "0xB8c77482B069f57D5fD8acA15b3d67a87B74C9cE": {
+    "address": "0xB8c77482B069f57D5fD8acA15b3d67a87B74C9cE",
+    "decimals": 18,
+    "symbol": "WBNB",
+    "name": "Wrapped BNB"
+  },
+  "0xE9e7C3d4B8cA9b8C2B1D5D6FfFfFfFfFfFfFfFf": {
+    "address": "0xE9e7C3d4B8cA9b8C2B1D5D6FfFfFfFfFfFfFfFf",
+    "decimals": 18,
+    "symbol": "BUSD",
+    "name": "Binance USD"
+  }
+}

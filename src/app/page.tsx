@@ -1,37 +1,32 @@
 'use client';
-import { PageLayout } from '@/components/page-layout';
-import { NextPage } from 'next/types';
-import React, { useEffect, useState } from 'react';
-import { Typography } from '@/components/typography';
-import Link from 'next/link';
-import Image from 'next/image';
-import { ArrowRight } from 'lucide-react';
-import { CURRENT_DAO_IMAGE, DefaiCartelLinks, FUND_CARD_PLACEHOLDER_IMAGE, WHITEPAPER_URL } from '@/constants/links';
-import { Link as UILink } from 'lucide-react';
-import { FooterIconLink } from '@/components/footer';
-import CheckWaitlistModal from '@/components/landing/waitlist-modal';
-import { ethers } from 'ethers';
-import { CONTRACT_ABI } from '@/daao-sdk/abi/abi';
-import { Button } from '@/shadcn/components/ui/button';
-import { Card, CardContent } from '@/shadcn/components/ui/card';
-import { formatNumber } from '@/utils/numbers';
-import { daoAddress } from '@/constants/addresses';
-import { FundSection } from '@/components/dashboard/fundsection';
-import type { Fund } from '@/types/fund';
-import { useAccount } from 'wagmi';
-import { useRouter } from 'next/navigation';
-import { useToast } from '@/hooks/use-toast';
 import { ConnectWalletButton } from '@/components/connect-button';
-import PoolDetailCard from '@/components/poolDetailCard';
+import { FundSection } from '@/components/dashboard/fundsection';
 import FAQDaao from '@/components/faqDaao';
+import { PageLayout } from '@/components/page-layout';
+import PoolDetailCard from '@/components/poolDetailCard';
+import { chainsData } from '@/config/chains';
+import { daoAddress } from '@/constants/addresses';
+import { FUND_CARD_PLACEHOLDER_IMAGE } from '@/constants/links';
+import { DAAO_CONTRACT_ABI } from '@/daao-sdk/abi/daao';
+import { fetchIsFundraisingFinalized } from '@/helpers/contribution';
+import { useToast } from '@/hooks/use-toast';
+import type { Fund } from '@/types/fund';
+import { ethers } from 'ethers';
+import Image from 'next/image';
+import Link from 'next/link';
+import { useRouter } from 'next/navigation';
+import { NextPage } from 'next/types';
+import { useEffect, useState } from 'react';
+import { useAccount } from 'wagmi';
 
 const HomePage: NextPage = () => {
+  const { chainId: accountChainId } = useAccount();
   const [isOpen, setIsOpen] = useState(false);
   const [price, setPrice] = useState<number | null>(0);
   const [marketCap, setMarketCap] = useState<number | null>(null);
   const [liquidity, setLiquidity] = useState<number | null>(null);
   const [volume, setVolume] = useState<number | null>(null);
-
+  const [isFundraisingFinalized, setIsFundraisingFinalized] = useState(false);
   const { isConnected } = useAccount();
   const router = useRouter();
   const { toast } = useToast();
@@ -42,7 +37,7 @@ const HomePage: NextPage = () => {
 
       // const signer = provider.getSigner();
 
-      const contract = new ethers.Contract(daoAddress as string, CONTRACT_ABI, provider);
+      const contract = new ethers.Contract(daoAddress as string, DAAO_CONTRACT_ABI, provider);
       const daoToken = await contract.daoToken();
       // setDaoTokenAddress(daoToken)
       // if (!daoTokenAddress) return
@@ -72,7 +67,18 @@ const HomePage: NextPage = () => {
       }
     };
     fetchMarketData();
-  }, []);
+    updateFundraisingStatus();
+  }, [accountChainId]);
+
+  const updateFundraisingStatus = async () => {
+    if (!accountChainId) return;
+    const chainInfo = chainsData[accountChainId];
+    const res = await fetchIsFundraisingFinalized({
+      chainId: accountChainId,
+      daoAddress: chainInfo.daoAddress,
+    });
+    setIsFundraisingFinalized(res);
+  };
 
   const getFeaturedFunds = (): Fund[] => {
     return [
@@ -138,10 +144,19 @@ const HomePage: NextPage = () => {
       return;
     }
     // Navigate to the fund page if connected
-    router.push(`/dapp/${fundId}`);
+
+    if (isFundraisingFinalized) {
+      router.push(`/dapp/${fundId}`);
+    } else {
+      router.push('/dapp/contribution');
+    }
   };
   const redirectToDashboard = () => {
-    router.push('/dapp/1');
+    if (isFundraisingFinalized) {
+      router.push('/dapp/1');
+    } else {
+      router.push('/dapp/contribution');
+    }
   };
 
   return (

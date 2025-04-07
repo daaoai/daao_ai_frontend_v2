@@ -722,4 +722,4 @@ export const VELO_FACTORY_ABI = [
     stateMutability: 'view',
     type: 'function',
   },
-];
+] as const;

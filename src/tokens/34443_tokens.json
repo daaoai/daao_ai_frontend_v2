@@ -1,0 +1,26 @@
+{
+  "0x0000000000000000000000000000000000000000": {
+    "address": "0x0000000000000000000000000000000000000000",
+    "name": "Ether",
+    "symbol": "ETH",
+    "decimals": 18
+  },
+  "0x4200000000000000000000000000000000000006": {
+    "address": "0x4200000000000000000000000000000000000006",
+    "decimals": 18,
+    "symbol": "WETH",
+    "name": "Wrapped Ether"
+  },
+  "0xDfc7C877a950e49D2610114102175A06C2e3167a": {
+    "address": "0xDfc7C877a950e49D2610114102175A06C2e3167a",
+    "decimals": 18,
+    "symbol": "MODE",
+    "name": "Mode"
+  },
+  "0x98E0AD23382184338dDcEC0E13685358EF845f30": {
+    "address": "0x98E0AD23382184338dDcEC0E13685358EF845f30",
+    "decimals": 18,
+    "symbol": "CARTEL",
+    "name": "Cartel Token"
+  }
+}

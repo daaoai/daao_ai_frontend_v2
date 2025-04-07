@@ -8,6 +8,7 @@ import { FarmPool } from '@/types/farm';
 import { Info } from 'lucide-react';
 import { ModalWrapper } from '../modalWrapper';
 import LPFarms from '../lpFarms';
+import { daoAddress } from '@/constants/addresses';
 
 interface FarmTabsProps {
   activeFarms: FarmPool[];
@@ -102,7 +103,7 @@ const FarmTabs: React.FC<FarmTabsProps> = ({ activeFarms, inactiveFarms, isLoadi
           </TabsList>
         </div>
         <ModalWrapper isOpen={isLPFarmModalOpen} onClose={closeFarmModalOpen}>
-          <LPFarms onClose={closeFarmModalOpen} daoTokenAddress={'daoTokenAddress'} />
+          <LPFarms onClose={closeFarmModalOpen} daoTokenAddress={daoAddress} />
         </ModalWrapper>
 
         <TabsContent value="active">{renderFarms(activeFarms, 'No active cards found.')}</TabsContent>

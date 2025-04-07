@@ -1,13 +1,4 @@
-import { lpFarmAddress, nonFungiblePositionManagerAddress } from '@/constants/addresses';
-import { NON_FUNGIBLE_POSITION_MANAGER_ABI } from '@/daao-sdk/abi/nonFungiblePositionManager';
-import { VELO_POOL_ABI } from '@/daao-sdk/abi/veloPool';
-import { Position } from '@/types/farm';
-import { CLPoolUtils } from '@/utils/v3Pools';
-import { usePublicClient, useWriteContract } from 'wagmi';
-import { useAccount } from 'wagmi';
-import useTokenPrice from '../useTokenPrice';
-import { Address, encodeAbiParameters, formatUnits, type Abi, type TransactionReceipt } from 'viem';
-import { LP_FARM_ABI } from '@/daao-sdk/abi/lpFarm';
+import { nonFungiblePositionManagerAddress } from '@/constants/addresses';
 import {
   LP_FARM_END_TIME,
   LP_FARM_POOL,
@@ -15,11 +6,18 @@ import {
   LP_FARM_REWARD_TOKEN,
   LP_FARM_START_TIME,
 } from '@/constants/lpFarm';
-import { useToast } from '../use-toast';
-import { handleViemTransactionError } from '@/utils/approval';
+import { LP_FARM_ABI } from '@/daao-sdk/abi/lpFarm';
+import { NON_FUNGIBLE_POSITION_MANAGER_ABI } from '@/daao-sdk/abi/nonFungiblePositionManager';
 import { V3_STACKER_ABI } from '@/daao-sdk/abi/v3Stacker';
+import { VELO_POOL_ABI } from '@/daao-sdk/abi/veloPool';
+import { Position } from '@/types/farm';
+import { handleViemTransactionError } from '@/utils/approval';
+import { CLPoolUtils } from '@/utils/v3Pools';
 import { ethers } from 'ethers';
 import { toast as reactToast } from 'react-toastify'; // Ensure to import react-toastify's toast function
+import { Address, formatUnits, type Abi, type TransactionReceipt } from 'viem';
+import { useAccount, usePublicClient, useWriteContract } from 'wagmi';
+import useTokenPrice from '../useTokenPrice';
 
 const POOL_ADDRESS = '0xf70e76cc5a39aad1953bef3d1647c8b36f3f6324';
 const UNISWAP_V3_STAKER = '0xd9cC1D4565102AE6118476EF0E531e7956487099';
@@ -28,7 +26,7 @@ const useLpFarms = () => {
   // const { toast } = useToast();
   const { address } = useAccount();
   const publicClient = usePublicClient();
-  const { fetchTokenPrice } = useTokenPrice();
+  const { fetchTokenPriceDexScreener } = useTokenPrice();
   const { writeContractAsync } = useWriteContract();
 
   // const KEY_STRUCT = [LP_FARM_REWARD_TOKEN, LP_FARM_POOL, LP_FARM_START_TIME, LP_FARM_END_TIME, LP_FARM_REFUNDEE];
@@ -108,7 +106,7 @@ const useLpFarms = () => {
         upperTick: tickUpper,
       });
 
-      const tokenPricePromises = [fetchTokenPrice(token0), fetchTokenPrice(token1)];
+      const tokenPricePromises = [fetchTokenPriceDexScreener(token0), fetchTokenPriceDexScreener(token1)];
       const [token0Price, token1Price] = await Promise.all(tokenPricePromises);
 
       const token0Amount = Number(formatUnits(BigInt(amounts.amount0InWei), 18)) * token0Price;

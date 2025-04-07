@@ -1,8 +1,6 @@
 'use client';
-import { createContext, useContext, useState, ReactNode } from 'react';
+import React, { createContext, ReactNode, useContext, useState } from 'react';
 import { useFetchBalance } from '../../hooks/useFetchBalance';
-import { useAccount } from 'wagmi';
-import React from 'react';
 
 interface FundContextType {
   fetchedData: any;
@@ -18,9 +16,7 @@ interface FundContextType {
 const FundContext = createContext<FundContextType | undefined>(undefined);
 
 export const FundProvider = ({ children }: { children: ReactNode }) => {
-  const account = useAccount();
-  const accountAddress = account.address as `0x${string}`;
-  const { data: fetchedData, refreshData } = useFetchBalance(accountAddress);
+  const { data: fetchedData, refreshData } = useFetchBalance();
 
   const totalraised = fetchedData.totalRaised;
 

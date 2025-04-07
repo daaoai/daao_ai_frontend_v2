@@ -409,7 +409,9 @@ const Liquidity: React.FC<LiquidityProps> = ({ onClose }) => {
         setApprovalStatus(`Approving ${token0}...`);
         const approve0Tx = await token0Contract.approve(
           NON_FUNGIBLE_POSITION_MANAGER_ADDRESS,
-          amount0Desired.toString(),
+          // amount0Desired.toString(),
+
+          (direction === 'to' ? amount1Desired : amount0Desired).toString(),
         );
         await approve0Tx.wait();
         setApprovalStatus(null);
@@ -420,7 +422,7 @@ const Liquidity: React.FC<LiquidityProps> = ({ onClose }) => {
         setApprovalStatus(`Approving ${token1}...`);
         const approve1Tx = await token1Contract.approve(
           NON_FUNGIBLE_POSITION_MANAGER_ADDRESS,
-          amount1Desired.toString(),
+          (direction === 'to' ? amount0Desired : amount1Desired).toString(),
         );
         await approve1Tx.wait();
         setApprovalStatus(null);
@@ -472,7 +474,7 @@ const Liquidity: React.FC<LiquidityProps> = ({ onClose }) => {
         sqrtPriceX96: '0',
       };
 
-      console.log('Params:', params);
+      console.log('Paramsertyhjk:', params);
 
       // Add validation for all parameters
       const isValid = Object.values(params).every(
@@ -580,6 +582,7 @@ const Liquidity: React.FC<LiquidityProps> = ({ onClose }) => {
     //     setToken1Amount(tempAmount);
 
     if (direction === 'from') {
+      console.log('fromswap');
       setToken0(token1);
       setToken1(token0);
       // setToken0Amount(token1Amount);
@@ -588,6 +591,7 @@ const Liquidity: React.FC<LiquidityProps> = ({ onClose }) => {
       setToken1Amount('');
       setDirection('to');
     } else {
+      console.log('toswap');
       const currentConversion = 1 / (pricedata && pricedata?.currentPrice);
 
       setToken1(token0);
