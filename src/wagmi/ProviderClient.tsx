@@ -1,15 +1,15 @@
 'use client';
+import { initializeStore } from '@/store';
 import { RainbowKitProvider } from '@rainbow-me/rainbowkit';
-import { cookieToInitialState, WagmiProvider } from 'wagmi';
-import { getWagmiConfig } from '.';
-import { mode } from 'wagmi/chains';
-import { ReactNode, useMemo } from 'react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { store } from '@/store';
+import { ReactNode, useMemo } from 'react';
 import { Provider as ReduxProvider } from 'react-redux';
+import { cookieToInitialState, WagmiProvider } from 'wagmi';
+import { mode } from 'wagmi/chains';
+import { getWagmiConfig } from '.';
 // import { SessionProvider } from 'next-auth/react';
-import { ThemeProvider } from '@/components/theme-provider';
 import { FundProvider } from '@/components/dashboard/FundContext';
+import { ThemeProvider } from '@/components/theme-provider';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
@@ -24,7 +24,7 @@ const ProviderClient = ({ wagmiCookie, children }: ProviderClientProps) => {
   const queryClient = useMemo(() => new QueryClient(), []); // Fix: Move to useMemo
 
   return (
-    <ReduxProvider store={store}>
+    <ReduxProvider store={initializeStore()}>
       <WagmiProvider config={wagmiConfig} initialState={initialWagmiState}>
         {/* <SessionProvider session={pageProps.session}> */}
         <QueryClientProvider client={queryClient}>

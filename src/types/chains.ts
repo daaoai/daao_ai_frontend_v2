@@ -15,16 +15,10 @@ export type Token = {
 };
 
 export type ChainsConfig = {
-  id: number;
+  slug: string;
   name: string;
   rpcUrls: string[];
   blockExplorer: string;
-  contribution: {
-    token: Token;
-    minAmount: bigint;
-    maxAmount: bigint;
-  };
-  daoAddress: Hex;
   nativeCurrency: Token;
   wnativeToken: Token;
   dexInfo: {

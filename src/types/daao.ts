@@ -13,3 +13,12 @@ export type DaoInfo = {
   paymentTokenDetails: Token;
   isPaymentTokenNative: boolean;
 };
+
+export type FundDetails = {
+  id: string;
+  address: Hex;
+  title: string;
+  token: Hex;
+  status: 'live' | 'funding' | 'trading' | 'soon';
+  imgSrc: string;
+};

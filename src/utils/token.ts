@@ -1,5 +1,5 @@
 import { chainsData } from '@/config/chains';
-import { tokensByChainId } from '@/tokens';
+import { tokensByChainId } from '@/data/tokens';
 import { SupportedChain, Token } from '@/types/chains';
 import { erc20Abi, Hex } from 'viem';
 import { multicallForSameContract } from './multicall';
@@ -59,4 +59,12 @@ export const fetchTokenBalance = async ({ token, account, chainId }: { token: He
     console.error('Error fetching token balance:', error);
     return BigInt(0);
   }
+};
+
+export const getLocalTokenDetails = ({ address, chainId }: { address: Hex; chainId: SupportedChain }): Token => {
+  const tokenDetails = tokensByChainId[chainId]?.[address];
+  if (!tokenDetails) {
+    throw new Error('Token not found');
+  }
+  return tokenDetails;
 };

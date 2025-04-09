@@ -1,9 +1,9 @@
 'use client';
 
-import * as React from 'react';
 import FundCard from '@/components/dashboard/fund-card';
-import { Fund } from '@/types/fund';
+import { FundDetails } from '@/types/daao';
 import Carousel from '../carousel';
+import { getLocalTokenDetails, getTokenDetails } from '@/utils/token';
 
 // Lucide React icons
 // import { ChevronLeft, ChevronRight } from 'lucide-react';
@@ -17,13 +17,12 @@ import Carousel from '../carousel';
 // } from '@/shadcn/components/ui/carousel';
 
 interface FundSectionProps {
-  title?: string;
-  subtitle?: string;
-  funds: Fund[];
+  chainId: number;
+  funds: FundDetails[];
   onFundClick: (fundId: string) => void;
 }
 
-export function FundSection({ title, subtitle, funds, onFundClick }: FundSectionProps) {
+export function FundSection({ funds, onFundClick, chainId }: FundSectionProps) {
   return (
     <section className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-5">
       {/* <div className="mb-8 text-left">
@@ -32,28 +31,34 @@ export function FundSection({ title, subtitle, funds, onFundClick }: FundSection
       </div> */}
       <div className="relative">
         <Carousel slidesToShowConfig={{ laptop: 3, tablet: 2, mobile: 1 }}>
-          {funds.map((fund, index) => (
-            <button
-              key={index}
-              title="btn"
-              onClick={(e) => {
-                e.preventDefault();
-                if (fund.status === 'trading') {
-                  onFundClick(fund.id);
-                }
-              }}
-              disabled={fund.status !== 'trading'}
-              className={`block w-full px-4 h-fit ${fund.status !== 'trading' ? 'cursor-not-allowed' : ''}`}
-            >
-              <FundCard
-                title={fund.title}
-                token={fund.token || ''}
-                uId={fund.id}
-                status={fund.status}
-                imgSrc={fund.imgSrc}
-              />
-            </button>
-          ))}
+          {funds.map((fund, index) => {
+            const tokenDetails = getLocalTokenDetails({
+              address: fund.token,
+              chainId,
+            });
+            return (
+              <button
+                key={index}
+                title="btn"
+                onClick={(e) => {
+                  e.preventDefault();
+                  if (fund.status === 'trading') {
+                    onFundClick(fund.address);
+                  }
+                }}
+                disabled={fund.status !== 'trading'}
+                className={`block w-full px-4 h-fit ${fund.status !== 'trading' ? 'cursor-not-allowed' : ''}`}
+              >
+                <FundCard
+                  title={fund.title}
+                  token={fund.status !== 'trading' ? 'TBA' : tokenDetails.symbol}
+                  uId={fund.id}
+                  status={fund.status}
+                  imgSrc={fund.imgSrc}
+                />
+              </button>
+            );
+          })}
         </Carousel>
       </div>
     </section>

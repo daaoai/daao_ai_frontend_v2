@@ -3,15 +3,15 @@ import { ROUTER_ABI } from '@/daao-sdk/abi/router';
 import { SWAP_QUOTER_SIMULATE } from '@/daao-sdk/abi/swapQuoterAbi';
 import { fetchDaoInfo } from '@/helpers/contribution';
 import { findPoolAddress, findPoolDetails } from '@/helpers/pool';
-import { DaoInfo } from '@/types/dao';
+import { DaoInfo, FundDetails } from '@/types/daao';
 import { getPublicClient } from '@/utils/publicClient';
 import { getMinAmount } from '@/utils/slippage';
 import { useEffect, useState } from 'react';
 import { toast } from 'sonner';
 import { erc20Abi, Hex } from 'viem';
-import { useAccount, useWriteContract } from 'wagmi';
+import { useAccount, useSwitchChain, useWriteContract } from 'wagmi';
 
-export const useSwap = () => {
+export const useSwap = ({ chainId, fundDetails }: { chainId: number; fundDetails: FundDetails }) => {
   // states
   const [activeTab, setActiveTab] = useState<'buy' | 'sell'>('buy');
   const [isLoading, setIsLoading] = useState(false);
@@ -26,11 +26,11 @@ export const useSwap = () => {
   // hooks
   const { address: accountAddress, chainId: accountChainId } = useAccount();
   const { writeContractAsync } = useWriteContract();
+  const { switchChainAsync } = useSwitchChain();
 
   // constants
 
   const account = accountAddress as Hex;
-  const chainId = accountChainId as number;
   const minSqrtPrice = '4295128750';
   const maxSqrtPrice = '1461446703485210103287273052203988822378723970300';
   const chainInfo = chainsData[chainId];
@@ -45,7 +45,7 @@ export const useSwap = () => {
       setIsLoading(true);
       const daoDetails = await fetchDaoInfo({
         chainId,
-        daoAddress: chainInfo.daoAddress,
+        daoAddress: fundDetails.address,
         useWnativeToken: true,
       });
       if (daoDetails) {
@@ -162,8 +162,11 @@ export const useSwap = () => {
     try {
       setIsSwapping(true);
 
-      if (!window.ethereum) throw new Error('No Ethereum provider found');
-      if (!poolAddress) throw new Error('No pool address found');
+      if (!account) {
+        toast.error('No wallet connected');
+        return;
+      }
+
       if (!amount) {
         toast.error('No amount specified');
         return;
@@ -177,6 +180,10 @@ export const useSwap = () => {
       if (amount > sellTokenBalance) {
         toast.error('Insufficient balance');
         return;
+      }
+
+      if (accountChainId !== chainId) {
+        await switchChainAsync({ chainId });
       }
 
       await approveSellToken(amount);

@@ -5,7 +5,9 @@ import Orderbook from '@/components/dashboard/orderbook';
 import { PageLayout } from '@/components/page-layout';
 import { assetColumns } from '@/components/table/assets-columns';
 import { AssetTable } from '@/components/table/assets-table';
+import { chainSlugToChainIdMap } from '@/config/chains';
 import { CURRENT_DAO_IMAGE } from '@/constants/links';
+import { fundsByChainId } from '@/data/funds';
 import { useFetchBalance } from '@/hooks/useFetchBalance';
 import useTokenPrice from '@/hooks/useTokenPrice';
 import type { FundDetailsProps } from '@/types';
@@ -13,7 +15,9 @@ import type { Asset } from '@/types/dashboard';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@radix-ui/react-tabs';
 import axios from 'axios';
 import { motion } from 'framer-motion';
+import { useParams } from 'next/navigation';
 import React, { useEffect, useState } from 'react';
+import { Hex } from 'viem';
 
 export interface Token {
   address: string;
@@ -111,6 +115,11 @@ const Dashboard: React.FC = () => {
   const [daoTokenAddress, setDaoTokenAddress] = useState('');
   const [daaoHoldingTokens, setDaoHoldingTokens] = useState<ApiResponse | null>(null);
   const { fetchTokenPriceCoingecko } = useTokenPrice();
+  const { chain, address } = useParams();
+
+  const chainId = chainSlugToChainIdMap[chain as string];
+  const fundAddress = address as Hex;
+  const fundDetails = fundsByChainId[chainId][fundAddress];
 
   useEffect(() => {
     if (!fetchedData) return;
@@ -200,10 +209,10 @@ const Dashboard: React.FC = () => {
       <div className={`overflow-hidden gap-20 flex flex-col justify-center items-center pt-16 px-2`}>
         <div className="grid gap-2 md:gap-3 lg:grid-cols-[55%_45%] w-full">
           <div className="p-2 sm:p-4 flex items-center justify-center">
-            <FundDetails {...props} />
+            <FundDetails {...fundDetails} />
           </div>
           <div className="p-2 sm:p-4 flex items-center justify-center">
-            <BuySellCard />
+            <BuySellCard chainId={chainId} fundAddress={fundAddress} />
           </div>
         </div>
 

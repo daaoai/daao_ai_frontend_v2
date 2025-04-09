@@ -1,13 +1,15 @@
 import { chainsData } from '@/config/chains';
 import { TIER_LABELS } from '@/constants/contribution';
+import { fundsByChainId } from '@/data/funds';
 import { UserContributionInfo } from '@/types/contribution';
+import { getTokenDetails } from '@/utils/token';
 import * as lodash from 'lodash';
 import { useEffect, useState } from 'react';
-import { formatUnits } from 'viem';
+import { formatUnits, Hex } from 'viem';
 import { useAccount } from 'wagmi';
 
 export const useFetchBalance = () => {
-  const { address: account, chainId } = useAccount();
+  const { address: account } = useAccount();
 
   const [data, setData] = useState({
     balance: '0',
@@ -24,12 +26,12 @@ export const useFetchBalance = () => {
     userTierLabel: 'None',
   });
 
-  const refetch = async () => {
+  const refetch = async (chainId: number, daaoAddress: Hex) => {
     try {
       if (chainId) {
         const chainData = chainsData[chainId];
-        const daoAddress = chainData.daoAddress;
-        const tokenDetails = chainData.contribution.token;
+        const fundDetails = fundsByChainId[chainId][daaoAddress];
+        const tokenDetails = await getTokenDetails({ chainId, address: fundDetails.token });
 
         let userContributionInfo: UserContributionInfo | undefined;
         let balance = BigInt(0);
@@ -54,14 +56,14 @@ export const useFetchBalance = () => {
   const throttledRefreshData = lodash.throttle(() => refreshData(), 1000);
 
   useEffect(() => {
-    if (account && chainId) {
-      throttledRefreshData();
+    if (account) {
+      // throttledRefreshData();
     }
-  }, [account, chainId]);
+  }, [account]);
 
   const refreshData = async () => {
     console.log('🔄 Refetching contract data...');
-    await refetch();
+    // await refetch();
   };
   return { data, refreshData };
 };
