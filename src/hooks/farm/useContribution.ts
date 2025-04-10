@@ -1,32 +1,36 @@
-import { chainsData } from '@/config/chains';
+import { chainsData } from '@/constants/chains';
 import { CARTEL } from '@/daao-sdk/abi/cartel';
 import { DAAO_CONTRACT_ABI } from '@/daao-sdk/abi/daao';
 import { fetchDaoInfo, fetchTierLimits, fetchUserContributionInfo } from '@/helpers/contribution';
+import { FundDetails } from '@/types/daao';
 import { handleViemTransactionError } from '@/utils/approval';
 import { getPublicClient } from '@/utils/publicClient';
+import { getLocalTokenDetails } from '@/utils/token';
 import { useState } from 'react';
 import { toast as reactToast } from 'react-toastify';
+import { toast } from 'sonner';
 import { Abi, erc20Abi, Hex } from 'viem';
-import { useAccount, useWriteContract } from 'wagmi';
+import { useAccount, useSwitchChain, useWriteContract } from 'wagmi';
 
-const useContribution = () => {
+const useContribution = ({ chainId, fundDetails }: { chainId: number; fundDetails: FundDetails }) => {
   const { address: account, chainId: accountChainId } = useAccount();
-  const chainId = accountChainId as number;
   const publicClient = getPublicClient(chainId);
-  const token = chainsData[chainId].contribution.token.address;
-  const tokenDecimals = chainsData[chainId].contribution.token.decimals;
+  const { switchChainAsync } = useSwitchChain();
+  const tokenDetails = getLocalTokenDetails({
+    address: fundDetails.token,
+    chainId,
+  });
   const { writeContractAsync } = useWriteContract();
   const [approvalTxHash, setApprovalTxHash] = useState<Hex | undefined>(undefined);
 
   const checkAllowance = async (requiredAmount: bigint): Promise<boolean> => {
     if (!account) return false;
     try {
-      const daoAddress = chainsData[chainId].daoAddress;
       const allowance = await publicClient.readContract({
-        address: token,
+        address: fundDetails.token,
         abi: erc20Abi,
         functionName: 'allowance',
-        args: [account, daoAddress],
+        args: [account, fundDetails.address],
       });
       return BigInt(allowance as bigint) >= BigInt(requiredAmount);
     } catch (err) {
@@ -38,12 +42,11 @@ const useContribution = () => {
   const requestAllowance = async ({ amount, token }: { amount: bigint; token: Hex }): Promise<Hex | undefined> => {
     if (!account) return undefined;
     try {
-      const daoAddress = chainsData[chainId].daoAddress;
       const tx = await writeContractAsync({
         address: token,
         abi: erc20Abi,
         functionName: 'approve',
-        args: [daoAddress, amount],
+        args: [fundDetails.address, amount],
       });
       if (!tx) throw new Error('Approval transaction failed to send');
       setApprovalTxHash(tx);
@@ -67,33 +70,42 @@ const useContribution = () => {
   };
 
   const getDaoInfo = async () => {
-    const daoAddress = chainsData[chainId].daoAddress;
     return fetchDaoInfo({
-      daoAddress,
+      daoAddress: fundDetails.address,
       chainId,
     });
   };
 
   const getUserContributionInfo = async () => {
-    const daoAddress = chainsData[chainId].daoAddress;
     return fetchUserContributionInfo({
       account,
-      daoAddress,
+      daoAddress: fundDetails.address,
       chainId,
-      tokenDecimals,
+      tokenDecimals: tokenDetails.decimals,
     });
   };
 
   const contribute = async (amount: bigint) => {
     try {
-      const daoAddress = chainsData[chainId].daoAddress;
       if (!account) {
         reactToast.error('No wallet connected');
         return undefined;
       }
 
+      if (accountChainId !== chainId) {
+        if (accountChainId !== chainId) {
+          try {
+            await switchChainAsync({ chainId });
+          } catch (error) {
+            console.error('Error switching chain:', error);
+            toast.error(`Please switch to ${chainsData[chainId].slug} network to proceed`);
+            return;
+          }
+        }
+      }
+
       const txHash = await writeContractAsync({
-        address: daoAddress,
+        address: fundDetails.address,
         abi: DAAO_CONTRACT_ABI,
         functionName: 'contribute',
         args: [amount],
@@ -121,15 +133,18 @@ const useContribution = () => {
 
   const contributeWithToken = async (amount: bigint) => {
     try {
-      const daoAddress = chainsData[chainId].daoAddress;
       if (!account) {
         reactToast.error('No wallet connected');
         return undefined;
       }
 
+      if (accountChainId !== chainId) {
+        await switchChainAsync({ chainId });
+      }
+
       let allowanceSufficient = await checkAllowance(amount);
       if (!allowanceSufficient) {
-        await requestAllowance({ amount, token: token });
+        await requestAllowance({ amount, token: fundDetails.token });
         allowanceSufficient = await checkAllowance(amount);
         if (!allowanceSufficient) {
           throw new Error('Approval failed');
@@ -137,7 +152,7 @@ const useContribution = () => {
       }
 
       const txHash = await writeContractAsync({
-        address: daoAddress,
+        address: fundDetails.address,
         abi: DAAO_CONTRACT_ABI,
         functionName: 'contribute',
         args: [amount],
@@ -163,11 +178,10 @@ const useContribution = () => {
   };
 
   const getTierLimits = async (tier: number) => {
-    const daoAddress = chainsData[chainId].daoAddress;
     return fetchTierLimits({
       tier,
       chainId,
-      daoAddress,
+      daoAddress: fundDetails.address,
     });
   };
 

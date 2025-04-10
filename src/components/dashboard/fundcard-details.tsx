@@ -1,20 +1,20 @@
-import Image from 'next/image';
-import React, { useState, useEffect, useCallback } from 'react';
-import { useFundContext } from './FundContext';
-import Liquidity from '../Liquidity/liquidity';
-import { ethers } from 'ethers';
+import { daoAddress } from '@/constants/addresses';
+import { telegramDeFAILink, twitterDeFAILink } from '@/constants/links';
 import { DAAO_CONTRACT_ABI } from '@/daao-sdk/abi/daao';
 import { Card } from '@/shadcn/components/ui/card';
+import { FundDetails as FundDetailsType } from '@/types/daao';
 import { shortenAddress } from '@/utils/address';
-import type { FundDetailsProps } from '@/types';
-import { daoAddress } from '@/constants/addresses';
+import { ethers } from 'ethers';
+import Image from 'next/image';
+import { useCallback, useEffect, useState } from 'react';
 import ClickToCopy from '../copyToClipboard';
-import { telegramDeFAILink, telegramLink, twitterDeFAILink, twitterLink } from '@/constants/links';
-import PoolDetailCard from '../poolDetailCard';
-import { ModalWrapper } from '../modalWrapper';
+import Liquidity from '../Liquidity/liquidity';
 import LPFarms from '../lpFarms';
+import { ModalWrapper } from '../modalWrapper';
+import PoolDetailCard from '../poolDetailCard';
+import { useFundContext } from './FundContext';
 
-const FundDetails: React.FC<FundDetailsProps> = (props) => {
+const FundDetails = (fundDetails: FundDetailsType) => {
   interface TokenChangeState {
     percent: number;
     token: number;

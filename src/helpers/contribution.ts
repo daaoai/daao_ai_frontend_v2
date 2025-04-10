@@ -1,8 +1,8 @@
-import { chainsData } from '@/config/chains';
+import { chainsData } from '@/constants/chains';
 import { supportedChainIds } from '@/constants/chains';
 import { DAAO_CONTRACT_ABI } from '@/daao-sdk/abi/daao';
 import { UserContributionInfo } from '@/types/contribution';
-import { DaoInfo } from '@/types/dao';
+import { DaoInfo } from '@/types/daao';
 import { multicallForSameContract } from '@/utils/multicall';
 import { getPublicClient } from '@/utils/publicClient';
 import { getTokenDetails } from '@/utils/token';

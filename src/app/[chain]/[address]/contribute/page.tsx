@@ -1,15 +1,18 @@
 'use client';
 import { PageLayout } from '@/components/page-layout';
-import { chainsData } from '@/config/chains';
+import { chainsData, chainSlugToChainIdMap } from '@/constants/chains';
+import { fundsByChainId } from '@/data/funds';
+import { tokensByChainId } from '@/data/tokens';
 import useContribution from '@/hooks/farm/useContribution';
 import useTokenPrice from '@/hooks/useTokenPrice';
 import { Button } from '@/shadcn/components/ui/button';
 import { Input } from '@/shadcn/components/ui/input';
 import { UserContributionInfo } from '@/types/contribution';
-import { DaoInfo } from '@/types/dao';
+import { DaoInfo } from '@/types/daao';
 import { fetchTokenBalance } from '@/utils/token';
 import Decimal from 'decimal.js';
 import Image from 'next/image';
+import { useParams } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { toast as reactToast } from 'react-toastify';
 import { formatUnits, Hex, parseUnits } from 'viem';
@@ -24,9 +27,9 @@ const TIER_TYPE: { [key: string]: string } = {
 
 export default function Page() {
   // hooks
-  const { address: accountAddress, chainId: accountChainId } = useAccount();
-  const { getDaoInfo, contribute, getTierLimits, getUserContributionInfo, contributeWithToken } = useContribution();
+  const { address: accountAddress } = useAccount();
   const { fetchTokenPriceDexScreener } = useTokenPrice();
+  const { chain, address } = useParams();
 
   // states
   const [userBalance, setUserBalance] = useState<bigint>(BigInt(0));
@@ -39,9 +42,11 @@ export default function Page() {
 
   // constants
   const account = accountAddress as Hex;
-  const chainId = accountChainId!;
-  const contributionTokenDetails = chainsData[chainId].contribution.token;
+  const chainId = chainSlugToChainIdMap[chain as string];
+  const fundAddress = address as Hex;
+  const fundDetails = fundsByChainId[chainId][fundAddress];
   const contributionLimit = tierLimits;
+  const contributionTokenDetails = tokensByChainId[chainId][fundDetails.token];
   const currentContributions = userContributionInfo?.contributions || BigInt(0);
   const totalRaisedPercentage = daoInfoData?.totalRaised
     ? new Decimal(daoInfoData?.totalRaised.toString())
@@ -55,6 +60,11 @@ export default function Page() {
     daoInfoData?.fundraisingGoal || BigInt(0),
     contributionTokenDetails.decimals,
   );
+
+  const { getDaoInfo, contribute, getTierLimits, getUserContributionInfo, contributeWithToken } = useContribution({
+    chainId,
+    fundDetails,
+  });
 
   const contributionsFormatted = formatUnits(
     userContributionInfo?.contributions || BigInt(0),
@@ -77,12 +87,10 @@ export default function Page() {
       return;
     }
 
-    const amountInUnits = parseUnits(formattedAmount.toFixed(18), 18);
-
-    if (amountInUnits > chainsData[chainId].contribution.maxAmount) {
-      reactToast.error('Amount should be lower than 0.1');
-      return;
-    }
+    const amountInUnits = parseUnits(
+      formattedAmount.toFixed(contributionTokenDetails.decimals),
+      contributionTokenDetails.decimals,
+    );
 
     if (amountInUnits + currentContributions > contributionLimit) {
       // if (formattedAmount.plus(currentContributions).gt(contributionLimit)) {
@@ -179,7 +187,7 @@ export default function Page() {
         <div className="w-full max-w-3xl text-white">
           <div className="flex gap-6 mb-8">
             <div className="relative w-32 h-32 overflow-hidden rounded-lg">
-              <Image src="/assets/testing.svg" alt="Sorceror Artwork" fill className="object-cover" />
+              <Image src="/assets/daao-monad.svg" alt="Sorceror Artwork" fill className="object-cover" />
             </div>
             <div className="flex-1">
               <h1 className="text-2xl font-bold mb-2 text-left">Sorceror</h1>

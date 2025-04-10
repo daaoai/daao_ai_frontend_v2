@@ -1,4 +1,4 @@
-import { chainsData } from '@/config/chains';
+import { chainsData } from '@/constants/chains';
 import { createPublicClient, fallback, http, PublicClient } from 'viem';
 import { getViemChainById } from './chains';
 

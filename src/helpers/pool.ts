@@ -1,32 +1,16 @@
-import { chainsData } from '@/config/chains';
 import { supportedDexesTypes } from '@/constants/dex';
-import { UNI_FACTORY_ABI } from '@/daao-sdk/abi/uniFactory';
-import { UNI_POOL_ABI } from '@/daao-sdk/abi/uniPool';
-import { VELO_FACTORY_ABI } from '@/daao-sdk/abi/veloFactory';
+import { VelodromeDex } from '@/dexes/velodrome';
+import { PancakeDex } from '@/dexes/pancake';
+import { UniswapDex } from '@/dexes/uniswap';
 import { SupportedDexType } from '@/types/chains';
-import { multicallForSameContract } from '@/utils/multicall';
-import { getPublicClient } from '@/utils/publicClient';
-import { Hex } from 'viem';
+import { Hex, zeroAddress } from 'viem';
+import { KodiakDex } from '@/dexes/kodiakDex';
 
-export const findPoolDetails = async ({ address, chainId }: { address: Hex; chainId: number }) => {
-  const multicallRes = (await multicallForSameContract({
-    abi: UNI_POOL_ABI,
-    address,
-    chainId,
-    functionNames: ['token0', 'token1'],
-    params: [[], []],
-  })) as [Hex, Hex];
-
-  return {
-    token0: multicallRes[0],
-    token1: multicallRes[1],
-  };
-};
-
-export const findPoolAddress = async ({
+export const getPoolAddress = async ({
   token0,
   token1,
   tickSpacing,
+  factoryAddress,
   fee,
   type,
   chainId,
@@ -35,11 +19,12 @@ export const findPoolAddress = async ({
   token1: Hex;
   tickSpacing: number;
   fee: number;
+  factoryAddress: Hex;
   type: SupportedDexType;
   chainId: number;
 }) => {
   const handlers: {
-    [key in SupportedDexType]: (args: {
+    [key in SupportedDexType]?: (args: {
       token0: Hex;
       token1: Hex;
       tickSpacing: number;
@@ -48,17 +33,29 @@ export const findPoolAddress = async ({
       factoryAddress: Hex;
     }) => Promise<Hex>;
   } = {
-    [supportedDexesTypes.pancake]: getPoolAddressFromUniswap,
-    [supportedDexesTypes.uniswap]: getPoolAddressFromUniswap,
-    [supportedDexesTypes.velodrome]: getPoolAddressFromVelodrome,
+    [supportedDexesTypes.uniswap]: async (args) => {
+      const uniswapDex = new UniswapDex(args.chainId);
+      return await uniswapDex.getPoolAddress(args);
+    },
+    [supportedDexesTypes.velodrome]: async (args) => {
+      const velodromeDex = new VelodromeDex(args.chainId);
+      return await velodromeDex.getPoolAddress(args);
+    },
+    [supportedDexesTypes.pancake]: async (args) => {
+      const pancakeDex = new PancakeDex(args.chainId);
+      return await pancakeDex.getPoolAddress(args);
+    },
+    [supportedDexesTypes.kodiak]: async (args) => {
+      const kodiakDex = new KodiakDex(args.chainId);
+      return await kodiakDex.getPoolAddress(args);
+    },
   };
-
   const handler = handlers[type];
+
   if (!handler) {
-    throw new Error(`Unsupported dex type: ${type}`);
+    return zeroAddress;
   }
 
-  const factoryAddress = chainsData[chainId].dexInfo.factoryAddress;
   return await handler({
     token0,
     token1,
@@ -69,48 +66,43 @@ export const findPoolAddress = async ({
   });
 };
 
-const getPoolAddressFromVelodrome = async ({
-  token0,
-  token1,
-  tickSpacing,
+export const getPoolDetails = async ({
+  address,
+  type,
   chainId,
-  factoryAddress,
 }: {
-  token0: Hex;
-  token1: Hex;
-  fee: number;
-  tickSpacing: number;
+  address: Hex;
+  type: SupportedDexType;
   chainId: number;
-  factoryAddress: Hex;
 }) => {
-  const publicClient = getPublicClient(chainId);
-  return await publicClient.readContract({
-    abi: VELO_FACTORY_ABI,
-    functionName: 'getPool',
-    args: [token0, token1, tickSpacing],
-    address: factoryAddress,
-  });
-};
+  const handlers: {
+    [key in SupportedDexType]?: (args: { address: Hex; chainId: number }) => Promise<{ token0: Hex; token1: Hex }>;
+  } = {
+    [supportedDexesTypes.uniswap]: async (args) => {
+      const uniswapDex = new UniswapDex(args.chainId);
+      return await uniswapDex.getPoolDetails(args.address);
+    },
+    [supportedDexesTypes.velodrome]: async (args) => {
+      const velodromeDex = new VelodromeDex(args.chainId);
+      return await velodromeDex.getPoolDetails(args.address);
+    },
+    [supportedDexesTypes.pancake]: async (args) => {
+      const pancakeDex = new PancakeDex(args.chainId);
+      return await pancakeDex.getPoolDetails(args.address);
+    },
+    [supportedDexesTypes.kodiak]: async (args) => {
+      const kodiakDex = new KodiakDex(args.chainId);
+      return await kodiakDex.getPoolDetails(args.address);
+    },
+  };
+  const handler = handlers[type];
 
-const getPoolAddressFromUniswap = async ({
-  token0,
-  token1,
-  fee,
-  chainId,
-  factoryAddress,
-}: {
-  token0: Hex;
-  token1: Hex;
-  tickSpacing: number;
-  fee: number;
-  chainId: number;
-  factoryAddress: Hex;
-}) => {
-  const publicClient = getPublicClient(chainId);
-  return await publicClient.readContract({
-    abi: UNI_FACTORY_ABI,
-    functionName: 'getPool',
-    args: [token0, token1, fee],
-    address: factoryAddress,
+  if (!handler) {
+    return { token0: zeroAddress, token1: zeroAddress };
+  }
+
+  return await handler({
+    address,
+    chainId,
   });
 };

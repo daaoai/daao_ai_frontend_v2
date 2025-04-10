@@ -1,10 +1,12 @@
-import '../globals.css';
+import { initializeStore } from '@/store';
 import ProviderWrapper from '@/wagmi/ProviderWrapper';
-import React from 'react';
 import '@rainbow-me/rainbowkit/styles.css';
-import { Toaster } from 'sonner';
+import React from 'react';
+import { Provider as ReduxProvider } from 'react-redux';
 import { ToastContainer } from 'react-toastify'; // Import ToastContainer
 import 'react-toastify/dist/ReactToastify.css';
+import '../globals.css';
+import AppLayout from './AppLayout';
 export const metadata = {
   title: 'Daao App',
   description: 'Daao App',
@@ -15,7 +17,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     <html lang="en" className="dark" style={{ colorScheme: 'dark' }}>
       <body>
         <ToastContainer />
-        <ProviderWrapper>{children}</ProviderWrapper>
+        <ProviderWrapper>
+          <AppLayout>{children}</AppLayout>
+        </ProviderWrapper>
       </body>
     </html>
   );

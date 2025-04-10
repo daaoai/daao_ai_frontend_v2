@@ -98,4 +98,4 @@ export const ROUTER_ABI = [
     stateMutability: 'nonpayable',
     type: 'function',
   },
-];
+] as const;

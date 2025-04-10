@@ -1,6 +1,6 @@
-import { chainsData } from '@/config/chains';
-import { tokensByChainId } from '@/tokens';
-import { SupportedChain, Token } from '@/types/chains';
+import { chainsData } from '@/constants/chains';
+import { tokensByChainId } from '@/data/tokens';
+import { Token } from '@/types/chains';
 import { erc20Abi, Hex } from 'viem';
 import { multicallForSameContract } from './multicall';
 import { getPublicClient } from './publicClient';
@@ -25,13 +25,7 @@ const fetchErc20Info = async ({ address, chainId }: { address: Hex; chainId: num
   };
 };
 
-export const getTokenDetails = async ({
-  address,
-  chainId,
-}: {
-  address: Hex;
-  chainId: SupportedChain;
-}): Promise<Token> => {
+export const getTokenDetails = async ({ address, chainId }: { address: Hex; chainId: number }): Promise<Token> => {
   const tokenDetails = tokensByChainId[chainId]?.[address];
   if (!tokenDetails) {
     return await fetchErc20Info({ address, chainId });
@@ -59,4 +53,12 @@ export const fetchTokenBalance = async ({ token, account, chainId }: { token: He
     console.error('Error fetching token balance:', error);
     return BigInt(0);
   }
+};
+
+export const getLocalTokenDetails = ({ address, chainId }: { address: Hex; chainId: number }): Token => {
+  const tokenDetails = tokensByChainId[chainId]?.[address];
+  if (!tokenDetails) {
+    throw new Error('Token not found');
+  }
+  return tokenDetails;
 };

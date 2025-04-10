@@ -11,7 +11,7 @@ import {
   walletConnectWallet,
 } from '@rainbow-me/rainbowkit/wallets';
 import { cookieStorage, createConfig, createStorage, http } from 'wagmi';
-import { bsc, mode, monadTestnet } from 'wagmi/chains';
+import { berachain, bsc, mode, monadTestnet } from 'wagmi/chains';
 
 const connectors = connectorsForWallets(
   [
@@ -33,7 +33,7 @@ const connectors = connectorsForWallets(
 
 export const getWagmiConfig = () => {
   return createConfig({
-    chains: [monadTestnet, bsc, mode],
+    chains: [monadTestnet, bsc, mode, berachain],
     storage: createStorage({
       storage: cookieStorage,
     }),
@@ -43,6 +43,7 @@ export const getWagmiConfig = () => {
       // [monad.id]: http(),
       // [goerli.id]: http(),
       // [sepolia.id]: http(),
+      [berachain.id]: http(),
       [mode.id]: http(),
       [monadTestnet.id]: http(),
       [bsc.id]: http(),

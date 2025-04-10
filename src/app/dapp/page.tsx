@@ -130,15 +130,6 @@ const AppHome: React.FC = () => {
               funds={FEATURED_FUNDS}
               onFundClick={(fundId) => onFundClick(fundId, 'dashboard')}
             /> */}
-
-            {/* Upcoming funds */}
-            {/* <FundSection
-              title="Launched DAOs"
-              subtitle="Launching soon"
-              funds={UPCOMING_FUNDS}
-              linkPrefix="upcoming"
-              onFundClick={(fundId) => onFundClick(fundId, 'upcoming')}
-            /> */}
           </div>
         </div>
       </div>

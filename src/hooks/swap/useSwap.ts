@@ -1,17 +1,17 @@
-import { chainsData } from '@/config/chains';
-import { ROUTER_ABI } from '@/daao-sdk/abi/router';
-import { SWAP_QUOTER_SIMULATE } from '@/daao-sdk/abi/swapQuoterAbi';
+import { chainsData } from '@/constants/chains';
+import { getDexAddressesForChain } from '@/constants/dex';
 import { fetchDaoInfo } from '@/helpers/contribution';
-import { findPoolAddress, findPoolDetails } from '@/helpers/pool';
-import { DaoInfo } from '@/types/dao';
+import { getPoolAddress, getPoolDetails } from '@/helpers/pool';
+import { getQuotes, getSwapData } from '@/helpers/swap';
+import { DaoInfo, FundDetails } from '@/types/daao';
 import { getPublicClient } from '@/utils/publicClient';
 import { getMinAmount } from '@/utils/slippage';
 import { useEffect, useState } from 'react';
 import { toast } from 'sonner';
 import { erc20Abi, Hex } from 'viem';
-import { useAccount, useWriteContract } from 'wagmi';
+import { useAccount, useSendTransaction, useSwitchChain, useWriteContract } from 'wagmi';
 
-export const useSwap = () => {
+export const useSwap = ({ chainId, fundDetails }: { chainId: number; fundDetails: FundDetails }) => {
   // states
   const [activeTab, setActiveTab] = useState<'buy' | 'sell'>('buy');
   const [isLoading, setIsLoading] = useState(false);
@@ -25,19 +25,20 @@ export const useSwap = () => {
 
   // hooks
   const { address: accountAddress, chainId: accountChainId } = useAccount();
+  const { sendTransactionAsync } = useSendTransaction();
   const { writeContractAsync } = useWriteContract();
+  const { switchChainAsync } = useSwitchChain();
 
   // constants
 
   const account = accountAddress as Hex;
-  const chainId = accountChainId as number;
   const minSqrtPrice = '4295128750';
   const maxSqrtPrice = '1461446703485210103287273052203988822378723970300';
-  const chainInfo = chainsData[chainId];
   const sellToken = activeTab === 'buy' ? daoInfo?.paymentTokenDetails : daoInfo?.daoTokenDetails;
   const buyToken = activeTab === 'buy' ? daoInfo?.daoTokenDetails : daoInfo?.paymentTokenDetails;
   const slippage = 1; // 1% slippage
   const zeroToOne = sellToken?.address === token0;
+  const dexDetails = getDexAddressesForChain(chainId, fundDetails.dexInfo.type);
   // functions
 
   const fetchDaoInfoAndPoolAddress = async () => {
@@ -45,22 +46,23 @@ export const useSwap = () => {
       setIsLoading(true);
       const daoDetails = await fetchDaoInfo({
         chainId,
-        daoAddress: chainInfo.daoAddress,
+        daoAddress: fundDetails.address,
         useWnativeToken: true,
       });
       if (daoDetails) {
         setDaoInfo(daoDetails);
 
-        //TODO: dynamic fee and tick spacing
-        const poolAddress = await findPoolAddress({
+        const poolAddress = await getPoolAddress({
           chainId,
-          fee: 10000,
+          fee: fundDetails.dexInfo.fee,
           token0: daoDetails.paymentToken,
           token1: daoDetails.daoToken,
-          tickSpacing: 100,
-          type: chainInfo.dexInfo.type,
+          tickSpacing: fundDetails.dexInfo.tickSpacing,
+          type: fundDetails.dexInfo.type,
+          factoryAddress: dexDetails.factoryAddress,
         });
-        const poolDetails = await findPoolDetails({
+        const poolDetails = await getPoolDetails({
+          type: fundDetails.dexInfo.type,
           address: poolAddress,
           chainId,
         });
@@ -95,7 +97,7 @@ export const useSwap = () => {
 
   const approveSellToken = async (amount: bigint) => {
     const publicClient = getPublicClient(chainId);
-    const spender = chainInfo.dexInfo.swapRouterAddress;
+    const spender = dexDetails.swapRouterAddress;
     const sellToken = activeTab === 'buy' ? daoInfo?.paymentTokenDetails : daoInfo?.daoTokenDetails;
     if (!sellToken) return;
     const allowance = await publicClient.readContract({
@@ -136,24 +138,25 @@ export const useSwap = () => {
         return;
       }
 
-      const publicClient = getPublicClient(chainId);
-
-      let amountOut = (
-        await publicClient.simulateContract({
-          address: chainInfo.dexInfo.quoterAddress,
-          abi: SWAP_QUOTER_SIMULATE,
-          functionName: 'quoteExactInputSingle',
-          args: [poolAddress, zeroToOne, amount, zeroToOne ? BigInt(minSqrtPrice) : BigInt(maxSqrtPrice)],
-        })
-      ).result;
+      let amountOut = await getQuotes({
+        poolAddress,
+        amount,
+        chainId,
+        sqrtPrice: zeroToOne ? BigInt(minSqrtPrice) : BigInt(maxSqrtPrice),
+        zeroToOne,
+        type: fundDetails.dexInfo.type,
+        fee: fundDetails.dexInfo.fee,
+        tokenIn: sellToken?.address as Hex,
+        tokenOut: buyToken?.address as Hex,
+      });
 
       if (amountOut < 0) {
         amountOut = amountOut * BigInt(-1);
       }
       setToAmount(amountOut);
     } catch (err) {
-      console.error('Error simulating swap:', err);
-      toast.error('Error simulating swap');
+      console.error('Error fetching quotes:', err);
+      toast.error('Error fetching quotes');
       setToAmount(BigInt(0));
     }
   }
@@ -162,8 +165,11 @@ export const useSwap = () => {
     try {
       setIsSwapping(true);
 
-      if (!window.ethereum) throw new Error('No Ethereum provider found');
-      if (!poolAddress) throw new Error('No pool address found');
+      if (!account) {
+        toast.error('No wallet connected');
+        return;
+      }
+
       if (!amount) {
         toast.error('No amount specified');
         return;
@@ -179,37 +185,46 @@ export const useSwap = () => {
         return;
       }
 
+      if (accountChainId !== chainId) {
+        try {
+          await switchChainAsync({ chainId });
+        } catch (error) {
+          console.error('Error switching chain:', error);
+          toast.error(`Please switch to ${chainsData[chainId].slug} network to proceed`);
+          return;
+        }
+      }
+
       await approveSellToken(amount);
       const minAmount = getMinAmount(toAmount, slippage);
       const publicClient = getPublicClient(chainId);
       const deadline = BigInt(Math.floor(Date.now() / 1000) + 60 * 5); // 5 minutes from now
 
-      const args = [
-        poolAddress,
-        zeroToOne,
+      const { callData, to, value } = await getSwapData({
         amount,
-        zeroToOne ? BigInt(minSqrtPrice) : BigInt(maxSqrtPrice),
-        minAmount,
+        chainId,
         deadline,
-      ] as const;
-
-      const estimatedGas = await publicClient.estimateContractGas({
-        abi: ROUTER_ABI,
-        address: chainInfo.dexInfo.swapRouterAddress,
-        functionName: 'getSwapResult',
-        args: args,
-        account,
+        minAmount,
+        poolAddress: poolAddress!,
+        sqrtPrice: zeroToOne ? BigInt(minSqrtPrice) : BigInt(maxSqrtPrice),
+        type: fundDetails.dexInfo.type,
+        zeroToOne,
+        tokenIn: sellToken?.address as Hex,
+        tokenOut: buyToken?.address as Hex,
+        fee: fundDetails.dexInfo.fee,
+        recipient: account,
       });
 
-      const tx = await writeContractAsync({
-        abi: ROUTER_ABI,
-        address: chainInfo.dexInfo.swapRouterAddress,
-        functionName: 'getSwapResult',
-        args,
+      const hash = await sendTransactionAsync({
+        account,
+        to,
+        value,
+        data: callData,
+        chainId,
       });
 
       const receipt = await publicClient.waitForTransactionReceipt({
-        hash: tx,
+        hash,
       });
 
       if (receipt?.status !== 'success') {

@@ -1,5 +1,6 @@
 'use client';
 import { CURRENT_DAO_IMAGE } from '@/constants/links';
+import { fundsByChainId } from '@/data/funds';
 import { useSwap } from '@/hooks/swap/useSwap';
 import useDebounce from '@/hooks/useDebounce';
 import useGetUserTickets from '@/hooks/useGetUserTickets';
@@ -19,10 +20,11 @@ import SlippageModal from '../slippageModal';
 import TicketPurchase from '../ticket';
 import ModeTokenLogo from '/public/assets/mode.png';
 
-const BuySellCard = () => {
+const BuySellCard = ({ chainId, fundAddress }: { chainId: number; fundAddress: Hex }) => {
   // account
-  const { address: accountAddress, chainId: accountChainId } = useAccount();
+  const { address: accountAddress } = useAccount();
   const account = accountAddress as Hex;
+  const fundDetails = fundsByChainId[chainId][fundAddress];
 
   // states
   const [slippageOpen, setSlippageOpen] = useState(false);
@@ -41,20 +43,12 @@ const BuySellCard = () => {
     setActiveTab,
     isSwapping,
     toAmount,
-  } = useSwap();
+  } = useSwap({ chainId, fundDetails });
 
   // constants
   const [formattedSrcAmount, setFormattedSrcAmount] = useState<string>('');
   const formattedSellTokenBalance = formatUnits(sellTokenBalance, sellToken?.decimals || 18);
   const formattedToAmount = formatUnits(toAmount, buyToken?.decimals || 18);
-
-  // function handleFromChange(e: React.ChangeEvent<HTMLInputElement>) {
-  //   const val = e.target.value;
-  //   setSrcAmount(parseUnits(val, sellToken?.decimals || 18));
-  //   if (Number(val) > 0) {
-  //     fetchQuotes(parseUnits(val, sellToken?.decimals || 18));
-  //   }
-  // }
 
   const handleFormChange = useDebounce((val: string) => {
     setFormattedSrcAmount(val);

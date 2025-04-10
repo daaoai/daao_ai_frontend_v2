@@ -1,5 +1,5 @@
 import { Hex } from 'viem';
-import { Token } from './chains';
+import { SupportedDexType, Token } from './chains';
 
 export type DaoInfo = {
   fundraisingGoal: bigint;
@@ -12,4 +12,18 @@ export type DaoInfo = {
   daoTokenDetails: Token;
   paymentTokenDetails: Token;
   isPaymentTokenNative: boolean;
+};
+
+export type FundDetails = {
+  id: string;
+  address: Hex;
+  title: string;
+  token: Hex;
+  status: 'live' | 'funding' | 'trading' | 'soon';
+  imgSrc: string;
+  dexInfo: {
+    type: SupportedDexType;
+    fee: number;
+    tickSpacing: number;
+  };
 };

@@ -1,0 +1,77 @@
+import { getDexAddressesForChain, supportedDexesTypes } from '@/constants/dex';
+import { DexProtocol, PoolAddressRequest, QuotesRequest, SwapDataRequest } from '@/types/dex';
+import { getPublicClient } from '@/utils/publicClient';
+import { encodeFunctionData, Hex, PublicClient } from 'viem';
+import { UniswapDex } from '../uniswap';
+import { KODIAK_QUOTER_ABI } from './abi/quoter';
+import { KODIAK_ROUTER_ABI } from './abi/router';
+
+export class KodiakDex implements DexProtocol {
+  factoryAddress: Hex;
+  swapRouterAddress: Hex;
+  quoterAddress: Hex;
+  publicClient: PublicClient;
+  chainId: number;
+  private uniswapDex: UniswapDex;
+
+  constructor(chainId: number) {
+    const dexDetails = getDexAddressesForChain(chainId, supportedDexesTypes.kodiak);
+    this.uniswapDex = new UniswapDex(chainId, supportedDexesTypes.kodiak);
+    this.chainId = chainId;
+    this.factoryAddress = dexDetails.factoryAddress;
+    this.swapRouterAddress = dexDetails.swapRouterAddress;
+    this.quoterAddress = dexDetails.quoterAddress;
+    this.publicClient = getPublicClient(chainId);
+  }
+
+  getPoolAddress = async ({ token0, token1, fee, tickSpacing }: PoolAddressRequest) => {
+    return this.uniswapDex.getPoolAddress({ token0, token1, fee, tickSpacing });
+  };
+
+  getPoolDetails = async (address: Hex) => {
+    return this.uniswapDex.getPoolDetails(address);
+  };
+
+  fetchQuotes = async ({ tokenIn, tokenOut, fee, amount, sqrtPrice }: QuotesRequest) => {
+    return (
+      await this.publicClient.simulateContract({
+        address: this.quoterAddress,
+        abi: KODIAK_QUOTER_ABI,
+        functionName: 'quoteExactInputSingle',
+        args: [
+          {
+            amountIn: amount,
+            fee,
+            sqrtPriceLimitX96: sqrtPrice,
+            tokenIn,
+            tokenOut,
+          },
+        ],
+      })
+    ).result[0];
+  };
+
+  generateSwapData = ({ tokenIn, tokenOut, fee, recipient, amount, minAmount, sqrtPrice }: SwapDataRequest) => {
+    const callData = encodeFunctionData({
+      abi: KODIAK_ROUTER_ABI,
+      args: [
+        {
+          amountIn: amount,
+          fee,
+          amountOutMinimum: minAmount,
+          recipient,
+          sqrtPriceLimitX96: sqrtPrice,
+          tokenIn,
+          tokenOut,
+        },
+      ],
+      functionName: 'exactInputSingle',
+    });
+
+    return {
+      callData,
+      to: this.swapRouterAddress,
+      value: 0n,
+    };
+  };
+}
