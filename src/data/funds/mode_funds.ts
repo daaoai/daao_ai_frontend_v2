@@ -1,3 +1,4 @@
+import { supportedDexesTypes } from '@/constants/dex';
 import { FundDetails } from '@/types/daao';
 
 export const modeFunds: Record<string, FundDetails> = {
@@ -8,5 +9,10 @@ export const modeFunds: Record<string, FundDetails> = {
     address: '0xEc7b0FD288E87eBC1C301E360092c645567e79B9',
     imgSrc: '/assets/defaiCartel.svg',
     status: 'trading',
+    dexInfo: {
+      type: supportedDexesTypes.velodrome,
+      fee: 10000,
+      tickSpacing: 100,
+    },
   },
 };

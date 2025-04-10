@@ -1,18 +1,22 @@
 'use client';
-import { chainIdToChainSlugMap } from '@/config/chains';
-import { supportedChainIds } from '@/constants/chains';
+
+import { chainIdToChainSlugMap, supportedChainIds } from '@/constants/chains';
 import { usePathname, useRouter } from 'next/navigation';
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 import { useAccount } from 'wagmi';
 
 const AppLayout = ({ children }: { children: React.ReactNode }) => {
   const pathname = usePathname();
   const router = useRouter();
   const { chainId: accountChainId } = useAccount();
+  const prevChainIdRef = useRef<number | undefined>(undefined);
 
   // initial routing for home route redirect to funds
   useEffect(() => {
-    if (pathname === '/') {
+    const prevChainIdEndpoint = prevChainIdRef.current
+      ? `/${chainIdToChainSlugMap[prevChainIdRef.current]}/`
+      : undefined;
+    if (pathname === '/' || (prevChainIdRef.current && pathname === prevChainIdEndpoint)) {
       const chainId =
         accountChainId && Object.values(supportedChainIds).includes(accountChainId)
           ? accountChainId
@@ -20,6 +24,7 @@ const AppLayout = ({ children }: { children: React.ReactNode }) => {
       const chainSlug = chainIdToChainSlugMap[chainId];
       router.push(`/${chainSlug}`);
     }
+    prevChainIdRef.current = accountChainId;
   }, [pathname, accountChainId]);
 
   return <>{children}</>;

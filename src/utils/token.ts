@@ -1,6 +1,6 @@
-import { chainsData } from '@/config/chains';
+import { chainsData } from '@/constants/chains';
 import { tokensByChainId } from '@/data/tokens';
-import { SupportedChain, Token } from '@/types/chains';
+import { Token } from '@/types/chains';
 import { erc20Abi, Hex } from 'viem';
 import { multicallForSameContract } from './multicall';
 import { getPublicClient } from './publicClient';
@@ -25,13 +25,7 @@ const fetchErc20Info = async ({ address, chainId }: { address: Hex; chainId: num
   };
 };
 
-export const getTokenDetails = async ({
-  address,
-  chainId,
-}: {
-  address: Hex;
-  chainId: SupportedChain;
-}): Promise<Token> => {
+export const getTokenDetails = async ({ address, chainId }: { address: Hex; chainId: number }): Promise<Token> => {
   const tokenDetails = tokensByChainId[chainId]?.[address];
   if (!tokenDetails) {
     return await fetchErc20Info({ address, chainId });
@@ -61,7 +55,7 @@ export const fetchTokenBalance = async ({ token, account, chainId }: { token: He
   }
 };
 
-export const getLocalTokenDetails = ({ address, chainId }: { address: Hex; chainId: SupportedChain }): Token => {
+export const getLocalTokenDetails = ({ address, chainId }: { address: Hex; chainId: number }): Token => {
   const tokenDetails = tokensByChainId[chainId]?.[address];
   if (!tokenDetails) {
     throw new Error('Token not found');

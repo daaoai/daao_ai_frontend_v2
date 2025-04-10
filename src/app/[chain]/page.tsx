@@ -4,7 +4,7 @@ import { FundSection } from '@/components/dashboard/fundsection';
 import FAQDaao from '@/components/faqDaao';
 import { PageLayout } from '@/components/page-layout';
 import PoolDetailCard from '@/components/poolDetailCard';
-import { chainSlugToChainIdMap } from '@/config/chains';
+import { chainSlugToChainIdMap } from '@/constants/chains';
 import { daoAddress } from '@/constants/addresses';
 import { DAAO_CONTRACT_ABI } from '@/daao-sdk/abi/daao';
 import { fundsByChainId, tbaDaao } from '@/data/funds';

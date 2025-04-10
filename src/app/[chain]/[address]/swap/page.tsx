@@ -5,7 +5,7 @@ import Orderbook from '@/components/dashboard/orderbook';
 import { PageLayout } from '@/components/page-layout';
 import { assetColumns } from '@/components/table/assets-columns';
 import { AssetTable } from '@/components/table/assets-table';
-import { chainSlugToChainIdMap } from '@/config/chains';
+import { chainSlugToChainIdMap } from '@/constants/chains';
 import { CURRENT_DAO_IMAGE } from '@/constants/links';
 import { fundsByChainId } from '@/data/funds';
 import { useFetchBalance } from '@/hooks/useFetchBalance';

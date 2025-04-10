@@ -1,6 +1,6 @@
 'use client';
 import { PageLayout } from '@/components/page-layout';
-import { chainsData, chainSlugToChainIdMap } from '@/config/chains';
+import { chainsData, chainSlugToChainIdMap } from '@/constants/chains';
 import { fundsByChainId } from '@/data/funds';
 import { tokensByChainId } from '@/data/tokens';
 import useContribution from '@/hooks/farm/useContribution';

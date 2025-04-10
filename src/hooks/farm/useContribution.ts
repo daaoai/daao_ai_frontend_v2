@@ -1,4 +1,4 @@
-import { chainsData } from '@/config/chains';
+import { chainsData } from '@/constants/chains';
 import { CARTEL } from '@/daao-sdk/abi/cartel';
 import { DAAO_CONTRACT_ABI } from '@/daao-sdk/abi/daao';
 import { fetchDaoInfo, fetchTierLimits, fetchUserContributionInfo } from '@/helpers/contribution';
@@ -8,6 +8,7 @@ import { getPublicClient } from '@/utils/publicClient';
 import { getLocalTokenDetails } from '@/utils/token';
 import { useState } from 'react';
 import { toast as reactToast } from 'react-toastify';
+import { toast } from 'sonner';
 import { Abi, erc20Abi, Hex } from 'viem';
 import { useAccount, useSwitchChain, useWriteContract } from 'wagmi';
 
@@ -92,7 +93,15 @@ const useContribution = ({ chainId, fundDetails }: { chainId: number; fundDetail
       }
 
       if (accountChainId !== chainId) {
-        await switchChainAsync({ chainId });
+        if (accountChainId !== chainId) {
+          try {
+            await switchChainAsync({ chainId });
+          } catch (error) {
+            console.error('Error switching chain:', error);
+            toast.error(`Please switch to ${chainsData[chainId].slug} network to proceed`);
+            return;
+          }
+        }
       }
 
       const txHash = await writeContractAsync({

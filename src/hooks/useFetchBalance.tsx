@@ -1,4 +1,4 @@
-import { chainsData } from '@/config/chains';
+import { chainsData } from '@/constants/chains';
 import { TIER_LABELS } from '@/constants/contribution';
 import { fundsByChainId } from '@/data/funds';
 import { UserContributionInfo } from '@/types/contribution';

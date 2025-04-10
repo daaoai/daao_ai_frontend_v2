@@ -1,4 +1,4 @@
-import { chainsData } from '@/config/chains';
+import { chainsData } from '@/constants/chains';
 import { supportedChainIds } from '@/constants/chains';
 import { DAAO_CONTRACT_ABI } from '@/daao-sdk/abi/daao';
 import { UserContributionInfo } from '@/types/contribution';
