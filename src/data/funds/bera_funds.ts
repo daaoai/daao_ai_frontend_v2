@@ -3,10 +3,10 @@ import { FundDetails } from '@/types/daao';
 import { zeroAddress } from 'viem';
 
 export const beraFunds: Record<string, FundDetails> = {
-  '0x273cfA50190358639ea7ab3e6bF9c91252132338': {
+  '0x402f35e11cC6E89E80EFF4205956716aCd94be04': {
     id: '1',
     title: 'BERA DAAO',
-    address: '0x273cfA50190358639ea7ab3e6bF9c91252132338',
+    address: '0x402f35e11cC6E89E80EFF4205956716aCd94be04',
     token: zeroAddress,
     imgSrc: '/assets/batman.jpg',
     status: 'trading',
