@@ -2,9 +2,10 @@ import { getDexAddressesForChain, supportedDexesTypes } from '@/constants/dex';
 import { DexProtocol, PoolAddressRequest, QuotesRequest, SwapDataRequest } from '@/types/dex';
 import { getPublicClient } from '@/utils/publicClient';
 import { encodeFunctionData, Hex, PublicClient } from 'viem';
-import { UniswapDex } from '../uniswap';
+import { UniswapCustomRouterDex } from '../UniswapCustomRouter';
 import { KODIAK_QUOTER_ABI } from './abi/quoter';
 import { KODIAK_ROUTER_ABI } from './abi/router';
+import { SupportedDexType } from '@/types/chains';
 
 export class KodiakDex implements DexProtocol {
   factoryAddress: Hex;
@@ -12,11 +13,11 @@ export class KodiakDex implements DexProtocol {
   quoterAddress: Hex;
   publicClient: PublicClient;
   chainId: number;
-  private uniswapDex: UniswapDex;
+  private customDex: UniswapCustomRouterDex;
 
-  constructor(chainId: number) {
-    const dexDetails = getDexAddressesForChain(chainId, supportedDexesTypes.kodiak);
-    this.uniswapDex = new UniswapDex(chainId, supportedDexesTypes.kodiak);
+  constructor(chainId: number, type: SupportedDexType = supportedDexesTypes.kodiak) {
+    const dexDetails = getDexAddressesForChain(chainId, type);
+    this.customDex = new UniswapCustomRouterDex(chainId, type);
     this.chainId = chainId;
     this.factoryAddress = dexDetails.factoryAddress;
     this.swapRouterAddress = dexDetails.swapRouterAddress;
@@ -25,11 +26,11 @@ export class KodiakDex implements DexProtocol {
   }
 
   getPoolAddress = async ({ token0, token1, fee, tickSpacing }: PoolAddressRequest) => {
-    return this.uniswapDex.getPoolAddress({ token0, token1, fee, tickSpacing });
+    return this.customDex.getPoolAddress({ token0, token1, fee, tickSpacing });
   };
 
   getPoolDetails = async (address: Hex) => {
-    return this.uniswapDex.getPoolDetails(address);
+    return this.customDex.getPoolDetails(address);
   };
 
   fetchQuotes = async ({ tokenIn, tokenOut, fee, amount, sqrtPrice }: QuotesRequest) => {

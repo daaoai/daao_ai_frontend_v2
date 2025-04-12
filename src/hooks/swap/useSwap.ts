@@ -41,35 +41,28 @@ export const useSwap = ({ chainId, fundDetails }: { chainId: number; fundDetails
   const dexDetails = getDexAddressesForChain(chainId, fundDetails.dexInfo.type);
   // functions
 
-  const fetchDaoInfoAndPoolAddress = async () => {
+  const fetchPoolAddress = async () => {
     try {
+      if (!daoInfo) return;
       setIsLoading(true);
-      const daoDetails = await fetchDaoInfo({
-        chainId,
-        daoAddress: fundDetails.address,
-        useWnativeToken: true,
-      });
-      if (daoDetails) {
-        setDaoInfo(daoDetails);
 
-        const poolAddress = await getPoolAddress({
-          chainId,
-          fee: fundDetails.dexInfo.fee,
-          token0: daoDetails.paymentToken,
-          token1: daoDetails.daoToken,
-          tickSpacing: fundDetails.dexInfo.tickSpacing,
-          type: fundDetails.dexInfo.type,
-          factoryAddress: dexDetails.factoryAddress,
-        });
-        const poolDetails = await getPoolDetails({
-          type: fundDetails.dexInfo.type,
-          address: poolAddress,
-          chainId,
-        });
-        setToken0(poolDetails.token0);
-        setToken1(poolDetails.token1);
-        setPoolAddress(poolAddress);
-      }
+      const poolAddress = await getPoolAddress({
+        chainId,
+        fee: fundDetails.dexInfo.fee,
+        token0: daoInfo.paymentToken,
+        token1: daoInfo.daoToken,
+        tickSpacing: fundDetails.dexInfo.tickSpacing,
+        type: fundDetails.dexInfo.type,
+        factoryAddress: dexDetails.factoryAddress,
+      });
+      const poolDetails = await getPoolDetails({
+        type: fundDetails.dexInfo.type,
+        address: poolAddress,
+        chainId,
+      });
+      setToken0(poolDetails.token0);
+      setToken1(poolDetails.token1);
+      setPoolAddress(poolAddress);
     } catch (error) {
       console.error('Error fetching DAO info and pool address:', error);
       toast.error('Error fetching DAO info and pool address');
@@ -79,19 +72,30 @@ export const useSwap = ({ chainId, fundDetails }: { chainId: number; fundDetails
   };
 
   const fetchSellTokenBalance = async () => {
-    try {
-      const sellToken = activeTab === 'buy' ? daoInfo?.paymentTokenDetails : daoInfo?.daoTokenDetails;
-      if (!sellToken) return;
-      const publicClient = getPublicClient(chainId);
-      const balance = await publicClient.readContract({
-        address: sellToken.address as Hex,
-        abi: erc20Abi,
-        functionName: 'balanceOf',
-        args: [account],
-      });
-      setSellTokenBalance(balance);
-    } catch (error) {
-      console.error('Error fetching payment token balance:', error);
+    if (!account || !daoInfo) return;
+    const sellToken = activeTab === 'buy' ? daoInfo?.paymentTokenDetails : daoInfo?.daoTokenDetails;
+    if (!sellToken) return;
+    const publicClient = getPublicClient(chainId);
+    const balance = await publicClient.readContract({
+      address: sellToken.address as Hex,
+      abi: erc20Abi,
+      functionName: 'balanceOf',
+      args: [account],
+    });
+    setSellTokenBalance(balance);
+  };
+
+  const fetchSellTokenBalanceWithRetry = async (retries: number = 3) => {
+    for (let i = 0; i < retries; i++) {
+      try {
+        await fetchSellTokenBalance();
+        return;
+      } catch (error) {
+        if (i === retries - 1) {
+          console.error('Error fetching payment token balance:', error);
+          toast.error('Error fetching payment token balance');
+        }
+      }
     }
   };
 
@@ -231,26 +235,25 @@ export const useSwap = ({ chainId, fundDetails }: { chainId: number; fundDetails
         throw new Error('Swap transaction did not succeed');
       }
       toast.success('Swap/Buy successful');
-
-      fetchSellTokenBalance();
+      fetchSellTokenBalanceWithRetry();
     } catch (error) {
       console.error('Error during swap:', error);
     } finally {
       setIsSwapping(false);
       setToAmount(BigInt(0));
-      fetchSellTokenBalance();
+      fetchSellTokenBalanceWithRetry();
     }
   }
 
   useEffect(() => {
     if (!account) return;
-    fetchDaoInfoAndPoolAddress();
     setToAmount(BigInt(0));
-  }, [chainId, account]);
+  }, [account]);
 
   useEffect(() => {
     if (daoInfo) {
-      fetchSellTokenBalance();
+      fetchPoolAddress();
+      fetchSellTokenBalanceWithRetry();
     }
   }, [daoInfo, account, activeTab]);
 
@@ -265,10 +268,9 @@ export const useSwap = ({ chainId, fundDetails }: { chainId: number; fundDetails
     sellTokenBalance,
     toAmount,
     setActiveTab,
-    fetchDaoInfoAndPoolAddress,
     handleSwap,
     fetchQuotes,
-    fetchSellTokenBalance,
+    fetchSellTokenBalance: fetchSellTokenBalanceWithRetry,
     setToAmount,
     setIsLoading,
     approveSellToken,

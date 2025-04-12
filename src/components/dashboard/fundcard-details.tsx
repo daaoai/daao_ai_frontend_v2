@@ -1,10 +1,8 @@
-import { daoAddress } from '@/constants/addresses';
 import { telegramDeFAILink, twitterDeFAILink } from '@/constants/links';
-import { DAAO_CONTRACT_ABI } from '@/daao-sdk/abi/daao';
 import { Card } from '@/shadcn/components/ui/card';
-import { FundDetails as FundDetailsType } from '@/types/daao';
+import { DaoInfo, FundDetails as FundDetailsType } from '@/types/daao';
 import { shortenAddress } from '@/utils/address';
-import { ethers } from 'ethers';
+import { getLocalTokenDetails } from '@/utils/token';
 import Image from 'next/image';
 import { useCallback, useEffect, useState } from 'react';
 import ClickToCopy from '../copyToClipboard';
@@ -14,7 +12,15 @@ import { ModalWrapper } from '../modalWrapper';
 import PoolDetailCard from '../poolDetailCard';
 import { useFundContext } from './FundContext';
 
-const FundDetails = (fundDetails: FundDetailsType) => {
+const FundDetails = ({
+  fundDetails,
+  chainId,
+  daoInfo,
+}: {
+  fundDetails: FundDetailsType;
+  chainId: number;
+  daoInfo: DaoInfo | null;
+}) => {
   interface TokenChangeState {
     percent: number;
     token: number;
@@ -22,7 +28,6 @@ const FundDetails = (fundDetails: FundDetailsType) => {
   const [marketCap, setMarketCap] = useState<number | null>(null);
   const [liquidity, setLiquidity] = useState<number | null>(null);
   const [volume, setVolume] = useState<number | null>(null);
-  const [daoTokenAddress, setDaoTokenAddress] = useState('');
   const [price, setPrice] = useState<number | null>(null);
   const { setPriceUsd } = useFundContext();
   const [tokenChange, setTokenChange] = useState<TokenChangeState>({
@@ -35,6 +40,8 @@ const FundDetails = (fundDetails: FundDetailsType) => {
   const [isLPFarmModalOpen, setIsLPFarmModalOpen] = useState(false);
   const openFarmModalOpen = useCallback(() => setIsLPFarmModalOpen(true), []);
   const closeFarmModalOpen = useCallback(() => setIsLPFarmModalOpen(false), []);
+
+  const tokenDetails = getLocalTokenDetails({ address: fundDetails.token, chainId });
 
   // useEffect(() => {
   //   const fetchContractData = async () => {
@@ -78,51 +85,44 @@ const FundDetails = (fundDetails: FundDetailsType) => {
   };
 
   useEffect(() => {
-    const modeRpc = 'https://mainnet.mode.network/';
-    const fetchMarketData = async () => {
-      const provider = new ethers.providers.JsonRpcProvider(modeRpc);
-
-      // const signer = provider.getSigner();
-
-      const contract = new ethers.Contract(daoAddress as string, DAAO_CONTRACT_ABI, provider);
-      const daoToken = await contract.daoToken();
-      setDaoTokenAddress(daoToken);
-      // if (!daoTokenAddress) return
-
-      // const url = `https://api.dexscreener.com/token-pairs/v1/mode/${daoTokenAddress}`
-      const url = `https://api.dexscreener.com/token-pairs/v1/mode/${daoToken}`;
-      console.log('url is ', url);
-      try {
-        // Replace with your actual endpoint or logic
-        const response = await fetch(url);
-        const data = await response.json();
-        console.log('Data from api is  is ', data);
-
-        if (data && Array.isArray(data) && data[0]) {
-          setPrice(data[0].priceUsd);
-          setPriceUsd(data[0].priceUsd);
-          // setPriceUsd(23)
-          // const marketCap = (Number(data[0].priceUsd) * 10 ** 9).toFixed(0)
-          const marketCap = Number(data[0].marketCap).toFixed(0);
-          const liq = Number(data[0].liquidity?.usd).toFixed(0);
-          const volume = Number(data[0].volume?.h24).toFixed(0);
-          setMarketCap(Number(marketCap));
-          setLiquidity(Number(liq));
-          setVolume(Number(volume));
-          const percentageChange = Number(data?.[0]?.priceChange?.h24);
-          const tokenChangeValue = calculateTokenChange(Number(marketCap), percentageChange);
-          setTokenChange({
-            percent: percentageChange,
-            token: tokenChangeValue,
-          });
-        } else {
-          console.warn('Market data not in expected format.');
-        }
-      } catch (error) {
-        console.error('Error fetching market data:', error);
-      }
-    };
-    fetchMarketData();
+    // const modeRpc = 'https://mainnet.mode.network/';
+    // const fetchMarketData = async () => {
+    //   const provider = new ethers.providers.JsonRpcProvider(modeRpc);
+    //   // const signer = provider.getSigner();
+    //   // if (!daoTokenAddress) return
+    //   // const url = `https://api.dexscreener.com/token-pairs/v1/mode/${daoTokenAddress}`
+    //   const url = `https://api.dexscreener.com/token-pairs/v1/mode/${daoToken}`;
+    //   console.log('url is ', url);
+    //   try {
+    //     // Replace with your actual endpoint or logic
+    //     const response = await fetch(url);
+    //     const data = await response.json();
+    //     console.log('Data from api is  is ', data);
+    //     if (data && Array.isArray(data) && data[0]) {
+    //       setPrice(data[0].priceUsd);
+    //       setPriceUsd(data[0].priceUsd);
+    //       // setPriceUsd(23)
+    //       // const marketCap = (Number(data[0].priceUsd) * 10 ** 9).toFixed(0)
+    //       const marketCap = Number(data[0].marketCap).toFixed(0);
+    //       const liq = Number(data[0].liquidity?.usd).toFixed(0);
+    //       const volume = Number(data[0].volume?.h24).toFixed(0);
+    //       setMarketCap(Number(marketCap));
+    //       setLiquidity(Number(liq));
+    //       setVolume(Number(volume));
+    //       const percentageChange = Number(data?.[0]?.priceChange?.h24);
+    //       const tokenChangeValue = calculateTokenChange(Number(marketCap), percentageChange);
+    //       setTokenChange({
+    //         percent: percentageChange,
+    //         token: tokenChangeValue,
+    //       });
+    //     } else {
+    //       console.warn('Market data not in expected format.');
+    //     }
+    //   } catch (error) {
+    //     console.error('Error fetching market data:', error);
+    //   }
+    // };
+    // fetchMarketData();
     // }, [daoTokenAddress, setPriceUsd])
   }, [setPriceUsd]);
 
@@ -130,8 +130,8 @@ const FundDetails = (fundDetails: FundDetailsType) => {
     <Card className="text-white sm:p-2  w-full border-none">
       <div className="w-full">
         <Image
-          src="/assets/defai-cartel-image.svg"
-          alt="defai-cartel"
+          src={fundDetails.imgSrc}
+          alt={fundDetails.title}
           width={600}
           height={300}
           style={{ width: '100%' }}
@@ -152,27 +152,33 @@ const FundDetails = (fundDetails: FundDetailsType) => {
             ${props.shortname} {props.longname}
           </CardTitle>
         </div> */}
-      <div className="border-2 border-gray-30 rounded-md my-4 p-6 flex items-center gap-6">
-        <button
-          className="bg-teal-50 text-black text-sm rounded-md p-2 hover:bg-teal-60 active:scale-95 transition-transform ease-in-out duration-150"
-          onClick={openLiquidityModalOpen}
-        >
-          Manage
-        </button>
-        <button
-          className="underline text-teal-50 text-sm rounded-md p-2 active:scale-95 transition-transform ease-in-out duration-150"
-          onClick={openFarmModalOpen}
-        >
-          LP Farms
-        </button>
+      {fundDetails.isManageLiquidityEnabled ||
+        (fundDetails.isLpFarmsEnabled && (
+          <div className="border-2 border-gray-30 rounded-md mt-4 p-6 flex items-center gap-6">
+            {fundDetails.isManageLiquidityEnabled && (
+              <button
+                className="bg-teal-50 text-black text-sm rounded-md p-2 hover:bg-teal-60 active:scale-95 transition-transform ease-in-out duration-150"
+                onClick={openLiquidityModalOpen}
+              >
+                Manage
+              </button>
+            )}
+            {fundDetails.isLpFarmsEnabled && (
+              <button
+                className="underline text-teal-50 text-sm rounded-md p-2 active:scale-95 transition-transform ease-in-out duration-150"
+                onClick={openFarmModalOpen}
+              >
+                LP Farms
+              </button>
+            )}
 
-        <ModalWrapper isOpen={isLiquidityModalOpen} onClose={closeLiquidityModalOpen} className="!max-w-[56rem]">
-          <Liquidity onClose={closeLiquidityModalOpen} />
-        </ModalWrapper>
-        <ModalWrapper isOpen={isLPFarmModalOpen} onClose={closeFarmModalOpen}>
-          <LPFarms onClose={closeFarmModalOpen} daoTokenAddress={daoTokenAddress} />
-        </ModalWrapper>
-        {/* 
+            <ModalWrapper isOpen={isLiquidityModalOpen} onClose={closeLiquidityModalOpen} className="!max-w-[56rem]">
+              <Liquidity onClose={closeLiquidityModalOpen} />
+            </ModalWrapper>
+            <ModalWrapper isOpen={isLPFarmModalOpen} onClose={closeFarmModalOpen}>
+              <LPFarms onClose={closeFarmModalOpen} daoTokenAddress={daoInfo?.daoToken || ''} />
+            </ModalWrapper>
+            {/* 
           <div className="flex flex-col gap-2">
             <p className="text-gray-70 font-rubik text-sm font-normal">LP VALUE</p>
             <p>12</p>
@@ -186,20 +192,21 @@ const FundDetails = (fundDetails: FundDetailsType) => {
             <p>12</p>
           </div>
          */}
-      </div>
-      <div className="flex justify-between w-full mb-4">
+          </div>
+        ))}
+      <div className="flex justify-between w-full my-4">
         <div className="w-fit flex gap-x-2 items-center">
-          <h5 className="text-sm sm:text-base lg:text-lg text-[#D0F0BF]">$CARTEL</h5>
+          <h5 className="text-sm sm:text-base lg:text-lg text-[#D0F0BF]">{`$${tokenDetails.symbol}`}</h5>
           <div className="bg-[#053738] p-1 rounded-2xl flex gap-x-2 px-3">
-            <p className="text-sm sm:text-base lg:text-lg">{shortenAddress(daoTokenAddress)}</p>
-            <ClickToCopy copyText={daoTokenAddress} className="text-teal-20" />
+            <p className="text-sm sm:text-base lg:text-lg">{shortenAddress(daoInfo?.daoToken || '')}</p>
+            <ClickToCopy copyText={daoInfo?.daoToken || ''} className="text-teal-20" />
           </div>
         </div>
         <div className="w-fit flex items-center gap-x-2">
           <a>
             <Image
               src="/assets/link-logo.svg"
-              alt="defai-cartel"
+              alt={fundDetails.title}
               className="w-4 h-4 sm:w-5 sm:h-5"
               width={24}
               height={24}
@@ -229,12 +236,8 @@ const FundDetails = (fundDetails: FundDetailsType) => {
         </div>
       </div>
       <div className="flex w-full flex-col items-start gap-y-3 pb-6">
-        <h2 className="text-sm sm:text-base md:text-lg lg:text-xl font-semibold">DeFAI Cartel</h2>
-        <p className=" sm:text-xs lg:text-sm text-left text-[#AEB3B6]">
-          DeFAI Venture DAO is a DeFAI Investment DAO dedicated to advancing the DeFAI movement by strategically
-          investing in AI Agents and AI-focused DAOs on Mode. As a collective force in decentralized AI finance, $CARTEL
-          empowers the AI-driven movement on Mode, fostering the growth of autonomous, AI-powered ecosystems.{' '}
-        </p>
+        <h2 className="text-sm sm:text-base md:text-lg lg:text-xl font-semibold">{fundDetails.title}</h2>
+        <p className=" sm:text-xs lg:text-sm text-left text-[#AEB3B6]">{fundDetails.description}</p>
       </div>
       <div className="w-full">
         <PoolDetailCard marketCap={marketCap || 0} liquidity={liquidity || 0} volume={volume || 0} />

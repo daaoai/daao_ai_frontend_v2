@@ -1,8 +1,6 @@
-import { initializeStore } from '@/store';
 import ProviderWrapper from '@/wagmi/ProviderWrapper';
 import '@rainbow-me/rainbowkit/styles.css';
 import React from 'react';
-import { Provider as ReduxProvider } from 'react-redux';
 import { ToastContainer } from 'react-toastify'; // Import ToastContainer
 import 'react-toastify/dist/ReactToastify.css';
 import '../globals.css';

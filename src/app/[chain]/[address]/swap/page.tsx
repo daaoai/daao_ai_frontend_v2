@@ -6,213 +6,99 @@ import { PageLayout } from '@/components/page-layout';
 import { assetColumns } from '@/components/table/assets-columns';
 import { AssetTable } from '@/components/table/assets-table';
 import { chainSlugToChainIdMap } from '@/constants/chains';
-import { CURRENT_DAO_IMAGE } from '@/constants/links';
 import { fundsByChainId } from '@/data/funds';
-import { useFetchBalance } from '@/hooks/useFetchBalance';
+import { tokensByChainId } from '@/data/tokens';
+import { getTokensBalance } from '@/helpers/token';
+import { useDaaoInfo } from '@/hooks/useDaaoInfo';
 import useTokenPrice from '@/hooks/useTokenPrice';
-import type { FundDetailsProps } from '@/types';
 import type { Asset } from '@/types/dashboard';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@radix-ui/react-tabs';
-import axios from 'axios';
 import { motion } from 'framer-motion';
 import { useParams } from 'next/navigation';
-import React, { useEffect, useState } from 'react';
-import { Hex } from 'viem';
-
-export interface Token {
-  address: string;
-  circulating_market_cap: number | null;
-  decimals: string;
-  exchange_rate: number | null;
-  holders: string;
-  icon_url: string | null;
-  name: string;
-  symbol: string;
-  total_supply: string;
-  type: string;
-  volume_24h: number | null;
-}
-export interface TokenBalance {
-  token: Token;
-  token_id: string | null;
-  token_instance: string | null;
-  value: string;
-}
-export type ApiResponse = TokenBalance[];
-
-export interface Token {
-  address: string;
-  circulating_market_cap: number | null;
-  decimals: string;
-  exchange_rate: number | null;
-  holders: string;
-  icon_url: string | null;
-  name: string;
-  symbol: string;
-  total_supply: string;
-  type: string;
-  volume_24h: number | null;
-}
-
-export interface TokenBalance {
-  token: Token;
-  token_id: string | null;
-  token_instance: string | null;
-  value: string;
-}
-
-// DEXScreener API types
-export interface DexScreenerPair {
-  chainId: string;
-  dexId: string;
-  url: string;
-  pairAddress: string;
-  baseToken: {
-    address: string;
-    name: string;
-    symbol: string;
-  };
-  priceUsd: string;
-  priceNative: string;
-  txns: {
-    h24: {
-      buys: number;
-      sells: number;
-    };
-  };
-}
-
-export interface DexScreenerResponse {
-  pairs: DexScreenerPair[];
-}
-
-// Combined token data with price
-export interface TokenWithPrice extends TokenBalance {
-  priceUsd?: string;
-}
-
-export type EnhancedApiResponse = TokenWithPrice[];
-
-const formatDaoHoldingTokens = (daoTokens: EnhancedApiResponse): Asset[] => {
-  return daoTokens
-    .filter((item) => item.token.symbol !== 'CARTELTEST')
-    .map((item) => {
-      const decimals = Number(item.token.decimals);
-      const balance = Number(item.value) / Math.pow(10, decimals);
-      const price = item.priceUsd ? Number(item.priceUsd) : 0;
-      return {
-        token: item.token.symbol,
-        // tokenIcon: item.token.icon_url ?? "",
-        balance: balance,
-        price: price,
-        totalValue: price * balance,
-      };
-    });
-};
+import React, { useEffect, useRef, useState } from 'react';
+import { formatUnits, Hex } from 'viem';
+import { useAccount } from 'wagmi';
 
 const Dashboard: React.FC = () => {
-  const { data: fetchedData, refreshData } = useFetchBalance();
-  const [daoTokenAddress, setDaoTokenAddress] = useState('');
-  const [daaoHoldingTokens, setDaoHoldingTokens] = useState<ApiResponse | null>(null);
-  const { fetchTokenPriceCoingecko } = useTokenPrice();
   const { chain, address } = useParams();
-
   const chainId = chainSlugToChainIdMap[chain as string];
   const fundAddress = address as Hex;
   const fundDetails = fundsByChainId[chainId][fundAddress];
 
-  useEffect(() => {
-    if (!fetchedData) return;
-    if (!daoTokenAddress) {
-      setDaoTokenAddress(fetchedData?.daoToken);
-    }
-  }, [fetchedData]);
+  const fetchedBalanceRef = useRef(false);
+  const [isTokenBalanceLoading, setIsTokenBalanceLoading] = useState(false);
+  const [daoTokenAddress, setDaoTokenAddress] = useState('');
+  const [daaoHoldingTokens, setDaoHoldingTokens] = useState<Asset[] | null>(null);
+  const { fetchTokenPriceGecko } = useTokenPrice();
+  const { address: account } = useAccount();
 
-  ///
-  const props: FundDetailsProps = {
-    icon: CURRENT_DAO_IMAGE, // Placeholder image URL
-    shortname: 'CARTEL',
-    longname: '',
-    description:
-      'DeFAI Venture DAO is a DeFAI Investment DAO dedicated to advancing the DeFAI movement by strategically investing in AI Agents and AI-focused DAOs on Mode. As a collective force in decentralized AI finance, $CARTEL empowers the AI-driven movement on Mode, fostering the growth of autonomous, AI-powered ecosystems.',
-    holdings: 0,
-    modeAddress: '0x5edbe707191Ae3A5bd5FEa5EDa0586f7488bD961',
-  };
+  const fetchTokenBalances = async () => {
+    try {
+      setIsTokenBalanceLoading(true);
+      const tokens = tokensByChainId[chainId];
+      const tokenAddress = Object.keys(tokens);
+      const [balancesRes, pricesRes] = await Promise.allSettled([
+        account ? getTokensBalance(tokenAddress as Hex[], chainId, account) : Promise.resolve({}),
+        account
+          ? Promise.allSettled(tokenAddress.map((address) => fetchTokenPriceGecko({ address, chainId })))
+          : Promise.resolve([]),
+      ]);
 
-  useEffect(() => {
-    const fetchTokensWithPrices = async () => {
-      try {
-        // Fetch token balances
-        const response = await axios.get<ApiResponse>(
-          '/api/conduit/v2/addresses/0x6F5961A01a4E6c5C2f77399E3758b124219d7A78/token-balances',
-        );
+      const balances = (balancesRes.status === 'fulfilled' ? balancesRes.value : {}) as Record<string, bigint>;
+      const prices =
+        pricesRes.status === 'fulfilled'
+          ? pricesRes.value.map((res) => (res.status === 'fulfilled' ? res.value : 0))
+          : [];
 
-        // Fetch prices in parallel
-
-        const pricePromises = response.data.map(async (tokenBalance) => {
-          try {
-            let priceUsd = '0';
-            if (tokenBalance.token.address.toLowerCase() === '0x6bb4a37643e7613e812a8d1af5e675cc735ea1e2') {
-              const gambleTokenPrice = await fetchTokenPriceCoingecko('0x6bb4a37643e7613e812a8d1af5e675cc735ea1e2');
-              priceUsd = Number(gambleTokenPrice).toFixed(6);
-              console.log(priceUsd, 'gambletokenPrice');
-            } else {
-              const dexResponse = await axios.get<DexScreenerResponse>(
-                `/api/dexscreener/token-pairs/v1/mode/${tokenBalance.token.address}`,
-              );
-              priceUsd = Number((dexResponse.data as unknown as any[])[0]?.priceUsd || 0).toFixed(6);
-            }
-            return {
-              address: tokenBalance.token.address,
-              priceUsd: priceUsd,
-            };
-          } catch (error) {
-            console.log(`Failed to fetch price for ${tokenBalance.token.address}`);
-            return {
-              address: tokenBalance.token.address,
-              priceUsd: undefined,
-            };
-          }
-        });
-
-        const prices = await Promise.all(pricePromises);
-
-        // Combine token data with prices
-        const tokensWithPrices: EnhancedApiResponse = response.data.map((tokenBalance) => {
-          const priceData = prices.find((p) => p.address === tokenBalance.token.address);
+      const tokenDetailsWithBalances = tokenAddress
+        .map((address, index) => {
+          const token = tokens[address];
+          const price = prices[index] || 0;
+          const balance = balances[address] || BigInt(0);
+          const totalValue = Number(formatUnits(balance, token.decimals)) * price;
           return {
-            ...tokenBalance,
-            priceUsd: priceData?.priceUsd,
+            price: prices[index] || 0,
+            tokenIcon: token.logo,
+            totalValue: totalValue,
+            token: token.symbol,
+            balance: Number(formatUnits(balance, token.decimals)),
           };
-        });
+        })
+        .sort((a, b) => b.totalValue - a.totalValue);
 
-        // Sort tokens by value * price (market value)
-        const sortedTokens = tokensWithPrices.sort((a, b) => {
-          const aValue = a.priceUsd ? Number(a.value) * Number(a.priceUsd) : Number(a.value);
-          const bValue = b.priceUsd ? Number(b.value) * Number(b.priceUsd) : Number(b.value);
-          return bValue - aValue;
-        });
-
-        setDaoHoldingTokens(sortedTokens);
-      } catch (error) {
-        console.error('Error fetching token data:', error);
-      }
-    };
-
-    fetchTokensWithPrices();
-  }, []);
-
+      setDaoHoldingTokens(tokenDetailsWithBalances);
+    } catch (e) {
+      console.error('Error fetching token balances:', e);
+    } finally {
+      setIsTokenBalanceLoading(false);
+    }
+  };
   const [activeTab, setActiveTab] = useState('trades');
+
+  useEffect(() => {
+    if (!account) return;
+    if (activeTab === 'assets' && !fetchedBalanceRef.current) {
+      fetchedBalanceRef.current = true;
+      fetchTokenBalances();
+    }
+  }, [activeTab]);
+
+  const { daoInfo, getDaaoInfo } = useDaaoInfo({ chainId, fundDetails });
+
+  useEffect(() => {
+    if (!account) return;
+    getDaaoInfo();
+  }, [account]);
 
   return (
     <PageLayout title="App" description="main-app" app={true}>
       <div className={`overflow-hidden gap-20 flex flex-col justify-center items-center pt-16 px-2`}>
         <div className="grid gap-2 md:gap-3 lg:grid-cols-[55%_45%] w-full">
           <div className="p-2 sm:p-4 flex items-center justify-center">
-            <FundDetails {...fundDetails} />
+            <FundDetails chainId={chainId} fundDetails={fundDetails} daoInfo={daoInfo} />
           </div>
           <div className="p-2 sm:p-4 flex items-center justify-center">
-            <BuySellCard chainId={chainId} fundAddress={fundAddress} />
+            <BuySellCard chainId={chainId} fundAddress={fundAddress} daaoInfo={daoInfo} />
           </div>
         </div>
 
@@ -296,13 +182,7 @@ const Dashboard: React.FC = () => {
 
                 {/* Right Section - 30% */}
                 <div className="md:col-span-3">
-                  <Orderbook
-                    name={props.longname}
-                    created="7/02/2025"
-                    owner="0xb51eC6F7D3E0D0FEae495eFe1f0751dE66b6be95"
-                    token={daoTokenAddress}
-                    ethRaised="1,000,000 MODE"
-                  />
+                  <Orderbook daaoInfo={daoInfo} fundDetails={fundDetails} />
                 </div>
               </div>
             </TabsContent>
@@ -313,8 +193,14 @@ const Dashboard: React.FC = () => {
                   <span className="font-semibold text-midGreen font-sora text-xl">Token Balances</span>
                 </div>
                 {/* <AssetTable columns={assetColumns} data={assetsData} /> */}
-                {daaoHoldingTokens ? (
-                  <AssetTable columns={assetColumns} data={formatDaoHoldingTokens(daaoHoldingTokens)} />
+                {isTokenBalanceLoading ? (
+                  <div className="flex items-center justify-center h-[400px] sm:h-[600px]">
+                    <p className="text-white text-lg">Loading token balances...</p>
+                  </div>
+                ) : daaoHoldingTokens && daaoHoldingTokens.length > 0 ? (
+                  <div className="overflow-x-auto w-full">
+                    <AssetTable columns={assetColumns} data={daaoHoldingTokens} />
+                  </div>
                 ) : (
                   <div className="flex items-center justify-center h-[400px] sm:h-[600px]">
                     <p className="text-white text-lg">No token balances available.</p>

@@ -1,18 +1,20 @@
 'use client';
+import AnimatedSkeleton from '@/components/animatedSkeleton';
 import { PageLayout } from '@/components/page-layout';
 import { chainsData, chainSlugToChainIdMap } from '@/constants/chains';
 import { fundsByChainId } from '@/data/funds';
-import { tokensByChainId } from '@/data/tokens';
 import useContribution from '@/hooks/farm/useContribution';
 import useTokenPrice from '@/hooks/useTokenPrice';
 import { Button } from '@/shadcn/components/ui/button';
 import { Input } from '@/shadcn/components/ui/input';
+import { Token } from '@/types/chains';
 import { UserContributionInfo } from '@/types/contribution';
 import { DaoInfo } from '@/types/daao';
-import { fetchTokenBalance } from '@/utils/token';
+import { fetchTokenBalance, getTokenDetails } from '@/utils/token';
 import Decimal from 'decimal.js';
 import Image from 'next/image';
 import { useParams } from 'next/navigation';
+import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { toast as reactToast } from 'react-toastify';
 import { formatUnits, Hex, parseUnits } from 'viem';
@@ -30,12 +32,18 @@ export default function Page() {
   const { address: accountAddress } = useAccount();
   const { fetchTokenPriceDexScreener } = useTokenPrice();
   const { chain, address } = useParams();
+  const router = useRouter();
 
   // states
   const [userBalance, setUserBalance] = useState<bigint>(BigInt(0));
+  const [contributionTokenDetails, setContributionTokenDetails] = useState<Token | null>(null);
   const [inputValue, setInputValue] = useState<string>('');
   const [tokenPrice, setTokenPrice] = useState<number>(0);
-  const [isLoading, setIsLoading] = useState<boolean>(false);
+
+  // Local loading state for contributing only
+  const [isContributing, setIsContributing] = useState<boolean>(false);
+
+  // DAO & user info
   const [daoInfoData, setDaoInfoData] = useState<DaoInfo | null>(null);
   const [userContributionInfo, setUserContributionInfo] = useState<UserContributionInfo | null>(null);
   const [tierLimits, setTierLimits] = useState<bigint>(BigInt(0));
@@ -45,37 +53,47 @@ export default function Page() {
   const chainId = chainSlugToChainIdMap[chain as string];
   const fundAddress = address as Hex;
   const fundDetails = fundsByChainId[chainId][fundAddress];
-  const contributionLimit = tierLimits;
-  const contributionTokenDetails = tokensByChainId[chainId][fundDetails.token];
-  const currentContributions = userContributionInfo?.contributions || BigInt(0);
-  const totalRaisedPercentage = daoInfoData?.totalRaised
-    ? new Decimal(daoInfoData?.totalRaised.toString())
-        .dividedBy(daoInfoData?.fundraisingGoal.toString())
-        .times(100)
-        .toNumber()
-    : 0;
 
-  const totalRaisedFormatted = formatUnits(daoInfoData?.totalRaised || BigInt(0), contributionTokenDetails.decimals);
-  const fundraisingGoalFormatted = formatUnits(
-    daoInfoData?.fundraisingGoal || BigInt(0),
-    contributionTokenDetails.decimals,
-  );
-
-  const { getDaoInfo, contribute, getTierLimits, getUserContributionInfo, contributeWithToken } = useContribution({
+  // Hooks from useContribution
+  const {
+    getDaoInfo,
+    loading: hookLoading,
+    contribute,
+    getTierLimits,
+    getUserContributionInfo,
+    contributeWithToken,
+  } = useContribution({
     chainId,
     fundDetails,
   });
 
+  const currentContributions = userContributionInfo?.contributions || BigInt(0);
+
+  const totalRaisedPercentage = daoInfoData
+    ? new Decimal(daoInfoData.totalRaised.toString())
+        .dividedBy(daoInfoData.fundraisingGoal.toString())
+        .times(100)
+        .toNumber()
+    : 0;
+
+  const totalRaisedFormatted = formatUnits(
+    daoInfoData?.totalRaised || BigInt(0),
+    contributionTokenDetails?.decimals || 18,
+  );
+  const fundraisingGoalFormatted = formatUnits(
+    daoInfoData?.fundraisingGoal || BigInt(0),
+    contributionTokenDetails?.decimals || 18,
+  );
+
   const contributionsFormatted = formatUnits(
     userContributionInfo?.contributions || BigInt(0),
-    contributionTokenDetails.decimals,
+    contributionTokenDetails?.decimals || 18,
   );
-  const tierLimitsFormatted = formatUnits(tierLimits, contributionTokenDetails.decimals);
+  const tierLimitsFormatted = formatUnits(tierLimits, contributionTokenDetails?.decimals || 18);
 
-  const remainingContribution = Number(tierLimits) - Number(userContributionInfo?.contributions || 0) || 0;
-
-  // functions
+  // Contribute function
   async function handleContribute() {
+    if (!contributionTokenDetails) return;
     if (!account) {
       reactToast.error('Please connect your wallet');
       return;
@@ -92,9 +110,8 @@ export default function Page() {
       contributionTokenDetails.decimals,
     );
 
-    if (amountInUnits + currentContributions > contributionLimit) {
-      // if (formattedAmount.plus(currentContributions).gt(contributionLimit)) {
-      reactToast.error(`Contribution exceeds your tier limit of ${contributionLimit}`);
+    if (amountInUnits + currentContributions > tierLimits) {
+      reactToast.error(`Contribution exceeds your tier limit of ${tierLimits}`);
       return;
     }
 
@@ -105,20 +122,25 @@ export default function Page() {
       return;
     }
 
-    setIsLoading(true);
+    setIsContributing(true);
     try {
-      daoInfoData?.isPaymentTokenNative ? await contribute(amountInUnits) : await contributeWithToken(amountInUnits);
+      if (daoInfoData?.isPaymentTokenNative) {
+        await contribute(amountInUnits);
+      } else {
+        await contributeWithToken(amountInUnits);
+      }
       setInputValue('');
     } catch (error) {
       console.error('Contribution error:', error);
     } finally {
-      setIsLoading(false);
+      setIsContributing(false);
       updateUserInfo();
       updateDaoInfo();
     }
   }
 
   const updateUserBalance = async () => {
+    if (!account || !contributionTokenDetails) return;
     const balance = await fetchTokenBalance({
       account,
       chainId,
@@ -127,10 +149,25 @@ export default function Page() {
     setUserBalance(balance);
   };
 
+  const updateContributionTokenDetetails = async () => {
+    try {
+      const tokenDetails = await getTokenDetails({
+        address: fundDetails.token,
+        chainId,
+      });
+      if (tokenDetails) {
+        setContributionTokenDetails(tokenDetails);
+      }
+    } catch (err) {
+      console.log({ err });
+    }
+  };
+
   const updateTokenPrice = async () => {
     try {
-      const tokenPrice = await fetchTokenPriceDexScreener(contributionTokenDetails.address);
-      setTokenPrice(Number(tokenPrice));
+      if (!contributionTokenDetails) return;
+      const price = await fetchTokenPriceDexScreener(contributionTokenDetails.address);
+      setTokenPrice(Number(price));
     } catch (err) {
       console.log({ err });
     }
@@ -138,8 +175,8 @@ export default function Page() {
 
   const updateUserTierLimit = async (tier: number) => {
     try {
-      const tierLimits = await getTierLimits(tier);
-      setTierLimits(tierLimits);
+      const tierLimitsValue = await getTierLimits(tier);
+      setTierLimits(tierLimitsValue);
     } catch (err) {
       console.log({ err });
     }
@@ -169,7 +206,6 @@ export default function Page() {
     }
   };
 
-  // useEffects
   useEffect(() => {
     if (account) {
       updateUserInfo();
@@ -178,70 +214,109 @@ export default function Page() {
 
   useEffect(() => {
     updateDaoInfo();
-    updateTokenPrice();
+    updateContributionTokenDetetails();
   }, [chainId]);
+
+  useEffect(() => {
+    updateTokenPrice();
+  }, [chainId, contributionTokenDetails]);
+
+  useEffect(() => {
+    if (daoInfoData?.fundraisingFinalized) {
+      router.replace(`/${chain}/${address}/swap`);
+    }
+  }, [daoInfoData]);
 
   return (
     <PageLayout title="contribution" description="contribution">
       <div className="flex items-center justify-center p-4 bg-[#101010] border-gray-800 border rounded-xl mt-12">
         <div className="w-full max-w-3xl text-white">
+          {/* ---------- TOP CARD / IMAGE / DAO INFO SECTION ---------- */}
           <div className="flex gap-6 mb-8">
             <div className="relative w-32 h-32 overflow-hidden rounded-lg">
               <Image src="/assets/daao-monad.svg" alt="Sorceror Artwork" fill className="object-cover" />
             </div>
             <div className="flex-1">
+              {/* Title is static */}
               <h1 className="text-2xl font-bold mb-2 text-left">Sorceror</h1>
               <p className="text-gray-400 text-base leading-relaxed text-left">
                 Sorcerer is an investment DAO on {chainsData[chainId].name}, that strategically fund AI agents and
                 AI-driven projects, empowering the next wave of decentralized intelligence and autonomous ecosystems.
               </p>
-
               <div className="mt-8 flex justify-between">
                 <div className="flex flex-col items-start mb-1 justify-start">
                   <p className="text-[#C4F82A] font-medium">Total Raised</p>
-                  <p className="text-sm font-bold">
-                    {totalRaisedFormatted} {daoInfoData?.paymentTokenDetails.symbol} ($
-                    {daoInfoData?.totalRaised ? Number(totalRaisedFormatted).toFixed(2) : 0})
-                  </p>
+                  {daoInfoData ? (
+                    <p className="text-sm font-bold">
+                      {totalRaisedFormatted} {daoInfoData.paymentTokenDetails.symbol} ($
+                      {Number(totalRaisedFormatted).toFixed(2)})
+                    </p>
+                  ) : (
+                    <AnimatedSkeleton className="w-32 h-4" />
+                  )}
                 </div>
               </div>
             </div>
           </div>
-
+          {/* ---------- FUNDING PROGRESS SECTION ---------- */}
           <div className="flex items-center justify-center">
             <div className="w-full max-w-xl">
               <div className="mb-4">
-                <div className="w-full h-6 bg-[#1A1A1A] rounded-md overflow-hidden">
-                  <div className="h-full bg-[#8B5CF6]" style={{ width: `${totalRaisedPercentage.toFixed(2)}%` }}></div>
+                {daoInfoData ? (
+                  <div className="w-full h-6 bg-[#1A1A1A] rounded-md overflow-hidden">
+                    <div className="h-full bg-[#8B5CF6]" style={{ width: `${totalRaisedPercentage.toFixed(2)}%` }} />
+                  </div>
+                ) : (
+                  <AnimatedSkeleton className="w-full h-6" />
+                )}
+                <div className="text-right mt-2 text-sm">
+                  {daoInfoData ? (
+                    totalRaisedPercentage.toFixed(2) + '%'
+                  ) : (
+                    <AnimatedSkeleton className="w-16 h-4 inline-block" />
+                  )}
                 </div>
-                <div className="text-right mt-2 text-sm">{totalRaisedPercentage.toFixed(2)}%</div>
               </div>
-
               <div className="flex flex-col gap-4 mb-8">
                 <div className="flex justify-between">
                   <span className="text-gray-400">Fundraising Deadline</span>
-                  <p>
-                    {new Date(Number(daoInfoData?.fundraisingDeadline)).toLocaleDateString('en-US', {
-                      year: 'numeric',
-                      month: 'long',
-                      day: 'numeric',
-                    })}
-                  </p>
+                  <span>
+                    {daoInfoData ? (
+                      new Date(Number(daoInfoData.fundraisingDeadline)).toLocaleDateString('en-US', {
+                        year: 'numeric',
+                        month: 'long',
+                        day: 'numeric',
+                      })
+                    ) : (
+                      <AnimatedSkeleton className="w-24 h-4 inline-block" />
+                    )}
+                  </span>
                 </div>
+
                 <div className="flex justify-between">
                   <span className="text-gray-400">Funding Goal</span>
                   <span>
-                    {daoInfoData?.paymentTokenDetails.symbol} {fundraisingGoalFormatted} ($
-                    {daoInfoData?.fundraisingGoal ? (Number(fundraisingGoalFormatted) * tokenPrice).toFixed(2) : 0})
+                    {daoInfoData ? (
+                      <>
+                        {daoInfoData.paymentTokenDetails.symbol} {fundraisingGoalFormatted} ($
+                        {(Number(fundraisingGoalFormatted) * tokenPrice).toFixed(2)})
+                      </>
+                    ) : (
+                      <AnimatedSkeleton className="w-32 h-4 inline-block" />
+                    )}
                   </span>
                 </div>
               </div>
-
+              {/* ---------- TIER / WHITELIST / CONTRIBUTION CARD ---------- */}
               {!account ? (
                 <div className="bg-yellow-800 text-yellow-200 p-4 rounded-lg mb-4">
                   Please connect your wallet to contribute
                 </div>
-              ) : !userContributionInfo?.whitelistInfo.isWhitelisted ? (
+              ) : !userContributionInfo ? (
+                <div className="bg-gray-800 text-gray-200 p-4 rounded-lg mb-4">
+                  <AnimatedSkeleton className="w-full h-4" />
+                </div>
+              ) : !userContributionInfo.whitelistInfo.isWhitelisted ? (
                 <div className="bg-red-900 text-red-200 p-4 rounded-lg mb-4">
                   Your address is not whitelisted for this contribution
                 </div>
@@ -249,10 +324,14 @@ export default function Page() {
                 <div className="bg-black rounded-lg p-4 mb-8 border border-gray-800">
                   <div className="flex items-center gap-2 mb-2">
                     <h3 className="text-sm font-bold">
-                      {TIER_TYPE[userContributionInfo.whitelistInfo.tier.toString() as keyof typeof TIER_TYPE]}
+                      {userContributionInfo ? (
+                        TIER_TYPE[userContributionInfo.whitelistInfo.tier.toString()]
+                      ) : (
+                        <AnimatedSkeleton className="w-24 h-4 inline-block" />
+                      )}
                     </h3>
                     <div className="w-6 h-6 rounded-full">
-                      {userContributionInfo.whitelistInfo.tier !== undefined ? (
+                      {userContributionInfo && userContributionInfo.whitelistInfo.tier !== undefined ? (
                         <img
                           src={
                             userContributionInfo.whitelistInfo.tier === 2
@@ -267,18 +346,26 @@ export default function Page() {
                           className="w-full h-full object-cover rounded-full"
                         />
                       ) : (
-                        <div className="bg-gray-20 w-full h-full rounded-full" />
+                        <AnimatedSkeleton className="w-6 h-6 rounded-full" />
                       )}
                     </div>
                   </div>
                   <div className="flex flex-col gap-2">
                     <div className="flex justify-between">
-                      <p className="text-gray-400 mb-1">Max </p>
-                      <p className="text-xl">{tierLimitsFormatted}</p>
+                      <p className="text-gray-400 mb-1">Max</p>
+                      {userContributionInfo ? (
+                        <p className="text-xl">{tierLimitsFormatted}</p>
+                      ) : (
+                        <AnimatedSkeleton className="w-16 h-6 inline-block" />
+                      )}
                     </div>
                     <div className="flex justify-between">
                       <p className="text-gray-400">Committed</p>
-                      <p className="text-xl">{contributionsFormatted || 0}</p>
+                      {userContributionInfo ? (
+                        <p className="text-xl">{contributionsFormatted || 0}</p>
+                      ) : (
+                        <AnimatedSkeleton className="w-16 h-6 inline-block" />
+                      )}
                     </div>
                   </div>
                 </div>
@@ -293,14 +380,14 @@ export default function Page() {
                     value={inputValue}
                     onChange={(e) => setInputValue(e.target.value)}
                     className="rounded-r-none text-black bg-white flex-1 h-10 text-lg"
-                    disabled={!account || !userContributionInfo?.whitelistInfo.isWhitelisted || isLoading}
+                    disabled={!account || !userContributionInfo?.whitelistInfo.isWhitelisted || isContributing}
                   />
                   <Button
                     onClick={handleContribute}
                     className="rounded-l-none bg-[#C4F82A] text-black hover:bg-[#D5FF3A] h-10 px-8 text-lg font-medium"
-                    disabled={!account || !userContributionInfo?.whitelistInfo.isWhitelisted || isLoading}
+                    disabled={!account || !userContributionInfo?.whitelistInfo.isWhitelisted || isContributing}
                   >
-                    {isLoading ? 'Processing...' : 'Contribute'}
+                    {isContributing ? 'Processing...' : 'Contribute'}
                   </Button>
                 </div>
               )}

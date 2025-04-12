@@ -12,6 +12,7 @@ export type DaoInfo = {
   daoTokenDetails: Token;
   paymentTokenDetails: Token;
   isPaymentTokenNative: boolean;
+  owner: Hex;
 };
 
 export type FundDetails = {
@@ -20,10 +21,13 @@ export type FundDetails = {
   title: string;
   token: Hex;
   status: 'live' | 'funding' | 'trading' | 'soon';
+  description: string;
   imgSrc: string;
   dexInfo: {
     type: SupportedDexType;
     fee: number;
     tickSpacing: number;
   };
+  isManageLiquidityEnabled?: boolean;
+  isLpFarmsEnabled?: boolean;
 };

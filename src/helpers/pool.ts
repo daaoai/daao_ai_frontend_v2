@@ -1,7 +1,7 @@
 import { supportedDexesTypes } from '@/constants/dex';
-import { VelodromeDex } from '@/dexes/velodrome';
+import { VelodromeCustomRouterDex } from '@/dexes/velodromeCustomRouter';
 import { PancakeDex } from '@/dexes/pancake';
-import { UniswapDex } from '@/dexes/uniswap';
+import { UniswapCustomRouterDex } from '@/dexes/UniswapCustomRouter';
 import { SupportedDexType } from '@/types/chains';
 import { Hex, zeroAddress } from 'viem';
 import { KodiakDex } from '@/dexes/kodiakDex';
@@ -33,12 +33,12 @@ export const getPoolAddress = async ({
       factoryAddress: Hex;
     }) => Promise<Hex>;
   } = {
-    [supportedDexesTypes.uniswap]: async (args) => {
-      const uniswapDex = new UniswapDex(args.chainId);
+    [supportedDexesTypes.uniswapCustomRouter]: async (args) => {
+      const uniswapDex = new UniswapCustomRouterDex(args.chainId);
       return await uniswapDex.getPoolAddress(args);
     },
-    [supportedDexesTypes.velodrome]: async (args) => {
-      const velodromeDex = new VelodromeDex(args.chainId);
+    [supportedDexesTypes.velodromeCustomRouter]: async (args) => {
+      const velodromeDex = new VelodromeCustomRouterDex(args.chainId);
       return await velodromeDex.getPoolAddress(args);
     },
     [supportedDexesTypes.pancake]: async (args) => {
@@ -78,12 +78,12 @@ export const getPoolDetails = async ({
   const handlers: {
     [key in SupportedDexType]?: (args: { address: Hex; chainId: number }) => Promise<{ token0: Hex; token1: Hex }>;
   } = {
-    [supportedDexesTypes.uniswap]: async (args) => {
-      const uniswapDex = new UniswapDex(args.chainId);
+    [supportedDexesTypes.uniswapCustomRouter]: async (args) => {
+      const uniswapDex = new UniswapCustomRouterDex(args.chainId);
       return await uniswapDex.getPoolDetails(args.address);
     },
-    [supportedDexesTypes.velodrome]: async (args) => {
-      const velodromeDex = new VelodromeDex(args.chainId);
+    [supportedDexesTypes.velodromeCustomRouter]: async (args) => {
+      const velodromeDex = new VelodromeCustomRouterDex(args.chainId);
       return await velodromeDex.getPoolDetails(args.address);
     },
     [supportedDexesTypes.pancake]: async (args) => {

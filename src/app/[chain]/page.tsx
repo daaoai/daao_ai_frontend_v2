@@ -1,15 +1,13 @@
 'use client';
-import { ConnectWalletButton } from '@/components/connect-button';
 import { FundSection } from '@/components/dashboard/fundsection';
 import FAQDaao from '@/components/faqDaao';
 import { PageLayout } from '@/components/page-layout';
 import PoolDetailCard from '@/components/poolDetailCard';
-import { chainSlugToChainIdMap } from '@/constants/chains';
 import { daoAddress } from '@/constants/addresses';
+import { chainSlugToChainIdMap } from '@/constants/chains';
 import { DAAO_CONTRACT_ABI } from '@/daao-sdk/abi/daao';
 import { fundsByChainId, tbaDaao } from '@/data/funds';
 import { fetchIsFundraisingFinalized } from '@/helpers/contribution';
-import { useToast } from '@/hooks/use-toast';
 import { FundDetails } from '@/types/daao';
 import { ethers } from 'ethers';
 import Image from 'next/image';
@@ -17,10 +15,11 @@ import Link from 'next/link';
 import { useParams, useRouter } from 'next/navigation';
 import { NextPage } from 'next/types';
 import { useEffect, useState } from 'react';
+import { toast as reactToast, toast } from 'react-toastify';
 import { useAccount } from 'wagmi';
 
 const FundsPage: NextPage = () => {
-  const [isOpen, setIsOpen] = useState(false);
+  const [isStatusLoading, setIsStatusLoading] = useState(false);
   const [price, setPrice] = useState<number | null>(0);
   const [marketCap, setMarketCap] = useState<number | null>(null);
   const [liquidity, setLiquidity] = useState<number | null>(null);
@@ -29,7 +28,6 @@ const FundsPage: NextPage = () => {
   const { isConnected } = useAccount();
   const router = useRouter();
   const { chain } = useParams();
-  const { toast } = useToast();
 
   const chainId = chainSlugToChainIdMap[chain as string];
   const activeFunds = Object.values(fundsByChainId[chainId]);
@@ -42,11 +40,10 @@ const FundsPage: NextPage = () => {
   ].slice(0, 3);
 
   const UPCOMING_FUNDS: FundDetails[] = [
-    ...activeFunds,
     ...Array(3)
       .fill(null)
       .map((_, index) => tbaDaao((index + 1).toString())),
-  ].slice(0, 3);
+  ];
 
   useEffect(() => {
     const modeRpc = 'https://mainnet.mode.network/';
@@ -89,6 +86,7 @@ const FundsPage: NextPage = () => {
   }, []);
 
   const updateFundraisingStatusForActiveFunds = async () => {
+    setIsStatusLoading(true);
     await Promise.allSettled(
       activeFunds.map(async (fund) => {
         const res = await fetchIsFundraisingFinalized({
@@ -101,17 +99,15 @@ const FundsPage: NextPage = () => {
         }));
       }),
     );
+    setIsStatusLoading(false);
   };
 
   const onFundClick = (fundAddress: string) => {
     if (!isConnected) {
-      // alert('Please connect your wallet first.');
-      toast({
-        title: 'Please connect your wallet first',
-        description: "It looks like your wallet isn't connected",
-        variant: 'destructive',
-        action: <ConnectWalletButton icons={false} className="bg-white text-black" />,
-      });
+      reactToast.error('Please connect your wallet to proceed.');
+    }
+    if (isStatusLoading) {
+      reactToast.error('Loading... Please wait while we fetch the latest data.');
       return;
     }
     // Navigate to the fund page if connected

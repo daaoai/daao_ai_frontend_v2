@@ -9,14 +9,14 @@ import { multicallForSameContract } from '@/utils/multicall';
 import { getPublicClient } from '@/utils/publicClient';
 import { encodeFunctionData, Hex, PublicClient } from 'viem';
 
-export class UniswapDex implements DexProtocol {
+export class UniswapCustomRouterDex implements DexProtocol {
   factoryAddress: Hex;
   swapRouterAddress: Hex;
   quoterAddress: Hex;
   publicClient: PublicClient;
   chainId: number;
 
-  constructor(chainId: number, type: SupportedDexType = supportedDexesTypes.uniswap) {
+  constructor(chainId: number, type: SupportedDexType = supportedDexesTypes.uniswapCustomRouter) {
     this.chainId = chainId;
     const dexDetails = getDexAddressesForChain(chainId, type);
     this.factoryAddress = dexDetails.factoryAddress;
@@ -89,7 +89,7 @@ export class UniswapDex implements DexProtocol {
       poolAddress,
       zeroToOne,
       amount,
-      zeroToOne ? BigInt(sqrtPrice) : BigInt(sqrtPrice),
+      sqrtPrice,
       minAmount,
       deadline,
     ] as const;

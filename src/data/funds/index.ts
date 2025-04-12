@@ -5,6 +5,7 @@ import { modeFunds } from './mode_funds';
 import { monadFunds } from './monad_funds';
 import { supportedChainIds } from '@/constants/chains';
 import { beraFunds } from './bera_funds';
+import { supportedDexesTypes } from '@/constants/dex';
 
 export const fundsByChainId: {
   [chainId: number]: Record<string, FundDetails>;
@@ -19,6 +20,7 @@ export const tbaDaao = (id: string): FundDetails => {
   return {
     id,
     title: 'To Be Announced',
+    description: '',
     token: zeroAddress,
     status: 'soon',
     address: zeroAddress,
@@ -26,7 +28,7 @@ export const tbaDaao = (id: string): FundDetails => {
     dexInfo: {
       fee: 0,
       tickSpacing: 0,
-      type: 'uniswap',
+      type: supportedDexesTypes.uniswapCustomRouter,
     },
   };
 };

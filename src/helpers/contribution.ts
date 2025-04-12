@@ -28,32 +28,32 @@ export const fetchDaoInfo = async ({
       'fundraisingDeadline',
       'daoToken',
       'PAYMENT_TOKEN',
-      'tierLimits',
+      'owner',
+      'isPaymentTokenNative',
     ];
 
-    let [fundraisingGoal, totalRaised, goalReached, fundraisingFinalized, fundraisingDeadline, daoToken, paymentToken] =
-      (await multicallForSameContract({
-        abi: DAAO_CONTRACT_ABI,
-        address: daoAddress,
-        chainId,
-        functionNames: daoFunctions,
-        params: daoFunctions.map(() => []),
-      })) as [bigint, bigint, boolean, boolean, bigint, Hex, Hex];
-
-    const publicClient = getPublicClient(chainId);
-
-    const contract = getContract({
-      address: daoAddress,
-      client: publicClient,
+    let [
+      fundraisingGoal,
+      totalRaised,
+      goalReached,
+      fundraisingFinalized,
+      fundraisingDeadline,
+      daoToken,
+      paymentToken,
+      owner,
+      isPaymentTokenNative,
+    ] = (await multicallForSameContract({
       abi: DAAO_CONTRACT_ABI,
-    });
+      address: daoAddress,
+      chainId,
+      functionNames: daoFunctions,
+      params: daoFunctions.map(() => []),
+    })) as [bigint, bigint, boolean, boolean, bigint, Hex, Hex, Hex, boolean];
 
     const isModeChain = chainId === supportedChainIds.mode;
 
     // special case for mode as contract does not have payment token function
     paymentToken = isModeChain ? modeTokenAddress : paymentToken;
-
-    const isPaymentTokenNative = isModeChain ? false : await contract.read.isPaymentTokenNative();
 
     const [daoTokenDetails, paymentTokenDetails] = await Promise.all([
       daoToken === zeroAddress
@@ -79,6 +79,7 @@ export const fetchDaoInfo = async ({
       isPaymentTokenNative,
       daoTokenDetails,
       paymentTokenDetails,
+      owner,
     };
   } catch (err) {
     console.log({ err });

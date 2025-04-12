@@ -26,7 +26,12 @@ const fetchErc20Info = async ({ address, chainId }: { address: Hex; chainId: num
 };
 
 export const getTokenDetails = async ({ address, chainId }: { address: Hex; chainId: number }): Promise<Token> => {
-  const tokenDetails = tokensByChainId[chainId]?.[address];
+  let tokenDetails: Token | undefined;
+  try {
+    tokenDetails = getLocalTokenDetails({ address, chainId });
+  } catch {
+    console.log('Token not found in local data for:', address);
+  }
   if (!tokenDetails) {
     return await fetchErc20Info({ address, chainId });
   }

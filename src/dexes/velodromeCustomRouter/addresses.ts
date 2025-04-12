@@ -1,7 +1,7 @@
 import { supportedChainIds } from '@/constants/chains';
 import { DexAddresses } from '@/types/dex';
 
-export const velodromeAddressesByChainId: Record<number, DexAddresses> = {
+export const velodromeCustomDexAddressesByChainId: Record<number, DexAddresses> = {
   [supportedChainIds.mode]: {
     factoryAddress: '0x04625B046C69577EfC40e6c0Bb83CDBAfab5a55F',
     swapRouterAddress: '0xC3a15f812901205Fc4406Cd0dC08Fe266bF45a1E',

@@ -1,8 +1,8 @@
 import { supportedDexesTypes } from '@/constants/dex';
 import { KodiakDex } from '@/dexes/kodiakDex';
 import { PancakeDex } from '@/dexes/pancake';
-import { UniswapDex } from '@/dexes/uniswap';
-import { VelodromeDex } from '@/dexes/velodrome';
+import { UniswapCustomRouterDex } from '@/dexes/UniswapCustomRouter';
+import { VelodromeCustomRouterDex } from '@/dexes/velodromeCustomRouter';
 import { SupportedDexType } from '@/types/chains';
 import { Hex, zeroAddress } from 'viem';
 
@@ -18,12 +18,12 @@ export const getQuotes = async (data: {
   chainId: number;
 }) => {
   const handlers = {
-    [supportedDexesTypes.uniswap]: async () => {
-      const uniswapDex = new UniswapDex(data.chainId);
+    [supportedDexesTypes.uniswapCustomRouter]: async () => {
+      const uniswapDex = new UniswapCustomRouterDex(data.chainId);
       return await uniswapDex.fetchQuotes(data);
     },
-    [supportedDexesTypes.velodrome]: async () => {
-      const velodromeDex = new VelodromeDex(data.chainId);
+    [supportedDexesTypes.velodromeCustomRouter]: async () => {
+      const velodromeDex = new VelodromeCustomRouterDex(data.chainId);
       return await velodromeDex.fetchQuotes(data);
     },
     [supportedDexesTypes.pancake]: async () => {
@@ -59,12 +59,12 @@ export const getSwapData = (data: {
   chainId: number;
 }) => {
   const handlers = {
-    [supportedDexesTypes.uniswap]: async () => {
-      const uniswapDex = new UniswapDex(data.chainId);
+    [supportedDexesTypes.uniswapCustomRouter]: async () => {
+      const uniswapDex = new UniswapCustomRouterDex(data.chainId);
       return uniswapDex.generateSwapData(data);
     },
-    [supportedDexesTypes.velodrome]: async () => {
-      const velodromeDex = new VelodromeDex(data.chainId);
+    [supportedDexesTypes.velodromeCustomRouter]: async () => {
+      const velodromeDex = new VelodromeCustomRouterDex(data.chainId);
       return velodromeDex.generateSwapData(data);
     },
     [supportedDexesTypes.pancake]: async () => {

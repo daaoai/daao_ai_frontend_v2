@@ -6,11 +6,11 @@ import { FundDetails } from '@/types/daao';
 import { handleViemTransactionError } from '@/utils/approval';
 import { getPublicClient } from '@/utils/publicClient';
 import { getLocalTokenDetails } from '@/utils/token';
-import { useState } from 'react';
 import { toast as reactToast } from 'react-toastify';
 import { toast } from 'sonner';
 import { Abi, erc20Abi, Hex } from 'viem';
 import { useAccount, useSwitchChain, useWriteContract } from 'wagmi';
+import { useState } from 'react';
 
 const useContribution = ({ chainId, fundDetails }: { chainId: number; fundDetails: FundDetails }) => {
   const { address: account, chainId: accountChainId } = useAccount();
@@ -22,6 +22,7 @@ const useContribution = ({ chainId, fundDetails }: { chainId: number; fundDetail
   });
   const { writeContractAsync } = useWriteContract();
   const [approvalTxHash, setApprovalTxHash] = useState<Hex | undefined>(undefined);
+  const [loading, setLoading] = useState<boolean>(false);
 
   const checkAllowance = async (requiredAmount: bigint): Promise<boolean> => {
     if (!account) return false;
@@ -87,6 +88,8 @@ const useContribution = ({ chainId, fundDetails }: { chainId: number; fundDetail
 
   const contribute = async (amount: bigint) => {
     try {
+      setLoading(true);
+
       if (!account) {
         reactToast.error('No wallet connected');
         return undefined;
@@ -128,6 +131,8 @@ const useContribution = ({ chainId, fundDetails }: { chainId: number; fundDetail
       console.error('Contribution error:', err);
       reactToast.error('Contribution failed');
       return undefined;
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -174,6 +179,8 @@ const useContribution = ({ chainId, fundDetails }: { chainId: number; fundDetail
       console.error('Token contribution error:', err);
       reactToast.error('Contribution failed');
       return undefined;
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -185,7 +192,7 @@ const useContribution = ({ chainId, fundDetails }: { chainId: number; fundDetail
     });
   };
 
-  return { getDaoInfo, contribute, getTierLimits, contributeWithToken, getUserContributionInfo };
+  return { loading, getDaoInfo, contribute, getTierLimits, contributeWithToken, getUserContributionInfo };
 };
 
 export default useContribution;
