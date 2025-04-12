@@ -6,11 +6,12 @@ import { FarmPool } from '@/types/farm';
 import { formatUnits } from 'viem';
 import { useAccount, usePublicClient } from 'wagmi';
 import useTokenPrice from '../useTokenPrice';
+import { supportedChainIds } from '@/constants/chains';
 
 const usePoolList = () => {
   const { address } = useAccount();
   const publicClient = usePublicClient();
-  const { fetchTokenPriceDexScreener, fetchTokenPriceCoingecko } = useTokenPrice();
+  const { fetchTokenPriceDexScreener, fetchTokenPriceGecko } = useTokenPrice();
   const getTotalPoolLength = async () => {
     try {
       const response = await publicClient?.readContract({
@@ -78,7 +79,10 @@ const usePoolList = () => {
       ];
 
       if (results) {
-        const rewardTokenPrice = await fetchTokenPriceCoingecko(results[2][0]); // GAMBL TOKEN
+        const rewardTokenPrice = await fetchTokenPriceGecko({
+          address: results[2][0],
+          chainId: supportedChainIds.mode,
+        });
         const depositTokenPrice = await fetchTokenPriceDexScreener(results[4]);
         const decimals = await publicClient?.multicall({
           contracts: [results[2][0], results[4]].map((address, index) => ({
