@@ -102,7 +102,6 @@ export const useSwap = ({ chainId, fundDetails }: { chainId: number; fundDetails
   const approveSellToken = async (amount: bigint) => {
     const publicClient = getPublicClient(chainId);
     const spender = dexDetails.swapRouterAddress;
-    const sellToken = activeTab === 'buy' ? daoInfo?.paymentTokenDetails : daoInfo?.daoTokenDetails;
     if (!sellToken) return;
     const allowance = await publicClient.readContract({
       address: sellToken.address as Hex,
