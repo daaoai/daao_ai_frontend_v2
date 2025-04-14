@@ -102,7 +102,7 @@ export const ConnectWalletButton: React.FC<ConnectWalletButtonProps> = ({ classN
                   <Button
                     onClick={() => {
                       if (isSwapPage || isContributionPage) {
-                        toast.error(`Unable to change network while on ${isSwapPage ? 'Swap' : 'Contribute'} page`);
+                        toast.info(`You are already on the ${chain.name} network`);
                       } else {
                         openChainModal();
                       }
