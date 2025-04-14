@@ -20,7 +20,7 @@ const FundCard: React.FC<FundCardProps> = (props) => {
   return (
     <div className="h-full w-full pb-6 bg-[#1a1a1a] flex-col justify-start items-start gap-6 inline-flex">
       <div className="bg-white justify-center items-center inline-flex overflow-hidden w-full">
-        <img className="w-full h-auto object-cover" src={props.imgSrc} alt={props.title} />
+        <img className="w-full h-[18rem] object-cover" src={props.imgSrc} alt={props.title} />
       </div>
       <div className="self-stretch h-auto px-4 flex-col justify-start items-start gap-4 flex">
         <div className="self-stretch justify-between items-center inline-flex">
