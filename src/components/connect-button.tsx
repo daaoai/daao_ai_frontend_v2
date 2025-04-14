@@ -1,12 +1,15 @@
 'use client';
 
-import { supportedChainIds } from '@/constants/chains';
+import { chainSlugToChainIdMap, supportedChainIds } from '@/constants/chains';
 import { Button } from '@/shadcn/components/ui/button';
 import { cn } from '@/shadcn/lib/utils';
 import { ConnectButton } from '@rainbow-me/rainbowkit';
 import { Wallet } from 'lucide-react';
 import Image from 'next/image'; // Import Image component for displaying chain icons
+import { usePathname } from 'next/navigation';
 import React from 'react';
+import { toast } from 'react-toastify';
+import { useSwitchChain } from 'wagmi';
 
 interface ConnectWalletButtonProps {
   className?: string;
@@ -14,6 +17,12 @@ interface ConnectWalletButtonProps {
 }
 
 export const ConnectWalletButton: React.FC<ConnectWalletButtonProps> = ({ className, icons = true }) => {
+  const url = usePathname();
+  const { switchChainAsync } = useSwitchChain();
+  const isSwapPage = url.includes('/swap');
+  const isContributionPage = url.includes('/contribute');
+  const chain = url.split('/')[1];
+  const chainId = chainSlugToChainIdMap[chain];
   return (
     <ConnectButton.Custom>
       {({ account, chain, openAccountModal, openChainModal, openConnectModal, authenticationStatus, mounted }) => {
@@ -52,6 +61,26 @@ export const ConnectWalletButton: React.FC<ConnectWalletButtonProps> = ({ classN
                 );
               }
 
+              if ((isSwapPage || isContributionPage) && chainId !== chain.id) {
+                return (
+                  <Button
+                    onClick={() => {
+                      switchChainAsync({
+                        chainId,
+                      });
+                    }}
+                    type="button"
+                    className={cn(
+                      'text-sm p-2 bg-red-500 text-white rounded-xl flex items-center gap-2 font-bold leading-normal',
+                      className,
+                    )}
+                  >
+                    <span className="sm:block hidden">Wrong network</span>
+                    <span className="sm:hidden block">Wrong</span>
+                  </Button>
+                );
+              }
+
               if (!isEthChain || chain.unsupported) {
                 return (
                   <Button
@@ -71,7 +100,13 @@ export const ConnectWalletButton: React.FC<ConnectWalletButtonProps> = ({ classN
               return (
                 <div className="flex gap-1 items-center">
                   <Button
-                    onClick={openChainModal}
+                    onClick={() => {
+                      if (isSwapPage || isContributionPage) {
+                        toast.error(`Unable to change network while on ${isSwapPage ? 'Swap' : 'Contribute'} page`);
+                      } else {
+                        openChainModal();
+                      }
+                    }}
                     type="button"
                     className={cn(
                       'text-sm p-2 bg-dark-white text-dark-black rounded-xl flex items-center gap-2 font-bold leading-normal min-w-0',
