@@ -85,14 +85,7 @@ export class UniswapCustomRouterDex implements DexProtocol {
     deadline: bigint;
     sqrtPrice: bigint;
   }) => {
-    const args = [
-      poolAddress,
-      zeroToOne,
-      amount,
-      sqrtPrice,
-      minAmount,
-      deadline,
-    ] as const;
+    const args = [poolAddress, zeroToOne, amount, sqrtPrice, minAmount, deadline] as const;
 
     const callData = encodeFunctionData({
       abi: ROUTER_ABI,

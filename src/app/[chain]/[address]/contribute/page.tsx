@@ -1,20 +1,21 @@
 'use client';
 import AnimatedSkeleton from '@/components/animatedSkeleton';
 import { PageLayout } from '@/components/page-layout';
-import { chainsData, chainSlugToChainIdMap } from '@/constants/chains';
+import { chainIdToChainSlugMap, chainSlugToChainIdMap, defaultChain } from '@/constants/chains';
 import { fundsByChainId } from '@/data/funds';
 import useContribution from '@/hooks/farm/useContribution';
+import useEffectAfterMount from '@/hooks/useEffectAfterMount';
 import useTokenPrice from '@/hooks/useTokenPrice';
 import { Button } from '@/shadcn/components/ui/button';
 import { Input } from '@/shadcn/components/ui/input';
 import { Token } from '@/types/chains';
 import { UserContributionInfo } from '@/types/contribution';
 import { DaoInfo } from '@/types/daao';
+import { isChainIdSupported } from '@/utils/chains';
 import { fetchTokenBalance, getTokenDetails } from '@/utils/token';
 import Decimal from 'decimal.js';
 import Image from 'next/image';
-import { useParams } from 'next/navigation';
-import { useRouter } from 'next/navigation';
+import { useParams, useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { toast as reactToast } from 'react-toastify';
 import { formatUnits, Hex, parseUnits } from 'viem';
@@ -29,7 +30,7 @@ const TIER_TYPE: { [key: string]: string } = {
 
 export default function Page() {
   // hooks
-  const { address: accountAddress } = useAccount();
+  const { address: accountAddress, chainId: accountChainId } = useAccount();
   const { fetchTokenPriceDexScreener } = useTokenPrice();
   const { chain, address } = useParams();
   const router = useRouter();
@@ -199,7 +200,6 @@ export default function Page() {
       if (userInfo) {
         setUserContributionInfo(userInfo);
         updateUserTierLimit(userInfo.whitelistInfo.tier);
-        updateUserBalance();
       }
     } catch (err) {
       console.log({ err });
@@ -209,23 +209,35 @@ export default function Page() {
   useEffect(() => {
     if (account) {
       updateUserInfo();
+      updateUserBalance();
     }
-  }, [account, chainId]);
+  }, [account]);
 
   useEffect(() => {
     updateDaoInfo();
     updateContributionTokenDetetails();
-  }, [chainId]);
+  }, []);
 
   useEffect(() => {
     updateTokenPrice();
-  }, [chainId, contributionTokenDetails]);
+    updateUserBalance();
+  }, [contributionTokenDetails]);
 
   useEffect(() => {
     if (daoInfoData?.fundraisingFinalized) {
       router.replace(`/${chain}/${address}/swap`);
     }
   }, [daoInfoData]);
+
+  useEffectAfterMount(() => {
+    if (!accountChainId) return;
+    if (isChainIdSupported(accountChainId)) {
+      const chainSlug = chainIdToChainSlugMap[accountChainId];
+      router.replace(`/${chainSlug}`);
+    } else {
+      router.replace(`/${defaultChain.slug}`);
+    }
+  }, [accountChainId]);
 
   return (
     <PageLayout title="contribution" description="contribution">
@@ -234,15 +246,12 @@ export default function Page() {
           {/* ---------- TOP CARD / IMAGE / DAO INFO SECTION ---------- */}
           <div className="flex gap-6 mb-8">
             <div className="relative w-32 h-32 overflow-hidden rounded-lg">
-              <Image src="/assets/daao-monad.svg" alt="Sorceror Artwork" fill className="object-cover" />
+              <Image src={fundDetails.imgSrc} alt={fundDetails.title} fill className="object-cover" />
             </div>
             <div className="flex-1">
               {/* Title is static */}
               <h1 className="text-2xl font-bold mb-2 text-left">Sorceror</h1>
-              <p className="text-gray-400 text-base leading-relaxed text-left">
-                Sorcerer is an investment DAO on {chainsData[chainId].name}, that strategically fund AI agents and
-                AI-driven projects, empowering the next wave of decentralized intelligence and autonomous ecosystems.
-              </p>
+              <p className="text-gray-400 text-base leading-relaxed text-left">{fundDetails.description}</p>
               <div className="mt-8 flex justify-between">
                 <div className="flex flex-col items-start mb-1 justify-start">
                   <p className="text-[#C4F82A] font-medium">Total Raised</p>

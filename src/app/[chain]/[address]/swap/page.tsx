@@ -5,16 +5,18 @@ import Orderbook from '@/components/dashboard/orderbook';
 import { PageLayout } from '@/components/page-layout';
 import { assetColumns } from '@/components/table/assets-columns';
 import { AssetTable } from '@/components/table/assets-table';
-import { chainSlugToChainIdMap } from '@/constants/chains';
+import { chainIdToChainSlugMap, chainSlugToChainIdMap, defaultChain } from '@/constants/chains';
 import { fundsByChainId } from '@/data/funds';
 import { tokensByChainId } from '@/data/tokens';
 import { getTokensBalance } from '@/helpers/token';
 import { useDaaoInfo } from '@/hooks/useDaaoInfo';
+import useEffectAfterMount from '@/hooks/useEffectAfterMount';
 import useTokenPrice from '@/hooks/useTokenPrice';
 import type { Asset } from '@/types/dashboard';
+import { isChainIdSupported } from '@/utils/chains';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@radix-ui/react-tabs';
 import { motion } from 'framer-motion';
-import { useParams } from 'next/navigation';
+import { useParams, useRouter } from 'next/navigation';
 import React, { useEffect, useRef, useState } from 'react';
 import { formatUnits, Hex } from 'viem';
 import { useAccount } from 'wagmi';
@@ -30,7 +32,8 @@ const Dashboard: React.FC = () => {
   const [daoTokenAddress, setDaoTokenAddress] = useState('');
   const [daaoHoldingTokens, setDaoHoldingTokens] = useState<Asset[] | null>(null);
   const { fetchTokenPriceGecko } = useTokenPrice();
-  const { address: account } = useAccount();
+  const { address: account, chainId: accountChainId } = useAccount();
+  const router = useRouter();
 
   const fetchTokenBalances = async () => {
     try {
@@ -89,6 +92,16 @@ const Dashboard: React.FC = () => {
     if (!account) return;
     getDaaoInfo();
   }, [account]);
+
+  useEffectAfterMount(() => {
+    if (!accountChainId) return;
+    if (isChainIdSupported(accountChainId)) {
+      const chainSlug = chainIdToChainSlugMap[accountChainId];
+      router.replace(`/${chainSlug}`);
+    } else {
+      router.replace(`/${defaultChain.slug}`);
+    }
+  }, [accountChainId]);
 
   return (
     <PageLayout title="App" description="main-app" app={true}>

@@ -5,9 +5,10 @@ import { PageLayout } from '@/components/page-layout';
 import PoolDetailCard from '@/components/poolDetailCard';
 import { daoAddress } from '@/constants/addresses';
 import { chainSlugToChainIdMap } from '@/constants/chains';
+import { getDexName, getDexURL } from '@/constants/dex';
 import { DAAO_CONTRACT_ABI } from '@/daao-sdk/abi/daao';
 import { fundsByChainId, tbaDaao } from '@/data/funds';
-import { fetchIsFundraisingFinalized } from '@/helpers/contribution';
+import { fetchDaaoBasicInfo } from '@/helpers/contribution';
 import { FundDetails } from '@/types/daao';
 import { ethers } from 'ethers';
 import Image from 'next/image';
@@ -15,7 +16,7 @@ import Link from 'next/link';
 import { useParams, useRouter } from 'next/navigation';
 import { NextPage } from 'next/types';
 import { useEffect, useState } from 'react';
-import { toast as reactToast, toast } from 'react-toastify';
+import { toast as reactToast } from 'react-toastify';
 import { useAccount } from 'wagmi';
 
 const FundsPage: NextPage = () => {
@@ -23,7 +24,14 @@ const FundsPage: NextPage = () => {
   const [price, setPrice] = useState<number | null>(0);
   const [marketCap, setMarketCap] = useState<number | null>(null);
   const [liquidity, setLiquidity] = useState<number | null>(null);
-  const [fundRaisingFinalizedStatus, setFundraisingFinalizedStatus] = useState<Record<string, boolean>>({});
+  const [daaosBasicInfo, setDaaosBasicInfo] = useState<Record<
+    string,
+    {
+      fundraisingFinalized: boolean;
+      daaoToken: string;
+      paymentToken: string;
+    }
+  > | null>(null);
   const [volume, setVolume] = useState<number | null>(null);
   const { isConnected } = useAccount();
   const router = useRouter();
@@ -44,6 +52,8 @@ const FundsPage: NextPage = () => {
       .fill(null)
       .map((_, index) => tbaDaao((index + 1).toString())),
   ];
+
+  const highlightedFund = activeFunds[0];
 
   useEffect(() => {
     const modeRpc = 'https://mainnet.mode.network/';
@@ -82,18 +92,18 @@ const FundsPage: NextPage = () => {
       }
     };
     fetchMarketData();
-    updateFundraisingStatusForActiveFunds();
+    updateDaaoDetails();
   }, []);
 
-  const updateFundraisingStatusForActiveFunds = async () => {
+  const updateDaaoDetails = async () => {
     setIsStatusLoading(true);
     await Promise.allSettled(
       activeFunds.map(async (fund) => {
-        const res = await fetchIsFundraisingFinalized({
+        const res = await fetchDaaoBasicInfo({
           chainId,
           daoAddress: fund.address,
         });
-        setFundraisingFinalizedStatus((prev) => ({
+        setDaaosBasicInfo((prev) => ({
           ...prev,
           [fund.address]: res,
         }));
@@ -111,7 +121,7 @@ const FundsPage: NextPage = () => {
       return;
     }
     // Navigate to the fund page if connected
-    const isFundraisingFinalized = fundRaisingFinalizedStatus[fundAddress] || false;
+    const isFundraisingFinalized = daaosBasicInfo?.[fundAddress]?.fundraisingFinalized || false;
 
     if (isFundraisingFinalized) {
       router.push(`/${chain}/${fundAddress}/swap`);
@@ -137,28 +147,32 @@ const FundsPage: NextPage = () => {
         {/* Foreground content */}
         <div className="relative z-10 flex flex-col md:flex-row justify-between gap-10 lg:gap-20 w-full pt-24 items-center">
           <Image
-            src={activeFunds[0].imgSrc}
-            alt={activeFunds[0].title}
+            src={highlightedFund.imgSrc}
+            alt={highlightedFund.title}
             width={400}
             height={400}
-            onClick={() => onFundClick(activeFunds[0].address)}
+            onClick={() => onFundClick(highlightedFund.address)}
             className="cursor-pointer w-[25rem] h-[25rem]"
           />
           <div className="flex flex-col sm:items-start gap-6">
-            <p className="text-5xl font-sora font-medium text-white">{activeFunds[0].title}</p>
-            <Link
-              href="https://velodrome.finance/swap?from=0xdfc7c877a950e49d2610114102175a06c2e3167a&to=0x98e0ad23382184338ddcec0e13685358ef845f30&chain0=34443&chain1=34443"
-              className="text-teal-60 font-normal"
-            >
-              Trade On Velodrome
-            </Link>
-            <p className="text-gray-10 font-normal font-rubik text-lg text-left">
-              DeFAI Venture DAO is a DeFAI Investment DAO dedicated to advancing the DeFAI movement by strategically
-              investing in AI Agents and AI-focused DAOs on Mode. As a collective force in decentralized AI finance,
-              $CARTEL empowers the AI-driven movement on Mode, fostering the growth of autonomous, AI-powered
-              ecosystems.
-            </p>
-            <PoolDetailCard marketCap={marketCap || 0} liquidity={liquidity || 0} volume={volume || 0} />
+            <p className="text-5xl font-sora font-medium text-white">{highlightedFund.title}</p>
+            {!isStatusLoading && daaosBasicInfo?.[highlightedFund.address]?.fundraisingFinalized && (
+              <Link
+                href={getDexURL({
+                  chainId,
+                  type: highlightedFund.dexInfo.type,
+                  daaoToken: daaosBasicInfo?.[highlightedFund.address]?.daaoToken,
+                  paymentToken: daaosBasicInfo?.[highlightedFund.address]?.paymentToken,
+                })}
+                className="text-teal-60 font-normal"
+              >
+                Trade On {getDexName(highlightedFund.dexInfo.type)}
+              </Link>
+            )}
+            <p className="text-gray-10 font-normal font-rubik text-lg text-left">{highlightedFund.description}</p>
+            {!isStatusLoading && daaosBasicInfo?.[highlightedFund.address]?.fundraisingFinalized && (
+              <PoolDetailCard marketCap={marketCap || 0} liquidity={liquidity || 0} volume={volume || 0} />
+            )}
           </div>
         </div>
       </div>

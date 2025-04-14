@@ -17,12 +17,6 @@ interface ConnectWalletButtonProps {
 }
 
 export const ConnectWalletButton: React.FC<ConnectWalletButtonProps> = ({ className, icons = true }) => {
-  const url = usePathname();
-  const { switchChainAsync } = useSwitchChain();
-  const isSwapPage = url.includes('/swap');
-  const isContributionPage = url.includes('/contribute');
-  const chain = url.split('/')[1];
-  const chainId = chainSlugToChainIdMap[chain];
   return (
     <ConnectButton.Custom>
       {({ account, chain, openAccountModal, openChainModal, openConnectModal, authenticationStatus, mounted }) => {
@@ -61,26 +55,6 @@ export const ConnectWalletButton: React.FC<ConnectWalletButtonProps> = ({ classN
                 );
               }
 
-              if ((isSwapPage || isContributionPage) && chainId !== chain.id) {
-                return (
-                  <Button
-                    onClick={() => {
-                      switchChainAsync({
-                        chainId,
-                      });
-                    }}
-                    type="button"
-                    className={cn(
-                      'text-sm p-2 bg-red-500 text-white rounded-xl flex items-center gap-2 font-bold leading-normal',
-                      className,
-                    )}
-                  >
-                    <span className="sm:block hidden">Wrong network</span>
-                    <span className="sm:hidden block">Wrong</span>
-                  </Button>
-                );
-              }
-
               if (!isEthChain || chain.unsupported) {
                 return (
                   <Button
@@ -100,13 +74,7 @@ export const ConnectWalletButton: React.FC<ConnectWalletButtonProps> = ({ classN
               return (
                 <div className="flex gap-1 items-center">
                   <Button
-                    onClick={() => {
-                      if (isSwapPage || isContributionPage) {
-                        toast.info(`You are already on the ${chain.name} network`);
-                      } else {
-                        openChainModal();
-                      }
-                    }}
+                    onClick={openChainModal}
                     type="button"
                     className={cn(
                       'text-sm p-2 bg-dark-white text-dark-black rounded-xl flex items-center gap-2 font-bold leading-normal min-w-0',

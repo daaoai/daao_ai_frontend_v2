@@ -144,24 +144,41 @@ export const fetchTierLimits = async ({
   }
 };
 
-export const fetchIsFundraisingFinalized = async ({
+export const fetchDaaoBasicInfo = async ({
   daoAddress,
   chainId,
 }: {
   daoAddress: Hex;
   chainId: number;
-}): Promise<boolean> => {
+}): Promise<{
+  fundraisingFinalized: boolean;
+  daaoToken: Hex;
+  paymentToken: Hex;
+}> => {
   try {
-    const publicClient = getPublicClient(chainId);
-    const fundraisingFinalized = await publicClient.readContract({
-      address: daoAddress,
+    const functions = ['fundraisingFinalized', 'daoToken', 'PAYMENT_TOKEN'];
+
+    const isModeChain = chainId === supportedChainIds.mode;
+
+    const [fundraisingFinalized, daaoToken, paymentToken] = (await multicallForSameContract({
       abi: DAAO_CONTRACT_ABI,
-      functionName: 'fundraisingFinalized',
-      args: [],
-    });
-    return fundraisingFinalized;
+      address: daoAddress,
+      chainId,
+      functionNames: functions,
+      params: functions.map(() => []),
+    })) as [boolean, Hex, Hex];
+
+    return {
+      fundraisingFinalized,
+      daaoToken,
+      paymentToken: isModeChain ? modeTokenAddress : paymentToken,
+    };
   } catch (err) {
     console.log({ err });
-    return false;
+    return {
+      fundraisingFinalized: false,
+      daaoToken: zeroAddress,
+      paymentToken: zeroAddress,
+    };
   }
 };

@@ -88,12 +88,6 @@ export const chainsData: {
       symbol: 'MODE',
       decimals: 18,
     },
-    // dexInfo: {
-    //   type: 'velodrome',
-    //   factoryAddress: '0x04625B046C69577EfC40e6c0Bb83CDBAfab5a55F',
-    //   swapRouterAddress: '0xC3a15f812901205Fc4406Cd0dC08Fe266bF45a1E',
-    //   quoterAddress: '0xB11f2310D1b3FF589af56b981c17BC57dee1D488',
-    // },
     geckoId: 'mode',
   },
 
@@ -130,3 +124,5 @@ export const chainIdToChainSlugMap: {
 export const chainSlugToChainIdMap: {
   [key: string]: number;
 } = Object.fromEntries(Object.entries(chainsData).map(([key, value]) => [value.slug, Number(key)]));
+
+export const defaultChain = chainsData[supportedChainIds.mode];

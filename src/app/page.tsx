@@ -8,7 +8,7 @@ import { chainsData } from '@/constants/chains';
 import { daoAddress } from '@/constants/addresses';
 import { FUND_CARD_PLACEHOLDER_IMAGE } from '@/constants/links';
 import { DAAO_CONTRACT_ABI } from '@/daao-sdk/abi/daao';
-import { fetchIsFundraisingFinalized } from '@/helpers/contribution';
+import { fetchDaaoBasicInfo } from '@/helpers/contribution';
 import { useToast } from '@/hooks/use-toast';
 import type { Fund } from '@/types/fund';
 import { ethers } from 'ethers';
