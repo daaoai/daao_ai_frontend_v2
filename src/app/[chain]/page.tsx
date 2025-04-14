@@ -142,7 +142,7 @@ const FundsPage: NextPage = () => {
             width={400}
             height={400}
             onClick={() => onFundClick(activeFunds[0].address)}
-            className="cursor-pointer"
+            className="cursor-pointer w-[25rem] h-[25rem]"
           />
           <div className="flex flex-col sm:items-start gap-6">
             <p className="text-5xl font-sora font-medium text-white">{activeFunds[0].title}</p>
@@ -163,7 +163,7 @@ const FundsPage: NextPage = () => {
         </div>
       </div>
 
-      <div className="mb-18 mt-32 w-full flex flex-col gap-5">
+      <div className="mb-18 mt-52 w-full flex flex-col gap-5">
         <p className="text-white font-regular text-3xl md:text-5xl">&lt;&lt;&lt;Featured Funds&gt;&gt;&gt;</p>
         <FundSection funds={FEATURED_FUNDS} onFundClick={(fundAddress) => onFundClick(fundAddress)} chainId={chainId} />
       </div>

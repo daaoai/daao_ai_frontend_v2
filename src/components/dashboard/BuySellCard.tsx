@@ -180,7 +180,7 @@ const BuySellCard = ({
                   setFormattedSrcAmount(val);
                   handleFormChange(val);
                 }}
-                className={`appearance-none w-full bg-transparent border-1 p-0 text-3xl w-100 [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none `}
+                className={`appearance-none outline-none w-full bg-transparent border-1 p-0 text-3xl w-100 [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none `}
               />
             </div>
             <div className="space-y-2 text-right">
@@ -203,7 +203,7 @@ const BuySellCard = ({
                   alt={sellToken?.symbol || 'PT'}
                   width={16}
                   height={16}
-                   className="mr-2 [&>path]:stroke-white [&>circle]:stroke-white"
+                  className="mr-2 [&>path]:stroke-white [&>circle]:stroke-white"
                 />
                 {fromLabel}
               </Button>
