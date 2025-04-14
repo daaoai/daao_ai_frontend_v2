@@ -70,6 +70,7 @@ export const chainsData: {
       decimals: 18,
     },
     geckoId: 'bsc',
+    dexScreenerId: 'bsc',
   },
   [supportedChainIds.mode]: {
     slug: 'mode',
@@ -89,6 +90,7 @@ export const chainsData: {
       decimals: 18,
     },
     geckoId: 'mode',
+    dexScreenerId: 'mode',
   },
 
   [supportedChainIds.bera]: {
@@ -114,6 +116,7 @@ export const chainsData: {
       name: 'Wrapped Bera',
     },
     geckoId: 'berachain',
+    dexScreenerId: 'berachain',
   },
 };
 

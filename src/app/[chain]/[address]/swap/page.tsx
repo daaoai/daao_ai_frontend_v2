@@ -5,20 +5,22 @@ import Orderbook from '@/components/dashboard/orderbook';
 import { PageLayout } from '@/components/page-layout';
 import { assetColumns } from '@/components/table/assets-columns';
 import { AssetTable } from '@/components/table/assets-table';
-import { chainIdToChainSlugMap, chainSlugToChainIdMap, defaultChain } from '@/constants/chains';
+import { chainIdToChainSlugMap, chainsData, chainSlugToChainIdMap, defaultChain } from '@/constants/chains';
 import { fundsByChainId } from '@/data/funds';
 import { tokensByChainId } from '@/data/tokens';
+import { fetchDaoMarketData } from '@/helpers/contribution';
 import { getTokensBalance } from '@/helpers/token';
 import { useDaaoInfo } from '@/hooks/useDaaoInfo';
 import useEffectAfterMount from '@/hooks/useEffectAfterMount';
 import useTokenPrice from '@/hooks/useTokenPrice';
+import { DaoMarketData } from '@/types/daao';
 import type { Asset } from '@/types/dashboard';
 import { isChainIdSupported } from '@/utils/chains';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@radix-ui/react-tabs';
 import { motion } from 'framer-motion';
 import { useParams, useRouter } from 'next/navigation';
 import React, { useEffect, useRef, useState } from 'react';
-import { formatUnits, Hex } from 'viem';
+import { formatUnits, Hex, zeroAddress } from 'viem';
 import { useAccount } from 'wagmi';
 
 const Dashboard: React.FC = () => {
@@ -29,8 +31,13 @@ const Dashboard: React.FC = () => {
 
   const fetchedBalanceRef = useRef(false);
   const [isTokenBalanceLoading, setIsTokenBalanceLoading] = useState(false);
-  const [daoTokenAddress, setDaoTokenAddress] = useState('');
   const [daaoHoldingTokens, setDaoHoldingTokens] = useState<Asset[] | null>(null);
+  const [marketData, setMarketData] = useState<DaoMarketData>({
+    liquidity: 0,
+    marketCap: 0,
+    price: 0,
+    volume: 0,
+  });
   const { fetchTokenPriceGecko } = useTokenPrice();
   const { address: account, chainId: accountChainId } = useAccount();
   const router = useRouter();
@@ -76,6 +83,14 @@ const Dashboard: React.FC = () => {
       setIsTokenBalanceLoading(false);
     }
   };
+
+  const updateMarketData = async () => {
+    if (!daoInfo?.daoToken || daoInfo.daoToken === zeroAddress) return;
+    const data = await fetchDaoMarketData({ chainId, daaoToken: daoInfo.daoToken });
+    if (data) {
+      setMarketData(data);
+    }
+  };
   const [activeTab, setActiveTab] = useState('trades');
 
   useEffect(() => {
@@ -102,6 +117,10 @@ const Dashboard: React.FC = () => {
       router.replace(`/${defaultChain.slug}`);
     }
   }, [accountChainId]);
+
+  useEffect(() => {
+    updateMarketData();
+  }, [daoInfo]);
 
   return (
     <PageLayout title="App" description="main-app" app={true}>
@@ -181,14 +200,14 @@ const Dashboard: React.FC = () => {
               <div className="w-full grid grid-cols-1 md:grid-cols-10 gap-4">
                 {/* Left Section - 70% */}
                 <div className="md:col-span-7">
-                  {!daoTokenAddress ? (
+                  {!daoInfo?.daoToken || !chainsData[chainId]?.dexScreenerId ? (
                     <div className="flex items-center justify-center h-[400px] sm:h-[600px]">
                       <p className="text-white text-lg">Loading...</p>
                     </div>
                   ) : (
                     <iframe
                       className="h-[400px] w-full border-0 sm:h-[600px]"
-                      src={`https://dexscreener.com/mode/${daoTokenAddress}?embed=1&loadChartSettings=0&trades=0&tabs=0&info=0&chartLeftToolbar=0&chartTheme=dark&theme=dark&chartStyle=0&chartType=usd&interval=15`}
+                      src={`https://dexscreener.com/${chainsData[chainId].dexScreenerId}/${daoInfo.daoToken}?embed=1&loadChartSettings=0&trades=0&tabs=0&info=0&chartLeftToolbar=0&chartTheme=dark&theme=dark&chartStyle=0&chartType=usd&interval=15`}
                     ></iframe>
                   )}
                 </div>

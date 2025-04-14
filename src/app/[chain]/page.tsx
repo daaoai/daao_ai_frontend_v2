@@ -3,36 +3,29 @@ import { FundSection } from '@/components/dashboard/fundsection';
 import FAQDaao from '@/components/faqDaao';
 import { PageLayout } from '@/components/page-layout';
 import PoolDetailCard from '@/components/poolDetailCard';
-import { daoAddress } from '@/constants/addresses';
 import { chainSlugToChainIdMap } from '@/constants/chains';
 import { getDexName, getDexURL } from '@/constants/dex';
-import { DAAO_CONTRACT_ABI } from '@/daao-sdk/abi/daao';
 import { fundsByChainId, tbaDaao } from '@/data/funds';
-import { fetchDaaoBasicInfo } from '@/helpers/contribution';
-import { FundDetails } from '@/types/daao';
-import { ethers } from 'ethers';
+import { fetchDaaoBasicInfo, fetchDaoMarketData } from '@/helpers/contribution';
+import { BasicDaoInfo, DaoMarketData, FundDetails } from '@/types/daao';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useParams, useRouter } from 'next/navigation';
 import { NextPage } from 'next/types';
 import { useEffect, useState } from 'react';
 import { toast as reactToast } from 'react-toastify';
+import { Hex } from 'viem';
 import { useAccount } from 'wagmi';
 
 const FundsPage: NextPage = () => {
   const [isStatusLoading, setIsStatusLoading] = useState(false);
-  const [price, setPrice] = useState<number | null>(0);
-  const [marketCap, setMarketCap] = useState<number | null>(null);
-  const [liquidity, setLiquidity] = useState<number | null>(null);
-  const [daaosBasicInfo, setDaaosBasicInfo] = useState<Record<
-    string,
-    {
-      fundraisingFinalized: boolean;
-      daaoToken: string;
-      paymentToken: string;
-    }
-  > | null>(null);
-  const [volume, setVolume] = useState<number | null>(null);
+  const [highlightedFundMarketData, setHighlightedFundMarketData] = useState<DaoMarketData>({
+    price: 0,
+    marketCap: 0,
+    liquidity: 0,
+    volume: 0,
+  });
+  const [daaosBasicInfo, setDaaosBasicInfo] = useState<Record<string, BasicDaoInfo> | null>(null);
   const { isConnected } = useAccount();
   const router = useRouter();
   const { chain } = useParams();
@@ -56,44 +49,14 @@ const FundsPage: NextPage = () => {
   const highlightedFund = activeFunds[0];
 
   useEffect(() => {
-    const modeRpc = 'https://mainnet.mode.network/';
-    const fetchMarketData = async () => {
-      const provider = new ethers.providers.JsonRpcProvider(modeRpc);
-
-      // const signer = provider.getSigner();
-
-      const contract = new ethers.Contract(daoAddress as string, DAAO_CONTRACT_ABI, provider);
-      const daoToken = await contract.daoToken();
-      // setDaoTokenAddress(daoToken)
-      // if (!daoTokenAddress) return
-
-      // const url = `https://api.dexscreener.com/token-pairs/v1/mode/${daoTokenAddress}`
-      const url = `https://api.dexscreener.com/token-pairs/v1/mode/${daoToken}`;
-      console.log('url is ', url);
-      try {
-        // Replace with your actual endpoint or logic
-        const response = await fetch(url);
-        const data = await response.json();
-        console.log('Data from api is  is ', data);
-
-        if (data && Array.isArray(data) && data[0]) {
-          setPrice(data[0].priceUsd);
-          const marketCap = Number(data[0].marketCap).toFixed(0);
-          const liq = Number(data[0].liquidity?.usd).toFixed(0);
-          const volume = Number(data[0].volume?.h24).toFixed(0);
-          setMarketCap(Number(marketCap));
-          setLiquidity(Number(liq));
-          setVolume(Number(volume));
-        } else {
-          console.warn('Market data not in expected format.');
-        }
-      } catch (error) {
-        console.error('Error fetching market data:', error);
-      }
-    };
-    fetchMarketData();
     updateDaaoDetails();
   }, []);
+
+  useEffect(() => {
+    // Fetch market data for the highlighted fund
+    if (isStatusLoading) return;
+    fetchHighlightedFundMarketData();
+  }, [daaosBasicInfo, isStatusLoading]);
 
   const updateDaaoDetails = async () => {
     setIsStatusLoading(true);
@@ -110,6 +73,19 @@ const FundsPage: NextPage = () => {
       }),
     );
     setIsStatusLoading(false);
+  };
+
+  const fetchHighlightedFundMarketData = async () => {
+    const highlightedFundDetails = daaosBasicInfo?.[highlightedFund.address];
+    if (!highlightedFundDetails || !highlightedFundDetails.fundraisingFinalized) return;
+    const { daaoToken } = highlightedFundDetails;
+    const res = await fetchDaoMarketData({
+      chainId,
+      daaoToken: daaoToken as Hex,
+    });
+    if (res) {
+      setHighlightedFundMarketData(res);
+    }
   };
 
   const onFundClick = (fundAddress: string) => {
@@ -171,7 +147,11 @@ const FundsPage: NextPage = () => {
             )}
             <p className="text-gray-10 font-normal font-rubik text-lg text-left">{highlightedFund.description}</p>
             {!isStatusLoading && daaosBasicInfo?.[highlightedFund.address]?.fundraisingFinalized && (
-              <PoolDetailCard marketCap={marketCap || 0} liquidity={liquidity || 0} volume={volume || 0} />
+              <PoolDetailCard
+                marketCap={highlightedFundMarketData.marketCap}
+                liquidity={highlightedFundMarketData.liquidity || 0}
+                volume={highlightedFundMarketData.volume || 0}
+              />
             )}
           </div>
         </div>

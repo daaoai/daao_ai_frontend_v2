@@ -1,6 +1,6 @@
 import { telegramDeFAILink, twitterDeFAILink } from '@/constants/links';
 import { Card } from '@/shadcn/components/ui/card';
-import { DaoInfo, FundDetails as FundDetailsType } from '@/types/daao';
+import { DaoInfo, DaoMarketData, FundDetails as FundDetailsType } from '@/types/daao';
 import { shortenAddress } from '@/utils/address';
 import { getLocalTokenDetails } from '@/utils/token';
 import Image from 'next/image';
@@ -11,6 +11,8 @@ import LPFarms from '../lpFarms';
 import { ModalWrapper } from '../modalWrapper';
 import PoolDetailCard from '../poolDetailCard';
 import { useFundContext } from './FundContext';
+import { fetchDaoMarketData } from '@/helpers/contribution';
+import { zeroAddress } from 'viem';
 
 const FundDetails = ({
   fundDetails,
@@ -25,14 +27,11 @@ const FundDetails = ({
     percent: number;
     token: number;
   }
-  const [marketCap, setMarketCap] = useState<number | null>(null);
-  const [liquidity, setLiquidity] = useState<number | null>(null);
-  const [volume, setVolume] = useState<number | null>(null);
-  const [price, setPrice] = useState<number | null>(null);
-  const { setPriceUsd } = useFundContext();
-  const [tokenChange, setTokenChange] = useState<TokenChangeState>({
-    percent: 0,
-    token: 0,
+  const [marketData, setMarketData] = useState<DaoMarketData>({
+    liquidity: 0,
+    marketCap: 0,
+    price: 0,
+    volume: 0,
   });
   const [isLiquidityModalOpen, setIsLiquidityModalOpen] = useState(false);
   const openLiquidityModalOpen = useCallback(() => setIsLiquidityModalOpen(true), []);
@@ -43,99 +42,26 @@ const FundDetails = ({
 
   const tokenDetails = getLocalTokenDetails({ address: fundDetails.token, chainId });
 
-  // useEffect(() => {
-  //   const fetchContractData = async () => {
-  //     try {
-  //       const data = await getContractData()
-  //       if (data?.daoToken) {
-  //         setDaoTokenAddress(data.daoToken)
-  //       }
-  //     } catch (error) {
-  //       console.error('Error fetching contract data:', error)
-  //     }
-  //   }
-  //   fetchContractData()
-  // }, [isConnected])
+  const updateMarketData = async () => {
+    if (!daoInfo?.daoToken || daoInfo.daoToken === zeroAddress) return;
+    const data = await fetchDaoMarketData({ chainId, daaoToken: daoInfo.daoToken });
+    if (data) {
+      setMarketData(data);
+    }
+  };
 
-  // useEffect(() => {
-  //   const fetchDaoBalance = async () => {
-  //     if (!daoTokenAddress) return
-  //     if (typeof window === 'undefined' || !(window as any).ethereum) return
-
-  //     try {
-  //       await (window as any).ethereum.request({ method: 'eth_requestAccounts' })
-  //       const provider = new ethers.providers.Web3Provider((window as any).ethereum)
-  //       const signer = provider.getSigner()
-  //       const userAddress = await signer.getAddress()
-
-  //       const daoContract = new ethers.Contract(daoTokenAddress, daoABI, provider)
-  //       const balanceBN = await daoContract.balanceOf(userAddress)
-  //       const balanceFormatted = ethers.utils.formatUnits(balanceBN, 18)
-  //       console.log("Balance is pikcachuuuuuu ", daoBalance)
-  //       setDaoHoldings(daoBalance)
-  //     } catch (error) {
-  //       console.error('Error fetching DAO balance:', error)
-  //     }
-  //   }
-  //   fetchDaoBalance()
-  // }, [daoTokenAddress])
+  useEffect(() => {
+    updateMarketData();
+  }, [daoInfo]);
 
   const calculateTokenChange = (marketCap: number, percentageChange: number): number => {
     return (marketCap * percentageChange) / 100;
   };
 
-  useEffect(() => {
-    // const modeRpc = 'https://mainnet.mode.network/';
-    // const fetchMarketData = async () => {
-    //   const provider = new ethers.providers.JsonRpcProvider(modeRpc);
-    //   // const signer = provider.getSigner();
-    //   // if (!daoTokenAddress) return
-    //   // const url = `https://api.dexscreener.com/token-pairs/v1/mode/${daoTokenAddress}`
-    //   const url = `https://api.dexscreener.com/token-pairs/v1/mode/${daoToken}`;
-    //   console.log('url is ', url);
-    //   try {
-    //     // Replace with your actual endpoint or logic
-    //     const response = await fetch(url);
-    //     const data = await response.json();
-    //     console.log('Data from api is  is ', data);
-    //     if (data && Array.isArray(data) && data[0]) {
-    //       setPrice(data[0].priceUsd);
-    //       setPriceUsd(data[0].priceUsd);
-    //       // setPriceUsd(23)
-    //       // const marketCap = (Number(data[0].priceUsd) * 10 ** 9).toFixed(0)
-    //       const marketCap = Number(data[0].marketCap).toFixed(0);
-    //       const liq = Number(data[0].liquidity?.usd).toFixed(0);
-    //       const volume = Number(data[0].volume?.h24).toFixed(0);
-    //       setMarketCap(Number(marketCap));
-    //       setLiquidity(Number(liq));
-    //       setVolume(Number(volume));
-    //       const percentageChange = Number(data?.[0]?.priceChange?.h24);
-    //       const tokenChangeValue = calculateTokenChange(Number(marketCap), percentageChange);
-    //       setTokenChange({
-    //         percent: percentageChange,
-    //         token: tokenChangeValue,
-    //       });
-    //     } else {
-    //       console.warn('Market data not in expected format.');
-    //     }
-    //   } catch (error) {
-    //     console.error('Error fetching market data:', error);
-    //   }
-    // };
-    // fetchMarketData();
-    // }, [daoTokenAddress, setPriceUsd])
-  }, [setPriceUsd]);
-
   return (
     <Card className="text-white sm:p-2  w-full border-none">
       <div className="w-full">
-        <Image
-          src={fundDetails.imgSrc}
-          alt={fundDetails.title}
-          width={600}
-          height={300}
-          style={{ width: '100%' }}
-        />
+        <Image src={fundDetails.imgSrc} alt={fundDetails.title} width={600} height={300} style={{ width: '100%' }} />
       </div>
 
       {/* <div className="flex items-center gap-4 sm:gap-6">
@@ -240,7 +166,11 @@ const FundDetails = ({
         <p className=" sm:text-xs lg:text-sm text-left text-[#AEB3B6]">{fundDetails.description}</p>
       </div>
       <div className="w-full">
-        <PoolDetailCard marketCap={marketCap || 0} liquidity={liquidity || 0} volume={volume || 0} />
+        <PoolDetailCard
+          marketCap={marketData.marketCap || 0}
+          liquidity={marketData.liquidity || 0}
+          volume={marketData.volume || 0}
+        />
       </div>
 
       {/* 

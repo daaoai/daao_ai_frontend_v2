@@ -31,3 +31,16 @@ export type FundDetails = {
   isManageLiquidityEnabled?: boolean;
   isLpFarmsEnabled?: boolean;
 };
+
+export type BasicDaoInfo = {
+  fundraisingFinalized: boolean;
+  daaoToken: Hex;
+  paymentToken: Hex;
+};
+
+export type DaoMarketData = {
+  price: number;
+  marketCap: number;
+  liquidity: number;
+  volume: number;
+};

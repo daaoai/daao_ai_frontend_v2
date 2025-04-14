@@ -2,7 +2,7 @@ import { chainsData } from '@/constants/chains';
 import { supportedChainIds } from '@/constants/chains';
 import { DAAO_CONTRACT_ABI } from '@/daao-sdk/abi/daao';
 import { UserContributionInfo } from '@/types/contribution';
-import { DaoInfo } from '@/types/daao';
+import { BasicDaoInfo, DaoInfo, DaoMarketData } from '@/types/daao';
 import { multicallForSameContract } from '@/utils/multicall';
 import { getPublicClient } from '@/utils/publicClient';
 import { getTokenDetails } from '@/utils/token';
@@ -150,11 +150,7 @@ export const fetchDaaoBasicInfo = async ({
 }: {
   daoAddress: Hex;
   chainId: number;
-}): Promise<{
-  fundraisingFinalized: boolean;
-  daaoToken: Hex;
-  paymentToken: Hex;
-}> => {
+}): Promise<BasicDaoInfo> => {
   try {
     const functions = ['fundraisingFinalized', 'daoToken', 'PAYMENT_TOKEN'];
 
@@ -180,5 +176,36 @@ export const fetchDaaoBasicInfo = async ({
       daaoToken: zeroAddress,
       paymentToken: zeroAddress,
     };
+  }
+};
+
+export const fetchDaoMarketData = async ({
+  chainId,
+  daaoToken,
+}: {
+  chainId: number;
+  daaoToken: Hex;
+}): Promise<DaoMarketData | null> => {
+  if (!chainsData[chainId]?.dexScreenerId) return null;
+  const url = `https://api.dexscreener.com/token-pairs/v1/${chainsData[chainId].dexScreenerId}/${daaoToken}`;
+  try {
+    const response = await fetch(url);
+    const dexScreenerData = await response.json();
+    if (dexScreenerData && Array.isArray(dexScreenerData) && dexScreenerData[0]) {
+      const price = dexScreenerData[0].priceUsd;
+      const marketCap = Number(dexScreenerData[0].marketCap).toFixed(0);
+      const liq = Number(dexScreenerData[0].liquidity?.usd).toFixed(2);
+      const volume = Number(dexScreenerData[0].volume?.h24).toFixed(2);
+      return {
+        price: Number(price),
+        marketCap: Number(marketCap),
+        liquidity: Number(liq),
+        volume: Number(volume),
+      };
+    }
+    return null;
+  } catch (error) {
+    console.error('Error fetching market data:', error);
+    return null;
   }
 };
