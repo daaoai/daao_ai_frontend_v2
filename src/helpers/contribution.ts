@@ -186,6 +186,14 @@ export const fetchDaoMarketData = async ({
   chainId: number;
   daaoToken: Hex;
 }): Promise<DaoMarketData | null> => {
+  if (chainsData[chainId]?.networkType === 'testnet') {
+    return {
+      price: Math.random() * 100,
+      marketCap: Math.random() * 1000000,
+      liquidity: Math.random() * 100000,
+      volume: Math.random() * 10000,
+    };
+  }
   if (!chainsData[chainId]?.dexScreenerId) return null;
   const url = `https://api.dexscreener.com/token-pairs/v1/${chainsData[chainId].dexScreenerId}/${daaoToken}`;
   try {

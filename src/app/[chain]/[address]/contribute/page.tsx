@@ -5,7 +5,7 @@ import { chainIdToChainSlugMap, chainSlugToChainIdMap, defaultChain } from '@/co
 import { fundsByChainId } from '@/data/funds';
 import useContribution from '@/hooks/farm/useContribution';
 import useEffectAfterMount from '@/hooks/useEffectAfterMount';
-import useTokenPrice from '@/hooks/useTokenPrice';
+import useTokenPrice from '@/hooks/token/useTokenPrice';
 import { Button } from '@/shadcn/components/ui/button';
 import { Input } from '@/shadcn/components/ui/input';
 import { Token } from '@/types/chains';
@@ -231,6 +231,7 @@ export default function Page() {
 
   useEffectAfterMount(() => {
     if (!accountChainId) return;
+    if (accountChainId === chainId) return;
     if (isChainIdSupported(accountChainId)) {
       const chainSlug = chainIdToChainSlugMap[accountChainId];
       router.replace(`/${chainSlug}`);

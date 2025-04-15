@@ -7,20 +7,15 @@ import { assetColumns } from '@/components/table/assets-columns';
 import { AssetTable } from '@/components/table/assets-table';
 import { chainIdToChainSlugMap, chainsData, chainSlugToChainIdMap, defaultChain } from '@/constants/chains';
 import { fundsByChainId } from '@/data/funds';
-import { tokensByChainId } from '@/data/tokens';
-import { fetchDaoMarketData } from '@/helpers/contribution';
-import { getTokensBalance } from '@/helpers/token';
+import { useTokenBalance } from '@/hooks/token/useTokenBalance';
 import { useDaaoInfo } from '@/hooks/useDaaoInfo';
 import useEffectAfterMount from '@/hooks/useEffectAfterMount';
-import useTokenPrice from '@/hooks/useTokenPrice';
-import { DaoMarketData } from '@/types/daao';
-import type { Asset } from '@/types/dashboard';
 import { isChainIdSupported } from '@/utils/chains';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@radix-ui/react-tabs';
 import { motion } from 'framer-motion';
 import { useParams, useRouter } from 'next/navigation';
 import React, { useEffect, useRef, useState } from 'react';
-import { formatUnits, Hex, zeroAddress } from 'viem';
+import { Hex } from 'viem';
 import { useAccount } from 'wagmi';
 
 const Dashboard: React.FC = () => {
@@ -30,67 +25,11 @@ const Dashboard: React.FC = () => {
   const fundDetails = fundsByChainId[chainId][fundAddress];
 
   const fetchedBalanceRef = useRef(false);
-  const [isTokenBalanceLoading, setIsTokenBalanceLoading] = useState(false);
-  const [daaoHoldingTokens, setDaoHoldingTokens] = useState<Asset[] | null>(null);
-  const [marketData, setMarketData] = useState<DaoMarketData>({
-    liquidity: 0,
-    marketCap: 0,
-    price: 0,
-    volume: 0,
-  });
-  const { fetchTokenPriceGecko } = useTokenPrice();
+
+  const { fetchTokenBalances, isTokensBalanceLoading, tokensWithBalance } = useTokenBalance({ chainId });
   const { address: account, chainId: accountChainId } = useAccount();
   const router = useRouter();
 
-  const fetchTokenBalances = async () => {
-    try {
-      setIsTokenBalanceLoading(true);
-      const tokens = tokensByChainId[chainId];
-      const tokenAddress = Object.keys(tokens);
-      const [balancesRes, pricesRes] = await Promise.allSettled([
-        account ? getTokensBalance(tokenAddress as Hex[], chainId, account) : Promise.resolve({}),
-        account
-          ? Promise.allSettled(tokenAddress.map((address) => fetchTokenPriceGecko({ address, chainId })))
-          : Promise.resolve([]),
-      ]);
-
-      const balances = (balancesRes.status === 'fulfilled' ? balancesRes.value : {}) as Record<string, bigint>;
-      const prices =
-        pricesRes.status === 'fulfilled'
-          ? pricesRes.value.map((res) => (res.status === 'fulfilled' ? res.value : 0))
-          : [];
-
-      const tokenDetailsWithBalances = tokenAddress
-        .map((address, index) => {
-          const token = tokens[address];
-          const price = prices[index] || 0;
-          const balance = balances[address] || BigInt(0);
-          const totalValue = Number(formatUnits(balance, token.decimals)) * price;
-          return {
-            price: prices[index] || 0,
-            tokenIcon: token.logo,
-            totalValue: totalValue,
-            token: token.symbol,
-            balance: Number(formatUnits(balance, token.decimals)),
-          };
-        })
-        .sort((a, b) => b.totalValue - a.totalValue);
-
-      setDaoHoldingTokens(tokenDetailsWithBalances);
-    } catch (e) {
-      console.error('Error fetching token balances:', e);
-    } finally {
-      setIsTokenBalanceLoading(false);
-    }
-  };
-
-  const updateMarketData = async () => {
-    if (!daoInfo?.daoToken || daoInfo.daoToken === zeroAddress) return;
-    const data = await fetchDaoMarketData({ chainId, daaoToken: daoInfo.daoToken });
-    if (data) {
-      setMarketData(data);
-    }
-  };
   const [activeTab, setActiveTab] = useState('trades');
 
   useEffect(() => {
@@ -110,6 +49,7 @@ const Dashboard: React.FC = () => {
 
   useEffectAfterMount(() => {
     if (!accountChainId) return;
+    if (accountChainId === chainId) return;
     if (isChainIdSupported(accountChainId)) {
       const chainSlug = chainIdToChainSlugMap[accountChainId];
       router.replace(`/${chainSlug}`);
@@ -117,10 +57,6 @@ const Dashboard: React.FC = () => {
       router.replace(`/${defaultChain.slug}`);
     }
   }, [accountChainId]);
-
-  useEffect(() => {
-    updateMarketData();
-  }, [daoInfo]);
 
   return (
     <PageLayout title="App" description="main-app" app={true}>
@@ -202,7 +138,9 @@ const Dashboard: React.FC = () => {
                 <div className="md:col-span-7">
                   {!daoInfo?.daoToken || !chainsData[chainId]?.dexScreenerId ? (
                     <div className="flex items-center justify-center h-[400px] sm:h-[600px]">
-                      <p className="text-white text-lg">Loading...</p>
+                      <p className="text-white text-lg">
+                        {!chainsData[chainId]?.dexScreenerId ? 'Chart unavailable' : 'Loading chart...'}
+                      </p>
                     </div>
                   ) : (
                     <iframe
@@ -225,13 +163,13 @@ const Dashboard: React.FC = () => {
                   <span className="font-semibold text-midGreen font-sora text-xl">Token Balances</span>
                 </div>
                 {/* <AssetTable columns={assetColumns} data={assetsData} /> */}
-                {isTokenBalanceLoading ? (
+                {isTokensBalanceLoading ? (
                   <div className="flex items-center justify-center h-[400px] sm:h-[600px]">
                     <p className="text-white text-lg">Loading token balances...</p>
                   </div>
-                ) : daaoHoldingTokens && daaoHoldingTokens.length > 0 ? (
+                ) : tokensWithBalance && tokensWithBalance.length > 0 ? (
                   <div className="overflow-x-auto w-full">
-                    <AssetTable columns={assetColumns} data={daaoHoldingTokens} />
+                    <AssetTable columns={assetColumns} data={tokensWithBalance} />
                   </div>
                 ) : (
                   <div className="flex items-center justify-center h-[400px] sm:h-[600px]">

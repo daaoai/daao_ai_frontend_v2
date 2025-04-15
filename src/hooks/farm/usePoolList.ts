@@ -5,7 +5,7 @@ import { POOL_ABI } from '@/daao-sdk/abi/pool';
 import { FarmPool } from '@/types/farm';
 import { formatUnits } from 'viem';
 import { useAccount, usePublicClient } from 'wagmi';
-import useTokenPrice from '../useTokenPrice';
+import useTokenPrice from '../token/useTokenPrice';
 import { supportedChainIds } from '@/constants/chains';
 
 const usePoolList = () => {

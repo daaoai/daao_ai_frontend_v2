@@ -34,6 +34,7 @@ export const chainsData: {
       'https://monad-testnet.drpc.org',
     ],
     blockExplorer: 'https://modescan.io',
+    networkType: 'testnet',
     wnativeToken: {
       address: '0x760AfE86e5de5fa0Ee542fc7B7B713e1c5425701',
       decimals: 18,
@@ -57,6 +58,7 @@ export const chainsData: {
       'https://bsc-mainnet.public.blastapi.io',
     ],
     blockExplorer: 'bscscan.com',
+    networkType: 'mainnet',
     wnativeToken: {
       address: '0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c',
       decimals: 18,
@@ -77,6 +79,7 @@ export const chainsData: {
     name: 'Mode',
     rpcUrls: ['https://mainnet.mode.network', 'https://1rpc.io/mode', 'https://mode.drpc.org'],
     blockExplorer: 'testnet.modefi.com',
+    networkType: 'mainnet',
     wnativeToken: {
       address: '0x4200000000000000000000000000000000000006',
       decimals: 18,
@@ -103,6 +106,7 @@ export const chainsData: {
       'https://berachain-rpc.publicnode.com',
     ],
     blockExplorer: 'https://berascan.com',
+    networkType: 'mainnet',
     nativeCurrency: {
       address: zeroAddress,
       decimals: 18,

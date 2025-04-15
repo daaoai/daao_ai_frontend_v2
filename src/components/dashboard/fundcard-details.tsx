@@ -1,18 +1,17 @@
 import { telegramDeFAILink, twitterDeFAILink } from '@/constants/links';
+import { fetchDaoMarketData } from '@/helpers/contribution';
 import { Card } from '@/shadcn/components/ui/card';
 import { DaoInfo, DaoMarketData, FundDetails as FundDetailsType } from '@/types/daao';
 import { shortenAddress } from '@/utils/address';
 import { getLocalTokenDetails } from '@/utils/token';
 import Image from 'next/image';
 import { useCallback, useEffect, useState } from 'react';
+import { zeroAddress } from 'viem';
 import ClickToCopy from '../copyToClipboard';
 import Liquidity from '../Liquidity/liquidity';
 import LPFarms from '../lpFarms';
 import { ModalWrapper } from '../modalWrapper';
 import PoolDetailCard from '../poolDetailCard';
-import { useFundContext } from './FundContext';
-import { fetchDaoMarketData } from '@/helpers/contribution';
-import { zeroAddress } from 'viem';
 
 const FundDetails = ({
   fundDetails,
