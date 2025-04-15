@@ -61,7 +61,7 @@ const Dashboard: React.FC = () => {
   return (
     <PageLayout title="App" description="main-app" app={true}>
       <div className={`overflow-hidden gap-20 flex flex-col justify-center items-center pt-16 px-2`}>
-        <div className="grid gap-2 md:gap-3 lg:grid-cols-[55%_45%] w-full">
+        <div className="grid gap-2 md:gap-3 lg:grid-cols-[45%_55%] w-full">
           <div className="p-2 sm:p-4 flex items-center justify-center">
             <FundDetails chainId={chainId} fundDetails={fundDetails} daoInfo={daoInfo} />
           </div>

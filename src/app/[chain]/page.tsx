@@ -110,7 +110,7 @@ const FundsPage: NextPage = () => {
     <PageLayout>
       <div className="relative">
         {/* Background image */}
-        <div className="absolute inset-0 z-0 top-[22rem] pt-[23rem] -left-[8rem]">
+        {/* <div className="absolute inset-0 z-0 top-[22rem] pt-[23rem] -left-[8rem]">
           <Image
             src="/assets/brand.svg"
             alt="Background Asset"
@@ -118,7 +118,7 @@ const FundsPage: NextPage = () => {
             objectFit="cover"
             className=" absolute opacity-80"
           />
-        </div>
+        </div> */}
 
         {/* Foreground content */}
         <div className="relative z-10 flex flex-col md:flex-row justify-between gap-10 lg:gap-20 w-full pt-24 items-center">
@@ -154,6 +154,17 @@ const FundsPage: NextPage = () => {
               />
             )}
           </div>
+        </div>
+      </div>
+      <div className="relative w-full">
+        <div className="absolute inset-0 z-0 -top-24 pt-[23rem] -left-[8rem]">
+          <Image
+            src="/assets/brand.svg"
+            alt="Background Asset"
+            layout="fill"
+            objectFit="cover"
+            className=" absolute opacity-80"
+          />
         </div>
       </div>
 
