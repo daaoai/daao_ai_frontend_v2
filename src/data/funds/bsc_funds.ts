@@ -11,6 +11,7 @@ export const bscFunds: Record<string, FundDetails> = {
     address: '0x08Bd99E710D352B3435B0c52FDa5185eDCE465fe',
     imgSrc: '/assets/assassins.webp',
     status: 'trading',
+    isManageLiquidityEnabled: true,
     dexInfo: {
       type: supportedDexesTypes.pancake,
       fee: 10000,

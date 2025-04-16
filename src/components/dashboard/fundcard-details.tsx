@@ -12,15 +12,18 @@ import Liquidity from '../Liquidity/liquidity';
 import LPFarms from '../lpFarms';
 import { ModalWrapper } from '../modalWrapper';
 import PoolDetailCard from '../poolDetailCard';
+import { PoolDetails } from '@/types/pool';
 
 const FundDetails = ({
   fundDetails,
   chainId,
   daoInfo,
+  poolDetails,
 }: {
   fundDetails: FundDetailsType;
   chainId: number;
   daoInfo: DaoInfo | null;
+  poolDetails: PoolDetails | null;
 }) => {
   interface TokenChangeState {
     percent: number;
@@ -77,33 +80,37 @@ const FundDetails = ({
             ${props.shortname} {props.longname}
           </CardTitle>
         </div> */}
-      {fundDetails.isManageLiquidityEnabled ||
-        (fundDetails.isLpFarmsEnabled && (
-          <div className="border-2 border-gray-30 rounded-md mt-4 p-6 flex items-center gap-6">
-            {fundDetails.isManageLiquidityEnabled && (
-              <button
-                className="bg-teal-50 text-black text-sm rounded-md p-2 hover:bg-teal-60 active:scale-95 transition-transform ease-in-out duration-150"
-                onClick={openLiquidityModalOpen}
-              >
-                Manage
-              </button>
-            )}
-            {fundDetails.isLpFarmsEnabled && (
-              <button
-                className="underline text-teal-50 text-sm rounded-md p-2 active:scale-95 transition-transform ease-in-out duration-150"
-                onClick={openFarmModalOpen}
-              >
-                LP Farms
-              </button>
-            )}
-
-            <ModalWrapper isOpen={isLiquidityModalOpen} onClose={closeLiquidityModalOpen} className="!max-w-[56rem]">
-              <Liquidity onClose={closeLiquidityModalOpen} />
-            </ModalWrapper>
-            <ModalWrapper isOpen={isLPFarmModalOpen} onClose={closeFarmModalOpen}>
-              <LPFarms onClose={closeFarmModalOpen} daoTokenAddress={daoInfo?.daoToken || ''} />
-            </ModalWrapper>
-            {/* 
+      {(fundDetails.isManageLiquidityEnabled || fundDetails.isLpFarmsEnabled) && daoInfo && poolDetails && (
+        <div className="border-2 border-gray-30 rounded-md mt-4 p-6 flex items-center gap-6">
+          {fundDetails.isManageLiquidityEnabled && (
+            <button
+              className="bg-teal-50 text-black text-sm rounded-md p-2 hover:bg-teal-60 active:scale-95 transition-transform ease-in-out duration-150"
+              onClick={openLiquidityModalOpen}
+            >
+              Manage
+            </button>
+          )}
+          {fundDetails.isLpFarmsEnabled && (
+            <button
+              className="underline text-teal-50 text-sm rounded-md p-2 active:scale-95 transition-transform ease-in-out duration-150"
+              onClick={openFarmModalOpen}
+            >
+              LP Farms
+            </button>
+          )}
+          <ModalWrapper isOpen={isLiquidityModalOpen} onClose={closeLiquidityModalOpen} className="!max-w-[56rem]">
+            <Liquidity
+              onClose={closeLiquidityModalOpen}
+              daoInfo={daoInfo}
+              poolDetails={poolDetails}
+              fundDetails={fundDetails}
+              chainId={chainId}
+            />
+          </ModalWrapper>
+          <ModalWrapper isOpen={isLPFarmModalOpen} onClose={closeFarmModalOpen}>
+            <LPFarms onClose={closeFarmModalOpen} daoTokenAddress={daoInfo?.daoToken || ''} />
+          </ModalWrapper>
+          {/* 
           <div className="flex flex-col gap-2">
             <p className="text-gray-70 font-rubik text-sm font-normal">LP VALUE</p>
             <p>12</p>
@@ -117,8 +124,8 @@ const FundDetails = ({
             <p>12</p>
           </div>
          */}
-          </div>
-        ))}
+        </div>
+      )}
       <div className="flex justify-between w-full my-4">
         <div className="w-fit flex gap-x-2 items-center">
           <h5 className="text-sm sm:text-base lg:text-lg text-[#D0F0BF]">{`$${tokenDetails.symbol}`}</h5>

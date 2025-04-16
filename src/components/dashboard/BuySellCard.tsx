@@ -6,10 +6,12 @@ import useGetUserTickets from '@/hooks/useGetUserTickets';
 import { Button } from '@/shadcn/components/ui/button';
 import { Card, CardContent } from '@/shadcn/components/ui/card';
 import { Tabs, TabsList, TabsTrigger } from '@/shadcn/components/ui/tabs';
+import { DaoInfo } from '@/types/daao';
+import { PoolDetails } from '@/types/pool';
 import { motion } from 'framer-motion';
 import { Settings2 } from 'lucide-react';
 import Image from 'next/image';
-import { useCallback, useState, memo, useEffect } from 'react';
+import { memo, useCallback, useEffect, useState } from 'react';
 import { toast } from 'react-toastify';
 import { formatUnits, Hex, parseUnits } from 'viem';
 import { useAccount } from 'wagmi';
@@ -18,16 +20,17 @@ import { ModalWrapper } from '../modalWrapper';
 import SlippageModal from '../slippageModal';
 import TicketPurchase from '../ticket';
 import FallbackTokenLogo from '/public/assets/fallbackToken.svg';
-import { DaoInfo } from '@/types/daao';
 
 const BuySellCard = ({
   chainId,
   fundAddress,
   daaoInfo,
+  poolDetails,
 }: {
   chainId: number;
   fundAddress: Hex;
   daaoInfo: DaoInfo | null;
+  poolDetails: PoolDetails | null;
 }) => {
   // account
   const { address: accountAddress } = useAccount();
@@ -46,6 +49,7 @@ const BuySellCard = ({
     setToAmount,
     handleSwap,
     setDaoInfo,
+    setPoolDetails,
     sellToken,
     buyToken,
     sellTokenBalance,
@@ -96,8 +100,16 @@ const BuySellCard = ({
   };
 
   useEffect(() => {
-    setDaoInfo(daaoInfo);
+    if (daaoInfo) {
+      setDaoInfo(daaoInfo);
+    }
   }, [daaoInfo]);
+
+  useEffect(() => {
+    if (poolDetails) {
+      setPoolDetails(poolDetails);
+    }
+  }, [poolDetails]);
 
   return (
     <Card className="h-fit w-full max-w-xl bg-[#0e0e0e] text-white border-none">

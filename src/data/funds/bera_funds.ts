@@ -12,6 +12,7 @@ export const beraFunds: Record<string, FundDetails> = {
     token: zeroAddress,
     imgSrc: '/assets/batman.jpg',
     status: 'trading',
+    isManageLiquidityEnabled: true,
     dexInfo: {
       type: supportedDexesTypes.kodiak,
       fee: 10000,

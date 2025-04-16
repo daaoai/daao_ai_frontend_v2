@@ -4,6 +4,7 @@ export type DexAddresses = {
   factoryAddress: Hex;
   swapRouterAddress: Hex;
   quoterAddress: Hex;
+  nftManager: Hex;
 };
 
 export type QuotesRequest = {

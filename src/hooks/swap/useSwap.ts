@@ -1,9 +1,8 @@
 import { chainsData } from '@/constants/chains';
 import { getDexAddressesForChain } from '@/constants/dex';
-import { fetchDaoInfo } from '@/helpers/contribution';
-import { getPoolAddress, getPoolDetails } from '@/helpers/pool';
 import { getQuotes, getSwapData } from '@/helpers/swap';
 import { DaoInfo, FundDetails } from '@/types/daao';
+import { PoolDetails } from '@/types/pool';
 import { getPublicClient } from '@/utils/publicClient';
 import { getMinAmount } from '@/utils/slippage';
 import { useEffect, useState } from 'react';
@@ -15,12 +14,10 @@ export const useSwap = ({ chainId, fundDetails }: { chainId: number; fundDetails
   // states
   const [activeTab, setActiveTab] = useState<'buy' | 'sell'>('buy');
   const [isLoading, setIsLoading] = useState(false);
-  const [token0, setToken0] = useState<Hex | null>(null);
-  const [token1, setToken1] = useState<Hex | null>(null);
   const [toAmount, setToAmount] = useState<bigint>(BigInt(0));
   const [isSwapping, setIsSwapping] = useState(false);
   const [daoInfo, setDaoInfo] = useState<DaoInfo | null>(null);
-  const [poolAddress, setPoolAddress] = useState<Hex | null>(null);
+  const [poolDetails, setPoolDetails] = useState<PoolDetails | null>(null);
   const [sellTokenBalance, setSellTokenBalance] = useState<bigint>(BigInt(0));
 
   // hooks
@@ -37,39 +34,8 @@ export const useSwap = ({ chainId, fundDetails }: { chainId: number; fundDetails
   const sellToken = activeTab === 'buy' ? daoInfo?.paymentTokenDetails : daoInfo?.daoTokenDetails;
   const buyToken = activeTab === 'buy' ? daoInfo?.daoTokenDetails : daoInfo?.paymentTokenDetails;
   const slippage = 1; // 1% slippage
-  const zeroToOne = sellToken?.address === token0;
+  const zeroToOne = sellToken?.address === poolDetails?.token0;
   const dexDetails = getDexAddressesForChain(chainId, fundDetails.dexInfo.type);
-  // functions
-
-  const fetchPoolAddress = async () => {
-    try {
-      if (!daoInfo) return;
-      setIsLoading(true);
-
-      const poolAddress = await getPoolAddress({
-        chainId,
-        fee: fundDetails.dexInfo.fee,
-        token0: daoInfo.paymentToken,
-        token1: daoInfo.daoToken,
-        tickSpacing: fundDetails.dexInfo.tickSpacing,
-        type: fundDetails.dexInfo.type,
-        factoryAddress: dexDetails.factoryAddress,
-      });
-      const poolDetails = await getPoolDetails({
-        type: fundDetails.dexInfo.type,
-        address: poolAddress,
-        chainId,
-      });
-      setToken0(poolDetails.token0);
-      setToken1(poolDetails.token1);
-      setPoolAddress(poolAddress);
-    } catch (error) {
-      console.error('Error fetching DAO info and pool address:', error);
-      toast.error('Error fetching DAO info and pool address');
-    } finally {
-      setIsLoading(false);
-    }
-  };
 
   const fetchSellTokenBalance = async () => {
     if (!account || !daoInfo) return;
@@ -130,7 +96,7 @@ export const useSwap = ({ chainId, fundDetails }: { chainId: number; fundDetails
   };
 
   async function fetchQuotes(amount: bigint) {
-    if (!window.ethereum || !poolAddress || !daoInfo) return;
+    if (!window.ethereum || !poolDetails?.address || !daoInfo) return;
     try {
       if (!amount) {
         toast.error('No amount specified');
@@ -142,7 +108,7 @@ export const useSwap = ({ chainId, fundDetails }: { chainId: number; fundDetails
       }
 
       let amountOut = await getQuotes({
-        poolAddress,
+        poolAddress: poolDetails.address,
         amount,
         chainId,
         sqrtPrice: zeroToOne ? BigInt(minSqrtPrice) : BigInt(maxSqrtPrice),
@@ -208,7 +174,7 @@ export const useSwap = ({ chainId, fundDetails }: { chainId: number; fundDetails
         chainId,
         deadline,
         minAmount,
-        poolAddress: poolAddress!,
+        poolAddress: poolDetails?.address!,
         sqrtPrice: zeroToOne ? BigInt(minSqrtPrice) : BigInt(maxSqrtPrice),
         type: fundDetails.dexInfo.type,
         zeroToOne,
@@ -237,6 +203,7 @@ export const useSwap = ({ chainId, fundDetails }: { chainId: number; fundDetails
       fetchSellTokenBalanceWithRetry();
     } catch (error) {
       console.error('Error during swap:', error);
+      toast.error('Error during swap');
     } finally {
       setIsSwapping(false);
       setToAmount(BigInt(0));
@@ -251,7 +218,6 @@ export const useSwap = ({ chainId, fundDetails }: { chainId: number; fundDetails
 
   useEffect(() => {
     if (daoInfo) {
-      fetchPoolAddress();
       fetchSellTokenBalanceWithRetry();
     }
   }, [daoInfo, account, activeTab]);
@@ -263,8 +229,8 @@ export const useSwap = ({ chainId, fundDetails }: { chainId: number; fundDetails
     sellToken,
     buyToken,
     isLoading,
-    poolAddress,
     sellTokenBalance,
+    setPoolDetails,
     toAmount,
     setActiveTab,
     handleSwap,
@@ -275,7 +241,6 @@ export const useSwap = ({ chainId, fundDetails }: { chainId: number; fundDetails
     approveSellToken,
     setSellTokenBalance,
     setDaoInfo,
-    setPoolAddress,
     setIsSwapping,
   };
 };

@@ -1,10 +1,12 @@
 import { supportedDexesTypes } from '@/constants/dex';
-import { VelodromeCustomRouterDex } from '@/dexes/velodromeCustomRouter';
+import { KodiakDex } from '@/dexes/kodiakDex';
 import { PancakeDex } from '@/dexes/pancake';
-import { UniswapCustomRouterDex } from '@/dexes/UniswapCustomRouter';
+import { UniswapV3Pool } from '@/dexes/uniswap/v3Pool';
+import { UniswapCustomRouterDex } from '@/dexes/uniswapCustomRouter';
+import { VelodromeV3Pool } from '@/dexes/velodrome/v3Pool';
+import { VelodromeCustomRouterDex } from '@/dexes/velodromeCustomRouter';
 import { SupportedDexType } from '@/types/chains';
 import { Hex, zeroAddress } from 'viem';
-import { KodiakDex } from '@/dexes/kodiakDex';
 
 export const getPoolAddress = async ({
   token0,
@@ -105,4 +107,38 @@ export const getPoolDetails = async ({
     address,
     chainId,
   });
+};
+
+export const getPoolSlot0 = async ({
+  address,
+  type,
+  chainId,
+}: {
+  address: Hex;
+  type: SupportedDexType;
+  chainId: number;
+}) => {
+  const uniswapHandler = async () => {
+    const uniswapPool = new UniswapV3Pool(chainId, address);
+    return await uniswapPool.slot0();
+  };
+  const velodromeHandler = async () => {
+    const velodromeDex = new VelodromeV3Pool(chainId, address);
+    return await velodromeDex.slot0();
+  };
+  const handlers: {
+    [key in SupportedDexType]: () => Promise<{ sqrtPriceX96: bigint; currentTick: number }>;
+  } = {
+    [supportedDexesTypes.uniswapCustomRouter]: uniswapHandler,
+    [supportedDexesTypes.velodromeCustomRouter]: velodromeHandler,
+    [supportedDexesTypes.pancake]: uniswapHandler,
+    [supportedDexesTypes.kodiak]: uniswapHandler,
+  };
+  const handler = handlers[type];
+
+  if (!handler) {
+    return { sqrtPriceX96: BigInt(0), currentTick: 0 };
+  }
+
+  return await handler();
 };

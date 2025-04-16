@@ -40,7 +40,7 @@ const Dashboard: React.FC = () => {
     }
   }, [activeTab]);
 
-  const { daoInfo, getDaaoInfo } = useDaaoInfo({ chainId, fundDetails });
+  const { daoInfo, getDaaoInfo, poolDetails } = useDaaoInfo({ chainId, fundDetails });
 
   useEffect(() => {
     if (!account) return;
@@ -63,10 +63,10 @@ const Dashboard: React.FC = () => {
       <div className={`overflow-hidden gap-20 flex flex-col justify-center items-center pt-16 px-2`}>
         <div className="grid gap-2 md:gap-3 lg:grid-cols-[45%_55%] w-full">
           <div className="p-2 sm:p-4 flex items-center justify-center">
-            <FundDetails chainId={chainId} fundDetails={fundDetails} daoInfo={daoInfo} />
+            <FundDetails chainId={chainId} fundDetails={fundDetails} daoInfo={daoInfo} poolDetails={poolDetails}/>
           </div>
           <div className="p-2 sm:p-4 flex items-center justify-center">
-            <BuySellCard chainId={chainId} fundAddress={fundAddress} daaoInfo={daoInfo} />
+            <BuySellCard chainId={chainId} fundAddress={fundAddress} daaoInfo={daoInfo} poolDetails={poolDetails} />
           </div>
         </div>
 
