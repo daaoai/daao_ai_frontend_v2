@@ -140,6 +140,7 @@ const FundsPage: NextPage = () => {
                   daaoToken: daaosBasicInfo?.[highlightedFund.address]?.daaoToken,
                   paymentToken: daaosBasicInfo?.[highlightedFund.address]?.paymentToken,
                 })}
+                target="_blank"
                 className="text-teal-60 font-normal"
               >
                 Trade On {getDexName(highlightedFund.dexInfo.type)}

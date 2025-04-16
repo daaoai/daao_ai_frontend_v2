@@ -185,7 +185,7 @@ const BuySellCard = ({
             </div>
             <div className="space-y-2 text-right">
               <div className="text-sm flex flex-row justify-between">
-                <span className="text-[#aeb3b6]">Balance: {Number(formattedSellTokenBalance).toFixed(3)}</span>
+                <span className="text-[#aeb3b6]">Balance: {Number(formattedSellTokenBalance).toFixed(6)}</span>
                 {/* <Button
                   variant="link"
                   className="text-[#39db83] p-0 h-auto font-normal"
