@@ -7,7 +7,7 @@ import { DaoInfo, FundDetails } from '@/types/daao';
 import { getPublicClient } from '@/utils/publicClient';
 import { getMinAmount } from '@/utils/slippage';
 import { useEffect, useState } from 'react';
-import { toast } from 'sonner';
+import { toast } from 'react-toastify';
 import { erc20Abi, Hex } from 'viem';
 import { useAccount, useSendTransaction, useSwitchChain, useWriteContract } from 'wagmi';
 
