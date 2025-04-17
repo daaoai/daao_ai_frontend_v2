@@ -58,13 +58,13 @@ export const fetchDaoInfo = async ({
     const [daoTokenDetails, paymentTokenDetails] = await Promise.all([
       daoToken === zeroAddress
         ? useWnativeToken
-          ? chainsData[chainId].wnativeToken
-          : chainsData[chainId].nativeCurrency
+          ? getTokenDetails({ address: chainsData[chainId].wnativeToken.address, chainId })
+          : getTokenDetails({ address: chainsData[chainId].nativeCurrency.address, chainId })
         : getTokenDetails({ address: daoToken, chainId }),
       paymentToken === zeroAddress || isPaymentTokenNative
         ? useWnativeToken
-          ? chainsData[chainId].wnativeToken
-          : chainsData[chainId].nativeCurrency
+          ? getTokenDetails({ address: chainsData[chainId].wnativeToken.address, chainId })
+          : getTokenDetails({ address: chainsData[chainId].nativeCurrency.address, chainId })
         : getTokenDetails({ address: paymentToken, chainId }),
     ]);
 

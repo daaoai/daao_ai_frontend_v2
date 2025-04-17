@@ -237,6 +237,7 @@ export const useSwap = ({ chainId, fundDetails }: { chainId: number; fundDetails
       fetchSellTokenBalanceWithRetry();
     } catch (error) {
       console.error('Error during swap:', error);
+      toast.error('Error during Swap');
     } finally {
       setIsSwapping(false);
       setToAmount(BigInt(0));
