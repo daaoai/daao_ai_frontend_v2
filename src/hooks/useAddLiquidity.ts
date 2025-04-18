@@ -356,6 +356,14 @@ export const useAddLiquidity = ({
     setDstTokenFormattedAmount('');
   };
 
+  useEffect(() => {
+    const interval = setInterval(() => {
+      if (isDataLoading || txnInProgress) return;
+      updateCurrentPoolData();
+    }, 30000);
+    return () => clearInterval(interval);
+  }, [isDataLoading, txnInProgress]);
+
   return {
     lowerTick,
     upperTick,
