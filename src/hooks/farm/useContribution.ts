@@ -6,8 +6,7 @@ import { FundDetails } from '@/types/daao';
 import { handleViemTransactionError } from '@/utils/approval';
 import { getPublicClient } from '@/utils/publicClient';
 import { getLocalTokenDetails } from '@/utils/token';
-import { toast as reactToast } from 'react-toastify';
-import { toast } from 'sonner';
+import { toast } from 'react-toastify';
 import { Abi, erc20Abi, Hex } from 'viem';
 import { useAccount, useSwitchChain, useWriteContract } from 'wagmi';
 import { useState } from 'react';
@@ -35,6 +34,7 @@ const useContribution = ({ chainId, fundDetails }: { chainId: number; fundDetail
       });
       return BigInt(allowance as bigint) >= BigInt(requiredAmount);
     } catch (err) {
+      toast.error('Error checking allowance');
       console.error('checkAllowance error:', err);
       return false;
     }
@@ -65,7 +65,7 @@ const useContribution = ({ chainId, fundDetails }: { chainId: number; fundDetail
         abi: CARTEL as Abi,
         error: err,
       });
-      reactToast.error(errorMsg);
+      toast.error(errorMsg);
       return undefined;
     }
   };
@@ -91,7 +91,7 @@ const useContribution = ({ chainId, fundDetails }: { chainId: number; fundDetail
       setLoading(true);
 
       if (!account) {
-        reactToast.error('No wallet connected');
+        toast.error('No wallet connected');
         return undefined;
       }
 
@@ -121,15 +121,15 @@ const useContribution = ({ chainId, fundDetails }: { chainId: number; fundDetail
       });
 
       if (txnReceipt?.status !== 'success') {
-        reactToast.error('Contribution failed');
+        toast.error('Contribution failed');
         return undefined;
       }
 
-      reactToast.success('Your Contribution was Successful');
+      toast.success('Your Contribution was Successful');
       return txHash;
     } catch (err) {
       console.error('Contribution error:', err);
-      reactToast.error('Contribution failed');
+      toast.error('Contribution failed');
       return undefined;
     } finally {
       setLoading(false);
@@ -139,7 +139,7 @@ const useContribution = ({ chainId, fundDetails }: { chainId: number; fundDetail
   const contributeWithToken = async (amount: bigint) => {
     try {
       if (!account) {
-        reactToast.error('No wallet connected');
+        toast.error('No wallet connected');
         return undefined;
       }
 
@@ -169,15 +169,15 @@ const useContribution = ({ chainId, fundDetails }: { chainId: number; fundDetail
       });
 
       if (txnReceipt?.status !== 'success') {
-        reactToast.error('Contribution failed');
+        toast.error('Contribution failed');
         return undefined;
       }
 
-      reactToast.success('Your Contribution was Successful');
+      toast.success('Your Contribution was Successful');
       return txHash;
     } catch (err) {
       console.error('Token contribution error:', err);
-      reactToast.error('Contribution failed');
+      toast.error('Contribution failed');
       return undefined;
     } finally {
       setLoading(false);

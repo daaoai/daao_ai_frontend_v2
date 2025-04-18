@@ -5,7 +5,7 @@ import { DaoInfo, FundDetails } from '@/types/daao';
 import { PoolDetails } from '@/types/pool';
 import { throttle } from 'lodash';
 import { useState } from 'react';
-import { toast } from 'sonner';
+import { toast } from 'react-toastify';
 
 export const useDaaoInfo = ({ chainId, fundDetails }: { chainId: number; fundDetails: FundDetails }) => {
   // states

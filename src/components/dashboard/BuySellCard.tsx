@@ -152,32 +152,40 @@ const BuySellCard = ({
           </Tabs>
         </div>
 
-        {/* <div className="flex w-full gap-2 items-center justify-between">
+        <div className="flex w-full gap-2 items-center justify-between">
           <button
-            onClick={() => setAmountFrom('1000')}
-            className="bg-gray-40 rounded-md p-2 text-sm active:scale-95 transition-transform ease-in-out duration-150"
+            onClick={() => {
+              handleFormChange((Number(formattedSellTokenBalance) * 0.25).toString());
+            }}
+            className="bg-gray-40 w-24 rounded-md p-2 text-sm active:scale-95 transition-transform ease-in-out duration-150"
           >
-            1000 PAYMENT TOKEN
+            25%
           </button>
           <button
-            onClick={() => setAmountFrom('10000')}
-            className="bg-gray-40 rounded-md p-2 text-sm active:scale-95 transition-transform ease-in-out duration-150"
+            onClick={() => {
+              handleFormChange((Number(formattedSellTokenBalance) * 0.5).toString());
+            }}
+            className="bg-gray-40 w-24 rounded-md p-2 text-sm active:scale-95 transition-transform ease-in-out duration-150"
           >
-            10000 PAYMENT TOKEN
+            50%
           </button>
           <button
-            onClick={() => setAmountFrom('50000')}
-            className="bg-gray-40 rounded-md p-2 text-sm active:scale-95 transition-transform ease-in-out duration-150"
+            onClick={() => {
+              handleFormChange((Number(formattedSellTokenBalance) * 0.75).toString());
+            }}
+            className="bg-gray-40 w-24 rounded-md p-2 text-sm active:scale-95 transition-transform ease-in-out duration-150"
           >
-            50000 PAYMENT TOKEN
+            75%
           </button>
           <button
-            onClick={() => setAmountFrom('100000')}
-            className="bg-gray-40 rounded-md p-2 text-sm active:scale-95 transition-transform ease-in-out duration-150"
+            onClick={() => {
+              handleFormChange(formattedSellTokenBalance);
+            }}
+            className="bg-gray-40 w-24 rounded-md p-2 text-sm active:scale-95 transition-transform ease-in-out duration-150"
           >
-            100000 PAYMENT TOKEN
+            Max
           </button>
-        </div> */}
+        </div>
 
         <Card className="bg-gray-50 border-2 border-gray-20">
           <CardContent className="p-4 flex justify-between items-center">
