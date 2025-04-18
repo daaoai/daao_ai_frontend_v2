@@ -1,5 +1,5 @@
 import { telegramDeFAILink, twitterDeFAILink } from '@/constants/links';
-import { fetchDaoMarketData } from '@/helpers/contribution';
+import { fetchDaoMarketData } from '@/helpers/daao';
 import { Card } from '@/shadcn/components/ui/card';
 import { DaoInfo, DaoMarketData, FundDetails as FundDetailsType } from '@/types/daao';
 import { shortenAddress } from '@/utils/address';

@@ -71,13 +71,14 @@ const Liquidity: React.FC<LiquidityProps> = ({ onClose, daoInfo, poolDetails, fu
                 paymentToken: daoInfo.paymentToken,
                 type: fundDetails.dexInfo.type,
               })}
+              target="_blank"
               className="text-teal-60 font-normal"
             >
               {getDexName(fundDetails.dexInfo.type)}
             </Link>
           </div>
         </div>
-        <div className="bg-black border-[#27292a] border-2 rounded-md text-white top-40 p-4">
+        <div className="bg-black border-[#27292a] border-2 rounded-md text-white top-40 p-4 overflow-y-scroll max-h-[80vh]">
           <div>
             <p>Add Liquidity</p>
           </div>

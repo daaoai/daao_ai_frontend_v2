@@ -12,12 +12,12 @@ import { V3_STACKER_ABI } from '@/daao-sdk/abi/v3Stacker';
 import { VELO_POOL_ABI } from '@/daao-sdk/abi/veloPool';
 import { Position } from '@/types/farm';
 import { handleViemTransactionError } from '@/utils/approval';
-import { CLPoolUtils } from '@/utils/v3Pools';
 import { ethers } from 'ethers';
 import { toast as reactToast } from 'react-toastify'; // Ensure to import react-toastify's toast function
 import { Address, formatUnits, type Abi, type TransactionReceipt } from 'viem';
 import { useAccount, usePublicClient, useWriteContract } from 'wagmi';
 import useTokenPrice from '../token/useTokenPrice';
+import { V3PoolUtils } from '@/utils/v3Pools';
 
 const POOL_ADDRESS = '0xf70e76cc5a39aad1953bef3d1647c8b36f3f6324';
 const UNISWAP_V3_STAKER = '0xd9cC1D4565102AE6118476EF0E531e7956487099';
@@ -99,9 +99,9 @@ const useLpFarms = () => {
 
       console.log(positionDetails, 'positionDetailspositionDetails');
 
-      const amounts = CLPoolUtils.getTokenAmountsForLiquidity({
-        liquidity: liquidity.toString(),
-        sqrtPriceX96: poolDetails[0].toString(),
+      const amounts = V3PoolUtils.getTokenAmountsForLiquidity({
+        liquidity: liquidity,
+        sqrtPriceX96: poolDetails[0],
         lowerTick: tickLower,
         upperTick: tickUpper,
       });
@@ -109,8 +109,8 @@ const useLpFarms = () => {
       const tokenPricePromises = [fetchTokenPriceDexScreener(token0), fetchTokenPriceDexScreener(token1)];
       const [token0Price, token1Price] = await Promise.all(tokenPricePromises);
 
-      const token0Amount = Number(formatUnits(BigInt(amounts.amount0InWei), 18)) * token0Price;
-      const token1Amount = Number(formatUnits(BigInt(amounts.amount1InWei), 18)) * token1Price;
+      const token0Amount = Number(formatUnits(BigInt(amounts.amount0), 18)) * token0Price;
+      const token1Amount = Number(formatUnits(BigInt(amounts.amount1), 18)) * token1Price;
 
       const liquidityUsd = (token0Amount + token1Amount).toFixed(4);
 

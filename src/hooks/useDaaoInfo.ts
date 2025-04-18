@@ -1,5 +1,5 @@
 import { getDexAddressesForChain } from '@/constants/dex';
-import { fetchDaoInfo } from '@/helpers/contribution';
+import { fetchDaoInfo } from '@/helpers/daao';
 import { getPoolAddress, getPoolDetails } from '@/helpers/pool';
 import { DaoInfo, FundDetails } from '@/types/daao';
 import { PoolDetails } from '@/types/pool';

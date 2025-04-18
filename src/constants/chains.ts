@@ -35,6 +35,7 @@ export const chainsData: {
     ],
     blockExplorer: 'https://modescan.io',
     networkType: 'testnet',
+    logo: 'https://tokens.pancakeswap.finance/images/monad-testnet/0x760AfE86e5de5fa0Ee542fc7B7B713e1c5425701.png',
     wnativeToken: {
       address: '0x760AfE86e5de5fa0Ee542fc7B7B713e1c5425701',
       decimals: 18,
@@ -59,6 +60,7 @@ export const chainsData: {
     ],
     blockExplorer: 'bscscan.com',
     networkType: 'mainnet',
+    logo: 'https://raw.githubusercontent.com/lifinance/types/main/src/assets/icons/chains/bsc.svg',
     wnativeToken: {
       address: '0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c',
       decimals: 18,
@@ -94,6 +96,7 @@ export const chainsData: {
     },
     geckoId: 'mode',
     dexScreenerId: 'mode',
+    logo: 'https://imgproxy-mainnet.routescan.io/4TiM8ysk8JCazvM9Ggn9ketf6l_UK9WTFTbE6SAHNLI/pr:thumb_32/aHR0cHM6Ly9jbXMtY2RuLmF2YXNjYW4uY29tL2NtczIvMzQ0NDNfbG9nby4yODU3YTI0NzdkNTQuc3Zn',
   },
 
   [supportedChainIds.bera]: {
@@ -107,6 +110,7 @@ export const chainsData: {
     ],
     blockExplorer: 'https://berascan.com',
     networkType: 'mainnet',
+    logo: 'https://www.berachain.com/images/icons/berachain.svg',
     nativeCurrency: {
       address: zeroAddress,
       decimals: 18,

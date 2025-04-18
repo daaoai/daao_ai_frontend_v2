@@ -19,6 +19,7 @@ export type ChainsConfig = {
   blockExplorer: string;
   nativeCurrency: Token;
   wnativeToken: Token;
+  logo: string;
   geckoId?: string;
   dexScreenerId?: string;
 };

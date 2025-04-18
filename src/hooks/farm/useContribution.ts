@@ -1,15 +1,16 @@
 import { chainsData } from '@/constants/chains';
 import { CARTEL } from '@/daao-sdk/abi/cartel';
 import { DAAO_CONTRACT_ABI } from '@/daao-sdk/abi/daao';
-import { fetchDaoInfo, fetchTierLimits, fetchUserContributionInfo } from '@/helpers/contribution';
+import { fetchTierLimits, fetchUserContributionInfo } from '@/helpers/contribution';
+import { fetchDaoInfo } from '@/helpers/daao';
 import { FundDetails } from '@/types/daao';
 import { handleViemTransactionError } from '@/utils/approval';
 import { getPublicClient } from '@/utils/publicClient';
 import { getLocalTokenDetails } from '@/utils/token';
+import { useState } from 'react';
 import { toast } from 'react-toastify';
 import { Abi, erc20Abi, Hex } from 'viem';
 import { useAccount, useSwitchChain, useWriteContract } from 'wagmi';
-import { useState } from 'react';
 
 const useContribution = ({ chainId, fundDetails }: { chainId: number; fundDetails: FundDetails }) => {
   const { address: account, chainId: accountChainId } = useAccount();

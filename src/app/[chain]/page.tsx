@@ -6,7 +6,7 @@ import PoolDetailCard from '@/components/poolDetailCard';
 import { chainSlugToChainIdMap } from '@/constants/chains';
 import { getDexName, getDexURL } from '@/constants/dex';
 import { fundsByChainId, tbaDaao } from '@/data/funds';
-import { fetchDaaoBasicInfo, fetchDaoMarketData } from '@/helpers/contribution';
+import { fetchDaaoBasicInfo, fetchDaoMarketData } from '@/helpers/daao';
 import { BasicDaoInfo, DaoMarketData, FundDetails } from '@/types/daao';
 import Image from 'next/image';
 import Link from 'next/link';

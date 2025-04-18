@@ -1,6 +1,6 @@
 'use client';
 import { initializeStore } from '@/store';
-import { RainbowKitProvider } from '@rainbow-me/rainbowkit';
+import { darkTheme, RainbowKitProvider } from '@rainbow-me/rainbowkit';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { ReactNode, useMemo } from 'react';
 import { Provider as ReduxProvider } from 'react-redux';
@@ -27,7 +27,7 @@ const ProviderClient = ({ wagmiCookie, children }: ProviderClientProps) => {
       <WagmiProvider config={wagmiConfig} initialState={initialWagmiState}>
         {/* <SessionProvider session={pageProps.session}> */}
         <QueryClientProvider client={queryClient}>
-          <RainbowKitProvider initialChain={mode.id}>
+          <RainbowKitProvider initialChain={mode.id} theme={darkTheme()}>
             <ThemeProvider
               attribute="class"
               defaultTheme="dark"

@@ -310,14 +310,14 @@ export const useAddLiquidity = ({
         throw new Error('Swap transaction did not succeed');
       }
       toast.success('Liquidity added successfully');
+      updateTokensBalance();
       setSrcTokenFormattedAmount('');
+      setDstTokenFormattedAmount('');
     } catch (error) {
       console.error('Transaction failed:', error);
       toast.error('Transaction failed');
     } finally {
       setTxnInProgress(false);
-      setSrcTokenFormattedAmount('');
-      setDstTokenFormattedAmount('');
     }
   };
 

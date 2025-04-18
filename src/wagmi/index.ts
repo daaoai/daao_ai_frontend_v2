@@ -1,6 +1,8 @@
 'use client';
+import { chainsData, supportedChainIds } from '@/constants/chains';
 import { POLLING_INTERVAL } from '@/constants/wagmi';
-import { connectorsForWallets } from '@rainbow-me/rainbowkit';
+import { getViemChainById } from '@/utils/chains';
+import { Chain, connectorsForWallets } from '@rainbow-me/rainbowkit';
 import {
   frontierWallet,
   metaMaskWallet,
@@ -10,8 +12,8 @@ import {
   trustWallet,
   walletConnectWallet,
 } from '@rainbow-me/rainbowkit/wallets';
+import { HttpTransport } from 'viem';
 import { cookieStorage, createConfig, createStorage, http } from 'wagmi';
-import { berachain, bsc, mode, monadTestnet } from 'wagmi/chains';
 
 const connectors = connectorsForWallets(
   [
@@ -31,23 +33,35 @@ const connectors = connectorsForWallets(
   { appName: 'Daao.ai', projectId: '762399822f3c6326e60b27c2c2085d52' },
 );
 
+export type CustomWagmiChain = {
+  iconUrl: string;
+} & Chain;
+
+const chains: CustomWagmiChain[] = Object.values(supportedChainIds).map((chainId) => {
+  const viemChain = getViemChainById(chainId);
+  return {
+    ...viemChain,
+    iconUrl: chainsData[chainId].logo,
+  };
+});
+
+const transports = Object.values(supportedChainIds).reduce((acc, chainId) => {
+  const viemChain = getViemChainById(chainId);
+  return {
+    ...acc,
+    [viemChain.id]: http(),
+  };
+}, {} as Record<number, HttpTransport>);
+
 export const getWagmiConfig = () => {
   return createConfig({
-    chains: [monadTestnet, bsc, mode, berachain],
+    chains: chains as [CustomWagmiChain, ...CustomWagmiChain[]],
     storage: createStorage({
       storage: cookieStorage,
     }),
     pollingInterval: POLLING_INTERVAL.ms1500,
     syncConnectedChain: true,
-    transports: {
-      // [monad.id]: http(),
-      // [goerli.id]: http(),
-      // [sepolia.id]: http(),
-      [berachain.id]: http(),
-      [mode.id]: http(),
-      [monadTestnet.id]: http(),
-      [bsc.id]: http(),
-    },
+    transports: transports,
     ssr: true,
     connectors,
   });
