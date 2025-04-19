@@ -1,10 +1,10 @@
 import { supportedDexesTypes } from '@/constants/dex';
 import { KodiakDex } from '@/dexes/kodiakDex';
 import { PancakeDex } from '@/dexes/pancake';
-import { UniswapCustomRouterDex } from '@/dexes/uniswapCustomRouter';
+import { UniswapCustomRouterDex } from '@/dexes/UniswapCustomRouter';
 import { VelodromeCustomRouterDex } from '@/dexes/velodromeCustomRouter';
 import { SupportedDexType } from '@/types/chains';
-import { Hex, zeroAddress } from 'viem';
+import { Hex } from 'viem';
 
 export const getQuotes = async (data: {
   tokenIn: Hex;
