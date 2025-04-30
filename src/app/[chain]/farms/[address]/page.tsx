@@ -1,27 +1,31 @@
 'use client';
-import React, { useCallback, useEffect, useState } from 'react';
+import AnimatedSkeleton from '@/components/animatedSkeleton';
+import ClickToCopy from '@/components/copyToClipboard';
+import DepositFarms from '@/components/DepositFarmModal';
 import { ModalWrapper } from '@/components/modalWrapper';
 import WithdrawFarms from '@/components/WithdrawFarm';
-import DepositFarms from '@/components/DepositFarmModal';
-import usePoolList from '@/hooks/farm/usePoolList';
-import { useParams, useRouter } from 'next/navigation';
-import { FarmPool } from '@/types/farm';
+import { chainSlugToChainIdMap } from '@/constants/chains';
 import useHarvest from '@/hooks/farm/useHarvest';
-import { formatUnits, Hex } from 'viem';
-import { abbreviateNumber } from '@/utils/numbers';
-import { Skeleton } from '@/shadcn/components/ui/skeleton';
+import usePoolList from '@/hooks/farm/usePoolList';
 import { Badge } from '@/shadcn/components/ui/badge';
-import ClickToCopy from '@/components/copyToClipboard';
-import AnimatedSkeleton from '@/components/animatedSkeleton';
+import { Skeleton } from '@/shadcn/components/ui/skeleton';
+import { FarmPool } from '@/types/farm';
 import { shortenAddress } from '@/utils/address';
+import { abbreviateNumber } from '@/utils/numbers';
+import { useParams, useRouter } from 'next/navigation';
+import { useCallback, useEffect, useState } from 'react';
+import { formatUnits, Hex } from 'viem';
 
 const FarmStake = () => {
   const params = useParams();
-  const address = params?.address as string;
+  const poolAddress = params?.address as string;
+  const chain = params?.chain as string;
   const router = useRouter();
 
-  const { harvest } = useHarvest();
-  const { getPoolDetails } = usePoolList();
+  const chainId = chainSlugToChainIdMap[chain as string];
+
+  const { harvest } = useHarvest({ chainId });
+  const { getPoolDetails } = usePoolList({ chainId });
 
   const [isPoolDetailsLoading, setIsPoolDetailsLoading] = useState(true);
   const [poolData, setPoolData] = useState<FarmPool>();
@@ -33,15 +37,16 @@ const FarmStake = () => {
   const closeDepositModal = useCallback(() => setIsDepositModalOpen(false), []);
   const openWithdrawModal = useCallback(() => setIsWithdrawModalOpen(true), []);
   const closeWithdrawModal = useCallback(() => setIsWithdrawModalOpen(false), []);
+
   useEffect(() => {
-    if (!address) return;
+    if (!poolAddress) return;
     fetchPoolDetails();
-  }, [address]);
+  }, [poolAddress]);
 
   const fetchPoolDetails = async () => {
     try {
       setIsPoolDetailsLoading(true);
-      const response = await getPoolDetails({ poolAddress: address as `0x${string}` });
+      const response = await getPoolDetails({ poolAddress: poolAddress as Hex });
       if (response) {
         setPoolData(response);
       }
@@ -53,7 +58,8 @@ const FarmStake = () => {
   };
   const handleHarvest = async () => {
     if (poolData?.unclaimedReward && poolData.unclaimedReward > BigInt(0)) {
-      harvest({ poolAddress: address as Hex });
+      await harvest({ poolAddress: poolAddress as Hex });
+      await fetchPoolDetails();
     }
   };
   const isHarvestDisabled = !poolData?.unclaimedReward || poolData?.unclaimedReward === BigInt(0);
@@ -102,12 +108,12 @@ const FarmStake = () => {
             )}
           </div>
           <div className="flex items-center mb-6 gap-2 bg-darkGreen p-2 rounded-md w-fit">
-            {address ? (
-              <span className="text-teal-20 text-sm">{shortenAddress(address)}</span>
+            {poolAddress ? (
+              <span className="text-teal-20 text-sm">{shortenAddress(poolAddress)}</span>
             ) : (
               <AnimatedSkeleton className="w-40 h-4" />
             )}
-            <ClickToCopy copyText={address} className="text-teal-20" />
+            <ClickToCopy copyText={poolAddress} className="text-teal-20" />
           </div>
           <div className="flex flex-col gap-4 text-sm">
             <div
@@ -134,7 +140,7 @@ const FarmStake = () => {
                 <AnimatedSkeleton className="w-40 h-4" />
               ) : (
                 <p className="text-white font-rubik text-lg">
-                  $ {poolData?.totalStackedUSD ? abbreviateNumber(poolData.totalStackedUSD) : '0'}
+                  $ {poolData?.totalStakedUSD ? abbreviateNumber(poolData.totalStakedUSD) : '0'}
                 </p>
               )}
             </div>
@@ -149,7 +155,13 @@ const FarmStake = () => {
               ) : (
                 <p className="text-white font-rubik text-lg font-normal">
                   {poolData?.unclaimedReward
-                    ? abbreviateNumber(Number(Number(formatUnits(poolData.unclaimedReward, 18)).toFixed(2)))
+                    ? abbreviateNumber(
+                        Number(
+                          Number(formatUnits(poolData.unclaimedReward, poolData?.rewardTokenDetails.decimals)).toFixed(
+                            2,
+                          ),
+                        ),
+                      )
                     : '0'}
                 </p>
               )}
@@ -159,13 +171,15 @@ const FarmStake = () => {
          bg-black border-b border-gray-20
          rounded-md shadow-md"
             >
-              <p className="text-teal-70 font-rubik text-lg">Staked CARTEL</p>
+              <p className="text-teal-70 font-rubik text-lg">Staked ${poolData?.depositTokenDetails.symbol}</p>
               {isPoolDetailsLoading ? (
                 <AnimatedSkeleton className="w-40 h-4" />
               ) : (
                 <p className="text-white font-rubik text-lg font-normal">
-                  {poolData?.userInfo?.stackedAmount
-                    ? abbreviateNumber(Number(formatUnits(poolData.userInfo.stackedAmount, 18)))
+                  {poolData?.userInfo?.stakedAmount
+                    ? abbreviateNumber(
+                        Number(formatUnits(poolData.userInfo.stakedAmount, poolData?.depositTokenDetails.decimals)),
+                      )
                     : '0'}
                 </p>
               )}
@@ -212,10 +226,25 @@ const FarmStake = () => {
         </div>
       </div>
       <ModalWrapper isOpen={isWithdrawModalOpen} onClose={closeWithdrawModal}>
-        {poolData && <WithdrawFarms onClose={closeWithdrawModal} poolAddress={address as Hex} poolData={poolData} />}
+        {poolData && (
+          <WithdrawFarms
+            onClose={closeWithdrawModal}
+            poolAddress={poolAddress as Hex}
+            poolData={poolData}
+            chainId={chainId}
+          />
+        )}
       </ModalWrapper>
       <ModalWrapper isOpen={isDepositModalOpen} onClose={closeDepositModal}>
-        <DepositFarms onClose={closeDepositModal} poolAddress={address as Hex} fetchPoolAddresses={fetchPoolDetails} />
+        {poolData && (
+          <DepositFarms
+            onClose={closeDepositModal}
+            poolAddress={poolAddress as Hex}
+            poolData={poolData}
+            refreshFarmData={fetchPoolDetails}
+            chainId={chainId}
+          />
+        )}
       </ModalWrapper>
     </div>
   );

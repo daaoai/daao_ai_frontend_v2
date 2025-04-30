@@ -1,7 +1,7 @@
 import { supportedDexesTypes } from '@/constants/dex';
 import { KodiakDex } from '@/dexes/kodiakDex';
 import { PancakeDex } from '@/dexes/pancake';
-import { UniswapCustomRouterDex } from '@/dexes/UniswapCustomRouter';
+import { UniswapCustomRouterDex } from '@/dexes/uniswapCustomRouter';
 import { VelodromeCustomRouterDex } from '@/dexes/velodromeCustomRouter';
 import { SupportedDexType } from '@/types/chains';
 import { Hex } from 'viem';

@@ -3,12 +3,14 @@ import { isNativeCurrency } from '@/utils/token';
 import axios from 'axios';
 
 const useTokenPrice = () => {
-  const fetchTokenPriceDexScreener = async (address: string) => {
+  const fetchTokenPriceDexScreener = async ({ address, chainId }: { address: string; chainId: number }): Promise<number> => {
     try {
-      const response = await axios.get(`https://api.dexscreener.com/token-pairs/v1/mode/${address}`);
-      return response.data[0].priceUsd;
+      const dexscreenerNetworkId = chainsData[chainId].dexScreenerId;
+      if (!dexscreenerNetworkId) return 0;
+      const response = await axios.get(`https://api.dexscreener.com/token-pairs/v1/${dexscreenerNetworkId}/${address}`);
+      return Number(response.data[0].priceUsd) || 0;
     } catch (err) {
-      return null;
+      return 0;
     }
   };
   const fetchTokenPriceGecko = async ({ address, chainId }: { address: string; chainId: number }): Promise<number> => {

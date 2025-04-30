@@ -1,4 +1,5 @@
 import { Address, Hex } from 'viem';
+import { Token } from './chains';
 
 export interface PoolRewards {
   tokenAddress: string;
@@ -8,24 +9,23 @@ export interface PoolRewards {
 }
 
 export interface UserInfo {
-  stackedAmount: bigint;
+  stakedAmount: bigint;
   rewardDebt: bigint;
 }
 
 export interface FarmPool {
   startTime: bigint;
   endTime: bigint;
-  totalStackedAmount: bigint;
-  totalStackedUSD: number;
+  totalStakedAmount: bigint;
+  totalStakedUSD: number;
   rewards: PoolRewards;
   rewardTokenPerSec: bigint;
-  depositToken: Hex;
   poolAddress: Hex;
   userInfo: UserInfo;
   unclaimedReward: bigint;
   apr: number;
-  depositTokenName: string;
-  rewardTokenName: string;
+  depositTokenDetails: Token;
+  rewardTokenDetails: Token;
 }
 
 export interface Position {

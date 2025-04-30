@@ -19,5 +19,37 @@
     "symbol": "CAKE",
     "name": "CAKE",
     "logo": "https://tokens.pancakeswap.finance/images/0x0E09FaBB73Bd3Ade0a17ECC321fD13a19e81cE82.png"
+  },
+  "0x55d398326f99059fF775485246999027B3197955": {
+    "address": "0x55d398326f99059fF775485246999027B3197955",
+    "chainId": 56,
+    "decimals": 18,
+    "name": "USDT",
+    "symbol": "USDT",
+    "logo": "https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/0xdAC17F958D2ee523a2206206994597C13D831ec7/logo.png"
+  },
+  "0x8AC76a51cc950d9822D68b83fE1Ad97B32Cd580d": {
+    "address": "0x8AC76a51cc950d9822D68b83fE1Ad97B32Cd580d",
+    "chainId": 56,
+    "decimals": 18,
+    "name": "USD Coin",
+    "symbol": "USDC",
+    "logo": "https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48/logo.png"
+  },
+  "0x1AF3F329e8BE154074D8769D1FFa4eE058B1DBc3": {
+    "address": "0x1AF3F329e8BE154074D8769D1FFa4eE058B1DBc3",
+    "chainId": 56,
+    "decimals": 18,
+    "name": "DAI Stablecoin",
+    "symbol": "DAI",
+    "logo": "https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/0x6B175474E89094C44Da98b954EedeAC495271d0F/logo.png"
+  },
+  "0x2170Ed0880ac9A755fd29B2688956BD959F933F8": {
+    "address": "0x2170Ed0880ac9A755fd29B2688956BD959F933F8",
+    "chainId": 56,
+    "decimals": 18,
+    "name": "WETH",
+    "symbol": "WETH",
+    "logo": "https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2/logo.png"
   }
 }

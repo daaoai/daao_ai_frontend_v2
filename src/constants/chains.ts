@@ -11,8 +11,6 @@ export const supportedChainIds = {
   bera: 80094,
 };
 
-viemChains.berachain;
-
 export const viemChainsById: Record<number, viemChains.Chain> = Object.values(viemChains).reduce((acc, chainData) => {
   return chainData.id
     ? {

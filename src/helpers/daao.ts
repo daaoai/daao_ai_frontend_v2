@@ -1,12 +1,9 @@
-import { chainsData } from '@/constants/chains';
-import { supportedChainIds } from '@/constants/chains';
+import { chainsData, supportedChainIds } from '@/constants/chains';
 import { DAAO_CONTRACT_ABI } from '@/daao-sdk/abi/daao';
-import { UserContributionInfo } from '@/types/contribution';
 import { BasicDaoInfo, DaoInfo, DaoMarketData } from '@/types/daao';
 import { multicallForSameContract } from '@/utils/multicall';
-import { getPublicClient } from '@/utils/publicClient';
 import { getTokenDetails } from '@/utils/token';
-import { getContract, Hex, zeroAddress } from 'viem';
+import { Hex, zeroAddress } from 'viem';
 
 const modeTokenAddress = '0xDfc7C877a950e49D2610114102175A06C2e3167a';
 
@@ -86,7 +83,6 @@ export const fetchDaoInfo = async ({
     return null;
   }
 };
-
 
 export const fetchDaaoBasicInfo = async ({
   daoAddress,

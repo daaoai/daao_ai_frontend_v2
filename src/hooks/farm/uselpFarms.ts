@@ -12,20 +12,21 @@ import { V3_STACKER_ABI } from '@/daao-sdk/abi/v3Stacker';
 import { VELO_POOL_ABI } from '@/daao-sdk/abi/veloPool';
 import { Position } from '@/types/farm';
 import { handleViemTransactionError } from '@/utils/approval';
+import { getPublicClient } from '@/utils/publicClient';
+import { V3PoolUtils } from '@/utils/v3Pools';
 import { ethers } from 'ethers';
 import { toast as reactToast } from 'react-toastify'; // Ensure to import react-toastify's toast function
 import { Address, formatUnits, type Abi, type TransactionReceipt } from 'viem';
-import { useAccount, usePublicClient, useWriteContract } from 'wagmi';
+import { useAccount, useWriteContract } from 'wagmi';
 import useTokenPrice from '../token/useTokenPrice';
-import { V3PoolUtils } from '@/utils/v3Pools';
 
 const POOL_ADDRESS = '0xf70e76cc5a39aad1953bef3d1647c8b36f3f6324';
 const UNISWAP_V3_STAKER = '0xd9cC1D4565102AE6118476EF0E531e7956487099';
 
-const useLpFarms = () => {
+const useLpFarms = ({ chainId }: { chainId: number }) => {
   // const { toast } = useToast();
   const { address } = useAccount();
-  const publicClient = usePublicClient();
+  const publicClient = getPublicClient(chainId);
   const { fetchTokenPriceDexScreener } = useTokenPrice();
   const { writeContractAsync } = useWriteContract();
 
@@ -40,7 +41,7 @@ const useLpFarms = () => {
 
   const getPositionsIds = async () => {
     try {
-      const response = await publicClient?.readContract({
+      const response = await publicClient.readContract({
         address: nonFungiblePositionManagerAddress,
         abi: NON_FUNGIBLE_POSITION_MANAGER_ABI,
         functionName: 'userPositions',
@@ -55,7 +56,7 @@ const useLpFarms = () => {
 
   const getNumberOfStakedForPosition = async (tokenId: bigint) => {
     try {
-      const response = (await publicClient?.readContract({
+      const response = (await publicClient.readContract({
         address: UNISWAP_V3_STAKER,
         abi: V3_STACKER_ABI,
         functionName: 'deposits',
@@ -70,7 +71,7 @@ const useLpFarms = () => {
 
   const getPositionDetails = async (positionId: bigint) => {
     try {
-      const positionDetails = (await publicClient?.readContract({
+      const positionDetails = (await publicClient.readContract({
         address: nonFungiblePositionManagerAddress,
         abi: NON_FUNGIBLE_POSITION_MANAGER_ABI,
         functionName: 'positions',
@@ -91,13 +92,11 @@ const useLpFarms = () => {
         tokensOwed0,
         tokensOwed1,
       ] = positionDetails;
-      const poolDetails = (await publicClient?.readContract({
+      const poolDetails = (await publicClient.readContract({
         address: '0xF70e76cC5a39Aad1953BeF3D1647C8B36f3f6324',
         abi: VELO_POOL_ABI,
         functionName: 'slot0',
       })) as [bigint, number, number, number, number, boolean];
-
-      console.log(positionDetails, 'positionDetailspositionDetails');
 
       const amounts = V3PoolUtils.getTokenAmountsForLiquidity({
         liquidity: liquidity,
@@ -106,8 +105,10 @@ const useLpFarms = () => {
         upperTick: tickUpper,
       });
 
-      const tokenPricePromises = [fetchTokenPriceDexScreener(token0), fetchTokenPriceDexScreener(token1)];
-      const [token0Price, token1Price] = await Promise.all(tokenPricePromises);
+      const [token0Price, token1Price] = await Promise.all([
+        fetchTokenPriceDexScreener({ address: token0, chainId }),
+        fetchTokenPriceDexScreener({ address: token1, chainId }),
+      ]);
 
       const token0Amount = Number(formatUnits(BigInt(amounts.amount0), 18)) * token0Price;
       const token1Amount = Number(formatUnits(BigInt(amounts.amount1), 18)) * token1Price;
@@ -168,7 +169,7 @@ const useLpFarms = () => {
         args: [address, UNISWAP_V3_STAKER, tokenId, encodedData],
       });
 
-      const receipt = (await publicClient?.waitForTransactionReceipt({
+      const receipt = (await publicClient.waitForTransactionReceipt({
         hash: tx,
         confirmations: 1,
       })) as TransactionReceipt;
@@ -195,7 +196,7 @@ const useLpFarms = () => {
         functionName: 'unstakeToken',
         args: [KEY_STRUCT2, tokenId],
       });
-      const receipt = (await publicClient?.waitForTransactionReceipt({
+      const receipt = (await publicClient.waitForTransactionReceipt({
         hash: tx,
         confirmations: 1,
       })) as TransactionReceipt;
@@ -214,34 +215,33 @@ const useLpFarms = () => {
     }
   };
 
-  const getStackedPositionsIds = async () => {
+  const getStakedPositionsIds = async () => {
     try {
-      const stackedPositions = (await publicClient?.readContract({
+      const stakedPositions = (await publicClient.readContract({
         address: UNISWAP_V3_STAKER,
         abi: V3_STACKER_ABI,
         functionName: 'getUserStakedTokens',
         args: [address],
       })) as bigint[];
-      console.log({ stackedPositions });
-      return stackedPositions;
+      return stakedPositions;
     } catch (error) {
       console.error(error);
       return [];
     }
   };
 
-  const getStackedPositionList = async (): Promise<Position[]> => {
+  const getStakedPositionList = async (): Promise<Position[]> => {
     try {
-      const stackedPositionsIds = await getStackedPositionsIds();
+      const stakedPositionsIds = await getStakedPositionsIds();
 
-      const rewardInfo = await getRewardInfo(stackedPositionsIds);
+      const rewardInfo = await getRewardInfo(stakedPositionsIds);
 
       const positionResults = await Promise.allSettled(
-        stackedPositionsIds.map((positionId) => getPositionDetails(positionId)),
+        stakedPositionsIds.map((positionId) => getPositionDetails(positionId)),
       );
 
       // Filter out rejected promises and map successful results to Position objects
-      const stackedPositionList = positionResults
+      const stakedPositionList = positionResults
         .filter((result): result is PromiseFulfilledResult<Position> => result.status === 'fulfilled')
         .map((result) => {
           const position = result.value;
@@ -251,11 +251,11 @@ const useLpFarms = () => {
       // Log any failed position fetches
       positionResults.forEach((result, index) => {
         if (result.status === 'rejected') {
-          console.error(`Failed to fetch position ${stackedPositionsIds[index]}:`, result.reason);
+          console.error(`Failed to fetch position ${stakedPositionsIds[index]}:`, result.reason);
         }
       });
 
-      return stackedPositionList;
+      return stakedPositionList;
     } catch (error) {
       console.error('Error fetching staked positions:', error);
       return [];
@@ -264,7 +264,7 @@ const useLpFarms = () => {
 
   const getRewardInfo = async (tokenIds: BigInt[]) => {
     try {
-      const rewardDetails = await publicClient?.multicall({
+      const rewardDetails = await publicClient.multicall({
         contracts: tokenIds.map((tokenId) => ({
           address: UNISWAP_V3_STAKER as Address,
           abi: V3_STACKER_ABI,
@@ -295,7 +295,7 @@ const useLpFarms = () => {
 
   const getClaimableRewards = async () => {
     try {
-      const claimableRewards = (await publicClient?.readContract({
+      const claimableRewards = (await publicClient.readContract({
         address: UNISWAP_V3_STAKER,
         abi: V3_STACKER_ABI,
         functionName: 'rewards',
@@ -317,7 +317,7 @@ const useLpFarms = () => {
         functionName: 'claimReward',
         args: [LP_FARM_REWARD_TOKEN, address, rewardTokenAmount],
       });
-      const receipt = (await publicClient?.waitForTransactionReceipt({
+      const receipt = (await publicClient.waitForTransactionReceipt({
         hash: tx,
         confirmations: 1,
       })) as TransactionReceipt;
@@ -344,7 +344,7 @@ const useLpFarms = () => {
         functionName: 'withdrawToken',
         args: [tokenId, address, encodedData],
       });
-      const receipt = (await publicClient?.waitForTransactionReceipt({
+      const receipt = (await publicClient.waitForTransactionReceipt({
         hash: tx,
         confirmations: 1,
       })) as TransactionReceipt;
@@ -369,8 +369,8 @@ const useLpFarms = () => {
     getClaimableRewards,
     unStakeFarm,
     claimRewards,
-    getStackedPositionsIds,
-    getStackedPositionList,
+    getStakedPositionsIds,
+    getStakedPositionList,
     withdrawPosition,
   };
 };

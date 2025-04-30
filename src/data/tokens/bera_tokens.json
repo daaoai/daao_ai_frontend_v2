@@ -12,5 +12,19 @@
     "symbol": "WBERA",
     "name": "Wrapped Bera",
     "logo": "https://icecreamswap-assets.s3.amazonaws.com/token/80094/0x6969696969696969696969696969696969696969.png"
+  },
+  "0x549943e04f40284185054145c6E4e9568C1D3241": {
+    "address": "0x549943e04f40284185054145c6E4e9568C1D3241",
+    "decimals": 6,
+    "name": "Bridged USD (Stargate)",
+    "symbol": "USDC.e",
+    "logo": "https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48/logo.png"
+  },
+  "0x2F6F07CDcf3588944Bf4C42aC74ff24bF56e7590": {
+    "address": "0x2F6F07CDcf3588944Bf4C42aC74ff24bF56e7590",
+    "decimals": 18,
+    "name": "WETH",
+    "symbol": "WETH",
+    "logo": "https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2/logo.png"
   }
 }

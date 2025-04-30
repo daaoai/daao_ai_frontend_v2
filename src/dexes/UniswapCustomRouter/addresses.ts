@@ -1,7 +1,7 @@
 import { supportedChainIds } from '@/constants/chains';
 import { DexAddresses } from '@/types/dex';
 
-export const customDexAddressesByChainId: Record<number, DexAddresses> = {
+export const uniswapCustomDexAddressesByChainId: Record<number, DexAddresses> = {
   [supportedChainIds.monad]: {
     factoryAddress: '0x961235a9020B05C44DF1026D956D1F4D78014276',
     swapRouterAddress: '0xa4c3eDA0E6C4Ad82Fa8962129010cC57d6e5198A',

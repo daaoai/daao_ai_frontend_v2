@@ -2,7 +2,7 @@ import { supportedDexesTypes } from '@/constants/dex';
 import { KodiakDex } from '@/dexes/kodiakDex';
 import { PancakeDex } from '@/dexes/pancake';
 import { UniswapV3Pool } from '@/dexes/uniswap/v3Pool';
-import { UniswapCustomRouterDex } from '@/dexes/UniswapCustomRouter';
+import { UniswapCustomRouterDex } from '@/dexes/uniswapCustomRouter';
 import { VelodromeV3Pool } from '@/dexes/velodrome/v3Pool';
 import { VelodromeCustomRouterDex } from '@/dexes/velodromeCustomRouter';
 import { SupportedDexType } from '@/types/chains';

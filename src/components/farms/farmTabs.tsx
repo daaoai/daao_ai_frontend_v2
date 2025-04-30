@@ -1,22 +1,22 @@
 'use client';
-import React, { useCallback, useState } from 'react';
-import { motion } from 'framer-motion';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/shadcn/components/ui/tabs';
-import FarmCardSkeleton from '@/components/skeleton/farmCard';
 import FarmCard from '@/components/farms/farmCard';
+import FarmCardSkeleton from '@/components/skeleton/farmCard';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/shadcn/components/ui/tabs';
 import { FarmPool } from '@/types/farm';
+import { motion } from 'framer-motion';
 import { Info } from 'lucide-react';
-import { ModalWrapper } from '../modalWrapper';
+import React, { useCallback, useState } from 'react';
 import LPFarms from '../lpFarms';
-import { daoAddress } from '@/constants/addresses';
+import { ModalWrapper } from '../modalWrapper';
 
 interface FarmTabsProps {
   activeFarms: FarmPool[];
   inactiveFarms: FarmPool[];
   isLoading: boolean;
+  chainId: number;
 }
 
-const FarmTabs: React.FC<FarmTabsProps> = ({ activeFarms, inactiveFarms, isLoading }) => {
+const FarmTabs: React.FC<FarmTabsProps> = ({ activeFarms, inactiveFarms, chainId, isLoading }) => {
   const [activeTab, setActiveTab] = useState('active');
   const [isLPFarmModalOpen, setIsLPFarmModalOpen] = useState(false);
   const openFarmModalOpen = useCallback(() => setIsLPFarmModalOpen(true), []);
@@ -34,7 +34,7 @@ const FarmTabs: React.FC<FarmTabsProps> = ({ activeFarms, inactiveFarms, isLoadi
       return (
         <div className="flex items-start gap-6 justify-start relative z-20 flex-wrap">
           {farms.map((farm, index) => (
-            <FarmCard key={`${farm.poolAddress}-${index}`} farm={farm} isLoading={isLoading} />
+            <FarmCard key={`${farm.poolAddress}-${index}`} farm={farm} isLoading={isLoading} chainId={chainId} />
           ))}
         </div>
       );
@@ -103,7 +103,7 @@ const FarmTabs: React.FC<FarmTabsProps> = ({ activeFarms, inactiveFarms, isLoadi
           </TabsList>
         </div>
         <ModalWrapper isOpen={isLPFarmModalOpen} onClose={closeFarmModalOpen}>
-          <LPFarms onClose={closeFarmModalOpen} daoTokenAddress={daoAddress} />
+          <LPFarms onClose={closeFarmModalOpen} chainId={chainId} />
         </ModalWrapper>
 
         <TabsContent value="active">{renderFarms(activeFarms, 'No active cards found.')}</TabsContent>

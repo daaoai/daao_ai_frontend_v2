@@ -1,5 +1,7 @@
+import { getDexAddressesForChain, supportedDexesTypes } from '@/constants/dex';
 import { AddLiquidityParams } from '@/types/addLiquidity';
-import { encodeFunctionData } from 'viem';
+import { getPublicClient } from '@/utils/publicClient';
+import { encodeFunctionData, Hex } from 'viem';
 import { velodromeNFTManagerAbi } from './abi/nftManager';
 
 export class VelodromeNFTManager {
@@ -15,7 +17,6 @@ export class VelodromeNFTManager {
     amount1Min,
     recipient,
     deadline,
-    sqrtPriceX96,
   }: AddLiquidityParams) => {
     return encodeFunctionData({
       abi: velodromeNFTManagerAbi,
@@ -36,6 +37,17 @@ export class VelodromeNFTManager {
           token1,
         },
       ],
+    });
+  };
+
+  getUserNFTIds = async ({ account, chainId, poolAddress }: { account: Hex; chainId: number; poolAddress: Hex }) => {
+    const nftManagerAddress = getDexAddressesForChain(chainId, supportedDexesTypes.velodromeCustomRouter).nftManager;
+    const publicClient = getPublicClient(chainId);
+    return await publicClient.readContract({
+      address: nftManagerAddress,
+      abi: velodromeNFTManagerAbi,
+      functionName: 'userPositions',
+      args: [account, poolAddress],
     });
   };
 }

@@ -1,19 +1,19 @@
 'use client';
-import { useEffect, useState } from 'react';
-import { ChevronLeft } from 'lucide-react';
 import { Card, CardContent, CardHeader } from '@/shadcn/components/ui/card';
-import ClickToCopy from '../copyToClipboard';
 import { shortenAddress } from '@/utils/address';
+import { ChevronLeft } from 'lucide-react';
+import { useEffect, useState } from 'react';
+import ClickToCopy from '../copyToClipboard';
 // import usePoolList from '@/hooks/farm/usePoolList';
 import { FarmPool, Position } from '@/types/farm';
 // import useHarvest from '@/hooks/farm/useHarvest';
-import useLpFarms from '@/hooks/farm/uselpFarms';
 import { modeTokenAddress } from '@/constants/addresses';
 import { CARTEL_TOKEN_ADDRESS } from '@/constants/ticket';
+import useLpFarms from '@/hooks/farm/uselpFarms';
+import usePoolList from '@/hooks/farm/usePoolList';
 import Image from 'next/image';
 import { formatUnits } from 'viem';
 import AnimatedSkeleton from '../animatedSkeleton';
-import usePoolList from '@/hooks/farm/usePoolList';
 // import { CURRENT_DAO_IMAGE, GAMBLE_IMAGE } from '@/constants/links';
 
 interface LPFarm {
@@ -26,12 +26,12 @@ interface LPFarm {
 
 interface LPFarmsProps {
   onClose: () => void;
-  daoTokenAddress: string;
+  chainId: number;
 }
 
 const CONTRACT_ADDRESS = '0x7303dbc086a18459A4dc74e74f2Dcc2a2a26131B';
 
-const LPFarms: React.FC<LPFarmsProps> = ({ onClose, daoTokenAddress }) => {
+const LPFarms: React.FC<LPFarmsProps> = ({ onClose, chainId }) => {
   const [viewMode, setViewMode] = useState<'unstaked' | 'staked'>('unstaked');
   const [poolDetails, setPoolDetails] = useState<FarmPool | null>(null);
   const [isStakeLoading, setIsStakeLoading] = useState(false);
@@ -41,37 +41,33 @@ const LPFarms: React.FC<LPFarmsProps> = ({ onClose, daoTokenAddress }) => {
   const [unClaimedReward, setUnclaimedRewards] = useState(BigInt(0));
   const [isClaimingRewards, setIsClaimingRewards] = useState(false);
   const [isWithdrawingPosition, setIsWithdrawingPosition] = useState(false);
-  console.log(poolDetails?.apr, 'hgvbnmk');
 
   const {
     getPositionList,
     unStakeFarm,
     stakeFarm,
-    getStackedPositionList,
+    getStakedPositionList,
     getClaimableRewards,
     claimRewards,
     withdrawPosition,
-  } = useLpFarms();
+  } = useLpFarms({ chainId });
 
-  const { getPoolDetails } = usePoolList();
+  const { getPoolDetails } = usePoolList({ chainId });
 
   const fetchPositionList = async () => {
     try {
       const data = await getPositionList();
-      console.log('fetchPositionListdata', { data });
       setUserPositions(data);
     } catch (error) {
-      console.log('fetchPositionList - error');
       console.error(error);
     }
   };
 
-  const fetchStackedPositionList = async () => {
+  const fetchStakedPositionList = async () => {
     try {
-      const data = await getStackedPositionList();
+      const data = await getStakedPositionList();
       setStackedPositions(data);
     } catch (error) {
-      console.log('fetchStackedPositionList - error');
       console.error(error);
     }
   };
@@ -81,7 +77,6 @@ const LPFarms: React.FC<LPFarmsProps> = ({ onClose, daoTokenAddress }) => {
       const data = await getClaimableRewards();
       setUnclaimedRewards(data);
     } catch (error) {
-      console.log('fetchClaimableRewards - error');
       console.error(error);
     }
   };
@@ -89,10 +84,8 @@ const LPFarms: React.FC<LPFarmsProps> = ({ onClose, daoTokenAddress }) => {
   const fetchPoolDetails = async () => {
     try {
       const data = await getPoolDetails({ poolAddress: CONTRACT_ADDRESS });
-      console.log('fetchPoolDetailsdata', { data });
       setPoolDetails(data);
     } catch (error) {
-      console.log('fetchPoolDetails - error');
       console.error(error);
     }
   };
@@ -106,7 +99,7 @@ const LPFarms: React.FC<LPFarmsProps> = ({ onClose, daoTokenAddress }) => {
 
   useEffect(() => {
     if (viewMode === 'staked') {
-      fetchStackedPositionList();
+      fetchStakedPositionList();
     } else {
       fetchPositionList();
     }
@@ -135,7 +128,7 @@ const LPFarms: React.FC<LPFarmsProps> = ({ onClose, daoTokenAddress }) => {
       setIsUnStakeLoading(true);
       await unStakeFarm(BigInt(id));
       await fetchClaimableRewards();
-      await fetchStackedPositionList();
+      await fetchStakedPositionList();
       setIsUnStakeLoading(false);
     } catch (err) {
       console.log({ err });
@@ -159,7 +152,7 @@ const LPFarms: React.FC<LPFarmsProps> = ({ onClose, daoTokenAddress }) => {
     try {
       setIsWithdrawingPosition(true);
       await withdrawPosition(BigInt(id));
-      await fetchStackedPositionList();
+      await fetchStakedPositionList();
       setIsWithdrawingPosition(false);
     } catch (err) {
       console.log({ err });
@@ -167,7 +160,6 @@ const LPFarms: React.FC<LPFarmsProps> = ({ onClose, daoTokenAddress }) => {
     }
   };
 
-  console.log(stackedPositions, 'stackedPositions');
   return (
     <div className="w-full">
       <Card className=" text-white border-gray-800 bg-[#101010]">

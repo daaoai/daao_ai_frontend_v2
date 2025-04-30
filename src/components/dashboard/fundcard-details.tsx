@@ -2,6 +2,7 @@ import { telegramDeFAILink, twitterDeFAILink } from '@/constants/links';
 import { fetchDaoMarketData } from '@/helpers/daao';
 import { Card } from '@/shadcn/components/ui/card';
 import { DaoInfo, DaoMarketData, FundDetails as FundDetailsType } from '@/types/daao';
+import { PoolDetails } from '@/types/pool';
 import { shortenAddress } from '@/utils/address';
 import { getLocalTokenDetails } from '@/utils/token';
 import Image from 'next/image';
@@ -12,7 +13,6 @@ import Liquidity from '../Liquidity/liquidity';
 import LPFarms from '../lpFarms';
 import { ModalWrapper } from '../modalWrapper';
 import PoolDetailCard from '../poolDetailCard';
-import { PoolDetails } from '@/types/pool';
 
 const FundDetails = ({
   fundDetails,
@@ -108,7 +108,7 @@ const FundDetails = ({
             />
           </ModalWrapper>
           <ModalWrapper isOpen={isLPFarmModalOpen} onClose={closeFarmModalOpen}>
-            <LPFarms onClose={closeFarmModalOpen} daoTokenAddress={daoInfo?.daoToken || ''} />
+            <LPFarms onClose={closeFarmModalOpen} chainId={chainId} />
           </ModalWrapper>
           {/* 
           <div className="flex flex-col gap-2">

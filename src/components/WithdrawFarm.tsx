@@ -1,26 +1,28 @@
 'use client';
-import React, { useEffect, useState } from 'react';
-import { XCircle, Loader } from 'lucide-react';
 import useWithDraw from '@/hooks/farm/useWithdraw';
+import { Card, CardContent, CardHeader, CardTitle } from '@/shadcn/components/ui/card';
+import { FarmPool } from '@/types/farm';
+import { Loader, XCircle } from 'lucide-react';
+import React, { useEffect, useState } from 'react';
+import { toast } from 'react-toastify';
 import { formatUnits, Hex, parseUnits } from 'viem';
 import { useAccount } from 'wagmi';
-import { FarmPool } from '@/types/farm';
-import { useToast } from '@/hooks/use-toast';
-import { Card, CardContent, CardHeader, CardTitle } from '@/shadcn/components/ui/card';
 
 interface WithdrawProps {
   onClose: () => void;
   poolAddress: Hex;
   poolData: FarmPool;
+  chainId: number;
 }
 
-const WithdrawFarms: React.FC<WithdrawProps> = ({ onClose, poolAddress, poolData }) => {
-  const { withdraw, startWithdraw, getWithdrawalTime } = useWithDraw();
+const WithdrawFarms: React.FC<WithdrawProps> = ({ onClose, poolAddress, poolData, chainId }) => {
+  const { withdraw, startWithdraw, getWithdrawalTime } = useWithDraw({ chainId });
   const { address } = useAccount();
-  const { toast } = useToast();
 
   const [withDrawEnable, setWithdrawEnable] = useState(false);
-  const [withdrawAmount] = useState<number>(parseFloat(formatUnits(poolData.userInfo.stackedAmount, 18)));
+  const [withdrawAmount] = useState<number>(
+    parseFloat(formatUnits(poolData.userInfo.stakedAmount, poolData.depositTokenDetails.decimals)),
+  );
   const [withdrawTimeLeft, setWithdrawTimeLeft] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [withdrawTxnMessage, setWithdrawTxnMessage] = useState<{
@@ -31,21 +33,23 @@ const WithdrawFarms: React.FC<WithdrawProps> = ({ onClose, poolAddress, poolData
     msg: null,
   });
 
-  useEffect(() => {
-    const fetchWithdrawalTime = async () => {
-      if (address) {
-        const timeLeft = await getWithdrawalTime({ address ,poolAddress});
-        if (timeLeft === 'Available Now') {
-          setWithdrawEnable(true);
-        } else if (timeLeft === 'Not Initiated') {
-          setWithdrawEnable(false);
-        } else {
-          setWithdrawTimeLeft(timeLeft);
-          setWithdrawEnable(false);
-        }
+  const fetchWithdrawalTime = async () => {
+    setLoading(true);
+    if (address) {
+      const timeLeft = await getWithdrawalTime({ address, poolAddress });
+      if (timeLeft === 'Available Now') {
+        setWithdrawEnable(true);
+      } else if (timeLeft === 'Not Initiated') {
+        setWithdrawEnable(false);
+      } else {
+        setWithdrawTimeLeft(timeLeft);
+        setWithdrawEnable(false);
       }
-    };
+    }
+    setLoading(false);
+  };
 
+  useEffect(() => {
     fetchWithdrawalTime();
   }, [address]);
 
@@ -56,49 +60,35 @@ const WithdrawFarms: React.FC<WithdrawProps> = ({ onClose, poolAddress, poolData
       msg: null,
     });
 
-    toast({
-      title: 'Processing Withdrawal...',
-      description: `Withdrawing ${withdrawAmount} tokens.`,
-      variant: 'default',
-    });
+    if (!withDrawEnable) {
+      toast.success('Withdrawal Not Available currently');
+      setLoading(false);
+      return;
+    }
+
+    toast.success('Withdrawal in progress...');
 
     try {
-      const receipt = await withdraw({
+      await withdraw({
         poolAddress,
-        amount: parseUnits(withdrawAmount.toString(), 18),
+        amount: parseUnits(withdrawAmount.toString(), poolData.depositTokenDetails.decimals),
       });
 
-      if (receipt?.status === 'success') {
-        setWithdrawTxnMessage({
-          status: 'success',
-          msg: 'Withdrawal Successful',
-        });
-        toast({
-          title: 'Withdrawal Successful ✅',
-          description: `Your withdrawal of ${withdrawAmount} tokens is confirmed.`,
-          variant: 'default',
-        });
-
-        setTimeout(
-          () =>
-            setWithdrawTxnMessage({
-              status: null,
-              msg: null,
-            }),
-          5000,
-        );
-      }
+      setTimeout(
+        () =>
+          setWithdrawTxnMessage({
+            status: null,
+            msg: null,
+          }),
+        5000,
+      );
     } catch (error) {
       console.log(error, 'error');
       setWithdrawTxnMessage({
         status: 'error',
         msg: 'Withdrawal Failed',
       });
-      toast({
-        title: 'Withdrawal Failed ❌',
-        description: 'An error occurred during withdrawal.',
-        variant: 'destructive',
-      });
+      toast.error('Withdrawal Failed ❌');
     } finally {
       setLoading(false);
     }
@@ -107,11 +97,7 @@ const WithdrawFarms: React.FC<WithdrawProps> = ({ onClose, poolAddress, poolData
   const handleWithdrawFlow = async () => {
     if (address) {
       if (withdrawTimeLeft && withdrawTimeLeft !== 'Available Now') {
-        toast({
-          title: 'Withdrawal Pending',
-          description: `You can withdraw in ${withdrawTimeLeft}.`,
-          variant: 'default',
-        });
+        toast.error('Withdrawal Not Available currently');
         return;
       }
 
@@ -122,18 +108,15 @@ const WithdrawFarms: React.FC<WithdrawProps> = ({ onClose, poolAddress, poolData
       });
 
       try {
-        const txn = await startWithdraw({poolAddress});
+        const txn = await startWithdraw({ poolAddress });
         if (txn?.status === 'success') {
-          setWithdrawEnable(true);
           setWithdrawTxnMessage({
             status: 'success',
             msg: 'Withdrawal Initiated Successfully',
           });
-          toast({
-            title: 'Withdrawal Initiated ✅',
-            description: 'You can withdraw once the cooldown period is over.',
-            variant: 'default',
-          });
+          toast.success('Withdrawal Initiated Successfully ✅');
+
+          fetchWithdrawalTime();
 
           setTimeout(
             () =>
@@ -150,19 +133,12 @@ const WithdrawFarms: React.FC<WithdrawProps> = ({ onClose, poolAddress, poolData
           status: 'error',
           msg: 'Withdrawal Initiated Failed',
         });
-        toast({
-          title: 'Withdrawal Failed ❌',
-          description: 'An error occurred while starting withdrawal.',
-          variant: 'destructive',
-        });
+        toast.error('Withdrawal Initiated Failed ❌');
       } finally {
         setLoading(false);
       }
     }
   };
-
-  console.log(formatUnits(poolData.userInfo.stackedAmount, 18), 'fghgvbhj');
-  console.log({withDrawEnable})
   return (
     <Card className="w-full max-w-lg bg-gray-40 border border-gray-30 rounded-xl shadow-lg text-white">
       <CardHeader className="flex flex-row justify-between items-center px-6 py-4 border-b border-[#1E1E1E]">
@@ -182,8 +158,8 @@ const WithdrawFarms: React.FC<WithdrawProps> = ({ onClose, poolAddress, poolData
       <CardContent className="p-6">
         <div className="flex flex-col gap-4">
           <p className="text-white">
-            Tokens Staked: {formatUnits(poolData.userInfo.stackedAmount, 18)}
-            CARTEL
+            Tokens Staked: {formatUnits(poolData.userInfo.stakedAmount, poolData.depositTokenDetails.decimals)}
+            {` ${poolData.depositTokenDetails.symbol}`}
           </p>
 
           {withdrawTimeLeft && <p className="text-yellow-400">Withdrawal available in: {withdrawTimeLeft}</p>}

@@ -1,6 +1,5 @@
-import { Abi } from 'viem';
 
-export const FARM_ABI: Abi = [
+export const FARM_ABI = [
   {
     inputs: [
       { internalType: 'address', name: 'owner_', type: 'address' },
@@ -372,4 +371,4 @@ export const FARM_ABI: Abi = [
     stateMutability: 'view',
     type: 'function',
   },
-];
+] as const;

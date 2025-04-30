@@ -1,3 +1,18 @@
-export const FARM_FACTORY_CONTRACT_ADDRESS = '0x06B79282BA0b442F398443007246CEC43d1833A6' as `0x${string}`;
-export const FARM_CONTRACT_ADDRESS = '0xC61f154F8b93EA88A7E46276dc37179B8E43E0C3' as `0x${string}`;
-export const MODE_CHAIN_ID = 34443;
+import { Hex } from 'viem';
+import { supportedChainIds } from './chains';
+
+export const farmAddressesByChainId: {
+  [chainId: number]: {
+    factory: Hex;
+  };
+} = {
+  [supportedChainIds.mode]: {
+    factory: '0x06B79282BA0b442F398443007246CEC43d1833A6',
+  },
+  [supportedChainIds.bsc]: {
+    factory: '0xA2E34eAe3fae892716FF59dc3c9B638a3b762ed9',
+  },
+  [supportedChainIds.bera]: {
+    factory: '0x90d83b3b3844A2A56Dd4a29A42CBc12a4673b4Ea',
+  },
+};

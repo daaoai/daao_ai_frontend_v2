@@ -1,8 +1,8 @@
 import { kodiakAddressesByChainId } from '@/dexes/kodiakDex/addresses';
 import { pancakeAddressesByChainId } from '@/dexes/pancake/addresses';
 import { pancakeChainSlugMap } from '@/dexes/pancake/chainMap';
-import { customDexAddressesByChainId } from '@/dexes/UniswapCustomRouter/addresses';
-import { uniswapChainSlugMap } from '@/dexes/UniswapCustomRouter/chainMap';
+import { uniswapCustomDexAddressesByChainId } from '@/dexes/uniswapCustomRouter/addresses';
+import { uniswapChainSlugMap } from '@/dexes/uniswapCustomRouter/chainMap';
 import { velodromeCustomDexAddressesByChainId } from '@/dexes/velodromeCustomRouter/addresses';
 import { velodromeChainSlugMap } from '@/dexes/velodromeCustomRouter/chainMap';
 import { SupportedDexType } from '@/types/chains';
@@ -18,7 +18,7 @@ export const supportedDexesTypes = {
 export const getDexAddressesForChain = (chainId: number, type: SupportedDexType): DexAddresses => {
   switch (type) {
     case supportedDexesTypes.uniswapCustomRouter:
-      return customDexAddressesByChainId[chainId];
+      return uniswapCustomDexAddressesByChainId[chainId];
     case supportedDexesTypes.velodromeCustomRouter:
       return velodromeCustomDexAddressesByChainId[chainId];
     case supportedDexesTypes.pancake:

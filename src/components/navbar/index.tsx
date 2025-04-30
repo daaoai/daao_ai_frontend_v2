@@ -1,18 +1,21 @@
-import Link from 'next/link';
-import React, { useState } from 'react';
-import { ConnectWalletButton } from '../connect-button';
-import Image from 'next/image';
-import { usePathname } from 'next/navigation';
+import { chainSlugToChainIdMap } from '@/constants/chains';
 import { motion } from 'framer-motion';
 import { Menu, X } from 'lucide-react';
+import Image from 'next/image';
+import Link from 'next/link';
+import { useParams, usePathname } from 'next/navigation';
+import { useState } from 'react';
+import { ConnectWalletButton } from '../connect-button';
 import MobileMenu from './MobileMenu';
 
 export const Navbar = () => {
   const pathname = usePathname();
+  const { chain } = useParams();
+  const chainId = chainSlugToChainIdMap[chain as string];
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   const navLinks = [
-    { name: 'Farms', href: '/dapp/farms' },
+    { name: 'Farms', href: `/${chain}/farms` },
     {
       name: 'Launch DAO',
       href: 'https://docs.google.com/forms/d/e/1FAIpQLScbKuEH18VXPg29Ek4yeX3spXclZCXV6HHfDtmK9Vh8XMQigA/viewform?usp=header',

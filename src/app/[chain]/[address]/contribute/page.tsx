@@ -4,8 +4,8 @@ import { PageLayout } from '@/components/page-layout';
 import { chainIdToChainSlugMap, chainSlugToChainIdMap, defaultChain } from '@/constants/chains';
 import { fundsByChainId } from '@/data/funds';
 import useContribution from '@/hooks/farm/useContribution';
-import useEffectAfterMount from '@/hooks/useEffectAfterMount';
 import useTokenPrice from '@/hooks/token/useTokenPrice';
+import useEffectAfterMount from '@/hooks/useEffectAfterMount';
 import { Button } from '@/shadcn/components/ui/button';
 import { Input } from '@/shadcn/components/ui/input';
 import { Token } from '@/types/chains';
@@ -167,7 +167,10 @@ export default function Page() {
   const updateTokenPrice = async () => {
     try {
       if (!contributionTokenDetails) return;
-      const price = await fetchTokenPriceDexScreener(contributionTokenDetails.address);
+      const price = await fetchTokenPriceDexScreener({
+        address: contributionTokenDetails.address,
+        chainId,
+      });
       setTokenPrice(Number(price));
     } catch (err) {
       console.log({ err });

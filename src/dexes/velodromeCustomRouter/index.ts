@@ -1,7 +1,7 @@
 import { supportedDexesTypes } from '@/constants/dex';
 import { VELO_FACTORY_ABI } from '@/daao-sdk/abi/veloFactory';
 import { Hex } from 'viem';
-import { UniswapCustomRouterDex } from '../UniswapCustomRouter';
+import { UniswapCustomRouterDex } from '../uniswapCustomRouter';
 
 export class VelodromeCustomRouterDex extends UniswapCustomRouterDex {
   constructor(chainId: number) {
