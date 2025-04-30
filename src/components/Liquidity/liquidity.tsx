@@ -12,6 +12,7 @@ import Link from 'next/link';
 import React, { useState } from 'react';
 import { useAccount } from 'wagmi';
 import FallbackTokenLogo from '/public/assets/fallbackToken.svg';
+import { truncateNumber } from '@/utils/numbers';
 
 interface LiquidityProps {
   onClose: () => void;
@@ -150,7 +151,8 @@ const Liquidity: React.FC<LiquidityProps> = ({ onClose, daoInfo, poolDetails, fu
               <div className="flex justify-between text-sm">
                 <span>Exchange Rate</span>
                 <span>
-                  1 {srcTokenDetails.symbol} = {currentPrice.toFixed(6) || 0} {destTokenDetails.symbol}
+                  1 {srcTokenDetails.symbol} = {truncateNumber(currentPrice,8) || 0}{' '}
+                  {destTokenDetails.symbol}
                 </span>
               </div>
             </div>
@@ -220,7 +222,8 @@ const Liquidity: React.FC<LiquidityProps> = ({ onClose, daoInfo, poolDetails, fu
                     {`Your liquidity will be concentrated between ±${selectedRange}%`}
                   </p>
                   <p className="text-sm text-gray-400 mt-2">
-                    Price range: {lowerPrice.toFixed(6)} to {upperPrice.toFixed(6)} {srcTokenDetails.symbol} per{' '}
+                    Price range: {truncateNumber(lowerPrice, 8)} to{' '}
+                    {truncateNumber(upperPrice, 8)} {srcTokenDetails.symbol} per{' '}
                     {destTokenDetails.symbol}
                   </p>
                 </div>

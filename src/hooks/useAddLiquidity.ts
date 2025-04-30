@@ -122,6 +122,7 @@ export const useAddLiquidity = ({
     });
     setLowerTick(lowerTick);
     setUpperTick(upperTick);
+    updateCurrentPrice(currentPoolData.sqrtPriceX96);
     updateLowerPrice(lowerTick);
     updateUpperPrice(upperTick);
   };
@@ -141,7 +142,7 @@ export const useAddLiquidity = ({
       tick: tickLower,
     });
     if (srcToken === 'token1') {
-      setLowerPrice(1 / price);
+      setUpperPrice(1 / price); // when token1 is selected, lower price actually becomes upper price
       return 1 / price;
     }
     setLowerPrice(price);
@@ -154,7 +155,7 @@ export const useAddLiquidity = ({
       tick: tickUpper,
     });
     if (srcToken === 'token1') {
-      setUpperPrice(1 / price);
+      setLowerPrice(1 / price); // when token1 is selected, upper price actually becomes lower price
       return 1 / price;
     }
     setUpperPrice(price);
@@ -323,7 +324,7 @@ export const useAddLiquidity = ({
 
   useEffectAfterMount(() => {
     updateTicks();
-  }, [selectedRange, currentPoolData]);
+  }, [selectedRange, currentPoolData, srcToken]);
 
   useEffectAfterMount(() => {
     if (!Number(srcTokenFormattedAmount)) {
@@ -340,11 +341,6 @@ export const useAddLiquidity = ({
   useEffect(() => {
     updateTokensBalance();
   }, [account]);
-
-  useEffectAfterMount(() => {
-    updateLowerPrice(lowerTick);
-    updateUpperPrice(upperTick);
-  }, [srcToken]);
 
   const handleSwitch = () => {
     if (srcToken === 'token0') {
