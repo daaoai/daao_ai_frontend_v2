@@ -29,18 +29,10 @@ export interface FarmPool {
 }
 
 export interface Position {
-  nonce: bigint;
-  operator: Address;
-  token0: Address;
-  token1: Address;
-  tickSpacing: number;
-  tickLower: number;
-  tickUpper: number;
-  liquidity: bigint;
-  feeGrowthInside0LastX128: bigint;
-  feeGrowthInside1LastX128: bigint;
-  tokensOwed0: bigint;
-  tokensOwed1: bigint;
+  token0: Hex;
+  token1: Hex;
+  token0Details: Token;
+  token1Details: Token;
   liquidityUsd: string;
   id: number;
   apr: number;

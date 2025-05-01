@@ -1,6 +1,4 @@
-import { Abi } from 'viem';
-
-export const V3_STACKER_ABI: Abi = [
+export const V3_STAKER_ABI = [
   {
     inputs: [
       { internalType: 'contract IUniswapV3Factory', name: '_factory', type: 'address' },
@@ -337,4 +335,4 @@ export const V3_STACKER_ABI: Abi = [
     stateMutability: 'nonpayable',
     type: 'function',
   },
-];
+] as const;

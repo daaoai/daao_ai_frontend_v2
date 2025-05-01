@@ -851,4 +851,4 @@ export const VELO_POOL_ABI = [
     stateMutability: 'nonpayable',
     type: 'function',
   },
-];
+] as const;

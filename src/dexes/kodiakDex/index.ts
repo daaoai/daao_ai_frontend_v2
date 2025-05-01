@@ -1,13 +1,13 @@
 import { getDexAddressesForChain, supportedDexesTypes } from '@/constants/dex';
 import { SupportedDexType } from '@/types/chains';
-import { DexProtocol, PoolAddressRequest, QuotesRequest, SwapDataRequest } from '@/types/dex';
+import { IDexProtocol, PoolAddressRequest, QuotesRequest, SwapDataRequest } from '@/types/dex';
 import { getPublicClient } from '@/utils/publicClient';
 import { encodeFunctionData, Hex, PublicClient } from 'viem';
 import { UniswapCustomRouterDex } from '../uniswapCustomRouter';
 import { KODIAK_QUOTER_ABI } from './abi/quoter';
 import { KODIAK_ROUTER_ABI } from './abi/router';
 
-export class KodiakDex implements DexProtocol {
+export class KodiakDex implements IDexProtocol {
   factoryAddress: Hex;
   swapRouterAddress: Hex;
   quoterAddress: Hex;
@@ -29,8 +29,8 @@ export class KodiakDex implements DexProtocol {
     return this.customDex.getPoolAddress({ token0, token1, fee, tickSpacing });
   };
 
-  getPoolDetails = async (address: Hex) => {
-    return this.customDex.getPoolDetails(address);
+  getV3PoolDetails = async (address: Hex) => {
+    return this.customDex.getV3PoolDetails(address);
   };
 
   fetchQuotes = async ({ tokenIn, tokenOut, fee, amount, sqrtPrice }: QuotesRequest) => {

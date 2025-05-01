@@ -2,14 +2,14 @@ import { getDexAddressesForChain, supportedDexesTypes } from '@/constants/dex';
 import { ROUTER_ABI } from '@/daao-sdk/abi/router';
 import { SWAP_QUOTER_SIMULATE } from '@/daao-sdk/abi/swapQuoterAbi';
 import { UNI_FACTORY_ABI } from '@/daao-sdk/abi/uniFactory';
-import { UNI_POOL_ABI } from '@/daao-sdk/abi/uniPool';
+import { UNI_V3_POOL_ABI } from '@/daao-sdk/abi/uniPool';
 import { SupportedDexType } from '@/types/chains';
-import { DexProtocol, PoolAddressRequest } from '@/types/dex';
+import { IDexProtocol, PoolAddressRequest } from '@/types/dex';
 import { multicallForSameContract } from '@/utils/multicall';
 import { getPublicClient } from '@/utils/publicClient';
 import { encodeFunctionData, Hex, PublicClient } from 'viem';
 
-export class UniswapCustomRouterDex implements DexProtocol {
+export class UniswapCustomRouterDex implements IDexProtocol {
   factoryAddress: Hex;
   swapRouterAddress: Hex;
   quoterAddress: Hex;
@@ -34,9 +34,9 @@ export class UniswapCustomRouterDex implements DexProtocol {
     });
   };
 
-  getPoolDetails = async (address: Hex) => {
+  getV3PoolDetails = async (address: Hex) => {
     const multicallRes = (await multicallForSameContract({
-      abi: UNI_POOL_ABI,
+      abi: UNI_V3_POOL_ABI,
       address,
       chainId: this.chainId,
       functionNames: ['token0', 'token1'],

@@ -14,22 +14,12 @@ import usePoolList from '@/hooks/farm/usePoolList';
 import Image from 'next/image';
 import { formatUnits } from 'viem';
 import AnimatedSkeleton from '../animatedSkeleton';
-// import { CURRENT_DAO_IMAGE, GAMBLE_IMAGE } from '@/constants/links';
-
-interface LPFarm {
-  id: number;
-  tokenId: number;
-  value: string;
-  canStake: boolean;
-  apr?: string;
-}
+import { lpFarmAddressesByChainId } from '@/constants/farm';
 
 interface LPFarmsProps {
   onClose: () => void;
   chainId: number;
 }
-
-const CONTRACT_ADDRESS = '0x7303dbc086a18459A4dc74e74f2Dcc2a2a26131B';
 
 const LPFarms: React.FC<LPFarmsProps> = ({ onClose, chainId }) => {
   const [viewMode, setViewMode] = useState<'unstaked' | 'staked'>('unstaked');
@@ -37,13 +27,15 @@ const LPFarms: React.FC<LPFarmsProps> = ({ onClose, chainId }) => {
   const [isStakeLoading, setIsStakeLoading] = useState(false);
   const [isUnStakeLoading, setIsUnStakeLoading] = useState(false);
   const [userPositions, setUserPositions] = useState<Position[]>([]);
-  const [stackedPositions, setStackedPositions] = useState<Position[]>([]);
+  const [stakedPositions, setStakedPositions] = useState<Position[]>([]);
   const [unClaimedReward, setUnclaimedRewards] = useState(BigInt(0));
   const [isClaimingRewards, setIsClaimingRewards] = useState(false);
   const [isWithdrawingPosition, setIsWithdrawingPosition] = useState(false);
 
+  const { poolAddress } = lpFarmAddressesByChainId[chainId];
+
   const {
-    getPositionList,
+    getUserPositionsForPool,
     unStakeFarm,
     stakeFarm,
     getStakedPositionList,
@@ -56,7 +48,7 @@ const LPFarms: React.FC<LPFarmsProps> = ({ onClose, chainId }) => {
 
   const fetchPositionList = async () => {
     try {
-      const data = await getPositionList();
+      const data = await getUserPositionsForPool();
       setUserPositions(data);
     } catch (error) {
       console.error(error);
@@ -66,7 +58,7 @@ const LPFarms: React.FC<LPFarmsProps> = ({ onClose, chainId }) => {
   const fetchStakedPositionList = async () => {
     try {
       const data = await getStakedPositionList();
-      setStackedPositions(data);
+      setStakedPositions(data);
     } catch (error) {
       console.error(error);
     }
@@ -83,14 +75,12 @@ const LPFarms: React.FC<LPFarmsProps> = ({ onClose, chainId }) => {
 
   const fetchPoolDetails = async () => {
     try {
-      const data = await getPoolDetails({ poolAddress: CONTRACT_ADDRESS });
+      const data = await getPoolDetails({ poolAddress });
       setPoolDetails(data);
     } catch (error) {
       console.error(error);
     }
   };
-
-  console.log(userPositions, 'userPositions');
 
   useEffect(() => {
     fetchPoolDetails();
@@ -116,7 +106,7 @@ const LPFarms: React.FC<LPFarmsProps> = ({ onClose, chainId }) => {
       setIsStakeLoading(true);
       await stakeFarm(BigInt(id));
       setIsStakeLoading(false);
-      await fetchPositionList;
+      await fetchPositionList();
     } catch (err) {
       console.log({ err });
       setIsStakeLoading(false);
@@ -194,8 +184,8 @@ const LPFarms: React.FC<LPFarmsProps> = ({ onClose, chainId }) => {
               <span className="bg-[#D0F0BF] text-black text-xs px-2 py-0.5 rounded ml-auto">Active</span>
             </div>
             <div className="bg-[#053738] p-1 rounded-lg flex gap-x-2 px-3 w-fit mt-6">
-              <p className="text-sm sm:text-base">{shortenAddress(CONTRACT_ADDRESS)}</p>
-              <ClickToCopy copyText={CONTRACT_ADDRESS} className="text-teal-20" />
+              <p className="text-sm sm:text-base">{shortenAddress(poolAddress)}</p>
+              <ClickToCopy copyText={poolAddress} className="text-teal-20" />
             </div>
             <div className="flex items-center gap-2">
               <p>APR</p> <p className="text-white">{poolDetails?.apr}</p>
@@ -265,14 +255,14 @@ const LPFarms: React.FC<LPFarmsProps> = ({ onClose, chainId }) => {
                       <AnimatedSkeleton className="w-14 h-6 rounded-md" />
                     </td>
                   </tr>
-                ) : (viewMode === 'unstaked' ? userPositions : stackedPositions).length === 0 ? (
+                ) : (viewMode === 'unstaked' ? userPositions : stakedPositions).length === 0 ? (
                   <tr>
                     <td colSpan={5} className="text-center py-4 text-gray-400">
                       No results found
                     </td>
                   </tr>
                 ) : (
-                  (viewMode === 'unstaked' ? userPositions : stackedPositions).map((position, index) => (
+                  (viewMode === 'unstaked' ? userPositions : stakedPositions).map((position, index) => (
                     <tr key={position.id}>
                       <td className="px-4 py-3">{index + 1}</td>
                       <td className="px-4 py-3">{position.id}</td>

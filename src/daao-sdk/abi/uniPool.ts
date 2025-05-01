@@ -1,4 +1,4 @@
-export const UNI_POOL_ABI = [
+export const UNI_V3_POOL_ABI = [
   { inputs: [], stateMutability: 'nonpayable', type: 'constructor' },
   {
     anonymous: false,

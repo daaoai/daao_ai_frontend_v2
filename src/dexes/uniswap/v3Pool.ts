@@ -1,6 +1,8 @@
+import { multicallForSameContract } from '@/utils/multicall';
 import { getPublicClient } from '@/utils/publicClient';
 import { Abi, Hex, PublicClient } from 'viem';
 import { uniswapV3PoolAbi } from './abi/v3Pool';
+import { V3PoolDetails } from '@/types/dex';
 
 export class UniswapV3Pool {
   address: Hex;
@@ -25,6 +27,28 @@ export class UniswapV3Pool {
     return {
       sqrtPriceX96: slot0[0],
       currentTick: slot0[1],
+    };
+  };
+
+  getV3PoolDetails = async (): Promise<V3PoolDetails> => {
+    const methods = ['token0', 'token1', 'slot0', 'tickSpacing', 'fee'];
+    const multicallRes = (await multicallForSameContract({
+      abi: this.abi,
+      address: this.address,
+      chainId: this.chainId,
+      functionNames: methods,
+      params: methods.map(() => []),
+    })) as [Hex, Hex, [bigint, number], number, number];
+
+    return {
+      token0: multicallRes[0],
+      token1: multicallRes[1],
+      slot0: {
+        sqrtPriceX96: multicallRes[2][0],
+        currentTick: multicallRes[2][1],
+      },
+      tickSpacing: multicallRes[3],
+      fee: multicallRes[4],
     };
   };
 }

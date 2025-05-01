@@ -1,4 +1,4 @@
-import { farmAddressesByChainId } from '@/constants/farm';
+import { farmFactoryAddressesByChainId } from '@/constants/farm';
 import { FARM_FACTORY_ABI } from '@/daao-sdk/abi/farmFactory';
 import { POOL_ABI } from '@/daao-sdk/abi/pool';
 import { FarmPool } from '@/types/farm';
@@ -13,7 +13,7 @@ const usePoolList = ({ chainId }: { chainId: number }) => {
   const { address } = useAccount();
   const publicClient = getPublicClient(chainId);
 
-  const farmFactoryAddress = farmAddressesByChainId[chainId]?.factory;
+  const farmFactoryAddress = farmFactoryAddressesByChainId[chainId]?.factory;
 
   const { fetchTokenPriceDexScreener, fetchTokenPriceGecko } = useTokenPrice();
   const getTotalPoolLength = async () => {
