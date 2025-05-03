@@ -4,7 +4,7 @@ import { PageLayout } from '@/components/page-layout';
 import { chainIdToChainSlugMap, chainSlugToChainIdMap } from '@/constants/chains';
 import usePoolList from '@/hooks/farm/usePoolList';
 import useEffectAfterMount from '@/hooks/useEffectAfterMount';
-import { FarmPool } from '@/types/farm';
+import { FarmPool, LPFarm } from '@/types/farm';
 import { isChainIdSupported } from '@/utils/chains';
 import Image from 'next/image';
 import { useParams, useRouter } from 'next/navigation';
@@ -18,14 +18,16 @@ const Farms: React.FC = () => {
   const chainId = chainSlugToChainIdMap[chain as string];
   const [isPoolListLoading, setIsPoolListLoading] = useState(false);
   const [farmPools, setFarmPools] = useState<FarmPool[]>([]);
+  const [lpFarms, setLPFarms] = useState<LPFarm[]>([]);
 
-  const { getPoolList } = usePoolList({ chainId });
+  const { getPoolList, getLpFarmsList } = usePoolList({ chainId });
 
   const fetchPools = async () => {
     try {
       setIsPoolListLoading(true);
-      const responsePoolList = await getPoolList();
+      const [responsePoolList, lpFarmsList] = await Promise.all([getPoolList(), getLpFarmsList()]);
       setFarmPools(responsePoolList);
+      setLPFarms(lpFarmsList);
       setIsPoolListLoading(false);
     } catch (error) {
       console.error('Error fetching pool addresses:', error);
@@ -76,6 +78,7 @@ const Farms: React.FC = () => {
             inactiveFarms={inactiveFarms}
             isLoading={isPoolListLoading}
             chainId={chainId}
+            lpFarms={lpFarms}
           />
         </div>
       </div>

@@ -25,7 +25,7 @@ const FarmStake = () => {
   const chainId = chainSlugToChainIdMap[chain as string];
 
   const { harvest } = useHarvest({ chainId });
-  const { getPoolDetails } = usePoolList({ chainId });
+  const { getFarmDetails } = usePoolList({ chainId });
 
   const [isPoolDetailsLoading, setIsPoolDetailsLoading] = useState(true);
   const [poolData, setPoolData] = useState<FarmPool>();
@@ -46,7 +46,7 @@ const FarmStake = () => {
   const fetchPoolDetails = async () => {
     try {
       setIsPoolDetailsLoading(true);
-      const response = await getPoolDetails({ poolAddress: poolAddress as Hex });
+      const response = await getFarmDetails({ poolAddress: poolAddress as Hex });
       if (response) {
         setPoolData(response);
       }

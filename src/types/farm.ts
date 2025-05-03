@@ -1,5 +1,6 @@
 import { Address, Hex } from 'viem';
 import { Token } from './chains';
+import { V3PoolDetailedDetails } from './pool';
 
 export interface PoolRewards {
   tokenAddress: string;
@@ -38,4 +39,10 @@ export interface Position {
   apr: number;
   rewardInfo: bigint;
   numberOfStakes: number;
+}
+
+export interface LPFarm extends V3PoolDetailedDetails {
+  rewardTokenDetails: Token;
+  dexType: string;
+  address: Hex;
 }

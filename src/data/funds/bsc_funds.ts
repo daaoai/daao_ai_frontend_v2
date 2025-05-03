@@ -12,6 +12,7 @@ export const bscFunds: Record<string, FundDetails> = {
     imgSrc: '/assets/assassins.webp',
     status: 'trading',
     isManageLiquidityEnabled: true,
+    isLpFarmsEnabled: true,
     dexInfo: {
       type: supportedDexesTypes.pancake,
       fee: 10000,

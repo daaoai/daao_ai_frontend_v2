@@ -1,35 +1,36 @@
-import { nonFungiblePositionManagerAddress } from '@/constants/addresses';
+import { getDexAddressesForChain } from '@/constants/dex';
 import { lpFarmAddressesByChainId } from '@/constants/farm';
 import { LP_FARM_ABI } from '@/daao-sdk/abi/lpFarm';
 import { V3_STAKER_ABI } from '@/daao-sdk/abi/v3Staker';
 import { uniswapV3NFTManagerAbi } from '@/dexes/uniswap/abi/nftManager';
 import { getNFTDetails, getUserNFTsForPool } from '@/helpers/nftManager';
 import { getV3DetailedPoolDetails } from '@/helpers/pool';
+import { Token } from '@/types/chains';
 import { V3Position } from '@/types/dex';
 import { Position } from '@/types/farm';
 import { V3PoolDetailedDetails } from '@/types/pool';
 import { handleViemTransactionError } from '@/utils/approval';
-import { getPublicClient } from '@/utils/publicClient';
-import { V3PoolUtils } from '@/utils/v3Pools';
-import { ethers } from 'ethers';
-import { useEffect, useState } from 'react';
-import { toast } from 'react-toastify'; // Ensure to import react-toastify's toast function
-import { formatUnits, Hex } from 'viem';
-import { useAccount, useWriteContract } from 'wagmi';
-import useTokenPrice from '../token/useTokenPrice';
-import { multicall } from 'viem/actions';
 import { multicallForSameContract } from '@/utils/multicall';
+import { getPublicClient } from '@/utils/publicClient';
+import { getTokenDetails } from '@/utils/token';
+import { V3PoolUtils } from '@/utils/v3Pools';
+import { useEffect, useState } from 'react';
+import { toast } from 'react-toastify';
+import { encodeAbiParameters, formatUnits, Hex, parseAbiParameters } from 'viem';
+import { useAccount, useWriteContract } from 'wagmi';
 
-const useLpFarms = ({ chainId }: { chainId: number }) => {
+const useLpFarms = ({ chainId, lpFarmAddress }: { chainId: number; lpFarmAddress: string }) => {
   const { address } = useAccount();
   const publicClient = getPublicClient(chainId);
 
   const [poolDetails, setPoolDetails] = useState<V3PoolDetailedDetails | null>(null);
+  const [rewardTokenDetails, setRewardTokenDetails] = useState<Token | null>(null);
   const { writeContractAsync } = useWriteContract();
 
-  const { poolAddress, endTime, lpFarm, refundee, startTime, rewardToken, dexType } = lpFarmAddressesByChainId[chainId];
+  const { poolAddress, endTime, lpFarm, refundee, startTime, rewardToken, dexType } =
+    lpFarmAddressesByChainId[chainId][lpFarmAddress];
 
-  const KEY_STRUCT2 = [rewardToken, poolAddress, startTime, endTime, refundee];
+  const nftManagerAddress = getDexAddressesForChain(chainId, dexType).nftManager;
 
   const updatePoolDetails = async () => {
     try {
@@ -40,6 +41,20 @@ const useLpFarms = ({ chainId }: { chainId: number }) => {
       });
       setPoolDetails(res);
       return res;
+    } catch (error) {
+      console.error(error);
+      return null;
+    }
+  };
+
+  const updateRewardTokenDetails = async () => {
+    try {
+      const tokenDetails = await getTokenDetails({
+        address: rewardToken,
+        chainId,
+      });
+      setRewardTokenDetails(tokenDetails);
+      return tokenDetails;
     } catch (error) {
       console.error(error);
       return null;
@@ -78,8 +93,6 @@ const useLpFarms = ({ chainId }: { chainId: number }) => {
       apr,
     };
   };
-
-  // const KEY_STRUCT = [LP_FARM_REWARD_TOKEN, LP_FARM_POOL, LP_FARM_START_TIME, LP_FARM_END_TIME, LP_FARM_REFUNDEE];
 
   const getNumberOfStakedForPositions = async (tokenIds: bigint[]) => {
     try {
@@ -124,10 +137,10 @@ const useLpFarms = ({ chainId }: { chainId: number }) => {
       account: address,
       chainId,
       poolAddress: poolAddress,
-      fee: 0,
+      fee: poolDetails.fee,
       token0: poolDetails.token0,
       token1: poolDetails.token1,
-      nftManagerAddress: nonFungiblePositionManagerAddress,
+      nftManagerAddress,
       type: dexType,
     });
 
@@ -145,11 +158,17 @@ const useLpFarms = ({ chainId }: { chainId: number }) => {
   };
 
   // For a single incentive
-  const encodeSingleIncentive = (incentiveKey: (string | bigint)[]): Hex => {
-    return ethers.utils.defaultAbiCoder.encode(
-      ['(address rewardToken, address pool, uint256 startTime, uint256 endTime, address refundee)'],
+  const encodeSingleIncentive = (incentiveKey: {
+    rewardToken: Hex;
+    pool: Hex;
+    startTime: bigint;
+    endTime: bigint;
+    refundee: Hex;
+  }): Hex => {
+    return encodeAbiParameters(
+      parseAbiParameters('(address rewardToken, address pool, uint256 startTime, uint256 endTime, address refundee)'),
       [incentiveKey],
-    ) as Hex;
+    );
   };
 
   const stakeFarm = async (tokenId: bigint) => {
@@ -158,9 +177,15 @@ const useLpFarms = ({ chainId }: { chainId: number }) => {
       return;
     }
     try {
-      const encodedData = encodeSingleIncentive(KEY_STRUCT2);
+      const encodedData = encodeSingleIncentive({
+        rewardToken,
+        pool: poolAddress,
+        startTime,
+        endTime,
+        refundee,
+      });
       const tx = await writeContractAsync({
-        address: nonFungiblePositionManagerAddress,
+        address: nftManagerAddress,
         abi: uniswapV3NFTManagerAbi,
         functionName: 'safeTransferFrom',
         args: [address, lpFarm, tokenId, encodedData],
@@ -204,7 +229,7 @@ const useLpFarms = ({ chainId }: { chainId: number }) => {
         hash: tx,
       });
       if (receipt.status === 'success') {
-        toast.success('Your Unstake was Successfull');
+        toast.success('Your Unstake was Successful');
       }
       return receipt;
     } catch (error) {
@@ -251,7 +276,7 @@ const useLpFarms = ({ chainId }: { chainId: number }) => {
             getNFTDetails({
               chainId,
               nftId: positionId,
-              nftManagerAddress: nonFungiblePositionManagerAddress,
+              nftManagerAddress: nftManagerAddress,
               type: dexType,
             }),
           ),
@@ -263,7 +288,7 @@ const useLpFarms = ({ chainId }: { chainId: number }) => {
         return formatPositionDetails(
           {
             ...position,
-            numberOfStakes: Number(rewardInfo[position.id.toString()]),
+            numberOfStakes: numberOfStaked[position.id.toString()] || 0,
             rewardInfo: rewardInfo[position.id.toString()],
           },
           poolDetails,
@@ -284,7 +309,7 @@ const useLpFarms = ({ chainId }: { chainId: number }) => {
           address: lpFarm,
           abi: V3_STAKER_ABI,
           functionName: 'getRewardInfo',
-          args: [KEY_STRUCT2, tokenId],
+          args: [[rewardToken, poolAddress, startTime, endTime, refundee], tokenId],
         })),
       });
 
@@ -362,7 +387,13 @@ const useLpFarms = ({ chainId }: { chainId: number }) => {
       return;
     }
     try {
-      const encodedData = encodeSingleIncentive(KEY_STRUCT2);
+      const encodedData = encodeSingleIncentive({
+        rewardToken,
+        pool: poolAddress,
+        startTime,
+        endTime,
+        refundee,
+      });
       const tx = await writeContractAsync({
         address: lpFarm,
         abi: V3_STAKER_ABI,
@@ -388,9 +419,12 @@ const useLpFarms = ({ chainId }: { chainId: number }) => {
 
   useEffect(() => {
     updatePoolDetails();
+    updateRewardTokenDetails();
   }, []);
 
   return {
+    poolDetails,
+    rewardTokenDetails,
     getUserPositionsForPool,
     stakeFarm,
     getClaimableRewards,

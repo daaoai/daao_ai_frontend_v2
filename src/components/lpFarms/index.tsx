@@ -1,29 +1,25 @@
 'use client';
+import { lpFarmAddressesByChainId } from '@/constants/farm';
+import useLpFarms from '@/hooks/farm/uselpFarms';
 import { Card, CardContent, CardHeader } from '@/shadcn/components/ui/card';
+import { Position } from '@/types/farm';
 import { shortenAddress } from '@/utils/address';
 import { ChevronLeft } from 'lucide-react';
-import { useEffect, useState } from 'react';
-import ClickToCopy from '../copyToClipboard';
-// import usePoolList from '@/hooks/farm/usePoolList';
-import { FarmPool, Position } from '@/types/farm';
-// import useHarvest from '@/hooks/farm/useHarvest';
-import { modeTokenAddress } from '@/constants/addresses';
-import { CARTEL_TOKEN_ADDRESS } from '@/constants/ticket';
-import useLpFarms from '@/hooks/farm/uselpFarms';
-import usePoolList from '@/hooks/farm/usePoolList';
 import Image from 'next/image';
+import { useEffect, useState } from 'react';
 import { formatUnits } from 'viem';
 import AnimatedSkeleton from '../animatedSkeleton';
-import { lpFarmAddressesByChainId } from '@/constants/farm';
+import ClickToCopy from '../copyToClipboard';
+import FallbackTokenLogo from '/public/assets/fallbackToken.svg';
 
 interface LPFarmsProps {
   onClose: () => void;
   chainId: number;
+  lpFarmAddress: string;
 }
 
-const LPFarms: React.FC<LPFarmsProps> = ({ onClose, chainId }) => {
+const LPFarms: React.FC<LPFarmsProps> = ({ onClose, chainId, lpFarmAddress }) => {
   const [viewMode, setViewMode] = useState<'unstaked' | 'staked'>('unstaked');
-  const [poolDetails, setPoolDetails] = useState<FarmPool | null>(null);
   const [isStakeLoading, setIsStakeLoading] = useState(false);
   const [isUnStakeLoading, setIsUnStakeLoading] = useState(false);
   const [userPositions, setUserPositions] = useState<Position[]>([]);
@@ -32,9 +28,8 @@ const LPFarms: React.FC<LPFarmsProps> = ({ onClose, chainId }) => {
   const [isClaimingRewards, setIsClaimingRewards] = useState(false);
   const [isWithdrawingPosition, setIsWithdrawingPosition] = useState(false);
 
-  const { poolAddress } = lpFarmAddressesByChainId[chainId];
-
   const {
+    rewardTokenDetails,
     getUserPositionsForPool,
     unStakeFarm,
     stakeFarm,
@@ -42,9 +37,8 @@ const LPFarms: React.FC<LPFarmsProps> = ({ onClose, chainId }) => {
     getClaimableRewards,
     claimRewards,
     withdrawPosition,
-  } = useLpFarms({ chainId });
-
-  const { getPoolDetails } = usePoolList({ chainId });
+    poolDetails,
+  } = useLpFarms({ chainId, lpFarmAddress });
 
   const fetchPositionList = async () => {
     try {
@@ -73,17 +67,7 @@ const LPFarms: React.FC<LPFarmsProps> = ({ onClose, chainId }) => {
     }
   };
 
-  const fetchPoolDetails = async () => {
-    try {
-      const data = await getPoolDetails({ poolAddress });
-      setPoolDetails(data);
-    } catch (error) {
-      console.error(error);
-    }
-  };
-
   useEffect(() => {
-    fetchPoolDetails();
     fetchClaimableRewards();
   }, []);
 
@@ -166,29 +150,29 @@ const LPFarms: React.FC<LPFarmsProps> = ({ onClose, chainId }) => {
             <div className="flex items-center gap-3">
               <div className="relative w-20 h-[35px] flex-shrink-0">
                 <Image
-                  src="/assets/mode.png"
-                  alt="Gambl Token"
+                  src={poolDetails?.token0Details.logo || FallbackTokenLogo}
+                  alt={poolDetails?.token0Details.symbol || ''}
                   width={16}
                   height={16}
                   className="absolute left-0 top-0 w-[35px] h-[35px] rounded-full"
                 />
                 <Image
-                  src="/assets/defai-cartel-image.svg"
-                  alt="DeFai Cartel"
+                  src={poolDetails?.token1Details.logo || FallbackTokenLogo}
+                  alt={poolDetails?.token1Details.symbol || ''}
                   width={16}
                   height={16}
                   className="absolute left-[30px] top-0 w-[35px] h-[35px] rounded-full object-cover"
                 />
               </div>
-              <h2 className="text-xl font-medium text-[#DFFE01]">DeFAI Cartel</h2>
+              <h2 className="text-xl font-medium text-[#DFFE01]">DeFAI {poolDetails?.token1Details?.symbol}</h2>
               <span className="bg-[#D0F0BF] text-black text-xs px-2 py-0.5 rounded ml-auto">Active</span>
             </div>
             <div className="bg-[#053738] p-1 rounded-lg flex gap-x-2 px-3 w-fit mt-6">
-              <p className="text-sm sm:text-base">{shortenAddress(poolAddress)}</p>
-              <ClickToCopy copyText={poolAddress} className="text-teal-20" />
+              <p className="text-sm sm:text-base">{shortenAddress(lpFarmAddress)}</p>
+              <ClickToCopy copyText={lpFarmAddress} className="text-teal-20" />
             </div>
             <div className="flex items-center gap-2">
-              <p>APR</p> <p className="text-white">{poolDetails?.apr}</p>
+              <p>APR</p> <p className="text-white">{0}</p>
             </div>
           </div>
         </CardHeader>
@@ -215,14 +199,14 @@ const LPFarms: React.FC<LPFarmsProps> = ({ onClose, chainId }) => {
             <div className="flex justify-between items-center">
               <div className="flex items-center">
                 <Image
-                  src="/assets/defai-cartel-image.svg"
-                  alt="DeFai Cartel"
+                  src={rewardTokenDetails?.logo || FallbackTokenLogo}
+                  alt={rewardTokenDetails?.symbol || ''}
                   width={16}
                   height={16}
                   className=" rounded-full h-8 object-cover w-8 mr-4"
                 />
                 <span className="text-[#F8DE7F]">
-                  {formatUnits(unClaimedReward, 18)} CARTEL
+                  {formatUnits(unClaimedReward, rewardTokenDetails?.decimals || 18)} {rewardTokenDetails?.symbol}
                   {/* {poolDetails?.unclaimedReward} */}
                 </span>
               </div>
@@ -269,10 +253,8 @@ const LPFarms: React.FC<LPFarmsProps> = ({ onClose, chainId }) => {
                       <td className="px-4 py-3">{position.liquidityUsd}</td>
                       <td className="px-4 py-3">
                         {viewMode === 'unstaked'
-                          ? position.token0 === modeTokenAddress || position.token1 === CARTEL_TOKEN_ADDRESS
-                            ? 'No'
-                            : 'Yes'
-                          : formatUnits(position.rewardInfo, 18)}
+                          ? 'Yes'
+                          : formatUnits(position.rewardInfo, rewardTokenDetails?.decimals || 18)}
                       </td>
                       <td className="px-4 py-3 text-right">
                         {viewMode === 'unstaked' ? (

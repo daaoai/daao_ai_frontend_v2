@@ -13,6 +13,7 @@ import Liquidity from '../Liquidity/liquidity';
 import LPFarms from '../lpFarms';
 import { ModalWrapper } from '../modalWrapper';
 import PoolDetailCard from '../poolDetailCard';
+import { lpFarmAddressesByChainId } from '@/constants/farm';
 
 const FundDetails = ({
   fundDetails,
@@ -25,10 +26,6 @@ const FundDetails = ({
   daoInfo: DaoInfo | null;
   poolDetails: PoolDetails | null;
 }) => {
-  interface TokenChangeState {
-    percent: number;
-    token: number;
-  }
   const [marketData, setMarketData] = useState<DaoMarketData>({
     liquidity: 0,
     marketCap: 0,
@@ -60,6 +57,10 @@ const FundDetails = ({
     return (marketCap * percentageChange) / 100;
   };
 
+  const lpFarmForPool = Object.values(lpFarmAddressesByChainId[chainId]).find(
+    (lpFarm) => lpFarm.poolAddress.toLowerCase() === poolDetails?.address.toLowerCase(),
+  );
+
   return (
     <Card className="text-white sm:p-2  w-full border-none">
       <div className="w-full">
@@ -90,7 +91,7 @@ const FundDetails = ({
               Manage
             </button>
           )}
-          {fundDetails.isLpFarmsEnabled && (
+          {fundDetails.isLpFarmsEnabled && lpFarmForPool && (
             <button
               className="underline text-teal-50 text-sm rounded-md p-2 active:scale-95 transition-transform ease-in-out duration-150"
               onClick={openFarmModalOpen}
@@ -108,7 +109,7 @@ const FundDetails = ({
             />
           </ModalWrapper>
           <ModalWrapper isOpen={isLPFarmModalOpen} onClose={closeFarmModalOpen}>
-            <LPFarms onClose={closeFarmModalOpen} chainId={chainId} />
+            <LPFarms onClose={closeFarmModalOpen} chainId={chainId} lpFarmAddress={lpFarmForPool!.lpFarm} />
           </ModalWrapper>
           {/* 
           <div className="flex flex-col gap-2">

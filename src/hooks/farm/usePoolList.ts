@@ -1,7 +1,8 @@
-import { farmFactoryAddressesByChainId } from '@/constants/farm';
+import { farmFactoryAddressesByChainId, lpFarmAddressesByChainId } from '@/constants/farm';
 import { FARM_FACTORY_ABI } from '@/daao-sdk/abi/farmFactory';
 import { POOL_ABI } from '@/daao-sdk/abi/pool';
-import { FarmPool } from '@/types/farm';
+import { getV3DetailedPoolDetails } from '@/helpers/pool';
+import { FarmPool, LPFarm } from '@/types/farm';
 import { multicallForSameContract } from '@/utils/multicall';
 import { getPublicClient } from '@/utils/publicClient';
 import { getTokenDetails } from '@/utils/token';
@@ -43,7 +44,7 @@ const usePoolList = ({ chainId }: { chainId: number }) => {
     return multicallResponse;
   };
 
-  const getPoolDetails = async ({ poolAddress }: { poolAddress: Hex }) => {
+  const getFarmDetails = async ({ poolAddress }: { poolAddress: Hex }) => {
     try {
       const poolDetailsFunctions = [
         'settings',
@@ -127,7 +128,7 @@ const usePoolList = ({ chainId }: { chainId: number }) => {
   const getPoolList = async () => {
     if (!farmFactoryAddress) return [];
     const poolAddresses = await getPoolAddresses();
-    const poolDetailsPromise = poolAddresses?.map((poolAddress) => getPoolDetails({ poolAddress })) || [];
+    const poolDetailsPromise = poolAddresses?.map((poolAddress) => getFarmDetails({ poolAddress })) || [];
     const poolListData = await Promise.allSettled(poolDetailsPromise);
     const poolList: FarmPool[] = (
       poolListData.filter(
@@ -136,7 +137,40 @@ const usePoolList = ({ chainId }: { chainId: number }) => {
     ).map((res) => res.value);
     return poolList;
   };
-  return { getPoolAddresses, getPoolDetails, getPoolList };
+
+  const getLpFarmDetails = async (address: Hex): Promise<LPFarm> => {
+    const { dexType, rewardToken, poolAddress } = lpFarmAddressesByChainId[chainId][address];
+    const [poolDetails, rewardTokenDetails] = await Promise.all([
+      getV3DetailedPoolDetails({
+        address: poolAddress,
+        chainId,
+        type: dexType,
+      }),
+      getTokenDetails({
+        address: rewardToken,
+        chainId,
+      }),
+    ]);
+    return {
+      dexType,
+      address,
+      ...poolDetails,
+      rewardTokenDetails,
+    };
+  };
+
+  const getLpFarmsList = async (): Promise<LPFarm[]> => {
+    const lpFarmAddresses = Object.keys(lpFarmAddressesByChainId[chainId]);
+    const lpFarmDetailsPromise = lpFarmAddresses.map((address) => getLpFarmDetails(address as Hex));
+    const lpFarmsListData = await Promise.allSettled(lpFarmDetailsPromise);
+    const lpFarmsList = (
+      lpFarmsListData.filter(
+        (lpFarmDetailsRes) => lpFarmDetailsRes.status === 'fulfilled' && lpFarmDetailsRes.value,
+      ) as PromiseFulfilledResult<LPFarm>[]
+    ).map((res) => res.value);
+    return lpFarmsList;
+  };
+  return { getPoolAddresses, getFarmDetails, getPoolList, getLpFarmsList };
 };
 
 export default usePoolList;

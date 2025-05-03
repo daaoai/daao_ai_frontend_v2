@@ -1,26 +1,44 @@
 'use client';
 import FarmCard from '@/components/farms/farmCard';
 import FarmCardSkeleton from '@/components/skeleton/farmCard';
+import { lpFarmAddressesByChainId } from '@/constants/farm';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/shadcn/components/ui/tabs';
-import { FarmPool } from '@/types/farm';
+import { FarmPool, LPFarm } from '@/types/farm';
 import { motion } from 'framer-motion';
 import { Info } from 'lucide-react';
 import React, { useCallback, useState } from 'react';
-import LPFarms from '../lpFarms';
-import { ModalWrapper } from '../modalWrapper';
+import LPFarmCard from '../lpFarms/lpFarmCard';
 
 interface FarmTabsProps {
   activeFarms: FarmPool[];
   inactiveFarms: FarmPool[];
+  lpFarms: LPFarm[];
   isLoading: boolean;
   chainId: number;
 }
 
-const FarmTabs: React.FC<FarmTabsProps> = ({ activeFarms, inactiveFarms, chainId, isLoading }) => {
+const FarmTabs: React.FC<FarmTabsProps> = ({ activeFarms, inactiveFarms, lpFarms, chainId, isLoading }) => {
   const [activeTab, setActiveTab] = useState('active');
-  const [isLPFarmModalOpen, setIsLPFarmModalOpen] = useState(false);
-  const openFarmModalOpen = useCallback(() => setIsLPFarmModalOpen(true), []);
-  const closeFarmModalOpen = useCallback(() => setIsLPFarmModalOpen(false), []);
+
+  const renderLPFarms = (lpFarms: LPFarm[], emptyMessage: string) => {
+    if (isLoading) {
+      return (
+        <div className="flex items-start gap-6 justify-start relative z-20 flex-wrap">
+          <FarmCardSkeleton />
+        </div>
+      );
+    }
+    if (lpFarms.length > 0) {
+      return (
+        <div className="flex items-start gap-6 justify-start relative z-20 flex-wrap">
+          {lpFarms.map((lpFarm, index) => (
+            <LPFarmCard key={`${lpFarm.address}-${index}`} lpFarm={lpFarm} isLoading={isLoading} chainId={chainId} />
+          ))}
+        </div>
+      );
+    }
+    return <div className="flex justify-center items-center text-lg text-gray-500">{emptyMessage}</div>;
+  };
 
   const renderFarms = (farms: FarmPool[], emptyMessage: string) => {
     if (isLoading) {
@@ -84,27 +102,27 @@ const FarmTabs: React.FC<FarmTabsProps> = ({ activeFarms, inactiveFarms, chainId
                 />
               )}
             </TabsTrigger>
-            <TabsTrigger
-              value="lpFarms"
-              onClick={openFarmModalOpen}
-              className={`relative px-4 py-2 text-sm font-medium transition-colors ${
-                activeTab === 'lpFarms' ? 'text-black' : 'text-gray-500'
-              }`}
-            >
-              LP FARMS
-              {activeTab === 'lpFarms' && (
-                <motion.div
-                  layoutId="tabBackground"
-                  className="absolute inset-0 bg-teal-50 rounded-md z-[-1]"
-                  transition={{ type: 'tween', stiffness: 800, damping: 80 }}
-                />
-              )}
-            </TabsTrigger>
+            {lpFarmAddressesByChainId[chainId] && (
+              <TabsTrigger
+                value="lpFarms"
+                className={`relative px-4 py-2 text-sm font-medium transition-colors ${
+                  activeTab === 'lpFarms' ? 'text-black' : 'text-gray-500'
+                }`}
+              >
+                LP FARMS
+                {activeTab === 'lpFarms' && (
+                  <motion.div
+                    layoutId="tabBackground"
+                    className="absolute inset-0 bg-teal-50 rounded-md z-[-1]"
+                    transition={{ type: 'tween', stiffness: 800, damping: 80 }}
+                  />
+                )}
+              </TabsTrigger>
+            )}
           </TabsList>
         </div>
-        <ModalWrapper isOpen={isLPFarmModalOpen} onClose={closeFarmModalOpen}>
-          <LPFarms onClose={closeFarmModalOpen} chainId={chainId} />
-        </ModalWrapper>
+
+        <TabsContent value="lpFarms">{renderLPFarms(lpFarms, 'No LP farms found.')}</TabsContent>
 
         <TabsContent value="active">{renderFarms(activeFarms, 'No active cards found.')}</TabsContent>
 
