@@ -334,4 +334,4 @@ const BuySellCard = ({
   );
 };
 
-export default memo(BuySellCard);
+export default BuySellCard;

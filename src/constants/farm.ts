@@ -22,6 +22,7 @@ export const farmFactoryAddressesByChainId: {
 export const lpFarmAddressesByChainId: {
   [chainId: number]: {
     [farmAddress: string]: {
+      name: string;
       dexType: SupportedDexType;
       lpFarm: Hex;
       rewardToken: Hex;
@@ -34,6 +35,7 @@ export const lpFarmAddressesByChainId: {
 } = {
   [supportedChainIds.mode]: {
     '0xd9cC1D4565102AE6118476EF0E531e7956487099': {
+      name: 'DeFAI CARTEL',
       dexType: supportedDexesTypes.velodromeCustomRouter,
       lpFarm: '0xd9cC1D4565102AE6118476EF0E531e7956487099',
       poolAddress: '0xF70e76cC5a39Aad1953BeF3D1647C8B36f3f6324',
@@ -45,6 +47,7 @@ export const lpFarmAddressesByChainId: {
   },
   [supportedChainIds.bsc]: {
     '0x29F07AA75328194C274223F11cffAa329fD1c319': {
+      name: 'DeFAI TESTDAO',
       dexType: supportedDexesTypes.pancake,
       lpFarm: '0x29F07AA75328194C274223F11cffAa329fD1c319',
       poolAddress: '0x306777b6dD5FB09e944B1E2818F15F74D3E42b81',

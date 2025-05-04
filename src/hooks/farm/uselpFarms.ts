@@ -1,6 +1,5 @@
 import { getDexAddressesForChain } from '@/constants/dex';
 import { lpFarmAddressesByChainId } from '@/constants/farm';
-import { LP_FARM_ABI } from '@/daao-sdk/abi/lpFarm';
 import { V3_STAKER_ABI } from '@/daao-sdk/abi/v3Staker';
 import { uniswapV3NFTManagerAbi } from '@/dexes/uniswap/abi/nftManager';
 import { getNFTDetails, getUserNFTsForPool } from '@/helpers/nftManager';
@@ -9,7 +8,6 @@ import { Token } from '@/types/chains';
 import { V3Position } from '@/types/dex';
 import { Position } from '@/types/farm';
 import { V3PoolDetailedDetails } from '@/types/pool';
-import { handleViemTransactionError } from '@/utils/approval';
 import { multicallForSameContract } from '@/utils/multicall';
 import { getPublicClient } from '@/utils/publicClient';
 import { getTokenDetails } from '@/utils/token';
@@ -200,11 +198,7 @@ const useLpFarms = ({ chainId, lpFarmAddress }: { chainId: number; lpFarmAddress
       }
     } catch (error) {
       console.error(error);
-      const { errorMsg } = handleViemTransactionError({
-        abi: LP_FARM_ABI,
-        error,
-      });
-      toast.error(errorMsg);
+      toast.error('Failed to stake');
     }
   };
 
@@ -234,11 +228,7 @@ const useLpFarms = ({ chainId, lpFarmAddress }: { chainId: number; lpFarmAddress
       return receipt;
     } catch (error) {
       console.error(error);
-      const { errorMsg } = handleViemTransactionError({
-        abi: LP_FARM_ABI,
-        error,
-      });
-      toast.error(errorMsg);
+      toast.error('Failed to unstake');
     }
   };
 
@@ -323,12 +313,6 @@ const useLpFarms = ({ chainId, lpFarmAddress }: { chainId: number; lpFarmAddress
       return rewardInfo || {};
     } catch (error) {
       console.error(error);
-      const { errorMsg } = handleViemTransactionError({
-        abi: LP_FARM_ABI,
-        error,
-      });
-      toast.error(errorMsg);
-
       return {};
     }
   };
@@ -373,11 +357,7 @@ const useLpFarms = ({ chainId, lpFarmAddress }: { chainId: number; lpFarmAddress
       return receipt;
     } catch (error) {
       console.error(error);
-      const { errorMsg } = handleViemTransactionError({
-        abi: LP_FARM_ABI,
-        error,
-      });
-      toast.error(errorMsg);
+      toast.error('Failed to claim rewards');
     }
   };
 
@@ -409,11 +389,7 @@ const useLpFarms = ({ chainId, lpFarmAddress }: { chainId: number; lpFarmAddress
       return receipt;
     } catch (error) {
       console.error(error);
-      const { errorMsg } = handleViemTransactionError({
-        abi: LP_FARM_ABI,
-        error,
-      });
-      toast.error(errorMsg);
+      toast.error('Failed to withdraw position');
     }
   };
 

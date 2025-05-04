@@ -160,7 +160,7 @@ const usePoolList = ({ chainId }: { chainId: number }) => {
   };
 
   const getLpFarmsList = async (): Promise<LPFarm[]> => {
-    const lpFarmAddresses = Object.keys(lpFarmAddressesByChainId[chainId]);
+    const lpFarmAddresses = Object.keys(lpFarmAddressesByChainId[chainId] || {});
     const lpFarmDetailsPromise = lpFarmAddresses.map((address) => getLpFarmDetails(address as Hex));
     const lpFarmsListData = await Promise.allSettled(lpFarmDetailsPromise);
     const lpFarmsList = (

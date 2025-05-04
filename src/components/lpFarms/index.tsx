@@ -11,6 +11,7 @@ import { formatUnits } from 'viem';
 import AnimatedSkeleton from '../animatedSkeleton';
 import ClickToCopy from '../copyToClipboard';
 import FallbackTokenLogo from '/public/assets/fallbackToken.svg';
+import { Badge } from '@/shadcn/components/ui/badge';
 
 interface LPFarmsProps {
   onClose: () => void;
@@ -39,6 +40,13 @@ const LPFarms: React.FC<LPFarmsProps> = ({ onClose, chainId, lpFarmAddress }) =>
     withdrawPosition,
     poolDetails,
   } = useLpFarms({ chainId, lpFarmAddress });
+
+  const { name, startTime, endTime } = lpFarmAddressesByChainId[chainId][lpFarmAddress];
+
+  const startTimeMs = Number(startTime.toString()) * 1000;
+  const endTimeMs = Number(endTime.toString()) * 1000;
+  const now = Date.now();
+  const isActive = now >= startTimeMs && now <= endTimeMs;
 
   const fetchPositionList = async () => {
     try {
@@ -164,16 +172,23 @@ const LPFarms: React.FC<LPFarmsProps> = ({ onClose, chainId, lpFarmAddress }) =>
                   className="absolute left-[30px] top-0 w-[35px] h-[35px] rounded-full object-cover"
                 />
               </div>
-              <h2 className="text-xl font-medium text-[#DFFE01]">DeFAI {poolDetails?.token1Details?.symbol}</h2>
-              <span className="bg-[#D0F0BF] text-black text-xs px-2 py-0.5 rounded ml-auto">Active</span>
+              <h2 className="text-xl font-medium text-[#DFFE01]">{name}</h2>
+              <Badge
+                variant="secondary"
+                className={`flex items-center gap-2 px-3 py-1 rounded-md font-rubik font-regular ml-auto ${
+                  isActive ? 'bg-teal-20 text-black' : 'bg-red-400 text-black'
+                }`}
+              >
+                {isActive ? 'Active' : 'Inactive'}
+              </Badge>
             </div>
             <div className="bg-[#053738] p-1 rounded-lg flex gap-x-2 px-3 w-fit mt-6">
               <p className="text-sm sm:text-base">{shortenAddress(lpFarmAddress)}</p>
               <ClickToCopy copyText={lpFarmAddress} className="text-teal-20" />
             </div>
-            <div className="flex items-center gap-2">
+            {/* <div className="flex items-center gap-2">
               <p>APR</p> <p className="text-white">{0}</p>
-            </div>
+            </div> */}
           </div>
         </CardHeader>
 
@@ -211,9 +226,9 @@ const LPFarms: React.FC<LPFarmsProps> = ({ onClose, chainId, lpFarmAddress }) =>
                 </span>
               </div>
               <button
-                className="bg-white text-black text-xs font-medium px-3 py-1 rounded"
+                className="bg-white text-black text-xs font-medium px-3 py-1 rounded disabled:opacity-50"
                 onClick={handleClaimRewards}
-                disabled={isClaimingRewards}
+                disabled={isClaimingRewards || unClaimedReward === BigInt(0)}
               >
                 {isClaimingRewards ? 'Claiming...' : 'CLAIM'}
               </button>
@@ -253,14 +268,17 @@ const LPFarms: React.FC<LPFarmsProps> = ({ onClose, chainId, lpFarmAddress }) =>
                       <td className="px-4 py-3">{position.liquidityUsd}</td>
                       <td className="px-4 py-3">
                         {viewMode === 'unstaked'
-                          ? 'Yes'
+                          ? isActive
+                            ? 'Yes'
+                            : 'No'
                           : formatUnits(position.rewardInfo, rewardTokenDetails?.decimals || 18)}
                       </td>
                       <td className="px-4 py-3 text-right">
                         {viewMode === 'unstaked' ? (
                           <button
-                            className="text-black bg-[#D1FF53] text-xs px-3 py-1 rounded"
+                            className="text-black bg-[#D1FF53] text-xs px-3 py-1 rounded disabled:opacity-50"
                             onClick={() => handleStakeFarm(position.id)}
+                            disabled={!isActive || isStakeLoading}
                           >
                             Stake
                           </button>

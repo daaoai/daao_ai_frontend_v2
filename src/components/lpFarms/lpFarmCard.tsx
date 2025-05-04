@@ -1,12 +1,10 @@
 import { chainIdToChainSlugMap } from '@/constants/chains';
 import { lpFarmAddressesByChainId } from '@/constants/farm';
-import { CURRENT_DAO_IMAGE, tokenImageLinks } from '@/constants/links';
+import { tokenImageLinks } from '@/constants/links';
 import { Badge } from '@/shadcn/components/ui/badge';
 import { Card, CardContent } from '@/shadcn/components/ui/card';
-import { Separator } from '@/shadcn/components/ui/separator';
 import { LPFarm } from '@/types/farm';
-import { abbreviateNumber } from '@/utils/numbers';
-import { ArrowRight, Wallet } from 'lucide-react';
+import { ArrowRight } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { toast } from 'react-toastify';
@@ -60,7 +58,7 @@ const LPFarmCard = ({ lpFarm, chainId }: LPFarmCardProps) => {
                 src={
                   tokenImageLinks[token1Details.symbol.toUpperCase() as keyof typeof tokenImageLinks] ||
                   token1Details.logo ||
-                  CURRENT_DAO_IMAGE
+                  FallbackTokenLogo
                 }
                 alt="Deposit Token"
                 width={16}
@@ -85,7 +83,7 @@ const LPFarmCard = ({ lpFarm, chainId }: LPFarmCardProps) => {
           </Badge>
         </div>
 
-        <div className="flex flex-col gap-4 flex-grow">
+        {/* <div className="flex flex-col gap-4 flex-grow">
           <div className="flex justify-between items-center">
             <div className="flex flex-col gap-1 items-start">
               <p className="text-lg font-normal text-midGreen font-sora">APR</p>
@@ -105,7 +103,7 @@ const LPFarmCard = ({ lpFarm, chainId }: LPFarmCardProps) => {
               </p>
             </div>
           </div>
-        </div>
+        </div> */}
       </CardContent>
       <Link
         href={`/${chainIdToChainSlugMap[chainId]}/lp-farms/${lpFarm.address}`}

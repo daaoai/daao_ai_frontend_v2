@@ -57,7 +57,7 @@ const FundDetails = ({
     return (marketCap * percentageChange) / 100;
   };
 
-  const lpFarmForPool = Object.values(lpFarmAddressesByChainId[chainId]).find(
+  const lpFarmForPool = Object.values(lpFarmAddressesByChainId[chainId] || {}).find(
     (lpFarm) => lpFarm.poolAddress.toLowerCase() === poolDetails?.address.toLowerCase(),
   );
 
@@ -81,12 +81,16 @@ const FundDetails = ({
             ${props.shortname} {props.longname}
           </CardTitle>
         </div> */}
-      {(fundDetails.isManageLiquidityEnabled || fundDetails.isLpFarmsEnabled) && daoInfo && poolDetails && (
+      {(fundDetails.isManageLiquidityEnabled || fundDetails.isLpFarmsEnabled) && (
         <div className="border-2 border-gray-30 rounded-md mt-4 p-6 flex items-center gap-6">
           {fundDetails.isManageLiquidityEnabled && (
             <button
-              className="bg-teal-50 text-black text-sm rounded-md p-2 hover:bg-teal-60 active:scale-95 transition-transform ease-in-out duration-150"
-              onClick={openLiquidityModalOpen}
+              className="bg-teal-50 text-black text-sm rounded-md p-2 hover:bg-teal-60 active:scale-95 transition-transform ease-in-out duration-150 disabled:opacity-50"
+              onClick={() => {
+                if (!daoInfo || !poolDetails) return;
+                openLiquidityModalOpen();
+              }}
+              disabled={!daoInfo || !poolDetails}
             >
               Manage
             </button>
@@ -102,14 +106,14 @@ const FundDetails = ({
           <ModalWrapper isOpen={isLiquidityModalOpen} onClose={closeLiquidityModalOpen} className="!max-w-[56rem]">
             <Liquidity
               onClose={closeLiquidityModalOpen}
-              daoInfo={daoInfo}
-              poolDetails={poolDetails}
+              daoInfo={daoInfo!} // checked before opening modal
+              poolDetails={poolDetails!} // checked before opening modal
               fundDetails={fundDetails}
               chainId={chainId}
             />
           </ModalWrapper>
           <ModalWrapper isOpen={isLPFarmModalOpen} onClose={closeFarmModalOpen}>
-            <LPFarms onClose={closeFarmModalOpen} chainId={chainId} lpFarmAddress={lpFarmForPool!.lpFarm} />
+            <LPFarms onClose={closeFarmModalOpen} chainId={chainId} lpFarmAddress={lpFarmForPool?.lpFarm || ''} />
           </ModalWrapper>
           {/* 
           <div className="flex flex-col gap-2">
