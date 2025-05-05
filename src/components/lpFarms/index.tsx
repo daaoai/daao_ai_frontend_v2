@@ -10,7 +10,7 @@ import { useEffect, useState } from 'react';
 import { formatUnits } from 'viem';
 import AnimatedSkeleton from '../animatedSkeleton';
 import ClickToCopy from '../copyToClipboard';
-import FallbackTokenLogo from '/public/assets/fallbackToken.svg';
+import FallbackTokenLogo from '/public/assets/fallbackToken.png';
 import { Badge } from '@/shadcn/components/ui/badge';
 
 interface LPFarmsProps {

@@ -48,7 +48,12 @@ const Orderbook = ({ daaoInfo, fundDetails }: { daaoInfo: DaoInfo | null; fundDe
           <p className="text-teal-20 text-sm font-normal">{daaoInfo?.daoTokenDetails.symbol}</p>
         </div>
         <div className="relative h-10 w-10 overflow-hidden rounded-full bg-[#f7931a]">
-          <Image src={daaoInfo?.daoTokenDetails.logo || '/assets/fallbackToken.svg'} alt="Mode Token" layout="fill" objectFit="cover" />
+          <Image
+            src={daaoInfo?.daoTokenDetails.logo || '/assets/fallbackToken.png'}
+            alt="Mode Token"
+            layout="fill"
+            objectFit="cover"
+          />
         </div>
       </CardHeader>
       <CardContent className="space-y-4">

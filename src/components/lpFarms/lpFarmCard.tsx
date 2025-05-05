@@ -9,7 +9,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { toast } from 'react-toastify';
 import { useAccount } from 'wagmi';
-import FallbackTokenLogo from '/public/assets/fallbackToken.svg';
+import FallbackTokenLogo from '/public/assets/fallbackToken.png';
 import { truncateNumber } from '@/utils/numbers';
 
 interface LPFarmCardProps {
@@ -19,7 +19,7 @@ interface LPFarmCardProps {
 }
 
 const LPFarmCard = ({ lpFarm, chainId }: LPFarmCardProps) => {
-  const { token0Details, token1Details, unclaimedRewardsUSD } = lpFarm;
+  const { token0Details, token1Details, unclaimedRewardsUSD, rewardTokenDetails } = lpFarm;
   const { startTime, endTime } = lpFarmAddressesByChainId[chainId][lpFarm.address];
 
   const { address: account } = useAccount();
@@ -29,14 +29,14 @@ const LPFarmCard = ({ lpFarm, chainId }: LPFarmCardProps) => {
   const now = Date.now();
   const isActive = now >= startTimeMs && now <= endTimeMs;
 
-  const formatDate = (timestamp: number) =>
-    new Date(timestamp)
-      .toLocaleDateString('en-US', {
-        month: 'short',
-        day: '2-digit',
-        year: 'numeric',
-      })
-      .replace(' ', '/');
+  // const formatDate = (timestamp: number) =>
+  //   new Date(timestamp)
+  //     .toLocaleDateString('en-US', {
+  //       month: 'short',
+  //       day: '2-digit',
+  //       year: 'numeric',
+  //     })
+  //     .replace(' ', '/');
 
   return (
     <Card className="box-border w-full max-w-[360px] bg-[#0d0d0d] border-[#383838] text-white flex flex-col">

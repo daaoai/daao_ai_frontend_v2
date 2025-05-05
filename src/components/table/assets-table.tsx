@@ -26,8 +26,6 @@ export function AssetTable({ columns, data }: AssetTableProps) {
     getPaginationRowModel: getPaginationRowModel(),
   });
 
-  
-
   return (
     <div className="space-y-4 text-center rounded-md border-none  pb-4 max-w-[18rem]  sm:max-w-full  lg:max-full w-full overflow-x-auto">
       {/* Table */}
@@ -53,7 +51,7 @@ export function AssetTable({ columns, data }: AssetTableProps) {
                       <div className="flex justify-start items-center gap-2">
                         {cell.column.id === 'token' && (
                           <Image
-                            src={cell.row.original.tokenIcon || '/assets/fallbackToken.svg'}
+                            src={cell.row.original.tokenIcon || '/assets/fallbackToken.png'}
                             alt="token"
                             width={20}
                             height={20}

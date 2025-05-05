@@ -11,7 +11,7 @@ import Link from 'next/link';
 import { toast } from 'react-toastify';
 import { formatUnits } from 'viem';
 import { useAccount } from 'wagmi';
-import FallbackTokenLogo from '/public/assets/fallbackToken.svg';
+import FallbackTokenLogo from '/public/assets/fallbackToken.png';
 
 interface FarmCardProps {
   farm: FarmPool;

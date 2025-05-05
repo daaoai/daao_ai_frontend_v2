@@ -19,7 +19,7 @@ import CollectedTickets from '../collectedTickets';
 import { ModalWrapper } from '../modalWrapper';
 import SlippageModal from '../slippageModal';
 import TicketPurchase from '../ticket';
-import FallbackTokenLogo from '/public/assets/fallbackToken.svg';
+import FallbackTokenLogo from '/public/assets/fallbackToken.png';
 
 const BuySellCard = ({
   chainId,
