@@ -1,12 +1,14 @@
 import { farmFactoryAddressesByChainId, lpFarmAddressesByChainId } from '@/constants/farm';
 import { FARM_FACTORY_ABI } from '@/daao-sdk/abi/farmFactory';
 import { POOL_ABI } from '@/daao-sdk/abi/pool';
+import { V3_STAKER_ABI } from '@/daao-sdk/abi/v3Staker';
 import { getV3DetailedPoolDetails } from '@/helpers/pool';
 import { FarmPool, LPFarm } from '@/types/farm';
+import { encodeSingleIncentive } from '@/utils/lpFarm';
 import { multicallForSameContract } from '@/utils/multicall';
 import { getPublicClient } from '@/utils/publicClient';
 import { getTokenDetails } from '@/utils/token';
-import { formatUnits, Hex } from 'viem';
+import { formatUnits, Hex, keccak256 } from 'viem';
 import { useAccount } from 'wagmi';
 import useTokenPrice from '../token/useTokenPrice';
 
@@ -139,8 +141,9 @@ const usePoolList = ({ chainId }: { chainId: number }) => {
   };
 
   const getLpFarmDetails = async (address: Hex): Promise<LPFarm> => {
-    const { dexType, rewardToken, poolAddress } = lpFarmAddressesByChainId[chainId][address];
-    const [poolDetails, rewardTokenDetails] = await Promise.all([
+    const { dexType, rewardToken, poolAddress, lpFarm, endTime, refundee, startTime } =
+      lpFarmAddressesByChainId[chainId][address];
+    const [poolDetails, rewardTokenDetails, rewardTokenPrice, incentivesData] = await Promise.all([
       getV3DetailedPoolDetails({
         address: poolAddress,
         chainId,
@@ -150,12 +153,33 @@ const usePoolList = ({ chainId }: { chainId: number }) => {
         address: rewardToken,
         chainId,
       }),
+      fetchTokenPriceDexScreener({ address: rewardToken, chainId }),
+      publicClient.readContract({
+        address: lpFarm,
+        abi: V3_STAKER_ABI,
+        functionName: 'incentives',
+        args: [
+          keccak256(
+            encodeSingleIncentive({
+              endTime,
+              pool: poolAddress,
+              refundee,
+              rewardToken,
+              startTime,
+            }),
+          ),
+        ],
+      }),
     ]);
+
+    const unclaimedRewardsFormatted = Number(formatUnits(incentivesData[0], rewardTokenDetails.decimals));
+    const unclaimedRewardsUSD = unclaimedRewardsFormatted * rewardTokenPrice;
     return {
       dexType,
       address,
       ...poolDetails,
       rewardTokenDetails,
+      unclaimedRewardsUSD,
     };
   };
 

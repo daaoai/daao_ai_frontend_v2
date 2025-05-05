@@ -10,6 +10,7 @@ import Link from 'next/link';
 import { toast } from 'react-toastify';
 import { useAccount } from 'wagmi';
 import FallbackTokenLogo from '/public/assets/fallbackToken.svg';
+import { truncateNumber } from '@/utils/numbers';
 
 interface LPFarmCardProps {
   lpFarm: LPFarm;
@@ -18,7 +19,7 @@ interface LPFarmCardProps {
 }
 
 const LPFarmCard = ({ lpFarm, chainId }: LPFarmCardProps) => {
-  const { token0Details, token1Details } = lpFarm;
+  const { token0Details, token1Details, unclaimedRewardsUSD } = lpFarm;
   const { startTime, endTime } = lpFarmAddressesByChainId[chainId][lpFarm.address];
 
   const { address: account } = useAccount();
@@ -83,18 +84,18 @@ const LPFarmCard = ({ lpFarm, chainId }: LPFarmCardProps) => {
           </Badge>
         </div>
 
-        {/* <div className="flex flex-col gap-4 flex-grow">
+        <div className="flex flex-col gap-4 flex-grow">
           <div className="flex justify-between items-center">
             <div className="flex flex-col gap-1 items-start">
-              <p className="text-lg font-normal text-midGreen font-sora">APR</p>
-              <p className="text-2xl font-medium font-rubik">{0}</p>
+              <p className="text-lg font-normal text-midGreen font-sora">Rewards</p>
+              <p className="text-2xl font-medium font-rubik">${truncateNumber(unclaimedRewardsUSD, 4)}</p>
             </div>
-            <div className="flex flex-col gap-1 items-start">
+            {/* <div className="flex flex-col gap-1 items-start">
               <p className="text-lg font-normal text-midGreen font-sora">TVL</p>
               <p className="text-2xl font-medium font-rubik">$ {0}</p>
-            </div>
+            </div> */}
           </div>
-          <Separator className="bg-[#383838]" />
+          {/* <Separator className="bg-[#383838]" />
           <div className="text-left flex flex-col gap-3">
             <div className="flex items-center gap-4">
               <Wallet className="text-midGreen" width={18} height={18} />
@@ -102,8 +103,8 @@ const LPFarmCard = ({ lpFarm, chainId }: LPFarmCardProps) => {
                 Total Staked ${token0Details.symbol} : {abbreviateNumber(Number(0))} {token0Details.symbol}
               </p>
             </div>
-          </div>
-        </div> */}
+          </div> */}
+        </div>
       </CardContent>
       <Link
         href={`/${chainIdToChainSlugMap[chainId]}/lp-farms/${lpFarm.address}`}

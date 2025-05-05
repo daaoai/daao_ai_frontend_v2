@@ -2,6 +2,7 @@ import { getDexAddressesForChain } from '@/constants/dex';
 import { lpFarmAddressesByChainId } from '@/constants/farm';
 import { V3_STAKER_ABI } from '@/daao-sdk/abi/v3Staker';
 import { uniswapV3NFTManagerAbi } from '@/dexes/uniswap/abi/nftManager';
+import { encodeSingleIncentive } from '@/utils/lpFarm';
 import { getNFTDetails, getUserNFTsForPool } from '@/helpers/nftManager';
 import { getV3DetailedPoolDetails } from '@/helpers/pool';
 import { Token } from '@/types/chains';
@@ -14,7 +15,7 @@ import { getTokenDetails } from '@/utils/token';
 import { V3PoolUtils } from '@/utils/v3Pools';
 import { useEffect, useState } from 'react';
 import { toast } from 'react-toastify';
-import { encodeAbiParameters, formatUnits, Hex, parseAbiParameters } from 'viem';
+import { formatUnits } from 'viem';
 import { useAccount, useWriteContract } from 'wagmi';
 
 const useLpFarms = ({ chainId, lpFarmAddress }: { chainId: number; lpFarmAddress: string }) => {
@@ -153,20 +154,6 @@ const useLpFarms = ({ chainId, lpFarmAddress }: { chainId: number; lpFarmAddress
       );
       return formattedPosition;
     });
-  };
-
-  // For a single incentive
-  const encodeSingleIncentive = (incentiveKey: {
-    rewardToken: Hex;
-    pool: Hex;
-    startTime: bigint;
-    endTime: bigint;
-    refundee: Hex;
-  }): Hex => {
-    return encodeAbiParameters(
-      parseAbiParameters('(address rewardToken, address pool, uint256 startTime, uint256 endTime, address refundee)'),
-      [incentiveKey],
-    );
   };
 
   const stakeFarm = async (tokenId: bigint) => {

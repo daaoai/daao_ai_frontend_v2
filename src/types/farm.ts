@@ -45,4 +45,5 @@ export interface LPFarm extends V3PoolDetailedDetails {
   rewardTokenDetails: Token;
   dexType: string;
   address: Hex;
+  unclaimedRewardsUSD: number;
 }
