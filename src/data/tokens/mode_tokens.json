@@ -1,0 +1,30 @@
+{
+  "0x0000000000000000000000000000000000000000": {
+    "address": "0x0000000000000000000000000000000000000000",
+    "name": "Ether",
+    "symbol": "ETH",
+    "decimals": 18,
+    "logo": "https://static.debank.com/image/mtr_token/logo_url/0x79a61d3a28f8c8537a3df63092927cfa1150fb3c/61844453e63cf81301f845d7864236f6.png"
+  },
+  "0x4200000000000000000000000000000000000006": {
+    "address": "0x4200000000000000000000000000000000000006",
+    "decimals": 18,
+    "symbol": "WETH",
+    "name": "Wrapped Ether",
+    "logo": "https://static.debank.com/image/mtr_token/logo_url/0x79a61d3a28f8c8537a3df63092927cfa1150fb3c/61844453e63cf81301f845d7864236f6.png"
+  },
+  "0xDfc7C877a950e49D2610114102175A06C2e3167a": {
+    "address": "0xDfc7C877a950e49D2610114102175A06C2e3167a",
+    "decimals": 18,
+    "symbol": "MODE",
+    "name": "Mode",
+    "logo": "https://static.debank.com/image/mode_token/logo_url/0xdfc7c877a950e49d2610114102175a06c2e3167a/0df0ff7dc977a206f3909e8bf1222419.png"
+  },
+  "0x98E0AD23382184338dDcEC0E13685358EF845f30": {
+    "address": "0x98E0AD23382184338dDcEC0E13685358EF845f30",
+    "decimals": 18,
+    "symbol": "CARTEL",
+    "name": "Cartel Token",
+    "logo": "/assets/defiCartel.png"
+  }
+}

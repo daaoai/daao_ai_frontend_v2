@@ -1,34 +1,36 @@
-import Image from 'next/image';
-import React, { useState, useEffect, useCallback } from 'react';
-import { useFundContext } from './FundContext';
-import Liquidity from '../Liquidity/liquidity';
-import { ethers } from 'ethers';
-import { CONTRACT_ABI } from '@/daao-sdk/abi/abi';
+import { telegramDeFAILink, twitterDeFAILink } from '@/constants/links';
+import { fetchDaoMarketData } from '@/helpers/daao';
 import { Card } from '@/shadcn/components/ui/card';
+import { DaoInfo, DaoMarketData, FundDetails as FundDetailsType } from '@/types/daao';
+import { PoolDetails } from '@/types/pool';
 import { shortenAddress } from '@/utils/address';
-import type { FundDetailsProps } from '@/types';
-import { daoAddress } from '@/constants/addresses';
+import { getLocalTokenDetails } from '@/utils/token';
+import Image from 'next/image';
+import { useCallback, useEffect, useState } from 'react';
+import { zeroAddress } from 'viem';
 import ClickToCopy from '../copyToClipboard';
-import { telegramDeFAILink, telegramLink, twitterDeFAILink, twitterLink } from '@/constants/links';
-import PoolDetailCard from '../poolDetailCard';
-import { ModalWrapper } from '../modalWrapper';
+import Liquidity from '../Liquidity/liquidity';
 import LPFarms from '../lpFarms';
+import { ModalWrapper } from '../modalWrapper';
+import PoolDetailCard from '../poolDetailCard';
+import { lpFarmAddressesByChainId } from '@/constants/farm';
 
-const FundDetails: React.FC<FundDetailsProps> = (props) => {
-  interface TokenChangeState {
-    percent: number;
-    token: number;
-  }
-  const { daoBalance } = useFundContext();
-  const [marketCap, setMarketCap] = useState<number | null>(null);
-  const [liquidity, setLiquidity] = useState<number | null>(null);
-  const [volume, setVolume] = useState<number | null>(null);
-  const [daoTokenAddress, setDaoTokenAddress] = useState('');
-  const [price, setPrice] = useState<number | null>(null);
-  const { setPriceUsd } = useFundContext();
-  const [tokenChange, setTokenChange] = useState<TokenChangeState>({
-    percent: 0,
-    token: 0,
+const FundDetails = ({
+  fundDetails,
+  chainId,
+  daoInfo,
+  poolDetails,
+}: {
+  fundDetails: FundDetailsType;
+  chainId: number;
+  daoInfo: DaoInfo | null;
+  poolDetails: PoolDetails | null;
+}) => {
+  const [marketData, setMarketData] = useState<DaoMarketData>({
+    liquidity: 0,
+    marketCap: 0,
+    price: 0,
+    volume: 0,
   });
   const [isLiquidityModalOpen, setIsLiquidityModalOpen] = useState(false);
   const openLiquidityModalOpen = useCallback(() => setIsLiquidityModalOpen(true), []);
@@ -37,106 +39,32 @@ const FundDetails: React.FC<FundDetailsProps> = (props) => {
   const openFarmModalOpen = useCallback(() => setIsLPFarmModalOpen(true), []);
   const closeFarmModalOpen = useCallback(() => setIsLPFarmModalOpen(false), []);
 
-  // useEffect(() => {
-  //   const fetchContractData = async () => {
-  //     try {
-  //       const data = await getContractData()
-  //       if (data?.daoToken) {
-  //         setDaoTokenAddress(data.daoToken)
-  //       }
-  //     } catch (error) {
-  //       console.error('Error fetching contract data:', error)
-  //     }
-  //   }
-  //   fetchContractData()
-  // }, [isConnected])
+  const tokenDetails = getLocalTokenDetails({ address: fundDetails.token, chainId });
 
-  // useEffect(() => {
-  //   const fetchDaoBalance = async () => {
-  //     if (!daoTokenAddress) return
-  //     if (typeof window === 'undefined' || !(window as any).ethereum) return
+  const updateMarketData = async () => {
+    if (!daoInfo?.daoToken || daoInfo.daoToken === zeroAddress) return;
+    const data = await fetchDaoMarketData({ chainId, daaoToken: daoInfo.daoToken });
+    if (data) {
+      setMarketData(data);
+    }
+  };
 
-  //     try {
-  //       await (window as any).ethereum.request({ method: 'eth_requestAccounts' })
-  //       const provider = new ethers.providers.Web3Provider((window as any).ethereum)
-  //       const signer = provider.getSigner()
-  //       const userAddress = await signer.getAddress()
-
-  //       const daoContract = new ethers.Contract(daoTokenAddress, daoABI, provider)
-  //       const balanceBN = await daoContract.balanceOf(userAddress)
-  //       const balanceFormatted = ethers.utils.formatUnits(balanceBN, 18)
-  //       console.log("Balance is pikcachuuuuuu ", daoBalance)
-  //       setDaoHoldings(daoBalance)
-  //     } catch (error) {
-  //       console.error('Error fetching DAO balance:', error)
-  //     }
-  //   }
-  //   fetchDaoBalance()
-  // }, [daoTokenAddress])
+  useEffect(() => {
+    updateMarketData();
+  }, [daoInfo]);
 
   const calculateTokenChange = (marketCap: number, percentageChange: number): number => {
     return (marketCap * percentageChange) / 100;
   };
 
-  useEffect(() => {
-    const modeRpc = 'https://mainnet.mode.network/';
-    const fetchMarketData = async () => {
-      const provider = new ethers.providers.JsonRpcProvider(modeRpc);
-
-      // const signer = provider.getSigner();
-
-      const contract = new ethers.Contract(daoAddress as string, CONTRACT_ABI, provider);
-      const daoToken = await contract.daoToken();
-      setDaoTokenAddress(daoToken);
-      // if (!daoTokenAddress) return
-
-      // const url = `https://api.dexscreener.com/token-pairs/v1/mode/${daoTokenAddress}`
-      const url = `https://api.dexscreener.com/token-pairs/v1/mode/${daoToken}`;
-      console.log('url is ', url);
-      try {
-        // Replace with your actual endpoint or logic
-        const response = await fetch(url);
-        const data = await response.json();
-        console.log('Data from api is  is ', data);
-
-        if (data && Array.isArray(data) && data[0]) {
-          setPrice(data[0].priceUsd);
-          setPriceUsd(data[0].priceUsd);
-          // setPriceUsd(23)
-          // const marketCap = (Number(data[0].priceUsd) * 10 ** 9).toFixed(0)
-          const marketCap = Number(data[0].marketCap).toFixed(0);
-          const liq = Number(data[0].liquidity?.usd).toFixed(0);
-          const volume = Number(data[0].volume?.h24).toFixed(0);
-          setMarketCap(Number(marketCap));
-          setLiquidity(Number(liq));
-          setVolume(Number(volume));
-          const percentageChange = Number(data?.[0]?.priceChange?.h24);
-          const tokenChangeValue = calculateTokenChange(Number(marketCap), percentageChange);
-          setTokenChange({
-            percent: percentageChange,
-            token: tokenChangeValue,
-          });
-        } else {
-          console.warn('Market data not in expected format.');
-        }
-      } catch (error) {
-        console.error('Error fetching market data:', error);
-      }
-    };
-    fetchMarketData();
-    // }, [daoTokenAddress, setPriceUsd])
-  }, [setPriceUsd]);
+  const lpFarmForPool = Object.values(lpFarmAddressesByChainId[chainId] || {}).find(
+    (lpFarm) => lpFarm.poolAddress.toLowerCase() === poolDetails?.address.toLowerCase(),
+  );
 
   return (
     <Card className="text-white sm:p-2  w-full border-none">
       <div className="w-full">
-        <Image
-          src="/assets/defai-cartel-image.svg"
-          alt="defai-cartel"
-          width={600}
-          height={300}
-          style={{ width: '100%' }}
-        />
+        <Image src={fundDetails.imgSrc} alt={fundDetails.title} width={600} height={300} style={{ width: '100%' }} />
       </div>
 
       {/* <div className="flex items-center gap-4 sm:gap-6">
@@ -153,27 +81,41 @@ const FundDetails: React.FC<FundDetailsProps> = (props) => {
             ${props.shortname} {props.longname}
           </CardTitle>
         </div> */}
-      <div className="border-2 border-gray-30 rounded-md my-4 p-6 flex items-center gap-6">
-        <button
-          className="bg-teal-50 text-black text-sm rounded-md p-2 hover:bg-teal-60 active:scale-95 transition-transform ease-in-out duration-150"
-          onClick={openLiquidityModalOpen}
-        >
-          Manage
-        </button>
-        <button
-          className="underline text-teal-50 text-sm rounded-md p-2 active:scale-95 transition-transform ease-in-out duration-150"
-          onClick={openFarmModalOpen}
-        >
-          LP Farms
-        </button>
-
-        <ModalWrapper isOpen={isLiquidityModalOpen} onClose={closeLiquidityModalOpen} className="!max-w-[56rem]">
-          <Liquidity onClose={closeLiquidityModalOpen} />
-        </ModalWrapper>
-        <ModalWrapper isOpen={isLPFarmModalOpen} onClose={closeFarmModalOpen}>
-          <LPFarms onClose={closeFarmModalOpen} daoTokenAddress={daoTokenAddress} />
-        </ModalWrapper>
-        {/* 
+      {(fundDetails.isManageLiquidityEnabled || fundDetails.isLpFarmsEnabled) && (
+        <div className="border-2 border-gray-30 rounded-md mt-4 p-6 flex items-center gap-6">
+          {fundDetails.isManageLiquidityEnabled && (
+            <button
+              className="bg-teal-50 text-black text-sm rounded-md p-2 hover:bg-teal-60 active:scale-95 transition-transform ease-in-out duration-150 disabled:opacity-50"
+              onClick={() => {
+                if (!daoInfo || !poolDetails) return;
+                openLiquidityModalOpen();
+              }}
+              disabled={!daoInfo || !poolDetails}
+            >
+              Manage
+            </button>
+          )}
+          {fundDetails.isLpFarmsEnabled && lpFarmForPool && (
+            <button
+              className="underline text-teal-50 text-sm rounded-md p-2 active:scale-95 transition-transform ease-in-out duration-150"
+              onClick={openFarmModalOpen}
+            >
+              LP Farms
+            </button>
+          )}
+          <ModalWrapper isOpen={isLiquidityModalOpen} onClose={closeLiquidityModalOpen} className="!max-w-[56rem]">
+            <Liquidity
+              onClose={closeLiquidityModalOpen}
+              daoInfo={daoInfo!} // checked before opening modal
+              poolDetails={poolDetails!} // checked before opening modal
+              fundDetails={fundDetails}
+              chainId={chainId}
+            />
+          </ModalWrapper>
+          <ModalWrapper isOpen={isLPFarmModalOpen} onClose={closeFarmModalOpen}>
+            <LPFarms onClose={closeFarmModalOpen} chainId={chainId} lpFarmAddress={lpFarmForPool?.lpFarm || ''} />
+          </ModalWrapper>
+          {/* 
           <div className="flex flex-col gap-2">
             <p className="text-gray-70 font-rubik text-sm font-normal">LP VALUE</p>
             <p>12</p>
@@ -187,20 +129,21 @@ const FundDetails: React.FC<FundDetailsProps> = (props) => {
             <p>12</p>
           </div>
          */}
-      </div>
-      <div className="flex justify-between w-full mb-4">
+        </div>
+      )}
+      <div className="flex justify-between w-full my-4">
         <div className="w-fit flex gap-x-2 items-center">
-          <h5 className="text-sm sm:text-base lg:text-lg text-[#D0F0BF]">$CARTEL</h5>
+          <h5 className="text-sm sm:text-base lg:text-lg text-[#D0F0BF]">{`$${tokenDetails.symbol}`}</h5>
           <div className="bg-[#053738] p-1 rounded-2xl flex gap-x-2 px-3">
-            <p className="text-sm sm:text-base lg:text-lg">{shortenAddress(daoTokenAddress)}</p>
-            <ClickToCopy copyText={daoTokenAddress} className="text-teal-20" />
+            <p className="text-sm sm:text-base lg:text-lg">{shortenAddress(daoInfo?.daoToken || '')}</p>
+            <ClickToCopy copyText={daoInfo?.daoToken || ''} className="text-teal-20" />
           </div>
         </div>
         <div className="w-fit flex items-center gap-x-2">
           <a>
             <Image
               src="/assets/link-logo.svg"
-              alt="defai-cartel"
+              alt={fundDetails.title}
               className="w-4 h-4 sm:w-5 sm:h-5"
               width={24}
               height={24}
@@ -230,15 +173,15 @@ const FundDetails: React.FC<FundDetailsProps> = (props) => {
         </div>
       </div>
       <div className="flex w-full flex-col items-start gap-y-3 pb-6">
-        <h2 className="text-sm sm:text-base md:text-lg lg:text-xl font-semibold">DeFAI Cartel</h2>
-        <p className=" sm:text-xs lg:text-sm text-left text-[#AEB3B6]">
-          DeFAI Venture DAO is a DeFAI Investment DAO dedicated to advancing the DeFAI movement by strategically
-          investing in AI Agents and AI-focused DAOs on Mode. As a collective force in decentralized AI finance, $CARTEL
-          empowers the AI-driven movement on Mode, fostering the growth of autonomous, AI-powered ecosystems.{' '}
-        </p>
+        <h2 className="text-sm sm:text-base md:text-lg lg:text-xl font-semibold">{fundDetails.title}</h2>
+        <p className=" sm:text-xs lg:text-sm text-left text-[#AEB3B6]">{fundDetails.description}</p>
       </div>
       <div className="w-full">
-        <PoolDetailCard marketCap={marketCap || 0} liquidity={liquidity || 0} volume={volume || 0} />
+        <PoolDetailCard
+          marketCap={marketData.marketCap || 0}
+          liquidity={marketData.liquidity || 0}
+          volume={marketData.volume || 0}
+        />
       </div>
 
       {/* 

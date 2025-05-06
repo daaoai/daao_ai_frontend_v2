@@ -1,25 +1,40 @@
 'use client';
-import React, { useState } from 'react';
-import { XCircle, Loader2 } from 'lucide-react'; // Import Loader2 icon
+import { getTokensBalance } from '@/helpers/token';
 import useDeposit from '@/hooks/farm/useDeposit';
-import { formatUnits, Hex, parseUnits } from 'viem';
-import { CARTEL_TOKEN_ADDRESS } from '@/constants/ticket';
-import useGetBalance from '@/hooks/useGetBalance';
 import { useToast } from '@/hooks/use-toast';
 import { Card, CardContent, CardHeader, CardTitle } from '@/shadcn/components/ui/card';
+import { FarmPool } from '@/types/farm';
+import { Loader2, XCircle } from 'lucide-react'; // Import Loader2 icon
+import React, { useEffect, useState } from 'react';
+import { formatUnits, Hex, parseUnits } from 'viem';
+import { useAccount } from 'wagmi';
 
 interface DepositFarmsProps {
   onClose: () => void;
   poolAddress: Hex;
-  fetchPoolAddresses: () => void;
+  poolData: FarmPool;
+  refreshFarmData: () => void;
+  chainId: number;
 }
 
-const DepositFarms: React.FC<DepositFarmsProps> = ({ onClose, poolAddress, fetchPoolAddresses }) => {
+const DepositFarms: React.FC<DepositFarmsProps> = ({ onClose, poolData, refreshFarmData, chainId }) => {
+  const [depositTokenBalance, setDepositTokenBalance] = useState<bigint>(0n);
   const [depositAmount, setDepositAmount] = useState(0);
   const [isLoading, setIsLoading] = useState(false);
   const [depositSuccess, setDepositSuccess] = useState<boolean | null>(null); // ✅ Track success state
+  const depositTokenDetails = poolData.depositTokenDetails;
 
-  const { deposit } = useDeposit();
+  const { address: account } = useAccount();
+  useEffect(() => {
+    const fetchBalance = async () => {
+      if (!account) return;
+      const balance = await getTokensBalance([depositTokenDetails.address], chainId, account);
+      setDepositTokenBalance(balance[depositTokenDetails.address]);
+    };
+    fetchBalance();
+  }, [account]);
+
+  const { deposit } = useDeposit({ chainId });
   const { toast } = useToast();
 
   const handleDeposit = async () => {
@@ -27,9 +42,9 @@ const DepositFarms: React.FC<DepositFarmsProps> = ({ onClose, poolAddress, fetch
     setDepositSuccess(null);
 
     const response = await deposit({
-      tokenAddress: CARTEL_TOKEN_ADDRESS,
-      poolAddress,
-      amount: parseUnits(depositAmount.toString(), 18),
+      tokenAddress: poolData.depositTokenDetails.address,
+      poolAddress: poolData.poolAddress,
+      amount: parseUnits(depositAmount.toString(), poolData.depositTokenDetails.decimals),
     });
 
     if (response?.status === 'success') {
@@ -38,7 +53,7 @@ const DepositFarms: React.FC<DepositFarmsProps> = ({ onClose, poolAddress, fetch
         title: 'Deposit Successful',
         variant: 'default',
       });
-      fetchPoolAddresses();
+      refreshFarmData();
     } else {
       setDepositSuccess(false);
     }
@@ -46,8 +61,6 @@ const DepositFarms: React.FC<DepositFarmsProps> = ({ onClose, poolAddress, fetch
     setIsLoading(false);
     console.log(response);
   };
-
-  const { decimals, balance } = useGetBalance();
 
   return (
     <Card className="w-full max-w-lg bg-gray-40 border border-gray-30 rounded-xl shadow-lg text-white">
@@ -68,13 +81,16 @@ const DepositFarms: React.FC<DepositFarmsProps> = ({ onClose, poolAddress, fetch
       <CardContent className="p-6">
         <div className="flex flex-col gap-4">
           <p className="text-xs font-semibold">
-            Balance {Number(formatUnits((balance ?? 0) as bigint, decimals ?? 18)).toFixed(2)} CARTEL
+            Balance {Number(formatUnits(depositTokenBalance as bigint, depositTokenDetails.decimals)).toFixed(2)}{' '}
+            {depositTokenDetails.symbol}
           </p>
           <input
-            type="text"
+            type="number"
             placeholder="Enter amount"
-            value={depositAmount}
-            onChange={(e) => setDepositAmount(Number(e.target.value))}
+            onChange={(e) => {
+              setDepositAmount(Number(e.target.value) || 0);
+              setDepositSuccess(null);
+            }}
             className="w-full px-3 py-2 bg-black text-white rounded-md border border-[#2D2D2D] focus:outline-none"
           />
           <button

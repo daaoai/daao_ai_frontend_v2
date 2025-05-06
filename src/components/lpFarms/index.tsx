@@ -1,73 +1,67 @@
 'use client';
-import { useEffect, useState } from 'react';
-import { ChevronLeft } from 'lucide-react';
-import { Card, CardContent, CardHeader } from '@/shadcn/components/ui/card';
-import ClickToCopy from '../copyToClipboard';
-import { shortenAddress } from '@/utils/address';
-// import usePoolList from '@/hooks/farm/usePoolList';
-import { Position } from '@/types/farm';
-// import useHarvest from '@/hooks/farm/useHarvest';
+import { lpFarmAddressesByChainId } from '@/constants/farm';
 import useLpFarms from '@/hooks/farm/uselpFarms';
-import { modeTokenAddress } from '@/constants/addresses';
-import { CARTEL_TOKEN_ADDRESS } from '@/constants/ticket';
+import { Card, CardContent, CardHeader } from '@/shadcn/components/ui/card';
+import { Position } from '@/types/farm';
+import { shortenAddress } from '@/utils/address';
+import { ChevronLeft } from 'lucide-react';
 import Image from 'next/image';
+import { useEffect, useState } from 'react';
 import { formatUnits } from 'viem';
 import AnimatedSkeleton from '../animatedSkeleton';
-// import { CURRENT_DAO_IMAGE, GAMBLE_IMAGE } from '@/constants/links';
-
-interface LPFarm {
-  id: number;
-  tokenId: number;
-  value: string;
-  canStake: boolean;
-  apr?: string;
-}
+import ClickToCopy from '../copyToClipboard';
+import FallbackTokenLogo from '/public/assets/fallbackToken.png';
+import { Badge } from '@/shadcn/components/ui/badge';
 
 interface LPFarmsProps {
   onClose: () => void;
-  daoTokenAddress: string;
+  chainId: number;
+  lpFarmAddress: string;
 }
 
-const CONTRACT_ADDRESS = '0x7303dbc086a18459A4dc74e74f2Dcc2a2a26131B';
-
-const LPFarms: React.FC<LPFarmsProps> = ({ onClose, daoTokenAddress }) => {
+const LPFarms: React.FC<LPFarmsProps> = ({ onClose, chainId, lpFarmAddress }) => {
   const [viewMode, setViewMode] = useState<'unstaked' | 'staked'>('unstaked');
-  // const [poolDetails, setPoolDetails] = useState<FarmPool | null>(null);
   const [isStakeLoading, setIsStakeLoading] = useState(false);
   const [isUnStakeLoading, setIsUnStakeLoading] = useState(false);
   const [userPositions, setUserPositions] = useState<Position[]>([]);
-  const [stackedPositions, setStackedPositions] = useState<Position[]>([]);
+  const [stakedPositions, setStakedPositions] = useState<Position[]>([]);
   const [unClaimedReward, setUnclaimedRewards] = useState(BigInt(0));
   const [isClaimingRewards, setIsClaimingRewards] = useState(false);
   const [isWithdrawingPosition, setIsWithdrawingPosition] = useState(false);
 
   const {
-    getPositionList,
+    rewardTokenDetails,
+    getUserPositionsForPool,
     unStakeFarm,
     stakeFarm,
-    getStackedPositionList,
+    getStakedPositionList,
     getClaimableRewards,
     claimRewards,
     withdrawPosition,
-  } = useLpFarms();
+    poolDetails,
+  } = useLpFarms({ chainId, lpFarmAddress });
+
+  const { name, startTime, endTime } = lpFarmAddressesByChainId[chainId][lpFarmAddress];
+
+  const startTimeMs = Number(startTime.toString()) * 1000;
+  const endTimeMs = Number(endTime.toString()) * 1000;
+  const now = Date.now();
+  const isActive = now >= startTimeMs && now <= endTimeMs;
 
   const fetchPositionList = async () => {
     try {
-      const data = await getPositionList();
-      console.log('fetchPositionListdata', { data });
+      const data = await getUserPositionsForPool();
       setUserPositions(data);
     } catch (error) {
-      console.log('fetchPositionList - error');
       console.error(error);
     }
   };
 
-  const fetchStackedPositionList = async () => {
+  const fetchStakedPositionList = async () => {
     try {
-      const data = await getStackedPositionList();
-      setStackedPositions(data);
+      const data = await getStakedPositionList();
+      setStakedPositions(data);
     } catch (error) {
-      console.log('fetchStackedPositionList - error');
       console.error(error);
     }
   };
@@ -77,21 +71,17 @@ const LPFarms: React.FC<LPFarmsProps> = ({ onClose, daoTokenAddress }) => {
       const data = await getClaimableRewards();
       setUnclaimedRewards(data);
     } catch (error) {
-      console.log('fetchClaimableRewards - error');
       console.error(error);
     }
   };
 
-  console.log(userPositions, 'userPositions');
-
   useEffect(() => {
-    // fetchPoolDetails();
     fetchClaimableRewards();
   }, []);
 
   useEffect(() => {
     if (viewMode === 'staked') {
-      fetchStackedPositionList();
+      fetchStakedPositionList();
     } else {
       fetchPositionList();
     }
@@ -108,7 +98,7 @@ const LPFarms: React.FC<LPFarmsProps> = ({ onClose, daoTokenAddress }) => {
       setIsStakeLoading(true);
       await stakeFarm(BigInt(id));
       setIsStakeLoading(false);
-      await fetchPositionList;
+      await fetchPositionList();
     } catch (err) {
       console.log({ err });
       setIsStakeLoading(false);
@@ -120,7 +110,7 @@ const LPFarms: React.FC<LPFarmsProps> = ({ onClose, daoTokenAddress }) => {
       setIsUnStakeLoading(true);
       await unStakeFarm(BigInt(id));
       await fetchClaimableRewards();
-      await fetchStackedPositionList();
+      await fetchStakedPositionList();
       setIsUnStakeLoading(false);
     } catch (err) {
       console.log({ err });
@@ -144,7 +134,7 @@ const LPFarms: React.FC<LPFarmsProps> = ({ onClose, daoTokenAddress }) => {
     try {
       setIsWithdrawingPosition(true);
       await withdrawPosition(BigInt(id));
-      await fetchStackedPositionList();
+      await fetchStakedPositionList();
       setIsWithdrawingPosition(false);
     } catch (err) {
       console.log({ err });
@@ -152,7 +142,6 @@ const LPFarms: React.FC<LPFarmsProps> = ({ onClose, daoTokenAddress }) => {
     }
   };
 
-  console.log(stackedPositions, 'stackedPositions');
   return (
     <div className="w-full">
       <Card className=" text-white border-gray-800 bg-[#101010]">
@@ -169,27 +158,37 @@ const LPFarms: React.FC<LPFarmsProps> = ({ onClose, daoTokenAddress }) => {
             <div className="flex items-center gap-3">
               <div className="relative w-20 h-[35px] flex-shrink-0">
                 <Image
-                  src="/assets/mode.png"
-                  alt="Gambl Token"
+                  src={poolDetails?.token0Details.logo || FallbackTokenLogo}
+                  alt={poolDetails?.token0Details.symbol || ''}
                   width={16}
                   height={16}
                   className="absolute left-0 top-0 w-[35px] h-[35px] rounded-full"
                 />
                 <Image
-                  src="/assets/defai-cartel-image.svg"
-                  alt="DeFai Cartel"
+                  src={poolDetails?.token1Details.logo || FallbackTokenLogo}
+                  alt={poolDetails?.token1Details.symbol || ''}
                   width={16}
                   height={16}
                   className="absolute left-[30px] top-0 w-[35px] h-[35px] rounded-full object-cover"
                 />
               </div>
-              <h2 className="text-xl font-medium text-[#DFFE01]">DeFAI Cartel</h2>
-              <span className="bg-[#D0F0BF] text-black text-xs px-2 py-0.5 rounded ml-auto">Active</span>
+              <h2 className="text-xl font-medium text-[#DFFE01]">{name}</h2>
+              <Badge
+                variant="secondary"
+                className={`flex items-center gap-2 px-3 py-1 rounded-md font-rubik font-regular ml-auto ${
+                  isActive ? 'bg-teal-20 text-black' : 'bg-red-400 text-black'
+                }`}
+              >
+                {isActive ? 'Active' : 'Inactive'}
+              </Badge>
             </div>
             <div className="bg-[#053738] p-1 rounded-lg flex gap-x-2 px-3 w-fit mt-6">
-              <p className="text-sm sm:text-base">{shortenAddress(CONTRACT_ADDRESS)}</p>
-              <ClickToCopy copyText={CONTRACT_ADDRESS} className="text-teal-20" />
+              <p className="text-sm sm:text-base">{shortenAddress(lpFarmAddress)}</p>
+              <ClickToCopy copyText={lpFarmAddress} className="text-teal-20" />
             </div>
+            {/* <div className="flex items-center gap-2">
+              <p>APR</p> <p className="text-white">{0}</p>
+            </div> */}
           </div>
         </CardHeader>
 
@@ -215,21 +214,21 @@ const LPFarms: React.FC<LPFarmsProps> = ({ onClose, daoTokenAddress }) => {
             <div className="flex justify-between items-center">
               <div className="flex items-center">
                 <Image
-                  src="/assets/defai-cartel-image.svg"
-                  alt="DeFai Cartel"
+                  src={rewardTokenDetails?.logo || FallbackTokenLogo}
+                  alt={rewardTokenDetails?.symbol || ''}
                   width={16}
                   height={16}
                   className=" rounded-full h-8 object-cover w-8 mr-4"
                 />
                 <span className="text-[#F8DE7F]">
-                  {formatUnits(unClaimedReward, 18)} CARTEL
+                  {formatUnits(unClaimedReward, rewardTokenDetails?.decimals || 18)} {rewardTokenDetails?.symbol}
                   {/* {poolDetails?.unclaimedReward} */}
                 </span>
               </div>
               <button
-                className="bg-white text-black text-xs font-medium px-3 py-1 rounded"
+                className="bg-white text-black text-xs font-medium px-3 py-1 rounded disabled:opacity-50"
                 onClick={handleClaimRewards}
-                disabled={isClaimingRewards}
+                disabled={isClaimingRewards || unClaimedReward === BigInt(0)}
               >
                 {isClaimingRewards ? 'Claiming...' : 'CLAIM'}
               </button>
@@ -255,30 +254,31 @@ const LPFarms: React.FC<LPFarmsProps> = ({ onClose, daoTokenAddress }) => {
                       <AnimatedSkeleton className="w-14 h-6 rounded-md" />
                     </td>
                   </tr>
-                ) : (viewMode === 'unstaked' ? userPositions : stackedPositions).length === 0 ? (
+                ) : (viewMode === 'unstaked' ? userPositions : stakedPositions).length === 0 ? (
                   <tr>
                     <td colSpan={5} className="text-center py-4 text-gray-400">
                       No results found
                     </td>
                   </tr>
                 ) : (
-                  (viewMode === 'unstaked' ? userPositions : stackedPositions).map((position, index) => (
+                  (viewMode === 'unstaked' ? userPositions : stakedPositions).map((position, index) => (
                     <tr key={position.id}>
                       <td className="px-4 py-3">{index + 1}</td>
                       <td className="px-4 py-3">{position.id}</td>
                       <td className="px-4 py-3">{position.liquidityUsd}</td>
                       <td className="px-4 py-3">
                         {viewMode === 'unstaked'
-                          ? position.token0 === modeTokenAddress || position.token1 === CARTEL_TOKEN_ADDRESS
-                            ? 'No'
-                            : 'Yes'
-                          : formatUnits(position.rewardInfo, 18)}
+                          ? isActive
+                            ? 'Yes'
+                            : 'No'
+                          : formatUnits(position.rewardInfo, rewardTokenDetails?.decimals || 18)}
                       </td>
                       <td className="px-4 py-3 text-right">
                         {viewMode === 'unstaked' ? (
                           <button
-                            className="text-black bg-[#D1FF53] text-xs px-3 py-1 rounded"
+                            className="text-black bg-[#D1FF53] text-xs px-3 py-1 rounded disabled:opacity-50"
                             onClick={() => handleStakeFarm(position.id)}
+                            disabled={!isActive || isStakeLoading}
                           >
                             Stake
                           </button>

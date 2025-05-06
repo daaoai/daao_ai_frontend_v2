@@ -1,6 +1,5 @@
-import { Abi } from 'viem';
 
-export const FARM_FACTORY_ABI: Abi = [
+export const FARM_FACTORY_ABI = [
   {
     inputs: [
       {
@@ -300,4 +299,4 @@ export const FARM_FACTORY_ABI: Abi = [
     stateMutability: 'nonpayable',
     type: 'function',
   },
-];
+] as const;

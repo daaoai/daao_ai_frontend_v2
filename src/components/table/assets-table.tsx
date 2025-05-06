@@ -3,11 +3,6 @@
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/shadcn/components/ui/table';
 import { ColumnDef, flexRender, getCoreRowModel, useReactTable, getPaginationRowModel } from '@tanstack/react-table';
 import Image from 'next/image';
-const ICONS = {
-  CARTEL: '/assets/defaiCartel.svg',
-  MODE: '/assets/mode.png',
-  GAMBL: '/assets/gamble.jpeg',
-};
 type Asset = {
   token: string;
   tokenIcon?: string;
@@ -56,7 +51,7 @@ export function AssetTable({ columns, data }: AssetTableProps) {
                       <div className="flex justify-start items-center gap-2">
                         {cell.column.id === 'token' && (
                           <Image
-                            src={ICONS[cell.row.original.token as keyof typeof ICONS]}
+                            src={cell.row.original.tokenIcon || '/assets/fallbackToken.png'}
                             alt="token"
                             width={20}
                             height={20}

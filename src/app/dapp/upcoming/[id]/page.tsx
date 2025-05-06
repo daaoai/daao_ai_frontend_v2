@@ -1,30 +1,28 @@
 'use client';
-import { PageLayout } from '@/components/page-layout';
-import React, { useState, useEffect } from 'react';
-import UpcomingFunds from '@/components/dashboard/upcoming-card';
 import BurnCard from '@/components/dashboard/burncard';
+import UpcomingFunds from '@/components/dashboard/upcoming-card';
+import { PageLayout } from '@/components/page-layout';
 import { CURRENT_DAO_IMAGE, CURRENT_DAO_LINK } from '@/constants/links';
+import React, { useEffect, useState } from 'react';
 import { useAccount } from 'wagmi';
-import { useFundContext } from '@/components/dashboard/FundContext';
 
 const Upcoming: React.FC = () => {
   const { isConnected } = useAccount();
   const [fundraisingPercent, setFundraisingPercent] = useState<number>(0);
-  const { fetchedData, totalContributed } = useFundContext();
   const [totalRaised, setTotalRaised] = useState(0);
   console.log('totalRaised', totalRaised);
   useEffect(() => {
-    if (!isConnected || !fetchedData) return;
-    console.log('Connected');
-    const fundraisingGoal = fetchedData?.fundraisingGoal;
-    const totalRaisedFund = fetchedData?.totalRaised;
-    console.log('fetched data from this hhhhhhhhhhh is ', fetchedData);
-    console.log('totalRaised before this hhhh is ', totalRaisedFund);
-    setTotalRaised(Number(totalRaisedFund));
-    console.log('totalRaised is hhhhhhhhhhhhhhhhhh ', totalRaisedFund);
-    setFundraisingPercent((Number(totalRaisedFund) / Number(fundraisingGoal)) * 100);
-    console.log('fundraisingPercent is hhhhhhhhhhhh ', fundraisingPercent);
-  }, [isConnected, totalContributed, fetchedData]);
+    // if (!isConnected || !fetchedData) return;
+    // console.log('Connected');
+    // const fundraisingGoal = fetchedData?.fundraisingGoal;
+    // const totalRaisedFund = fetchedData?.totalRaised;
+    // console.log('fetched data from this hhhhhhhhhhh is ', fetchedData);
+    // console.log('totalRaised before this hhhh is ', totalRaisedFund);
+    // setTotalRaised(Number(totalRaisedFund));
+    // console.log('totalRaised is hhhhhhhhhhhhhhhhhh ', totalRaisedFund);
+    // setFundraisingPercent((Number(totalRaisedFund) / Number(fundraisingGoal)) * 100);
+    // console.log('fundraisingPercent is hhhhhhhhhhhh ', fundraisingPercent);
+  }, [isConnected]);
 
   const props = {
     longname: 'DeFAI Cartel',

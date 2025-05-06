@@ -1,4 +1,6 @@
 import { Address, Hex } from 'viem';
+import { Token } from './chains';
+import { V3PoolDetailedDetails } from './pool';
 
 export interface PoolRewards {
   tokenAddress: string;
@@ -8,42 +10,40 @@ export interface PoolRewards {
 }
 
 export interface UserInfo {
-  stackedAmount: bigint;
+  stakedAmount: bigint;
   rewardDebt: bigint;
 }
 
 export interface FarmPool {
   startTime: bigint;
   endTime: bigint;
-  totalStackedAmount: bigint;
-  totalStackedUSD: number;
+  totalStakedAmount: bigint;
+  totalStakedUSD: number;
   rewards: PoolRewards;
   rewardTokenPerSec: bigint;
-  depositToken: Hex;
   poolAddress: Hex;
   userInfo: UserInfo;
   unclaimedReward: bigint;
   apr: number;
-  depositTokenName: string;
-  rewardTokenName: string;
+  depositTokenDetails: Token;
+  rewardTokenDetails: Token;
 }
 
 export interface Position {
-  nonce: bigint;
-  operator: Address;
-  token0: Address;
-  token1: Address;
-  tickSpacing: number;
-  tickLower: number;
-  tickUpper: number;
-  liquidity: bigint;
-  feeGrowthInside0LastX128: bigint;
-  feeGrowthInside1LastX128: bigint;
-  tokensOwed0: bigint;
-  tokensOwed1: bigint;
+  token0: Hex;
+  token1: Hex;
+  token0Details: Token;
+  token1Details: Token;
   liquidityUsd: string;
   id: number;
   apr: number;
   rewardInfo: bigint;
   numberOfStakes: number;
+}
+
+export interface LPFarm extends V3PoolDetailedDetails {
+  rewardTokenDetails: Token;
+  dexType: string;
+  address: Hex;
+  unclaimedRewardsUSD: number;
 }

@@ -1,15 +1,12 @@
 'use client';
-import React from 'react';
-import Image from 'next/image';
-import { PageLayout } from '@/components/page-layout';
-import { FundSection } from '@/components/dashboard/fundsection';
-import { CURRENT_DAO_IMAGE, FUND_CARD_PLACEHOLDER_IMAGE } from '@/constants/links';
-import { useAccount } from 'wagmi';
-import { useRouter } from 'next/navigation';
-import { useToast } from '@/hooks/use-toast';
 import { ConnectWalletButton } from '@/components/connect-button';
+import { PageLayout } from '@/components/page-layout';
+import { useToast } from '@/hooks/use-toast';
+import Image from 'next/image';
+import { useRouter } from 'next/navigation';
+import React from 'react';
+import { useAccount } from 'wagmi';
 import starIcon from '/public/assets/hero_star_icon.png';
-import { Fund } from '@/types/fund';
 
 // const getFeaturedFunds = (): Fund[] => {
 //   return [
@@ -42,7 +39,6 @@ const AppHome: React.FC = () => {
   const { isConnected } = useAccount();
   const router = useRouter();
   const { toast } = useToast();
-  console.log(isConnected);
   // const FEATURED_FUNDS: Fund[] = getFeaturedFunds();
   // const UPCOMING_FUNDS = getUpcomingFunds();
 
@@ -129,15 +125,6 @@ const AppHome: React.FC = () => {
               subtitle="In-demand hedgefunds"
               funds={FEATURED_FUNDS}
               onFundClick={(fundId) => onFundClick(fundId, 'dashboard')}
-            /> */}
-
-            {/* Upcoming funds */}
-            {/* <FundSection
-              title="Launched DAOs"
-              subtitle="Launching soon"
-              funds={UPCOMING_FUNDS}
-              linkPrefix="upcoming"
-              onFundClick={(fundId) => onFundClick(fundId, 'upcoming')}
             /> */}
           </div>
         </div>

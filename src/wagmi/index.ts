@@ -1,8 +1,8 @@
 'use client';
+import { chainsData, supportedChainIds } from '@/constants/chains';
 import { POLLING_INTERVAL } from '@/constants/wagmi';
-import { cookieStorage, createConfig, createStorage, http } from 'wagmi';
-import { mode, goerli, sepolia, berachain, monadTestnet } from 'wagmi/chains';
-import { connectorsForWallets } from '@rainbow-me/rainbowkit';
+import { getViemChainById } from '@/utils/chains';
+import { Chain, connectorsForWallets } from '@rainbow-me/rainbowkit';
 import {
   frontierWallet,
   metaMaskWallet,
@@ -12,6 +12,8 @@ import {
   trustWallet,
   walletConnectWallet,
 } from '@rainbow-me/rainbowkit/wallets';
+import { HttpTransport } from 'viem';
+import { cookieStorage, createConfig, createStorage, http } from 'wagmi';
 
 const connectors = connectorsForWallets(
   [
@@ -28,29 +30,38 @@ const connectors = connectorsForWallets(
       ],
     },
   ],
-  { appName: 'Daao.ai', projectId: '762399822f3c6326e60b27c2c2085d52' || '' },
+  { appName: 'Daao.ai', projectId: '762399822f3c6326e60b27c2c2085d52' },
 );
+
+export type CustomWagmiChain = {
+  iconUrl: string;
+} & Chain;
+
+const chains: CustomWagmiChain[] = Object.values(supportedChainIds).map((chainId) => {
+  const viemChain = getViemChainById(chainId);
+  return {
+    ...viemChain,
+    iconUrl: chainsData[chainId].logo,
+  };
+});
+
+const transports = Object.values(supportedChainIds).reduce((acc, chainId) => {
+  const viemChain = getViemChainById(chainId);
+  return {
+    ...acc,
+    [viemChain.id]: http(),
+  };
+}, {} as Record<number, HttpTransport>);
 
 export const getWagmiConfig = () => {
   return createConfig({
-    chains: [
-      mode,
-      //  goerli, sepolia,
-      berachain,
-      monadTestnet,
-    ],
+    chains: chains as [CustomWagmiChain, ...CustomWagmiChain[]],
     storage: createStorage({
       storage: cookieStorage,
     }),
     pollingInterval: POLLING_INTERVAL.ms1500,
     syncConnectedChain: true,
-    transports: {
-      [mode.id]: http(),
-      // [goerli.id]: http(),
-      // [sepolia.id]: http(),
-      [monadTestnet.id]: http(),
-      [berachain.id]: http(),
-    },
+    transports: transports,
     ssr: true,
     connectors,
   });

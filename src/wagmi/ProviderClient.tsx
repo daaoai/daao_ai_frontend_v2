@@ -1,15 +1,14 @@
 'use client';
-import { RainbowKitProvider } from '@rainbow-me/rainbowkit';
-import { cookieToInitialState, WagmiProvider } from 'wagmi';
-import { getWagmiConfig } from '.';
-import { mode } from 'wagmi/chains';
-import { ReactNode, useMemo } from 'react';
+import { initializeStore } from '@/store';
+import { darkTheme, RainbowKitProvider } from '@rainbow-me/rainbowkit';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { store } from '@/store';
+import { ReactNode, useMemo } from 'react';
 import { Provider as ReduxProvider } from 'react-redux';
+import { cookieToInitialState, WagmiProvider } from 'wagmi';
+import { mode } from 'wagmi/chains';
+import { getWagmiConfig } from '.';
 // import { SessionProvider } from 'next-auth/react';
 import { ThemeProvider } from '@/components/theme-provider';
-import { FundProvider } from '@/components/dashboard/FundContext';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
@@ -24,11 +23,11 @@ const ProviderClient = ({ wagmiCookie, children }: ProviderClientProps) => {
   const queryClient = useMemo(() => new QueryClient(), []); // Fix: Move to useMemo
 
   return (
-    <ReduxProvider store={store}>
+    <ReduxProvider store={initializeStore()}>
       <WagmiProvider config={wagmiConfig} initialState={initialWagmiState}>
         {/* <SessionProvider session={pageProps.session}> */}
         <QueryClientProvider client={queryClient}>
-          <RainbowKitProvider initialChain={mode.id}>
+          <RainbowKitProvider initialChain={mode.id} theme={darkTheme()}>
             <ThemeProvider
               attribute="class"
               defaultTheme="dark"
@@ -37,21 +36,19 @@ const ProviderClient = ({ wagmiCookie, children }: ProviderClientProps) => {
               disableTransitionOnChange
             >
               {/* <Layout font={'fontChoice'}> */}
-              <FundProvider>
-                {children}
-                <ToastContainer
-                  position="bottom-right"
-                  autoClose={5000}
-                  hideProgressBar={false}
-                  newestOnTop={false}
-                  closeOnClick
-                  rtl={false}
-                  pauseOnFocusLoss
-                  draggable
-                  pauseOnHover
-                  theme="dark" // or "light"
-                />
-              </FundProvider>
+              {children}
+              <ToastContainer
+                position="bottom-right"
+                autoClose={5000}
+                hideProgressBar={false}
+                newestOnTop={false}
+                closeOnClick
+                rtl={false}
+                pauseOnFocusLoss
+                draggable
+                pauseOnHover
+                theme="dark" // or "light"
+              />
               {/* </Layout> */}
             </ThemeProvider>
           </RainbowKitProvider>

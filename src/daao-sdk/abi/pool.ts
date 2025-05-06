@@ -1,6 +1,5 @@
-import { Abi } from 'viem';
 
-export const POOL_ABI: Abi = [
+export const POOL_ABI = [
   {
     inputs: [
       { internalType: 'address', name: 'owner_', type: 'address' },
@@ -358,4 +357,4 @@ export const POOL_ABI: Abi = [
     stateMutability: 'nonpayable',
     type: 'function',
   },
-];
+] as const;

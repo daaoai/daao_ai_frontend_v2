@@ -1,19 +1,33 @@
-import { usePublicClient, useWriteContract } from 'wagmi';
-import { POOL_ABI } from '@/daao-sdk/abi/pool';
-import { useToast } from '../use-toast';
-import { handleViemTransactionError } from '@/utils/approval';
-import { Abi, Hex } from 'viem';
-import { FARM_CONTRACT_ADDRESS } from '@/constants/farm';
+import { chainsData } from '@/constants/chains';
 import { FARM_ABI } from '@/daao-sdk/abi/farm';
+import { POOL_ABI } from '@/daao-sdk/abi/pool';
+import { handleViemTransactionError } from '@/utils/approval';
+import { getPublicClient } from '@/utils/publicClient';
 import { toast as reactToast } from 'react-toastify';
+import { Abi, Hex } from 'viem';
+import { useAccount, useSwitchChain, useWriteContract } from 'wagmi';
 
-const useWithDraw = () => {
-  const publicClient = usePublicClient();
+const useWithDraw = ({ chainId }: { chainId: number }) => {
   const { writeContractAsync } = useWriteContract();
-  const { toast } = useToast();
+  const publicClient = getPublicClient(chainId);
+  const { switchChainAsync } = useSwitchChain();
+  const { chainId: accountChainId } = useAccount();
 
-  const withdraw = async ({ poolAddress, amount }: { poolAddress: `0x${string}`; amount: bigint }) => {
+  const switchChain = async () => {
+    if (accountChainId !== chainId) {
+      try {
+        await switchChainAsync({ chainId });
+      } catch (error) {
+        console.error('Error switching chain:', error);
+        reactToast.error(`Please switch to ${chainsData[chainId].slug} network to proceed`);
+        return;
+      }
+    }
+  };
+
+  const withdraw = async ({ poolAddress, amount }: { poolAddress: Hex; amount: bigint }) => {
     try {
+      await switchChain();
       reactToast.success('Processing Withdrawal...');
 
       const withdrawResponse = await writeContractAsync({
@@ -24,12 +38,12 @@ const useWithDraw = () => {
       });
       const receipt = await publicClient?.waitForTransactionReceipt({
         hash: withdrawResponse,
-        confirmations: 1,
       });
-      reactToast.success('Withdrawal Successful');
-
-      console.log({ withdraw: receipt });
-      return receipt;
+      if (receipt.status !== 'success') {
+        reactToast.error('Transaction failed');
+        throw new Error('Transaction failed');
+      }
+      reactToast.success('Withdrawal Successful ✅');
     } catch (error) {
       console.log({ error });
       const { errorMsg } = handleViemTransactionError({
@@ -37,16 +51,13 @@ const useWithDraw = () => {
         error,
       });
 
-      toast({
-        title: 'Withdrawal Failed',
-        description: errorMsg,
-        variant: 'destructive',
-      });
+      reactToast.error('Withdrawal Failed ❌, ' + errorMsg);
     }
   };
 
   const startWithdraw = async ({ poolAddress }: { poolAddress: Hex }) => {
     try {
+      await switchChain();
       reactToast.success('Initiating Withdrawal...');
 
       const startWithdrawResponse = await writeContractAsync({
@@ -61,12 +72,10 @@ const useWithDraw = () => {
       });
 
       if (receipt?.status === 'success') {
-        // const withdrawTime = await getWithdrawalTime({
-        //   address: FARM_CONTRACT_ADDRESS,
-        // });
         reactToast.success('Withdrawal Initiated');
+      } else {
+        reactToast.error('Withdrawal Initiation Failed');
       }
-      console.log({ startWithdraw: receipt });
       return receipt;
     } catch (error) {
       console.log({ error });
@@ -81,12 +90,12 @@ const useWithDraw = () => {
 
   const getWithdrawalTime = async ({ address, poolAddress }: { address: Hex; poolAddress: Hex }) => {
     try {
-      const withdrawalTime = (await publicClient?.readContract({
+      const withdrawalTime = await publicClient.readContract({
         address: poolAddress,
         abi: FARM_ABI,
         functionName: 'withdrawalTime',
         args: [address],
-      })) as string;
+      });
       // const withdrawalTime = BigInt(1743311984);
       if (!withdrawalTime || Number(withdrawalTime) === 0) return 'Not Initiated';
 

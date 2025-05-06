@@ -1,19 +1,17 @@
-import Link from 'next/link';
-import { Clock, Globe } from 'lucide-react';
-import { useState, useEffect } from 'react';
-import { useFundContext } from './FundContext';
-import Image from 'next/image';
-import { Card, CardContent, CardHeader } from '@/shadcn/components/ui/card';
-import { Badge } from '@/shadcn/components/ui/badge';
-import { Separator } from '@/shadcn/components/ui/separator';
 import { Avatar, AvatarFallback, AvatarImage } from '@/shadcn/components/ui/avatar';
+import { Badge } from '@/shadcn/components/ui/badge';
+import { Card, CardContent, CardHeader } from '@/shadcn/components/ui/card';
 import { Progress } from '@/shadcn/components/ui/progress';
+import { Separator } from '@/shadcn/components/ui/separator';
 import { UpcomingFundDetailsProps } from '@/types';
+import { Clock, Globe } from 'lucide-react';
+import Image from 'next/image';
+import Link from 'next/link';
+import { useEffect, useState } from 'react';
 
 export default function UpcomingFunds(props: UpcomingFundDetailsProps) {
   const [endFTime, setEndFTime] = useState<number>(Date.now());
   const [fundrasingGoal, setFundraisingGoal] = useState<number>(0);
-  const { fetchedData } = useFundContext();
 
   const getTimeRemaining = (endTime: number) => {
     console.log('endTime is ', endTime);
@@ -33,12 +31,11 @@ export default function UpcomingFunds(props: UpcomingFundDetailsProps) {
   };
 
   useEffect(() => {
-    if (fetchedData && fetchedData.endDate && fetchedData.fundraisingGoal) {
-      setEndFTime(Number(fetchedData.endDate));
-      setFundraisingGoal(Number(fetchedData.fundraisingGoal));
-      console.log('fundrasisngGoal uyyyyyyyyyyyyyyyyy', fetchedData.fundraisingGoal);
-    }
-  }, [fetchedData]);
+    // if (fetchedData && fetchedData.endDate && fetchedData.fundraisingGoal) {
+    //   setEndFTime(Number(fetchedData.endDate));
+    //   setFundraisingGoal(Number(fetchedData.fundraisingGoal));
+    // }
+  }, []);
 
   return (
     <Card className="w-full max-w-3xl bg-[#0d0d0d] border-[#383838] text-white font-['Work Sans'] h-min">
