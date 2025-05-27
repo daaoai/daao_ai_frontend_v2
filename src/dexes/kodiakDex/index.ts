@@ -3,9 +3,9 @@ import { SupportedDexType } from '@/types/chains';
 import { IDexProtocol, PoolAddressRequest, QuotesRequest, SwapDataRequest } from '@/types/dex';
 import { getPublicClient } from '@/utils/publicClient';
 import { encodeFunctionData, Hex, PublicClient } from 'viem';
-import { UniswapCustomRouterDex } from '../uniswapCustomRouter';
 import { KODIAK_QUOTER_ABI } from './abi/quoter';
 import { KODIAK_ROUTER_ABI } from './abi/router';
+import { UniswapCustomRouterDex } from '../UniswapCustomRouter';
 
 export class KodiakDex implements IDexProtocol {
   factoryAddress: Hex;
